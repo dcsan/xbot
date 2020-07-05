@@ -1,0 +1,55 @@
+name: first-story
+intro: You wake up in a dark room. The door is locked.
+rooms:
+  - name: lobby
+    look: A large empty room with a table. There is a note on the table.
+    inspect: The door is locked
+    items:
+
+    - name: note
+      description: A simple note
+      actions:
+        - match: get|take
+          pass:
+            text: You pick up the note
+            gets: note
+        - match: read|inspect
+          needs: false
+          pass:
+            text: "The note just has 4 numbers on it: 4 3 2 1. It seems like some kind of combination"
+            gets: combination
+
+    - name: lock
+      description: A rusty combination lock
+      inspect: The tumblers can be turned
+      actions:
+        - match: open
+          needs: combination
+          fail:
+            text: You try to open the lock, but you don't know the combination
+          pass:
+            text: you turn the dial to 4321 and it opens!
+            gets: open-lock
+
+    - name: chest
+      description: A large treasure chest
+      inspect: A treasure chest. It has a big lock on it. I wonder what could be inside?
+      actions:
+        - match: open
+          needs: open-lock
+          pass:
+            text: You open up the chest, there's a key inside. You take the key!
+            gets: key
+          fail:
+            text: You try to open the chest, but it's locked.
+
+    - name: door
+      description: A rusty combination lock
+      inspect: The tumblers can be turned
+      actions:
+        - match: open
+          needs: key
+          fail:
+            text: You try to open the door, but it's locked. If only you had a key...
+          pass:
+            text: You put the lock in the door and it opens! You're free!
