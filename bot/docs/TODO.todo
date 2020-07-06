@@ -1,0 +1,29 @@
+# TODO
+
+devops:
+  ☐ setup test slack space
+  ☐ deployment
+  ✔ images? @done (7/6/2020, 3:28:02 AM)
+
+  ☐ rewrite object system to allow Items to be passed around
+  ☐ typescript?
+
+  - images for items:
+    ✔ in room @done (7/6/2020, 3:27:56 AM)
+    ☐ in players inventory
+
+engine:
+  ☐ basic help
+  ✔ reset @done (7/6/2020, 3:28:14 AM)
+  ☐ intro
+  ☐ hint system
+  ✔ images @done (7/6/2020, 3:28:19 AM)
+  ✔ buttons @done (7/6/2020, 3:28:20 AM)
+  ☐ cards?
+
+parser:
+  ☐ use X on Y
+  ☐ use key on door
+  ☐ integrate/test ISHML parser?
+
+

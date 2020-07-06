@@ -29,20 +29,20 @@ class Story {
     this.reset()
   }
 
+  reset() {
+    this.currentRoom = this.rooms[0]
+  }
+
   get room() {
     if (!this.currentRoom) this.reset()
     return this.currentRoom
-  }
-
-  reset() {
-    this.currentRoom = this.rooms[0]
   }
 
   look() {
     return this.currentRoom.look()
   }
 
-  inspect(itemName) {
+  inspect (itemName) {
     return this.room.inspect(itemName)
   }
 

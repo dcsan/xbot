@@ -1,13 +1,19 @@
 name: first-story
-intro: You wake up in a dark room. The door is locked.
+intro: You wake up in a strange room. The door is locked.
+  You don't remember how you got in here but just know you have to get out!
+
 rooms:
   - name: lobby
-    look: A large empty room with a table. There is a note on the table.
+    look: A large empty room with a table.
+      There is a note on the table.
+      On the floor is a large chest.
     inspect: The door is locked
     items:
 
     - name: note
       description: A simple note
+      inspect: There seem to be a sequence of numbers written down
+      image: https://images.techhive.com/images/article/2015/04/ransomnote-100581578-large.jpg
       actions:
         - match: get|take
           pass:
@@ -21,7 +27,8 @@ rooms:
 
     - name: lock
       description: A rusty combination lock
-      inspect: The tumblers can be turned
+      inspect: A strange looking combination lock. It seems you can select some numbers on it.
+      # image: lock.gif
       actions:
         - match: open
           needs: combination

@@ -36,8 +36,9 @@ class Room {
     const name = itemName.toLowerCase()
     const found = this.items.filter((item) => item.name === name)
     if (found && found.length) {
-      let messages = found.map((item) => item.inspect())
-      return messages
+      const first = found.pop()
+      let message = first.inspect()
+      return message
     } else {
       debug('not found', itemName, 'in', this.items)
       return `you don't see a ${itemName}`
