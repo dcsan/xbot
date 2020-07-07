@@ -2,6 +2,7 @@ const fs = require('fs')
 const path = require('path')
 const debug = require('debug')('mup:Story')
 const yaml = require('js-yaml')
+const Logger = require('../lib/Logger')
 
 const Room = require('./Room')
 
@@ -33,6 +34,46 @@ class Story {
     this.currentRoom = this.rooms[0]
   }
 
+  start () {
+    let blocks = []
+
+    // if (this.doc.image) {
+    //   const img = {
+    //     "type": "image",
+    //     "image_url": this.data.image,
+    //     // title: {
+    //     //   type: 'plain_text',
+    //     //   text: this.data.examine
+    //     // },
+    //     "alt_text": this.description
+    //   }
+    //   blocks.push(img)
+    // }
+
+    const desc = {
+      "type": "section",
+      "block_id": "section567",
+      "text": {
+        "type": "mrkdwn",
+        "text": this.doc.intro
+      }
+    }
+    blocks.push(desc)
+
+    const blob = {
+      // text: this.data.examine,
+      attachments: [
+        {
+          blocks
+        }
+      ]
+    }
+
+    Logger.logObj('start=>', blob)
+    return blob
+
+  }
+
   get room() {
     if (!this.currentRoom) this.reset()
     return this.currentRoom
@@ -42,8 +83,8 @@ class Story {
     return this.currentRoom.look()
   }
 
-  inspect (itemName) {
-    return this.room.inspect(itemName)
+  examine (itemName) {
+    return this.room.examine(itemName)
   }
 
   stuff() {

@@ -7,19 +7,19 @@ rooms:
     look: A large empty room with a table.
       There is a note on the table.
       On the floor is a large chest.
-    inspect: The door is locked
+    examine: The door is locked
     items:
 
     - name: note
       description: A simple note
-      inspect: There seem to be a sequence of numbers written down
+      examine: There seem to be a sequence of numbers written down
       image: https://images.techhive.com/images/article/2015/04/ransomnote-100581578-large.jpg
       actions:
         - match: get|take
           pass:
             text: You pick up the note
             gets: note
-        - match: read|inspect
+        - match: read|examine
           needs: false
           pass:
             text: "The note just has 4 numbers on it: 4 3 2 1. It seems like some kind of combination"
@@ -27,7 +27,7 @@ rooms:
 
     - name: lock
       description: A rusty combination lock
-      inspect: A strange looking combination lock. It seems you can select some numbers on it.
+      examine: A strange looking combination lock. It seems you can select some numbers on it.
       # image: lock.gif
       actions:
         - match: open
@@ -40,7 +40,7 @@ rooms:
 
     - name: chest
       description: A large treasure chest
-      inspect: A treasure chest. It has a big lock on it. I wonder what could be inside?
+      examine: A treasure chest. It has a big lock on it. I wonder what could be inside?
       actions:
         - match: open
           needs: open-lock
@@ -52,7 +52,7 @@ rooms:
 
     - name: door
       description: A rusty combination lock
-      inspect: The tumblers can be turned
+      examine: The tumblers can be turned
       actions:
         - match: open
           needs: key

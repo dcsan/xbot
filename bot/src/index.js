@@ -65,7 +65,7 @@ async function Hint (context) {
   context.postEphemeral({ text: 'Hint!' });
 }
 
-async function Inspect (
+async function Examine (
   context,
   {
     match: {
@@ -73,11 +73,11 @@ async function Inspect (
     },
   }
 ) {
-  debug('inspect: ', item)
-  await context.sendText(`you inspect the ${item}`)
-  const msg = story.inspect(item)
+  debug('examine: ', item)
+  await context.sendText(`you examine the ${item}`)
+  const msg = story.examine(item)
   debug('msg', JSON.stringify(msg, null, 2))
-  await context.postMessage(msg)
+  await context.chat.postMessage(msg)
 
   // TODO - also check inventory items
   // await context.sendText(msg)
@@ -122,6 +122,12 @@ async function Button (context) {
   )
 }
 
+async function Start (context) {
+  await context.chat.postMessage(
+    story.start()
+  )
+}
+
 
 module.exports = async function App () {
   return router([
@@ -131,11 +137,12 @@ module.exports = async function App () {
     text(['look', 'l'], Look),
     text(['reset'], Reset),
     text(['hint'], Hint),
+    text(['start'], Start),
 
     // TODO - build list of actions on entering room
     text(/^(?<action>open|use|read|get|take|give|drop) (?<item>.*)$/i, Actions),
     text(['stuff'], Stuff),
-    text(/^(i|inspect) (?<item>.*)$/i, Inspect),
+    text(/^(x|examine) (?<item>.*)$/i, Examine),
     text(/^inv|status|st$/i, Inventory),
     text('menu', menu.show),
     text('image', menu.testImage),

@@ -1,8 +1,26 @@
 # TODO
 
+Engine:
+  ✔ X examine @done (7/6/2020, 3:10:31 PM)
+  ☐ intro / restart
+  ☐ basic help
+  ✔ reset @done (7/6/2020, 3:28:14 AM)
+  ☐ hint system
+  ☐ doors?
+  ✔ images @done (7/6/2020, 3:28:19 AM)
+  ✔ buttons @done (7/6/2020, 3:28:20 AM)
+  ☐ cards? other graphical items?
+
+parser:
+  ☐ use X on Y
+  ☐ use key on door
+  ☐ integrate/test ISHML parser?
+
 devops:
   ☐ setup test slack space
-  ☐ deployment
+  ☐ deployment?
+  ☐ script for quick deploy?
+
   ✔ images? @done (7/6/2020, 3:28:02 AM)
 
   ☐ rewrite object system to allow Items to be passed around
@@ -11,19 +29,3 @@ devops:
   - images for items:
     ✔ in room @done (7/6/2020, 3:27:56 AM)
     ☐ in players inventory
-
-engine:
-  ☐ basic help
-  ✔ reset @done (7/6/2020, 3:28:14 AM)
-  ☐ intro
-  ☐ hint system
-  ✔ images @done (7/6/2020, 3:28:19 AM)
-  ✔ buttons @done (7/6/2020, 3:28:20 AM)
-  ☐ cards?
-
-parser:
-  ☐ use X on Y
-  ☐ use key on door
-  ☐ integrate/test ISHML parser?
-
-

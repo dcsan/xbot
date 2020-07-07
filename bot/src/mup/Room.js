@@ -27,17 +27,17 @@ class Room {
     return reply.join('\n')
   }
 
-  inspect(itemName) {
+  examine(itemName) {
     if (!itemName) {
-      debug('inspect: no itemname')
+      debug('examine: no itemname')
       return
     }
-    debug('inspect', itemName)
+    debug('examine', itemName)
     const name = itemName.toLowerCase()
     const found = this.items.filter((item) => item.name === name)
     if (found && found.length) {
       const first = found.pop()
-      let message = first.inspect()
+      let message = first.examine()
       return message
     } else {
       debug('not found', itemName, 'in', this.items)

@@ -6,18 +6,7 @@ class Item {
     this.data = data
   }
 
-  inspect () {
-
-    // let blocks = [
-    //   {
-    //     "type": "section",
-    //     "block_id": "section567",
-    //     "text": {
-    //       "type": "mrkdwn",
-    //       "text": this.data.inspect
-    //     },
-    //   },
-    // ]
+  examine () {
 
     let blocks = []
 
@@ -27,9 +16,9 @@ class Item {
         "image_url": this.data.image,
         // title: {
         //   type: 'plain_text',
-        //   text: this.data.inspect
+        //   text: this.data.examine
         // },
-        "alt_text": "Haunted hotel image"
+        "alt_text": this.description
       }
       blocks.push(img)
     }
@@ -39,13 +28,13 @@ class Item {
       "block_id": "section567",
       "text": {
         "type": "mrkdwn",
-        "text": this.data.inspect || this.data.description || this.data.name
+        "text": this.description
       }
     }
     blocks.push(desc)
 
     const blob = {
-      // text: this.data.inspect,
+      // text: this.data.examine,
       attachments: [
         {
           blocks
@@ -53,13 +42,17 @@ class Item {
       ]
     }
 
-    Logger.logObj('inspect=>', blob)
+    Logger.logObj('examine=>', blob)
     return blob
+  }
+
+  get description () {
+    return this.data.examine || this.data.description || this.data.name
   }
 
   look () {
     // debug(`look name: ${this.data.name} , data =>`, this.data)
-    return this.inspect()
+    return this.examine()
   }
 
   runActions (actionName, player, room) {
