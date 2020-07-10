@@ -4,9 +4,20 @@ const debug = require('debug')('mup:Story')
 const yaml = require('js-yaml')
 const Logger = require('../lib/Logger')
 
+const SlackAdapter = require('../lib/adapters/SlackAdapter')
 const Room = require('./Room')
 
 class Story {
+
+  constructor() {
+
+  }
+
+  get room() {
+    if (!this.currentRoom) this.reset()
+    return this.currentRoom
+  }
+
   reload(filename) {
     debug('loading:', filename)
     const filepath = path.join(__dirname, '../data', filename + '.yaml')
@@ -14,7 +25,7 @@ class Story {
     try {
       const doc = yaml.safeLoad(fs.readFileSync(filepath, 'utf8'))
       this.doc = doc
-      debug('doc', JSON.stringify(doc, null, 2))
+      Logger.logObj('doc', doc)
       this.build(doc)
     } catch (err) {
       console.error('failed to load', filename, err)
@@ -74,9 +85,28 @@ class Story {
 
   }
 
-  get room() {
-    if (!this.currentRoom) this.reset()
-    return this.currentRoom
+  runCommand (commandName, context) {
+    switch (commandName) {
+      case '/hint':
+        this.hint(context)
+        break
+
+      default:
+        console.warn('unknown command:', commandName)
+    }
+  }
+
+  status (context) {
+    let msg = `story.room: ${this.room.doc.name}`
+    SlackAdapter.flexOutput(msg, context)
+  }
+
+  hint (context) {
+    const block = SlackAdapter.textBlock(":bulb: try reading the note")
+    const msg = SlackAdapter.wrapBlocks([block])
+    Logger.log('hint', msg)
+    context.chat.postEphemeral(msg)
+    // return msg
   }
 
   look() {

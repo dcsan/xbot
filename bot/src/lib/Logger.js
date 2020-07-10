@@ -1,7 +1,14 @@
+const yaml = require('js-yaml')
+
 const Logger = {
 
-  logObj(msg, obj) {
-    console.log(msg, JSON.stringify(obj, null, 2))
+  log (msg, rest) {
+    console.log(msg, rest)
+  },
+
+  logObj (msg, obj) {
+    const blob = yaml.dump(obj)
+    console.log(msg, blob)
   }
 
 }

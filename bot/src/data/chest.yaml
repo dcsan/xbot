@@ -7,51 +7,104 @@ rooms:
     look: A large empty room with a table.
       There is a note on the table.
       On the floor is a large chest.
+    hints:
+      - 1. Have a `look` around for anything interesting!
+      - 2. Try reading the note
+      - 3. Does the note help you open the lock?
+      - 4. What's inside the chest?
+      - 5. Where could you use that key?
     examine: The door is locked
     items:
 
+    - name: table
+      description: A wooden table
+      states:
+        - name: default
+          examine: An old wooden table. Nothing that interesting.
+
     - name: note
       description: A simple note
-      examine: There seem to be a sequence of numbers written down
-      image: https://images.techhive.com/images/article/2015/04/ransomnote-100581578-large.jpg
+      states:
+        - name: default
+          examine: There seem to be a sequence of numbers written down
+          image: https://images.techhive.com/images/article/2015/04/ransomnote-100581578-large.jpg
       actions:
         - match: get|take
           pass:
             text: You pick up the note
             gets: note
+            hintStep: 2
         - match: read|examine
           needs: false
           pass:
             text: "The note just has 4 numbers on it: 4 3 2 1. It seems like some kind of combination"
             gets: combination
+            hintStep: 3
 
     - name: lock
       description: A rusty combination lock
-      examine: A strange looking combination lock. It seems you can select some numbers on it.
+      state: locked
       # image: lock.gif
+      states:
+        - name: locked
+          examine: A strange looking combination lock. It seems you can select some numbers on it.
+        - name: unlocked
+          examine: you opened the lock!
       actions:
         - match: open
           needs: combination
           fail:
             text: You try to open the lock, but you don't know the combination
+            hintStep: 3
           pass:
             text: you turn the dial to 4321 and it opens!
             gets: open-lock
+            hintStep: 4
+            setStates:
+              - open chest
+              - open lock
 
     - name: chest
       description: A large treasure chest
-      examine: A treasure chest. It has a big lock on it. I wonder what could be inside?
+      state: locked
+      states:
+        - name: locked
+          examine: The chest is locked
+        - name: open
+          examine: the chest is open and you can see a large key inside
+        - name: empty
+          examine: A large chest. It's open, and there's nothing inside
       actions:
         - match: open
           needs: open-lock
           pass:
-            text: You open up the chest, there's a key inside. You take the key!
-            gets: key
+            text: You open up the chest, there's a key inside.
+            setStates:
+              - open chest
+          fail:
+            text: You try to open the chest, but it's locked.
+
+    - name: key
+      description: A large treasure chest
+      states:
+        - name: default
+          examine: A treasure chest. It has a big lock on it. I wonder what could be inside?
+      actions:
+        - match: open
+          needs: open-lock
+          pass:
+            text: You open up the chest, there's a key inside.
           fail:
             text: You try to open the chest, but it's locked.
 
     - name: door
-      description: A rusty combination lock
+      description: A heavy door
+      states:
+        - name: locked
+          examine: The door is locked.
+        - name: unlocked
+          examine: the door is unlocked.
+
       examine: The tumblers can be turned
       actions:
         - match: open

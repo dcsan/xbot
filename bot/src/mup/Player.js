@@ -1,4 +1,5 @@
 const debug = require('debug')('mup:Player')
+const SlackAdapter = require('../lib/adapters/SlackAdapter')
 
 class Player {
   constructor() {
@@ -7,6 +8,14 @@ class Player {
 
   reset() {
     this.items = []
+  }
+
+  status (context) {
+    let msg = "inventory: "
+    this.items.map(item => {
+      msg += `- ${item.name} \n`
+    })
+    context.sendText( msg )
   }
 
   addItem(item) {

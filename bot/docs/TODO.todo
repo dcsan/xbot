@@ -4,12 +4,19 @@ Engine:
   ✔ X examine @done (7/6/2020, 3:10:31 PM)
   ☐ intro / restart
   ☐ basic help
-  ✔ reset @done (7/6/2020, 3:28:14 AM)
   ☐ hint system
-  ☐ doors?
+  ☐ state engine / objects (rooms?)
+  ☐ try audio file in slack
+  ☐ puzzle design?
+  ✔ reset @done (7/6/2020, 3:28:14 AM)
   ✔ images @done (7/6/2020, 3:28:19 AM)
   ✔ buttons @done (7/6/2020, 3:28:20 AM)
   ☐ cards? other graphical items?
+  ☐ images / artwork
+  ☐ inventory system with buttons
+  ☐ use X on Y
+  ☐ character?
+  ☐ doors?
 
 parser:
   ☐ use X on Y
@@ -18,6 +25,8 @@ parser:
 
 devops:
   ☐ setup test slack space
+  ☐ use express
+  ☐ static dir
   ☐ deployment?
   ☐ script for quick deploy?
 
@@ -29,3 +38,10 @@ devops:
   - images for items:
     ✔ in room @done (7/6/2020, 3:27:56 AM)
     ☐ in players inventory
+
+comms:
+  ☐ tom
+  ☐ IF person
+    what engine?
+    would puzzles work on slack?
+

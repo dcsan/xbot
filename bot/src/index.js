@@ -3,11 +3,15 @@ const { Story } = require('./mup/Story')
 const { Player } = require('./mup/Player')
 const Room = require('./mup/Room')
 const Menu = require('./mup/Menu')
+const Logger = require('./lib/Logger')
+const SlackAdapter = require('./lib/adapters/SlackAdapter')
+const Game = require('./mup/Game')
 const debug = require('debug')('mup:index')
 
 let story
 let player // TODO - sessions
 let menu
+let game
 
 const config = {
   storyName: 'chest',
@@ -18,15 +22,16 @@ function flatten (textList) {
   return textList.join('\n')
 }
 
+
 function init () {
   story = new Story()
   player = new Player()
-  menu = new Menu()
-  story.reload(config.storyName)
+  Reset()
 }
 
-async function SayHi (context) {
-  await context.sendText('Hi!')
+
+async function SayTest (context) {
+  await context.sendText('Testing OK!')
 }
 
 async function SayHello (context) {
@@ -50,9 +55,14 @@ async function Stuff (context) {
 }
 
 async function Reset (context) {
+  story.reload(config.storyName)
+  menu = new Menu()
+  game = new Game()
   player.reset()
   story.reset()
-  await context.sendText("reset done!")
+  if (context) {
+    await context.sendText("reset done!")
+  }
 }
 
 async function Inventory (context) {
@@ -61,9 +71,16 @@ async function Inventory (context) {
   await context.sendText(flatten(invItems))
 }
 
-async function Hint (context) {
-  context.postEphemeral({ text: 'Hint!' });
+async function Help (context) {
+  await game.help(context)
 }
+
+async function Hint (context) {
+  // context.postEphemeral({ text: 'Hint!' });
+  story.runCommand('/hint', context)
+}
+
+
 
 async function Examine (
   context,
@@ -76,11 +93,7 @@ async function Examine (
   debug('examine: ', item)
   await context.sendText(`you examine the ${item}`)
   const msg = story.examine(item)
-  debug('msg', JSON.stringify(msg, null, 2))
-  await context.chat.postMessage(msg)
-
-  // TODO - also check inventory items
-  // await context.sendText(msg)
+  await SlackAdapter.flexOutput(msg, context)
 }
 
 async function Actions (
@@ -99,14 +112,24 @@ async function Actions (
 
 async function HandleSlack (context) {
   // debug('slack.any', context)
+  if (context.chat)
   debug('rawEvent', context.event.rawEvent)
   debug('event.type', context.event.type)
   debug('event.subtype', context.event.subtype)
   debug('event.action', context.event.action)
+  debug('event.command', context.event.command)
+
   if (context.event.action) {
+    Logger.logObj('.action:', context.event.action.value)
     context.sendText(`event.action: ${context.event.action.value}`)
+  } else if (context.event.command) {
+    const commandText = context.event.command
+    Logger.logObj('commandText:', commandText)
+    story.runCommand(commandText, context)
+    // context.chat.postMessage(result)
+    // context.sendText(`other event ${context.event.type}`)
   } else {
-    context.sendText(`other event ${context.event.type}`)
+    Logger.logObj('unknown slack event:', context.event)
   }
 }
 
@@ -128,16 +151,25 @@ async function Start (context) {
   )
 }
 
+async function Status (context) {
+  await story.status(context)
+  await story.room.status(context)
+  await player.status(context)
+}
+
 
 module.exports = async function App () {
   return router([
-    text('hi', SayHi),
-    text('hello', SayHello),
-    text(['reload', 'rl'], reload),
-    text(['look', 'l'], Look),
-    text(['reset'], Reset),
-    text(['hint'], Hint),
-    text(['start'], Start),
+    text('test', SayTest),
+    text(['l', 'look'], Look),
+    text(['h', 'hint'], Hint),
+    text(['?', 'help'], Help),
+
+    // debug commands
+    text(['start'], Start),   //
+    text(['rs', 'reset'], Reset),
+    text(['st', 'status'], Status),
+    text(['rl', 'reload'], reload),
 
     // TODO - build list of actions on entering room
     text(/^(?<action>open|use|read|get|take|give|drop) (?<item>.*)$/i, Actions),
