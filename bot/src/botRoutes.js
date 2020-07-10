@@ -106,8 +106,7 @@ async function Actions (
 ) {
   debug('actions: ', item)
   // await context.sendText(`trying ${action} on ${item} ...`)
-  const results = story.room.runActions(action, item, player)
-  await context.sendText(flatten(results))
+  await story.room.runActions(action, item, player, context)
 }
 
 async function HandleSlack (context) {
@@ -164,6 +163,8 @@ module.exports = async function App () {
     text(['l', 'look'], Look),
     text(['h', 'hint'], Hint),
     text(['?', 'help'], Help),
+    text(['i', 'inv', 'inventory'], Inventory),
+    text(/^(x|examine) (?<item>.*)$/i, Examine),
 
     // debug commands
     text(['start'], Start),   //
@@ -174,8 +175,8 @@ module.exports = async function App () {
     // TODO - build list of actions on entering room
     text(/^(?<action>open|use|read|get|take|give|drop) (?<item>.*)$/i, Actions),
     text(['stuff'], Stuff),
-    text(/^(x|examine) (?<item>.*)$/i, Examine),
-    text(/^inv|status|st$/i, Inventory),
+
+    // testing
     text('menu', menu.show),
     text('image', menu.testImage),
     text('test2', menu.test2),

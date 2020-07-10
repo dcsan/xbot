@@ -6,6 +6,13 @@ const Logger = {
     console.log(msg, rest)
   },
 
+  error (msg, obj) {
+    console.error(msg)
+    if (obj) {
+      Logger.logObj('obj', obj)
+    }
+  },
+
   logObj (msg, obj) {
     const blob = yaml.dump(obj)
     console.log(msg, blob)

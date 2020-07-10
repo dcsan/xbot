@@ -28,6 +28,8 @@ rooms:
         - name: default
           examine: There seem to be a sequence of numbers written down
           image: https://images.techhive.com/images/article/2015/04/ransomnote-100581578-large.jpg
+        - name: read
+          examine: "You've seen it before. The numbers are starting back at you: 4 3 2 1"
       actions:
         - match: get|take
           pass:
@@ -37,9 +39,12 @@ rooms:
         - match: read|examine
           needs: false
           pass:
-            text: "The note just has 4 numbers on it: 4 3 2 1. It seems like some kind of combination"
+            text: "The note just has 4 numbers on it: 4 3 2 1.
+              It seems like some kind of combination"
             gets: combination
             hintStep: 3
+            updates:
+              - read note
 
     - name: lock
       description: A rusty combination lock
@@ -60,7 +65,7 @@ rooms:
             text: you turn the dial to 4321 and it opens!
             gets: open-lock
             hintStep: 4
-            setStates:
+            updates:
               - open chest
               - open lock
 
@@ -79,21 +84,30 @@ rooms:
           needs: open-lock
           pass:
             text: You open up the chest, there's a key inside.
-            setStates:
+            updates:
               - open chest
           fail:
             text: You try to open the chest, but it's locked.
 
     - name: key
-      description: A large treasure chest
+      description: An antique looking key
       states:
         - name: default
-          examine: A treasure chest. It has a big lock on it. I wonder what could be inside?
+          examine: ...
+        - name: holding-key
+          examine: The key looks like it could open a door somewhere...
       actions:
-        - match: open
-          needs: open-lock
+        - match: open door with key|open door
+          needs: key
           pass:
             text: You open up the chest, there's a key inside.
+          fail:
+            text: You try to open the chest, but it's locked.
+        - match: get|take
+          needs: open-chest
+          pass:
+            text: You take the key
+            gets: key
           fail:
             text: You try to open the chest, but it's locked.
 
@@ -105,11 +119,11 @@ rooms:
         - name: unlocked
           examine: the door is unlocked.
 
-      examine: The tumblers can be turned
+      examine: The lock is creaking
       actions:
         - match: open
           needs: key
           fail:
             text: You try to open the door, but it's locked. If only you had a key...
           pass:
-            text: You put the lock in the door and it opens! You're free!
+            text: You put the key in the door and it opens! You're free!

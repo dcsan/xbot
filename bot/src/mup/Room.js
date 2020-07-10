@@ -8,7 +8,7 @@ class Room {
     this.doc = doc
     this.items = []
     this.doc.items.forEach((itemData) => {
-      const item = new Item(itemData)
+      const item = new Item(itemData, this)
       this.items.push(item)
     })
   }
@@ -34,10 +34,14 @@ class Room {
   findItemByName (itemName) {
     const name = itemName.toLowerCase()
     const found = this.items.filter((item) => item.name === name)
-    if (found) {
-      return found[0] // dont modify items
+    if (found.length) {
+      const item = found[0] // dont modify items
+      Logger.logObj('found Item:', {itemName, item})
+      return item
+    } else {
+      Logger.log('cannot find item:', itemName)
+      return false
     }
-    return false
   }
 
   examine(itemName) {
@@ -57,10 +61,10 @@ class Room {
   }
 
   // triggers can interact between items in the same room
-  runActions(action, itemName, player) {
+  runActions(action, itemName, player, context) {
     return this.items.map((item) => {
       if (itemName === item.name) {
-        return item.runActions(action, player, this)
+        item.runActions(action, player, context)
       }
     })
   }

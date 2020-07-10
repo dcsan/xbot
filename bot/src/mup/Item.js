@@ -4,14 +4,15 @@ const Logger = require('../lib/Logger')
 const SlackAdapter = require('../lib/adapters/SlackAdapter')
 
 class Item {
-  constructor(doc) {
+  constructor(doc, room) {
     this.doc = doc
+    this.room = room
     this.state = this.doc.state || 'default'
   }
 
   examine () {
     const stateInfo = this.doc.states.filter(s => s.name === this.state).pop()
-    Logger.logObj('stateInfo', {state: this.state, stateInfo})
+    Logger.logObj('stateInfo', { state: this.state, stateInfo })
 
     let blocks = []
 
@@ -68,9 +69,28 @@ class Item {
     return this.examine()
   }
 
-  runActions (actionName, player, room) {
+  runUpdates (updates, context) {
+    updates.map(pair => {
+      const [newState, itemName] = pair.split(' ')
+      let targetItem
+      if (itemName) {
+        targetItem = this.room.findItemByName(itemName)
+      } else {
+        // defaults to this if no 2nd arg for itemName
+        targetItem = this
+      }
+      Logger.logObj('updateStates', { targetItem, newState })
+      targetItem.setState(newState)
+    })
+  }
+
+  setState (newState) {
+    this.state = newState
+  }
+
+  async runActions (actionName, player, context) {
     // debug('runActions', actionName, 'on', this.name, 'in', room.name)
-    const actionResults = this.doc.actions.map((actionData) => {
+    this.doc.actions.forEach(async (actionData) => {
       let rex = new RegExp(actionData.match)
       // debug('check', actionName, actionData)
       if (actionName.match(rex)) {
@@ -82,21 +102,18 @@ class Item {
           if (passData.gets) {
             player.addItemByName(actionData.pass.gets)
           }
-          if (passData.setStates) {
-            passData.setStates.map(pair => {
-              const [item, newState] = pair
-              Logger.log('would set', {item, newState})
-            })
+          if (passData.updates) {
+            await this.runUpdates(passData.updates, context)
           }
-          return (actionData.pass?.text)
+          SlackAdapter.sendText(actionData.pass?.text, context)
         } else {
           debug('action fail', actionName, actionData)
-          return (actionData.fail?.text)
+          SlackAdapter.sendText(actionData.fail?.text, context)
         }
       }
     })
     // debug('actionResults', actionResults)
-    return actionResults
+
   }
 
   get name () {

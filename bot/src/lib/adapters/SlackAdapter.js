@@ -1,3 +1,5 @@
+const Logger = require("../Logger")
+
 const SlackAdapter = {
 
   textBlock (text) {
@@ -43,6 +45,9 @@ const SlackAdapter = {
   },
 
   async sendText (text, context) {
+    if (!text) {
+      Logger.error('sendText but no text')
+    }
     await context.sendText(text)
   }
 

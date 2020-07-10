@@ -25,7 +25,7 @@ class Story {
     try {
       const doc = yaml.safeLoad(fs.readFileSync(filepath, 'utf8'))
       this.doc = doc
-      Logger.logObj('doc', doc)
+      Logger.logObj('loaded story', {name: doc.name})
       this.build(doc)
     } catch (err) {
       console.error('failed to load', filename, err)
