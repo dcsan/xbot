@@ -40,18 +40,18 @@ app.prepare().then(() => {
   server.use('/cdn', express.static('cdn'))
 
   // route for webhook request
-  // do this last
   server.all('/webhooks/slack', (req, res) => {
     return handle(req, res);
   });
 
-  // server.get('*', (req, res) => {
-  //   console.log('unknown route', req.path)
-  //   const fp = path.join(__dirname, 'build/index.html')
-  //   res.sendFile(fp)
-  //   // todo - send index.html
-  //   // return handle(req, res);
-  // });
+  // do this last
+  server.get('*', (req, res) => {
+    console.log('unknown route', req.path)
+    const fp = path.join(__dirname, 'build/index.html')
+    res.sendFile(fp)
+    // todo - send index.html
+    // return handle(req, res);
+  });
 
   console.log('using SLACK_ACCESS_TOKEN', process.env.SLACK_ACCESS_TOKEN)
 
