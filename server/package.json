@@ -3,9 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "bottender dev",
+    "dev": "nodemon server.js",
+    "devbot": "bottender dev",
     "lint": "eslint . ",
-    "start": "bottender start",
+    "start": "node server.js",
     "test": "jest"
   },
   "dependencies": {

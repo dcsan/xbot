@@ -1,0 +1,64 @@
+# TODO
+
+Engine:
+  ☐ deploy script
+  ☐ /public images
+  ☐ draw some images
+  ☐ images on states? changing states... (discovery!)
+  ☐ images events - open chest etc.
+  ☐ test puzzle page and "close browser" inside slack mobile client
+
+  ☐ trigger / reveal events on other objects
+
+  ☐ try audio file in slack
+  ☐ inventory with buttons?
+  ☐ use code on lock - more grammar (include item?)
+  ☐ item synonyms?
+  ☐ deploy with images
+
+  ☐ cards? other graphical items?
+  ☐ puzzle design?
+  ☐ inventory system with buttons
+  ☐ use X on Y
+  ☐ NPC character?
+  ☐ doors / linked rooms?
+  ☐ move to typescript
+
+
+parser:
+  ☐ use X on Y
+  ☐ use key on door
+  ☐ integrate/test ISHML parser?
+
+devops:
+  ☐ setup test slack space
+  ☐ use express
+  ☐ static dir
+  ☐ deployment?
+  ☐ script for quick deploy?
+
+  ✔ images? @done (7/6/2020, 3:28:02 AM)
+
+  ☐ rewrite object system to allow Items to be passed around
+  ☐ typescript?
+
+  - images for items:
+    ✔ in room @done (7/6/2020, 3:27:56 AM)
+    ☐ in players inventory
+
+comms:
+  ☐ tom
+  ☐ IF person
+    what engine?
+    would puzzles work on slack?
+
+
+
+  ✔ X examine @done (7/6/2020, 3:10:31 PM)
+  ✔ intro / restart @done (7/10/2020, 3:09:52 PM)
+  ✔ basic help @done (7/10/2020, 3:09:53 PM)
+  ✔ hint system @done (7/10/2020, 3:09:53 PM)
+  ✔ state engine / objects (rooms?) @done (7/10/2020, 3:09:54 PM)
+  ✔ reset @done (7/6/2020, 3:28:14 AM)
+  ✔ images @done (7/6/2020, 3:28:19 AM)
+  ✔ buttons @done (7/6/2020, 3:28:20 AM)
