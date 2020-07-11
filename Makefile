@@ -2,17 +2,6 @@
 
 deploydir='/mnt/ext250/web-apps/cbg.rik.ai'
 
-clean:
-	rm -rf client/build
-	rm -rf server/build
-
-build:
-	cd client && npm run build
-
-move:
-	mv client/build server
-
-prep: clean build move
 
 # just run this once
 nginxSetup:
@@ -27,10 +16,32 @@ firstDeploy:
 	# make deploy dir
 	ssh root@rik.ai "mkdir -p ${deploydir}"
 
+pm2first:
+	ssh root@rik.ai "cd ${deploydir} && NODE_ENV=production pm2 --name=cbg start server.js"
+
+pm2restart:
+	ssh root@rik.ai "pm2 restart cbg"
+
+pm2logs:
+	ssh root@rik.ai "pm2 logs cbg"
+
+clean:
+	rm -rf client/build
+	rm -rf server/build
+
+build: clean
+	cd client && npm run build
+
+move:
+	mv client/build server
+
+prep: clean build move
+
 sync:
 	rsync -avi server/ root@rik.ai:${deploydir}
 	echo "done"
 
+deploy: prep sync pm2restart
 
 fixPermissions:
 	find server/static -type d -exec chmod 755 {} \;

@@ -1,3 +1,6 @@
+// do this first!
+require('dotenv-flow').config();
+
 const morgan = require('morgan')
 const bodyParser = require('body-parser');
 const express = require('express');
@@ -41,6 +44,7 @@ app.prepare().then(() => {
     return handle(req, res);
   });
 
+  console.log('using SLACK_ACCESS_TOKEN', process.env.SLACK_ACCESS_TOKEN)
 
   server.listen(port, err => {
     if (err) throw err;

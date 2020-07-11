@@ -1,12 +1,13 @@
-name: first-story
+name: office-hack
 intro: You wake up in a strange room. The door is locked.
   You don't remember how you got in here but just know you have to get out!
 
 rooms:
-  - name: lobby
-    look: A large empty room with a table.
-      There is a note on the table.
-      On the floor is a large chest.
+  - name: office
+    look: A large empty room with a couple of desks
+      There is a note on the desk.
+      There's a filing cabinet next to the desk.
+    image: rooms/corner-office.jpg
     hints:
       - 1. Have a `look` around for anything interesting!
       - 2. Try reading the note
@@ -88,6 +89,9 @@ rooms:
               - open chest
           fail:
             text: You try to open the chest, but it's locked.
+        - match: get
+          pass:
+            text: It's too heavy to carry
 
     - name: key
       description: An antique looking key
