@@ -5,7 +5,7 @@ deploydir='/mnt/ext250/web-apps/cbg.rik.ai'
 
 # just run this once
 nginxSetup:
-	scp devops/cbg.rik.ainginx root@dc.rik.ai:/etc/nginx/sites-enabled/
+	scp devops/cbg.rik.ai.nginx root@dc.rik.ai:/etc/nginx/sites-enabled/
 	echo "testing config:"
 	ssh root@rik.ai "sudo nginx -t"
 	echo "restarting nginx"
@@ -39,7 +39,6 @@ prep: clean build move
 
 sync:
 	rsync -avi --delete \
-		--ignore
 		server/ root@rik.ai:${deploydir}
 
 	echo "done"
@@ -56,3 +55,8 @@ renewCert:
 tailNginx:
 	ssh root@rik.ai "tail -f /var/log/nginx/*log"
 
+testDeploy:
+	curl http://cbg.rik.ai/assets/items/chest-closed.png
+
+testLocalImages:
+	curl http://localhost:33010/cdn/assets/items/key.png

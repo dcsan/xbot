@@ -11,9 +11,16 @@ server {
 
   index index.html;
 
+  location /assets/ {
+    alias /mnt/ext250/web-apps/cbg.rik.ai/cdn/assets/;
+    autoindex on;
+    # try_files $uri cdn/assets;
+  }
+
   # for other browser deep link routes serve the index file
+  # just give up and let the appserver handle it?
   location / {
-    try_files $uri build/index.html @backend;
+    try_files $uri @backend;
   }
 
   # proxy to node app @backend
