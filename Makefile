@@ -29,7 +29,14 @@ clean:
 	rm -rf client/build
 	rm -rf server/build
 
-build: clean
+# image files can have wrong permissions when copied from internet
+fixPermissions:
+	# directories 755
+	find server/cdn -type d -exec chmod 755 {} \;
+	# files 644
+	find server/cdn -type f -exec chmod 644 {} \;
+
+build: clean fixPermissions
 	cd client && npm run build
 
 move:
@@ -45,9 +52,6 @@ sync:
 
 deploy: prep sync pm2restart
 
-fixPermissions:
-	find server/static -type d -exec chmod 755 {} \;
-	find server/static -type f -exec chmod 644 {} \;
 
 renewCert:
 	certbot certonly -n -d cbg.rik.ai --nginx
@@ -60,3 +64,5 @@ testDeploy:
 
 testLocalImages:
 	curl http://localhost:33010/cdn/assets/items/key.png
+
+

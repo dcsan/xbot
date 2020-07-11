@@ -28,20 +28,20 @@ app.prepare().then(() => {
   server.use(bodyParser.json({ verify }));
   server.use(bodyParser.urlencoded({ extended: false, verify }));
 
-  // your custom route
-  server.get('/api', (req, res) => {
-    console.log('api call')
-    res.json({ ok: true });
-  });
-
   console.log('serving public and build dirs')
   server.use(express.static('public'))
   server.use(express.static('build'))
   server.use('/cdn', express.static('cdn'))
 
-  // route for webhook request
-  server.all('/webhooks/slack', (req, res) => {
+  // route for webhook request to bottender
+  server.all('/api/webhooks/*', (req, res) => {
     return handle(req, res);
+  });
+
+  // your custom route
+  server.get('/api', (req, res) => {
+    console.log('api call')
+    res.json({ ok: true });
   });
 
   // do this last

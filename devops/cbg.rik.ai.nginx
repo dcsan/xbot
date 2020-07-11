@@ -4,23 +4,33 @@
 server {
   listen 80;
   server_name cbg.rik.ai;
-  root /mnt/ext250/web-apps/cbg.rik.ai/build;
-  index index.html;
 
   access_log /var/log/nginx/cbg.access.log;
   error_log /var/log/nginx/cbg.error.log;
+  root /mnt/ext250/web-apps/cbg.rik.ai/build;
 
 
-  # location /cdn/ {
-  #   alias /mnt/ext250/web-apps/cbg.rik.ai/cdn/;
-  #   autoindex on;
-  #   # try_files $uri cdn/assets;
-  # }
+  # static files from server/cdn
+  # make sure files are 644
+  location /cdn/ {
+    alias /mnt/ext250/web-apps/cbg.rik.ai/cdn/;
+    # root /mnt/ext250/web-apps/cbg.rik.ai/;
+    # autoindex on;
+    try_files $uri $uri/ default.png;
+  }
 
   # # for other browser deep link routes serve the index file
   # # just give up and let the appserver handle it?
+  # static files
+  location / {
+    # build/index.html
+    # index index.html;
+    try_files $uri $uri/ /index.html;
+  }
+
   # location / {
   #   # build/index.html
+  #   root /mnt/ext250/web-apps/cbg.rik.ai/build;
   #   try_files $uri build/$uri @backend build/index.html;
   # }
 
@@ -30,7 +40,7 @@ server {
   # }
 
   # proxy to node app @backend
-  location / {
+  location /api {
     proxy_pass http://localhost:33010;
 
     proxy_set_header X-Real-IP $remote_addr;
@@ -42,12 +52,6 @@ server {
     proxy_set_header Upgrade $http_upgrade;
     proxy_set_header Connection "upgrade";
   }
-
-  # future cdn static files
-  # CRA puts files into build/static so do NOT use /static
-  # location /cdn {
-  #   alias /mnt/ext250/web-apps/cbg.rik.ai/cdn;
-  # }
 
   listen 443 ssl; # managed by Certbot
   ssl_certificate /etc/letsencrypt/live/cbg.rik.ai/fullchain.pem; # managed by Certbot

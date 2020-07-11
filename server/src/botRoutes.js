@@ -161,7 +161,7 @@ async function Status (context) {
 
 module.exports = async function App () {
   return router([
-    text('test', SayTest),
+    text(/^test$/i, SayTest),
     text(/^l$|^look$/i, Look),
     text(/^h$|^hint$/i, Hint),
     text(/^h$|^help$/i, Help),
@@ -181,7 +181,6 @@ module.exports = async function App () {
     // testing
     text('menu', menu.show),
     text('image', menu.testImage),
-    text('test2', menu.test2),
     text(/delay/i, delay),
     slack.event('member_joined_channel', Welcome),
     // slack.event('interactive_message', Button),
