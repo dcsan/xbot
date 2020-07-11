@@ -12,9 +12,9 @@ export function Room() {
   return (
     <div className='wrapper'>
       <div className='caption'>The Corner Office</div>
-      <img className='full-image' src="/images/rooms/corner-office.jpg" alt='office' />
+      <img className='full-image' src="/cdn/assets/rooms/corner-office.jpg" alt='office' />
       <Link to='/items/note'>
-        <img className='note-mini' src="/images/items/note.png" alt='note' />
+        <img className='note-mini' src="/cdn/assets/items/note.png" alt='note' />
       </Link>
     </div>
   );

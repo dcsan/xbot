@@ -4,27 +4,33 @@
 server {
   listen 80;
   server_name cbg.rik.ai;
-  root /mnt/ext250/web-apps/cbg.rik.ai;
+  root /mnt/ext250/web-apps/cbg.rik.ai/build;
+  index index.html;
 
   access_log /var/log/nginx/cbg.access.log;
   error_log /var/log/nginx/cbg.error.log;
 
-  index index.html;
 
-  location /assets/ {
-    alias /mnt/ext250/web-apps/cbg.rik.ai/cdn/assets/;
-    autoindex on;
-    # try_files $uri cdn/assets;
-  }
+  # location /cdn/ {
+  #   alias /mnt/ext250/web-apps/cbg.rik.ai/cdn/;
+  #   autoindex on;
+  #   # try_files $uri cdn/assets;
+  # }
 
-  # for other browser deep link routes serve the index file
-  # just give up and let the appserver handle it?
-  location / {
-    try_files $uri @backend;
-  }
+  # # for other browser deep link routes serve the index file
+  # # just give up and let the appserver handle it?
+  # location / {
+  #   # build/index.html
+  #   try_files $uri build/$uri @backend build/index.html;
+  # }
+
+  # location /api {
+  #   # build/index.html
+  #   try_files $uri @backend;
+  # }
 
   # proxy to node app @backend
-  location @backend {
+  location / {
     proxy_pass http://localhost:33010;
 
     proxy_set_header X-Real-IP $remote_addr;
@@ -39,9 +45,9 @@ server {
 
   # future cdn static files
   # CRA puts files into build/static so do NOT use /static
-  location /cdn {
-    alias /mnt/ext250/web-apps/cbg.rik.ai/cdn;
-  }
+  # location /cdn {
+  #   alias /mnt/ext250/web-apps/cbg.rik.ai/cdn;
+  # }
 
   listen 443 ssl; # managed by Certbot
   ssl_certificate /etc/letsencrypt/live/cbg.rik.ai/fullchain.pem; # managed by Certbot

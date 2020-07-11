@@ -19,7 +19,7 @@ app.prepare().then(() => {
   const server = express();
 
   // log all requests
-  server.use(morgan('combined'))
+  server.use(morgan('tiny'))
 
   const verify = (req, _, buf) => {
     req.rawBody = buf.toString();
@@ -45,14 +45,13 @@ app.prepare().then(() => {
     return handle(req, res);
   });
 
-
-  server.get('*', (req, res) => {
-    console.log('unknown route', req.path)
-    const fp = path.join(__dirname, 'build/index.html')
-    res.sendFile(fp)
-    // todo - send index.html
-    // return handle(req, res);
-  });
+  // server.get('*', (req, res) => {
+  //   console.log('unknown route', req.path)
+  //   const fp = path.join(__dirname, 'build/index.html')
+  //   res.sendFile(fp)
+  //   // todo - send index.html
+  //   // return handle(req, res);
+  // });
 
   console.log('using SLACK_ACCESS_TOKEN', process.env.SLACK_ACCESS_TOKEN)
 

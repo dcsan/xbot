@@ -19,7 +19,7 @@ export function Item() {
       <Link to='/rooms/office'>
         <div className='item-bg'></div>
       </Link>
-      <img className='note-full' src="/images/items/note.png" alt='note' />
+      <img className='note-full' src="/cdn/assets/items/note.png" alt='note' />
     </div>
   );
 }
