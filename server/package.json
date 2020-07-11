@@ -1,17 +1,19 @@
 {
-  "name": "bot",
+  "name": "cbg",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "nodemon server.js",
+    "dev": "NODE_ENV=development nodemon server.js",
     "devbot": "bottender dev",
     "lint": "eslint . ",
     "start": "node server.js",
-    "test": "jest"
+    "test": "jest",
+    "production": "NODE_ENV=production node server.js"
   },
   "dependencies": {
     "bottender": "1.4.8",
-    "js-yaml": "^3.14.0"
+    "js-yaml": "^3.14.0",
+    "morgan": "^1.10.0"
   },
   "devDependencies": {
     "eslint": "^7.4.0",

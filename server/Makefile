@@ -8,8 +8,9 @@ dev-slack:
 	# DEBUG=bottender:action,mup* npm run dev -- --console
 	DEBUG=mup* npm run dev
 
+# verbose
 proxy:
-	ssh -R 80:localhost:5000 xbot@ssh.localhost.run
+	ssh -vvv -R 80:localhost:33010 xbot@ssh.localhost.run
 	# ssh -R 80:localhost:5000 serveo.net
 
 # change slack endpoints

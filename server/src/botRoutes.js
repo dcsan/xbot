@@ -1,7 +1,6 @@
 const { router, text, slack } = require('bottender/router')
 const { Story } = require('./mup/Story')
 const { Player } = require('./mup/Player')
-const Room = require('./mup/Room')
 const Menu = require('./mup/Menu')
 const Logger = require('./lib/Logger')
 const SlackAdapter = require('./lib/adapters/SlackAdapter')
@@ -12,6 +11,7 @@ let story
 let player // TODO - sessions
 let menu
 let game
+
 
 const config = {
   storyName: 'chest',
@@ -27,6 +27,7 @@ function init () {
   story = new Story()
   player = new Player()
   Reset()
+  Logger.log('setup botRoutes')
 }
 
 

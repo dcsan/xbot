@@ -1,0 +1,45 @@
+# cbg.rik.ai
+# port: 33010
+
+# CRA puts files into build/static so do NOT use /static
+
+server {
+  listen 80;
+  server_name cbg.rik.ai;
+  root /mnt/ext250/web-apps/cbg.rik.ai;
+
+  access_log /var/log/nginx/cbg.access.log;
+  error_log /var/log/nginx/cbg.error.log;
+
+  index index.html;
+
+  location / {
+    try_files $uri /index.html @backend;
+  }
+
+  location @backend {
+    proxy_pass http://localhost:33010;
+
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+    # Following is necessary for Websocket support
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+  }
+
+  # future cdn static files
+  location /cdn {
+    alias /mnt/ext250/web-apps/cbg.rik.ai/cdn;
+  }
+
+  listen 443 ssl; # managed by Certbot
+  ssl_certificate /etc/letsencrypt/live/cbg.rik.ai/fullchain.pem; # managed by Certbot
+  ssl_certificate_key /etc/letsencrypt/live/cbg.rik.ai/privkey.pem; # managed by Certbot
+  include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+  ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+}
+
