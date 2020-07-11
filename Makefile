@@ -38,7 +38,10 @@ move:
 prep: clean build move
 
 sync:
-	rsync -avi server/ root@rik.ai:${deploydir}
+	rsync -avi --delete \
+		--ignore
+		server/ root@rik.ai:${deploydir}
+
 	echo "done"
 
 deploy: prep sync pm2restart
