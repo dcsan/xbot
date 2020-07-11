@@ -9,9 +9,9 @@ server {
   error_log /var/log/nginx/cbg.error.log;
   root /mnt/ext250/web-apps/cbg.rik.ai/build;
 
-
   # static files from server/cdn
   # make sure files are 644
+  # better to use alias than have two roots
   location /cdn/ {
     alias /mnt/ext250/web-apps/cbg.rik.ai/cdn/;
     # root /mnt/ext250/web-apps/cbg.rik.ai/;
@@ -27,17 +27,6 @@ server {
     # index index.html;
     try_files $uri $uri/ /index.html;
   }
-
-  # location / {
-  #   # build/index.html
-  #   root /mnt/ext250/web-apps/cbg.rik.ai/build;
-  #   try_files $uri build/$uri @backend build/index.html;
-  # }
-
-  # location /api {
-  #   # build/index.html
-  #   try_files $uri @backend;
-  # }
 
   # proxy to node app @backend
   location /api {

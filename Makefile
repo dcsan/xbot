@@ -6,11 +6,10 @@ deploydir='/mnt/ext250/web-apps/cbg.rik.ai'
 # just run this once
 nginxSetup:
 	scp devops/cbg.rik.ai.nginx root@dc.rik.ai:/etc/nginx/sites-enabled/
-	echo "testing config:"
+	# echo "testing config:"
 	ssh root@rik.ai "sudo nginx -t"
-	echo "restarting nginx"
+	# echo "restarting nginx"
 	ssh root@rik.ai "sudo nginx -t && sudo systemctl restart nginx"
-	echo "now run certbot --nginx and follow the prompts"
 
 firstDeploy:
 	# make deploy dir
@@ -51,7 +50,6 @@ sync:
 	echo "done"
 
 deploy: prep sync pm2restart
-
 
 renewCert:
 	certbot certonly -n -d cbg.rik.ai --nginx
