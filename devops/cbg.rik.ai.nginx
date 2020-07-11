@@ -14,17 +14,11 @@ server {
   # better to use alias than have two roots
   location /cdn/ {
     alias /mnt/ext250/web-apps/cbg.rik.ai/cdn/;
-    # root /mnt/ext250/web-apps/cbg.rik.ai/;
-    # autoindex on;
     try_files $uri $uri/ default.png;
   }
 
-  # # for other browser deep link routes serve the index file
-  # # just give up and let the appserver handle it?
-  # static files
+  # for other browser deep link routes serve the index file
   location / {
-    # build/index.html
-    # index index.html;
     try_files $uri $uri/ /index.html;
   }
 
