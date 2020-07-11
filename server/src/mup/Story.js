@@ -109,8 +109,8 @@ class Story {
     // return msg
   }
 
-  look() {
-    return this.currentRoom.look()
+  look(context) {
+    this.room.look(context)
   }
 
   examine (itemName) {

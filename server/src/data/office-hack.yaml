@@ -4,33 +4,36 @@ intro: You wake up in a strange room. The door is locked.
 
 rooms:
   - name: office
-    look: A large empty room with a couple of desks
+    description: A large empty room with a couple of desks.
+
       There is a note on the desk.
+
       There's a filing cabinet next to the desk.
-    image: rooms/corner-office.jpg
+    imageUrl: rooms/corner-office.jpg
+    caption: corner office
     hints:
       - 1. Have a `look` around for anything interesting!
       - 2. Try reading the note
       - 3. Does the note help you open the lock?
       - 4. What's inside the chest?
       - 5. Where could you use that key?
-    examine: The door is locked
     items:
 
     - name: table
-      description: A wooden table
+      description: The desk
       states:
         - name: default
-          examine: An old wooden table. Nothing that interesting.
+          examine: <https://cbg.rik.ai/|click here to look around>
 
     - name: note
       description: A simple note
       states:
         - name: default
           examine: There seem to be a sequence of numbers written down
-          image: https://images.techhive.com/images/article/2015/04/ransomnote-100581578-large.jpg
+          imageUrl: items/note.png
         - name: read
           examine: "You've seen it before. The numbers are starting back at you: 4 3 2 1"
+          imageUrl: items/note.png
       actions:
         - match: get|take
           pass:
@@ -50,7 +53,7 @@ rooms:
     - name: lock
       description: A rusty combination lock
       state: locked
-      # image: lock.gif
+      # imageUrl: lock.gif
       states:
         - name: locked
           examine: A strange looking combination lock. It seems you can select some numbers on it.

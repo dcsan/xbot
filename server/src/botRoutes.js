@@ -14,14 +14,13 @@ let game
 
 
 const config = {
-  storyName: 'chest',
+  storyName: 'office-hack',
 }
 
 function flatten (textList) {
   textList = textList.filter(n => n) // remove nulls / empties
   return textList.join('\n')
 }
-
 
 function init () {
   story = new Story()
@@ -30,13 +29,8 @@ function init () {
   Logger.log('setup botRoutes')
 }
 
-
 async function SayTest (context) {
   await context.sendText('Testing OK!')
-}
-
-async function SayHello (context) {
-  await context.sendText('Hello!')
 }
 
 async function reload (context) {
@@ -46,8 +40,7 @@ async function reload (context) {
 }
 
 async function Look (context) {
-  const msg = story.look()
-  await context.sendText(msg)
+  await story.look(context)
 }
 
 async function Stuff (context) {

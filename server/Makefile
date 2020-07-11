@@ -10,7 +10,7 @@ dev-slack:
 
 # verbose
 proxy:
-	ssh -vvv -R 80:localhost:33010 xbot@ssh.localhost.run
+	ssh -v -R 80:localhost:33010 xbot@ssh.localhost.run
 	# ssh -R 80:localhost:5000 serveo.net
 
 # change slack endpoints

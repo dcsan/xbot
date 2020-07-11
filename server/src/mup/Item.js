@@ -21,17 +21,8 @@ class Item {
     } else {
       blocks.push(SlackAdapter.textBlock(stateInfo.examine))
 
-      if (stateInfo.image) {
-        const img = {
-          "type": "image",
-          "image_url": stateInfo.image,
-          // title: {
-          //   type: 'plain_text',
-          //   text: this.doc.examine
-          // },
-          "alt_text": this.description
-        }
-        blocks.push(img)
+      if (stateInfo.imageUrl) {
+        blocks.push(SlackAdapter.imageBlock(stateInfo))
       }
     }
 

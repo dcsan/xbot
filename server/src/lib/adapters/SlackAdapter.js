@@ -2,6 +2,11 @@ const Logger = require("../Logger")
 
 const SlackAdapter = {
 
+  // wrap relative image URLs
+  imageUrl (file) {
+    return process.env.STATIC_SERVER + file
+  },
+
   textBlock (text) {
     const block = {
       "type": "section",
@@ -15,8 +20,15 @@ const SlackAdapter = {
     return block
   },
 
-  wrapBlocks (blocks) {
+  imageBlock (opts) {
+    return {
+      type: "image",
+      image_url: SlackAdapter.imageUrl(opts.imageUrl),
+      alt_text: opts.examine || opts.description || 'image',
+    }
+  },
 
+  wrapBlocks (blocks) {
     const blob = {
       // text: this.data.examine,
       attachments: [
@@ -49,6 +61,12 @@ const SlackAdapter = {
       Logger.error('sendText but no text')
     }
     await context.sendText(text)
+  },
+
+  async sendBlocks(blocks, context) {
+    const msg = SlackAdapter.wrapBlocks(blocks)
+    Logger.logObj('msg', msg)
+    context.chat.postMessage(msg)
   }
 
 }

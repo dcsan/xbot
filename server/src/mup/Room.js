@@ -17,10 +17,12 @@ class Room {
     return this.doc.name
   }
 
-  look() {
-    debug('look')
-    let messages = [this.doc.look]
-    return messages
+  look(context) {
+    const blocks = [
+      SlackAdapter.textBlock(this.doc.description),
+      SlackAdapter.imageBlock(this.doc)
+    ]
+    SlackAdapter.sendBlocks(blocks, context)
   }
 
   status(context) {

@@ -11,7 +11,8 @@ module.exports = async function HandleError(context, props) {
     console.log('error', props.error.stack)
   }
   if (process.env.NODE_ENV === 'development') {
-    console.log('error', props.error.stack)
+    console.log('caught error\n')
+    console.log('stack', props.error.stack)
     await context.sendText(props.error.stack);
   }
 };
