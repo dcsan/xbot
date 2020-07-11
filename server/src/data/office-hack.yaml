@@ -10,15 +10,15 @@ rooms:
 
       There's a filing cabinet next to the desk.
     imageUrl: rooms/corner-office.jpg
-    caption: corner office
+    caption: "<https://cbg.rik.ai/rooms/office| :mag: corner office>"
     hints:
       - 1. Have a `look` around for anything interesting!
       - 2. Try reading the note
       - 3. Does the note help you open the lock?
       - 4. What's inside the chest?
       - 5. Where could you use that key?
-    items:
 
+    items:
     - name: table
       description: The desk
       states:

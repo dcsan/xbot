@@ -20,7 +20,8 @@ class Room {
   look(context) {
     const blocks = [
       SlackAdapter.textBlock(this.doc.description),
-      SlackAdapter.imageBlock(this.doc)
+      SlackAdapter.imageBlock(this.doc),
+      SlackAdapter.textBlock(this.doc.caption) || '...',  // FIXME always check we have a caption
     ]
     SlackAdapter.sendBlocks(blocks, context)
   }

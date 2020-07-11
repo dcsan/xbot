@@ -6,7 +6,7 @@ const Logger = require('./lib/Logger')
 const SlackAdapter = require('./lib/adapters/SlackAdapter')
 const Game = require('./mup/Game')
 const debug = require('debug')('mup:index')
-
+const Util = require('./lib/Util')
 let story
 let player // TODO - sessions
 let menu
@@ -35,6 +35,7 @@ async function SayTest (context) {
 
 async function reload (context) {
   await context.sendText('reloading...')
+  await
   story.reload(config.storyName)
   await context.sendText('loaded!')
 }
@@ -42,6 +43,13 @@ async function reload (context) {
 async function Look (context) {
   await story.look(context)
 }
+
+async function delay (context) {
+  await context.postMessage("wait...")
+  await Util.sleep(5000)
+  await context.postMessage("... done")
+}
+
 
 async function Stuff (context) {
   const msg = story.stuff()
@@ -154,10 +162,10 @@ async function Status (context) {
 module.exports = async function App () {
   return router([
     text('test', SayTest),
-    text(['l', 'look'], Look),
-    text(['h', 'hint'], Hint),
-    text(['?', 'help'], Help),
-    text(['i', 'inv', 'inventory'], Inventory),
+    text(/^l$|^look$/i, Look),
+    text(/^h$|^hint$/i, Hint),
+    text(/^h$|^help$/i, Help),
+    text(/^i$|^inv$|^inventory$/i, Inventory),
     text(/^(x|examine) (?<item>.*)$/i, Examine),
 
     // debug commands
@@ -174,6 +182,7 @@ module.exports = async function App () {
     text('menu', menu.show),
     text('image', menu.testImage),
     text('test2', menu.test2),
+    text(/delay/i, delay),
     slack.event('member_joined_channel', Welcome),
     // slack.event('interactive_message', Button),
     // slack.message(HandleSlack),

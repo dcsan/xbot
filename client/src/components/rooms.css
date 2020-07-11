@@ -1,0 +1,55 @@
+
+.wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  overflow-y: hidden;
+  overflow-x: scroll;
+  /* border: 5px solid red; */
+}
+
+.full-image {
+  position: absolute;
+  top: 0px;
+  height: 100vh;
+  z-index: 5;
+}
+
+.caption {
+  position: fixed;
+  bottom: 0px;
+  left: 0px;
+  width: 100vw;
+  padding: 15px;
+  color: white;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 10;
+}
+
+.note-mini {
+  position: relative;
+  top: 36vh;
+  left: 22vh;
+  height: 10vh;
+  width: 10vh;
+  /* border: 2px solid red; */
+  z-index: 20;
+}
+
+.item-bg {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  background: rgb(0.3, 0.2, 0.2);
+  z-index: 1;
+}
+
+.note-full {
+  position: relative;
+  width: 75vw;
+  z-index: 20;
+}
+
+

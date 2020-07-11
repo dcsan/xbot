@@ -1,9 +1,15 @@
 # TODO
 
 Engine:
-  ☐ deploy script
-  ☐ /public images
+  ✔ deploy script @done (7/11/2020, 4:17:40 AM)
+  ✔ /public images @done (7/11/2020, 4:17:41 AM)
   ☐ draw some images
+  ☐ basic web UI
+
+  ☐ task list
+  ☐ reward for finding something
+  ☐ timer?
+
   ☐ images on states? changing states... (discovery!)
   ☐ images events - open chest etc.
   ☐ test puzzle page and "close browser" inside slack mobile client
