@@ -11,15 +11,24 @@ function pickItem() {
   console.log('pickItem')
 }
 
+const captions = {
+  note: 'A post it note with some letters jotted down',
+  chest: 'A strange antique chest. It seems out of place here.'
+}
+
 export function Item() {
-  const { itemName } = useParams();
+  const { itemName } = useParams() || 'note';
+  // @ts-ignore
+  const caption = captions[itemName]
+  const imgPath = `/cdn/assets/items/${ itemName }.png`
+  console.log('itemName:', itemName, caption)
   return (
-    <div className='wrapper'>
-      <div className='caption'>Note</div>
+    <div className='wrapper center'>
       <Link to='/rooms/office'>
         <div className='item-bg'></div>
       </Link>
-      <img className='note-full' src="/cdn/assets/items/note.png" alt='note' />
+      <img className='note-full' src={ imgPath } alt='note' />
+      <div className='caption'>{ caption }</div>
     </div>
   );
 }

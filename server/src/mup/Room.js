@@ -2,10 +2,11 @@ const debug = require('debug')('mup:Room')
 const Item = require('./Item')
 const Logger = require('../lib/Logger')
 const SlackAdapter = require('../lib/adapters/SlackAdapter')
+const GameObject = require('./GameObject')
 
-class Room {
+class Room extends GameObject {
   constructor(doc) {
-    this.doc = doc
+    super(doc)
     this.items = []
     this.doc.items.forEach((itemData) => {
       const item = new Item(itemData, this)
@@ -26,12 +27,12 @@ class Room {
     SlackAdapter.sendBlocks(blocks, context)
   }
 
-  status(context) {
-    const reply = []
+  async status(context) {
+    const reply = ["room items:"]
     this.items.forEach((item) => {
       reply.push( `- ${item.doc.description}: ${item.state}`)
     })
-    SlackAdapter.sendList(reply, context)
+    await SlackAdapter.sendList(reply, context)
   }
 
   findItemByName (itemName) {
@@ -47,30 +48,39 @@ class Room {
     }
   }
 
-  examine(itemName) {
+  async examine(itemName, player, context) {
     if (!itemName) {
       debug('examine: no itemname')
       return
     }
-    const found = this.findItemByName(itemName)
-    if (found) {
-      Logger.log('found', found)
-      let message = found.examine()
-      return message
-    } else {
+
+    const item = this.findItemByName(itemName)
+    if (!item) {
       debug('not found', itemName, 'in', this.items)
-      return `you don't see a ${itemName}`
+      const msg = `you don't see a ${itemName}`
+      await SlackAdapter.sendText(msg, context)
+    } else {
+      Logger.log('ex item', item)
+      // check if there's a special 'examine' event
+      const foundAction = await item.itemActions('examine', player, context)
+      Logger.log('foundAction', foundAction)
+      if (!foundAction) {
+        await item.examine(context, player) // default examine
+      }
     }
   }
 
+  // TODO refactor move to GameObject ?
   // triggers can interact between items in the same room
-  runActions(action, itemName, player, context) {
+  runActions (action, itemName, player, context) {
+    // this.runRoomActions()  // TODO
     return this.items.map((item) => {
       if (itemName === item.name) {
-        item.runActions(action, player, context)
+        item.itemActions(action, player, context)
       }
     })
   }
+
 }
 
 module.exports = Room

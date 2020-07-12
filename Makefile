@@ -43,7 +43,7 @@ move:
 
 prep: clean build move
 
-sync:
+sync: fixPermissions
 	rsync -avi --delete \
 		server/ ${login}:${deploydir}
 

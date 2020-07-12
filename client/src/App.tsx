@@ -29,11 +29,11 @@ export default function BasicExample() {
           <Route path="/about">
             <About />
           </Route>
-          <Route path="/rooms/:room">
+          <Route path="/rooms/:roomName">
             <Room />
           </Route>
 
-          <Route path="/items/:item">
+          <Route path="/items/:itemName">
             <Item />
           </Route>
 

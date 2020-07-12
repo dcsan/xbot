@@ -2,57 +2,25 @@ const debug = require('debug')('mup:Item')
 const Logger = require('../lib/Logger')
 
 const SlackAdapter = require('../lib/adapters/SlackAdapter')
+const GameObject = require('./GameObject')
 
-class Item {
+class Item extends GameObject {
+
   constructor(doc, room) {
-    this.doc = doc
+    super(doc)
     this.room = room
     this.state = this.doc.state || 'default'
   }
 
-  examine () {
+  async examine (context, player) {
     const stateInfo = this.doc.states.filter(s => s.name === this.state).pop()
     Logger.logObj('stateInfo', { state: this.state, stateInfo })
-
-    let blocks = []
-
-    if (!stateInfo) {
-      blocks.push(SlackAdapter.textBlock(this.description))
-    } else {
-      blocks.push(SlackAdapter.textBlock(stateInfo.examine))
-
-      if (stateInfo.imageUrl) {
-        blocks.push(SlackAdapter.imageBlock(stateInfo))
-      }
-    }
-
-    const blob = SlackAdapter.wrapBlocks(blocks)
-
-    // const desc = {
-    //   "type": "section",
-    //   "block_id": "section567",
-    //   "text": {
-    //     "type": "mrkdwn",
-    //     "text": this.description
-    //   }
-    // }
-    // blocks.push(desc)
-
-    // const blob = {
-    //   // text: this.doc.examine,
-    //   attachments: [
-    //     {
-    //       blocks
-    //     }
-    //   ]
-    // }
-
-    Logger.logObj('examine=>', blob)
-    return blob
+    Logger.log('item.examine', this.name)
+    await SlackAdapter.sendItemCard(stateInfo, this, context)
   }
 
   get description () {
-    return this.doc.examine || this.doc.description || this.doc.name
+    return this.doc.text || this.doc.description || this.doc.name
   }
 
   look () {
@@ -75,16 +43,14 @@ class Item {
     })
   }
 
-  setState (newState) {
-    this.state = newState
-  }
-
-  async runActions (actionName, player, context) {
-    // debug('runActions', actionName, 'on', this.name, 'in', room.name)
+  async itemActions (actionName, player, context) {
+    debug('itemActions', actionName, 'on', this.name)
+    let foundAction = false
     this.doc.actions.forEach(async (actionData) => {
       let rex = new RegExp(actionData.match)
       // debug('check', actionName, actionData)
       if (actionName.match(rex)) {
+        foundAction = true
         const needs = actionData.needs
         if (!needs || player.hasItem(needs)) {
           // success!
@@ -96,16 +62,21 @@ class Item {
           if (passData.updates) {
             await this.runUpdates(passData.updates, context)
           }
-          SlackAdapter.sendText(actionData.pass?.text, context)
+          SlackAdapter.sendItemCard(actionData.pass, this, context)
         } else {
           debug('action fail', actionName, actionData)
-          SlackAdapter.sendText(actionData.fail?.text, context)
+          SlackAdapter.sendItemCard(actionData.fail, this, context)
         }
       }
     })
-    // debug('actionResults', actionResults)
-
+    Logger.log('foundAction', foundAction)
+    return foundAction
   }
+
+  setState (newState) {
+    this.state = newState
+  }
+
 
   get name () {
     return this.doc.name.toLowerCase()

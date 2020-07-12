@@ -68,9 +68,8 @@ async function Reset (context) {
 }
 
 async function Inventory (context) {
-  const invItems = player.inventory()
   await context.sendText('You are holding:')
-  await context.sendText(flatten(invItems))
+  await player.inventory(context)
 }
 
 async function Help (context) {
@@ -83,7 +82,6 @@ async function Hint (context) {
 }
 
 
-
 async function Examine (
   context,
   {
@@ -94,8 +92,7 @@ async function Examine (
 ) {
   debug('examine: ', item)
   await context.sendText(`you examine the ${item}`)
-  const msg = story.examine(item)
-  await SlackAdapter.flexOutput(msg, context)
+  await story.examine(item, player, context)
 }
 
 async function Actions (
@@ -154,8 +151,8 @@ async function Start (context) {
 
 async function Status (context) {
   await story.status(context)
-  await story.room.status(context)
   await player.status(context)
+  await story.room.status(context)
 }
 
 

@@ -4,12 +4,8 @@ intro: You wake up in a strange room. The door is locked.
 
 rooms:
   - name: office
-    description: A large empty room with a couple of desks.
-
-      There is a note on the desk.
-
-      There's a filing cabinet next to the desk.
-    imageUrl: rooms/corner-office.jpg
+    description: A large empty room with a corner `desk`
+    imageUrl: rooms/office-chest-closed.jpg
     caption: "<https://cbg.rik.ai/rooms/office| :mag: corner office>"
     hints:
       - 1. Have a `look` around for anything interesting!
@@ -17,38 +13,77 @@ rooms:
       - 3. Does the note help you open the lock?
       - 4. What's inside the chest?
       - 5. Where could you use that key?
+    actions:
+      - match: atov/i
+        pass:
+          text: You say ATOV to noone in particular. Maybe you need to look for something else?
 
     items:
-    - name: table
+    - name: desk
       description: The desk
       states:
         - name: default
-          examine: <https://cbg.rik.ai/|click here to look around>
+          imageUrl: rooms/office-chest-closed.jpg
+          text:
+            "A messy desk. There's a post it `note` with some letters scrawled on it. \n
+            There's an antique looking `chest` under the desk. \n
+            :mag: <https://cbg.rik.ai/rooms/office|click here to look around>"
+      actions:
+        - match: open
+          pass:
+            text: You open the drawers. Not much interesting stuff inside.
 
     - name: note
       description: A simple note
       states:
         - name: default
-          examine: There seem to be a sequence of numbers written down
-          imageUrl: items/note.png
+          text: There seem to be a sequence of letters
+          imageUrl: items/note-sm.png
         - name: read
-          examine: "You've seen it before. The numbers are starting back at you: 4 3 2 1"
-          imageUrl: items/note.png
+          text: "You've seen it before. The letters ATOV don't mean much"
+          imageUrl: items/note-sm.png
       actions:
         - match: get|take
           pass:
             text: You pick up the note
             gets: note
             hintStep: 2
-        - match: read|examine
+        - match: read|text
           needs: false
           pass:
-            text: "The note just has 4 numbers on it: 4 3 2 1.
+            text: "The note just has 4 letters on it: ATOV
               It seems like some kind of combination"
+            imageUrl: items/note-sm.png
             gets: combination
             hintStep: 3
             updates:
               - read note
+
+    - name: chest
+      description: A large treasure chest
+      state: locked
+      states:
+        - name: locked
+          text: The chest is locked
+          imageUrl: items/chest-closed.png
+        - name: open
+          text: the chest is open and you can see a large key inside
+          imageUrl: items/chest-open-key.png
+        - name: empty
+          imageUrl: items/chest-open-empty.jpg
+          text: A large chest. It's open, but you can't see anything inside.
+      actions:
+        - match: open|unlock
+          needs: open-lock
+          pass:
+            text: You open up the chest, there's a key inside.
+            updates:
+              - open chest
+          fail:
+            text: You try to open the chest, but there's an old combination lock on it.
+        - match: get
+          pass:
+            text: It's too heavy to carry
 
     - name: lock
       description: A rusty combination lock
@@ -56,53 +91,40 @@ rooms:
       # imageUrl: lock.gif
       states:
         - name: locked
-          examine: A strange looking combination lock. It seems you can select some numbers on it.
+          text: An unusual looking combination lock. It seems to use lettters rather than numbers.
+          imageUrl: items/combolock-closed-sm.png
         - name: unlocked
-          examine: you opened the lock!
+          text: you opened the lock!
+          imageUrl: items/combolock-open-sm.png
       actions:
-        - match: open
+        - match: open|ATOV|atov|unlock|use
           needs: combination
           fail:
             text: You try to open the lock, but you don't know the combination
             hintStep: 3
           pass:
-            text: you turn the dial to 4321 and it opens!
+            text: you turn the dials to spell ATOV and it opens!
             gets: open-lock
             hintStep: 4
             updates:
               - open chest
               - open lock
-
-    - name: chest
-      description: A large treasure chest
-      state: locked
-      states:
-        - name: locked
-          examine: The chest is locked
-        - name: open
-          examine: the chest is open and you can see a large key inside
-        - name: empty
-          examine: A large chest. It's open, and there's nothing inside
-      actions:
-        - match: open
+        - match: take
           needs: open-lock
-          pass:
-            text: You open up the chest, there's a key inside.
-            updates:
-              - open chest
           fail:
-            text: You try to open the chest, but it's locked.
-        - match: get
+            text: It's locked to the chest
+            hintStep: 3
           pass:
-            text: It's too heavy to carry
+            text: you take the lock
+            gets: open-lock
 
     - name: key
       description: An antique looking key
       states:
         - name: default
-          examine: ...
+          text: ...
         - name: holding-key
-          examine: The key looks like it could open a door somewhere...
+          text: The key looks like it could open a door somewhere...
       actions:
         - match: open door with key|open door
           needs: key
@@ -122,11 +144,11 @@ rooms:
       description: A heavy door
       states:
         - name: locked
-          examine: The door is locked.
+          text: The door is locked.
         - name: unlocked
-          examine: the door is unlocked.
+          text: the door is unlocked.
 
-      examine: The lock is creaking
+      text: The lock is creaking
       actions:
         - match: open
           needs: key

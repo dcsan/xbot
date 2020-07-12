@@ -3,8 +3,16 @@
 Engine:
   ✔ deploy script @done (7/11/2020, 4:17:40 AM)
   ✔ /public images @done (7/11/2020, 4:17:41 AM)
+  ✔ basic web UI @done (7/11/2020, 6:12:26 PM)
+
+  ☐ NPC
+
+  ☐ open lock with ATOV
+  ☐ give X to NPC
+  ☐ help -> buttons
+
   ☐ draw some images
-  ☐ basic web UI
+  ☐ room actions
 
   ☐ task list
   ☐ reward for finding something

@@ -96,9 +96,9 @@ class Story {
     }
   }
 
-  status (context) {
-    let msg = `story.room: ${this.room.doc.name}`
-    SlackAdapter.flexOutput(msg, context)
+  async status (context) {
+    let msg = `_room_: ${this.room.doc.name}`
+    await SlackAdapter.sendText(msg, context)
   }
 
   hint (context) {
@@ -113,8 +113,8 @@ class Story {
     this.room.look(context)
   }
 
-  examine (itemName) {
-    return this.room.examine(itemName)
+  examine (itemName, player, context) {
+    return this.room.examine(itemName, player, context)
   }
 
   stuff() {

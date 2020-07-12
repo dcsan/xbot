@@ -1,4 +1,5 @@
-slackAppId = A016RSKNRBN
+# test app
+testAppId=A017ADRUE49
 
 dev-console:
 	# DEBUG=bottender:action,mup* npm run dev -- --console
@@ -15,10 +16,10 @@ proxy:
 
 # change slack endpoints
 slack-config:
-	open https://api.slack.com/apps/${slashAppId}/event-subscriptions
-	open https://api.slack.com/apps/${slashAppId}/interactive-messages
-	open https://api.slack.com/apps/${slashAppId}/slash-commands?
+	open "https://api.slack.com/apps/${testAppId}/event-subscriptions"
+	# open https://api.slack.com/apps/${testAppId}/interactive-messages
+	# open https://api.slack.com/apps/${testAppId}/slash-commands?
 
-	echo "use /webhooks/slack"
+	echo "use the proxy baseUrl + /api/webhooks/slack"
 
 

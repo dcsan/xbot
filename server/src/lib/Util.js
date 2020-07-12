@@ -4,7 +4,12 @@ const Util = {
     return new Promise((resolve) => {
       setTimeout(resolve, ms)
     })
-  }
+  },
+
+  // wrap relative image URLs
+  imageUrl (file) {
+    return process.env.STATIC_SERVER + file
+  },
 
 }
 

@@ -10,12 +10,14 @@ class Player {
     this.items = []
   }
 
-  status (context) {
-    let msg = "inventory: "
-    this.items.map(item => {
-      msg += `- ${item.name} \n`
+  async status (context) {
+    let reply = ["inventory: "]
+    if (!this.items.length) {
+      reply.push('nothing')
+    } else this.items.map(item => {
+      reply.push[`- ${item.name}`]
     })
-    context.sendText( msg )
+    await SlackAdapter.sendList( reply, context )
   }
 
   addItem(item) {
@@ -41,12 +43,14 @@ class Player {
     return (matchItems.length > 0)
   }
 
-  inventory() {
+  async inventory(context) {
     if (!this.items.length) {
-      return ['nothing']
-    }
-    return this.items.map((item) => item.name)
+      return await SlackAdapter.sendText('nothing', context)
+    } // else
+    const itemNames = this.items.map((item) => item.name)
+    await SlackAdapter.sendText(itemNames.join('\n'), context)
   }
+
 }
 
 module.exports = { Player }

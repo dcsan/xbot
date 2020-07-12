@@ -1,11 +1,7 @@
 const Logger = require("../Logger")
+const Util = require('../Util')
 
 const SlackAdapter = {
-
-  // wrap relative image URLs
-  imageUrl (file) {
-    return process.env.STATIC_SERVER + file
-  },
 
   textBlock (text) {
     const block = {
@@ -20,11 +16,27 @@ const SlackAdapter = {
     return block
   },
 
-  imageBlock (opts) {
+  imageSection (opts) {
     return {
       type: "image",
-      image_url: SlackAdapter.imageUrl(opts.imageUrl),
+      title: "some image",
+      image_url: Util.imageUrl(opts.imageUrl),
       alt_text: opts.examine || opts.description || 'image',
+    }
+  },
+
+  imageBlock (opts) {
+    return {
+      "type": "section",
+      "text": {
+        "type": "mrkdwn",
+        "text": opts.text || "item"
+      },
+      "accessory": {
+        "type": "image",
+        "image_url": Util.imageUrl(opts.imageUrl),
+        "alt_text": opts.name || "item"
+      },
     }
   },
 
@@ -45,7 +57,7 @@ const SlackAdapter = {
     if (typeof (msg) === 'string') {
       await context.sendText(msg)
     } else if (Array.isArray(msg)) {
-      msg.map( m => context.sendText(m))
+      msg.map(m => context.sendText(m))
     } else {
       await context.chat.postMessage(msg)
     }
@@ -57,16 +69,33 @@ const SlackAdapter = {
   },
 
   async sendText (text, context) {
+    if (!context) {
+      throw ('no context passed to .sendText')
+    }
     if (!text) {
-      Logger.error('sendText but no text')
+      throw ('sendText but no text')
     }
     await context.sendText(text)
   },
 
-  async sendBlocks(blocks, context) {
+  async sendBlocks (blocks, context) {
     const msg = SlackAdapter.wrapBlocks(blocks)
     Logger.logObj('msg', msg)
     context.chat.postMessage(msg)
+  },
+
+  async sendItemCard (stateInfo, item, context) {
+    let blocks = []
+    if (!stateInfo) {
+      blocks.push(SlackAdapter.textBlock(item.description))
+    } else {
+      if (stateInfo.imageUrl) {
+        blocks.push(SlackAdapter.imageBlock(stateInfo))
+      } else {
+        blocks.push(SlackAdapter.textBlock(stateInfo.text))
+      }
+    }
+    SlackAdapter.sendBlocks(blocks, context)
   }
 
 }
