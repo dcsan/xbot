@@ -1,7 +1,7 @@
 commands:
-- `l` look around
-- `x` examine an item
-- `i` inventory of what you're carrying
+- `l` look around the room
+- `x` `item` examine that item
+- `i` items you're carrying
 - `h` hint of what to do
 - `?` show this help
 

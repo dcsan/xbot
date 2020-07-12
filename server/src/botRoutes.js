@@ -90,7 +90,6 @@ async function Examine (
   }
 ) {
   debug('examine: ', item)
-  await context.sendText(`you examine the ${item}`)
   await story.examine(item, player, context)
 }
 
@@ -143,9 +142,8 @@ async function Button (context) {
 }
 
 async function Start (context) {
-  await context.chat.postMessage(
-    story.start()
-  )
+  await story.start(context)
+  await Help(context)
 }
 
 async function Status (context) {
@@ -165,9 +163,9 @@ module.exports = async function App () {
     text(/^(x|examine) (?<item>.*)$/i, Examine),
 
     // debug commands
-    text(['start'], Start),   //
+    text(/^start$/i, Start),
+    text(/^st$|^status$/i, Status),
     text(['rs', 'reset'], Reset),
-    text(['st', 'status'], Status),
     text(['rl', 'reload'], reload),
 
     // TODO - build list of actions on entering room

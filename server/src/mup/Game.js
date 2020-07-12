@@ -14,7 +14,8 @@ class Game {
   async help (context) {
     const help = SlackAdapter.textBlock(this.helpDoc)
     const msg = SlackAdapter.wrapBlocks([help])
-    await context.postEphemeral(msg)
+    // await context.postEphemeral(msg)
+    await context.chat.postMessage(msg)
   }
 
 }
