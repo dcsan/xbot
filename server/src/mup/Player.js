@@ -43,12 +43,13 @@ class Player {
     return (matchItems.length > 0)
   }
 
-  async inventory(context) {
+  async inventory (context) {
+    await context.sendText('You are holding:')
     if (!this.items.length) {
       return await SlackAdapter.sendText('nothing', context)
     } // else
     const itemNames = this.items.map((item) => item.name)
-    await SlackAdapter.sendText(itemNames.join('\n'), context)
+    await SlackAdapter.sendList(itemNames, context)
   }
 
 }

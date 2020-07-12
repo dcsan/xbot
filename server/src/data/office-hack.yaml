@@ -97,7 +97,7 @@ rooms:
           text: you opened the lock!
           imageUrl: items/combolock-open-sm.png
       actions:
-        - match: open|ATOV|atov|unlock|use
+        - match: open|ATOV|atov|unlock|use|open lock with code|open lock with atov
           needs: combination
           fail:
             text: You try to open the lock, but you don't know the combination
@@ -126,14 +126,8 @@ rooms:
         - name: holding-key
           text: The key looks like it could open a door somewhere...
       actions:
-        - match: open door with key|open door
-          needs: key
-          pass:
-            text: You open up the chest, there's a key inside.
-          fail:
-            text: You try to open the chest, but it's locked.
         - match: get|take
-          needs: open-chest
+          needs: open-lock
           pass:
             text: You take the key
             gets: key
@@ -147,7 +141,6 @@ rooms:
           text: The door is locked.
         - name: unlocked
           text: the door is unlocked.
-
       text: The lock is creaking
       actions:
         - match: open

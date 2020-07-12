@@ -68,7 +68,6 @@ async function Reset (context) {
 }
 
 async function Inventory (context) {
-  await context.sendText('You are holding:')
   await player.inventory(context)
 }
 
@@ -151,7 +150,7 @@ async function Start (context) {
 
 async function Status (context) {
   await story.status(context)
-  await player.status(context)
+  await player.inventory(context)
   await story.room.status(context)
 }
 

@@ -25,7 +25,21 @@ const SlackAdapter = {
     }
   },
 
-  imageBlock (opts) {
+  imageBlock (opts, item) {
+    item = item || { name: 'item'} // default
+    return {
+      "type": "image",
+      "title": {
+        "type": "plain_text",   // no mrkdwn?
+        "text": item.name || "item",
+        "emoji": true
+      },
+      "image_url": Util.imageUrl(opts.imageUrl),
+      "alt_text": "item",    // should be item.name
+    }
+  },
+
+  imageBox (opts) {
     return {
       "type": "section",
       "text": {
@@ -90,10 +104,9 @@ const SlackAdapter = {
       blocks.push(SlackAdapter.textBlock(item.description))
     } else {
       if (stateInfo.imageUrl) {
-        blocks.push(SlackAdapter.imageBlock(stateInfo))
-      } else {
-        blocks.push(SlackAdapter.textBlock(stateInfo.text))
+        blocks.push(SlackAdapter.imageBlock(stateInfo, item))
       }
+      blocks.push(SlackAdapter.textBlock(stateInfo.text))
     }
     SlackAdapter.sendBlocks(blocks, context)
   }

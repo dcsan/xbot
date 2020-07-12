@@ -30,7 +30,7 @@ class Room extends GameObject {
   async status(context) {
     const reply = ["room items:"]
     this.items.forEach((item) => {
-      reply.push( `- ${item.doc.description}: ${item.state}`)
+      reply.push( `- ${item.doc.name}: ${item.state}`)
     })
     await SlackAdapter.sendList(reply, context)
   }
