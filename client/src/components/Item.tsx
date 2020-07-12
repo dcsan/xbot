@@ -26,9 +26,9 @@ export function Item() {
     <div className='wrapper center'>
       <Link to='/rooms/office'>
         <div className='item-bg'></div>
+        <img className='note-full' src={ imgPath } alt='note' />
+        <div className='caption'>{ caption }</div>
       </Link>
-      <img className='note-full' src={ imgPath } alt='note' />
-      <div className='caption'>{ caption }</div>
     </div>
   );
 }

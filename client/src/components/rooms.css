@@ -47,14 +47,25 @@
   left: 24vh;
   height: 10vh;
   width: 10vh;
-  /* border: 2px solid red; */
+  padding: 10px;
   z-index: 20;
 }
 
+.clickable {
+  border: 1px dashed red;
+}
+
+.clickable:hover {
+  border: 1px dashed red;
+  background-color: white;
+}
+
+
 .note-full {
   position: relative;
-  width: 75vw;
+  width: 50vw;
   z-index: 20;
+  top: 50px;
 }
 
 .chest-mini {
