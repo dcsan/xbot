@@ -1,6 +1,5 @@
 const Game = require("./Game")
 const Logger = require('../lib/Logger')
-const { run } = require("../../../bottender/packages/bottender/dist/bot/Bot")
 
 let GameList = {}
 
