@@ -84,9 +84,10 @@ class Story {
     return this.room.examine(itemName, player, context)
   }
 
-  stuff() {
-    return this.room.stuff()
+  things(context) {
+    this.room.things(context)
   }
+
 }
 
 module.exports = { Story }

@@ -70,6 +70,11 @@ class Room extends GameObject {
     }
   }
 
+  async things (context) {
+    const msg = this.items.map(thing => thing.name)
+    context.sendText( msg.join(','))
+  }
+
   // TODO refactor move to GameObject ?
   // triggers can interact between items in the same room
   runActions (action, itemName, player, context) {

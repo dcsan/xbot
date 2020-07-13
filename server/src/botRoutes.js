@@ -1,186 +1,51 @@
 const { router, text, slack } = require('bottender/router')
-const { Story } = require('./mup/Story')
-const { Player } = require('./mup/Player')
-const Menu = require('./mup/Menu')
 const Logger = require('./lib/Logger')
+
 const SlackAdapter = require('./lib/adapters/SlackAdapter')
-const Game = require('./mup/Game')
 const debug = require('debug')('mup:index')
 const Util = require('./lib/Util')
-let story
-let player // TODO - sessions
-let menu
-let game
 
-
-const config = {
-  storyName: 'office-hack',
-}
-
-function flatten (textList) {
-  textList = textList.filter(n => n) // remove nulls / empties
-  return textList.join('\n')
-}
-
-function init () {
-  story = new Story()
-  player = new Player()
-  Reset()
-  Logger.log('setup botRoutes')
-}
-
-async function SayTest (context) {
-  await context.sendText('Testing OK!')
-}
-
-async function reload (context) {
-  await context.sendText('reloading...')
-  await
-  story.reload(config.storyName)
-  await context.sendText('loaded!')
-}
-
-async function Look (context) {
-  await story.look(context)
-}
-
-async function delay (context) {
-  await context.postMessage("wait...")
-  await Util.sleep(5000)
-  await context.postMessage("... done")
-}
-
-
-async function Stuff (context) {
-  const msg = story.stuff()
-  await context.sendText(msg)
-}
-
-async function Reset (context) {
-  story.reload(config.storyName)
-  menu = new Menu()
-  game = new Game()
-  player.reset()
-  story.reset()
-  if (context) {
-    await context.sendText("reset done!")
-  }
-}
-
-async function Inventory (context) {
-  await player.inventory(context)
-}
-
-async function Help (context) {
-  await game.help(context)
-}
-
-async function Hint (context) {
-  // context.postEphemeral({ text: 'Hint!' });
-  story.runCommand('/hint', context)
-}
-
-
-async function Examine (
-  context,
-  {
-    match: {
-      groups: { item },
-    },
-  }
-) {
-  debug('examine: ', item)
-  await story.examine(item, player, context)
-}
-
-async function Actions (
-  context,
-  {
-    match: {
-      groups: { action, item },
-    },
-  }
-) {
-  debug('actions: ', item)
-  // await context.sendText(`trying ${action} on ${item} ...`)
-  await story.room.runActions(action, item, player, context)
-}
-
-async function HandleSlack (context) {
-  // debug('slack.any', context)
-  if (context.chat)
-  debug('rawEvent', context.event.rawEvent)
-  debug('event.type', context.event.type)
-  debug('event.subtype', context.event.subtype)
-  debug('event.action', context.event.action)
-  debug('event.command', context.event.command)
-
-  if (context.event.action) {
-    Logger.logObj('.action:', context.event.action.value)
-    context.sendText(`event.action: ${context.event.action.value}`)
-  } else if (context.event.command) {
-    const commandText = context.event.command
-    Logger.logObj('commandText:', commandText)
-    story.runCommand(commandText, context)
-    // context.chat.postMessage(result)
-    // context.sendText(`other event ${context.event.type}`)
-  } else {
-    Logger.logObj('unknown slack event:', context.event)
-  }
-}
-
-async function Welcome (context) {
-  debug('Welcome event', context.event.rawEvent)
-  context.sendText('Welcome!')
-}
-
-async function Button (context) {
-  debug('event', context.event)
-  await context.sendText(
-    `I received your '${context.event.callbackId}' action`
-  )
-}
-
-async function Start (context) {
-  await story.start(context)
-  await Help(context)
-}
-
-async function Status (context) {
-  await story.status(context)
-  await player.inventory(context)
-  await story.room.status(context)
-}
-
+// const Game = require('./mup/Game')
+const Dispatcher = require('./mup/Dispatcher')
 
 module.exports = async function App () {
-  return router([
-    text(/^test$/i, SayTest),
-    text(/^l$|^look$/i, Look),
-    text(/^h$|^hint$/i, Hint),
-    text(/^h$|^help$/i, Help),
-    text(/^i$|^inv$|^inventory$/i, Inventory),
-    text(/^(x|examine) (?<item>.*)$/i, Examine),
+  // Logger.log('init routes game', game)
 
-    // debug commands
-    text(/^start$/i, Start),
-    text(/^st$|^status$/i, Status),
-    text(['rs', 'reset'], Reset),
-    text(['rl', 'reload'], reload),
+
+  const routes = router([
+    text(/^e$|^echo$/i, Dispatcher.echo),
+
+    // text(/^test$/i, gameObj.SayTest),
+    text(/^l$|^look$/i, Dispatcher.look ),
+    text(/^h$|^hint$/i, Dispatcher.hint),
+
+    text(/^help$/i, Dispatcher.help),
+    text(/^i$|^inv$|^inventory$/i, Dispatcher.inventory),
+    text(/^(x|examine) (?<item>.*)$/i, Dispatcher.examine),
+
+    // // debug commands
+    text(/^start$/i, Dispatcher.start),
+    text(/^st$|^status$/i, Dispatcher.status),
+    text(['rs', 'reset'], Dispatcher.reset),
+    text(['rl', 'reload'], Dispatcher.reload),
 
     // TODO - build list of actions on entering room
-    text(/^(?<action>open|use|read|get|take|give|drop) (?<item>.*)$/i, Actions),
-    text(['stuff'], Stuff),
+    text(/^(?<action>open|use|read|get|take|give|drop) (?<item>.*)$/i, Dispatcher.actions),
+    text(['things'], Dispatcher.things),
 
     // testing
-    text('menu', menu.show),
-    text('image', menu.testImage),
-    text(/delay/i, delay),
-    slack.event('member_joined_channel', Welcome),
-    // slack.event('interactive_message', Button),
-    // slack.message(HandleSlack),
-    slack.any(HandleSlack),
+    // text('menu', Dispatcher.menu.show),
+    // text('image', Dispatcher.menu.testImage),
+    // text(/delay/i, Dispatcher.delay),
+    text('welcome', Dispatcher.welcome),
+    slack.event('member_joined_channel', Dispatcher.welcome),
+    slack.event('interactive_message', Dispatcher.button),
+    text('*', Dispatcher.fallback),
+    // slack.any(Dispatcher.HandleSlack),
+
   ])
+  // Logger.log('router done', Dispatcher.story)
+  return routes
 }
 
-init() // startup
+console.log('parsed botRoutes')

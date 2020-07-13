@@ -1,4 +1,9 @@
 module.exports = {
+
+  initialState: {
+    count: 0,
+  },
+
   channels: {
     slack: {
       enabled: true,
@@ -8,4 +13,5 @@ module.exports = {
       // verificationToken: process.env.SLACK_VERIFICATION_TOKEN, // deprecated, use signingSecret
     },
   },
+
 };

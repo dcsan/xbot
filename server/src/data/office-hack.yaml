@@ -48,7 +48,7 @@ rooms:
             text: You pick up the note
             gets: note
             hintStep: 2
-        - match: read|text
+        - match: read|examine|inspect|look at
           needs: false
           pass:
             text: "The note just has 4 letters on it: ATOV
