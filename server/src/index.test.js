@@ -1,6 +1,6 @@
-const App = require('.');
+const App = require('./botRoutes');
 
-describe('index.js', () => {
+describe('server.js', () => {
   it('should be defined', () => {
     expect(App).toBeDefined();
   });

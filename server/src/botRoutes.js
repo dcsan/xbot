@@ -11,7 +11,6 @@ const Dispatcher = require('./mup/Dispatcher')
 module.exports = async function App () {
   // Logger.log('init routes game', game)
 
-
   const routes = router([
     text(/^e$|^echo$/i, Dispatcher.echo),
 
@@ -37,6 +36,8 @@ module.exports = async function App () {
     // text('menu', Dispatcher.menu.show),
     // text('image', Dispatcher.menu.testImage),
     // text(/delay/i, Dispatcher.delay),
+
+
     text('welcome', Dispatcher.welcome),
     slack.event('member_joined_channel', Dispatcher.welcome),
     slack.event('interactive_message', Dispatcher.button),
