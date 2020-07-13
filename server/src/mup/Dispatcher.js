@@ -37,6 +37,9 @@ const Dispatcher = {
   async hint (context) {
     Dispatcher.gameRun('hint', context)
   },
+  async help (context) {
+    Dispatcher.gameRun('help', context)
+  },
   async inventory (context) {
     Dispatcher.gameRun('inventory', context)
   },

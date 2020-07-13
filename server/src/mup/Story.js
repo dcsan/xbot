@@ -25,6 +25,7 @@ class Story {
     try {
       const doc = yaml.safeLoad(fs.readFileSync(filepath, 'utf8'))
       this.doc = doc
+      // @ts-ignore
       Logger.logObj('loaded story', {name: doc.name})
       this.build(doc)
     } catch (err) {
@@ -47,6 +48,7 @@ class Story {
 
   async start (context) {
     let blocks = []
+    // @ts-ignore
     blocks.push(SlackAdapter.textBlock(this.doc.intro))
     await SlackAdapter.sendBlocks(blocks, context)
     await this.room.look(context)

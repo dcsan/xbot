@@ -50,7 +50,7 @@ class Game {
     this.player.addItem('combination')
   }
 
-  async Start (context) {
+  async start (context) {
     await this.story.start(context)
     await this.help(context)
   }
@@ -83,9 +83,8 @@ class Game {
     await context.postMessage("... done")
   }
 
-
   async things (context) {
-    const msg = this.story.things()
+    const msg = this.story.things(context)
     await context.sendText(msg)
   }
 
