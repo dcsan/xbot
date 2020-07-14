@@ -22,6 +22,7 @@ class Game {
     this.menu = new Menu()
     this.story = new Story()
     this.player = new Player()
+    this.reset()
     // Logger.log('new game', { player: this.player })
   }
 
@@ -30,7 +31,9 @@ class Game {
     this.helpDoc = fs.readFileSync(filepath, 'utf8')
   }
 
-  async reset (context) {
+  reset (context) {
+    Logger.log('reset')
+
     this.loadHelp()
     this.story.reload(AppConfig.config.storyName, context)
     this.story.reset()
@@ -39,7 +42,7 @@ class Game {
     Logger.logObj('game.reset', { sid: this.sid, player: this.player })
     Logger.log('room', { room: this.story.room.name })
     if (context) {
-      await context.sendText("reset done!")
+      context.sendText("reset game!")
     }
   }
 
@@ -49,8 +52,8 @@ class Game {
     context.sendText('reloaded' + storyName)
   }
 
-  echo (context) {
-    context.sendText(`game echo sid : ${this.sid}`)
+  async echo (context) {
+    await context.sendText(`game [${this.sid}] echo!`)
   }
 
   // any items for testing

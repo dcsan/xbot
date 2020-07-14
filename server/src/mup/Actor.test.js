@@ -1,53 +1,48 @@
 const Game = require('./Game.js');
-const test = require('ava');
-const sinon = require('sinon')
+// const test = require('ava');
+// const sinon = require('sinon')
 
-const fakeContext = {
-  text: false,
-
-  sendText (text) {
-    this.text = text
-  }
-}
+const TestUtils = require('../lib/TestUtils')
+const context = TestUtils.context
 
 // @ts-ignore
-test('mock api', t => {
-  fakeContext.sendText('test msg')
-  t.is(fakeContext.text, 'test msg')
+test('mock api', () => {
+  context.sendText('test msg')
+  expect(context.text).toBe('test msg')
 })
 
 
 //@ts-ignore
-test('game loading', t => {
+test('game loading', () => {
 
   const game = new Game(1234)
   game.reset(false)
-  t.is(game.story.room.actors.length, 1)
+  expect(game.story.room.actors.length).toBe(1)
   const actor = game.story.room.actors[0]
-  t.is(actor.doc.name, 'Sid')
-  t.is(actor.doc.triggers.length, 3)
+  expect(actor.doc.name).toBe('Sid')
+  expect(actor.doc.triggers.length).toBe(4)
 
-  actor.ask('hi', fakeContext)
-  t.is(fakeContext.text, 'Sid: Hi back!')
+  actor.ask('hi', context)
+  expect(context.text).toBe('Sid: Hi back!')
 
   const defs = actor.doc.defaultReplies
-  t.is(defs.length, 3)
+  expect(defs.length).toBe(3)
 
   // check it steps through in sequence
-  actor.ask('random', fakeContext)
+  actor.ask('random', context)
   let expected = `${actor.doc.name}: ` + defs[1]
-  t.is(fakeContext.text, expected)
+  expect(context.text).toBe(expected)
 
-  actor.ask('random', fakeContext)
+  actor.ask('random', context)
   expected = `${actor.doc.name}: ` + defs[2]
-  t.is(fakeContext.text, expected)
+  expect(context.text).toBe(expected)
 
-  actor.ask('random', fakeContext)
+  actor.ask('random', context)
   expected = `${actor.doc.name}: ` + defs[0]
-  t.is(fakeContext.text, expected)
+  expect(context.text).toBe(expected)
 
-  actor.ask('random', fakeContext)
+  actor.ask('random', context)
   expected = `${actor.doc.name}: ` + defs[1]
-  t.is(fakeContext.text, expected)
+  expect(context.text).toBe(expected)
 
 })

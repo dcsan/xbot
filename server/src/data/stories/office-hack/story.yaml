@@ -32,6 +32,8 @@ rooms:
             reply: Testing back!
           - match: give note
             reply: Hmm, you found my written down password! I feel bad now!
+          - match: password
+            reply: I'm not telling you!
 
 
     items:

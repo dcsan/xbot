@@ -9,10 +9,14 @@ class Actor extends GameObject {
     this.defaultCount = 0
   }
 
+  get name () {
+    return this.doc.name
+  }
+
   ask (input, context) {
 
     // @ts-ignore
-    assert(input.length > 0, "sayTo with no text")
+    assert(input.length > 0, "ask with no text")
     const found = this.doc.triggers.find(trig => {
       const rex = new RegExp(trig.match)
       Logger.log('check', rex)

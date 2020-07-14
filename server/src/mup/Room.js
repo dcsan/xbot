@@ -24,7 +24,7 @@ class Room extends GameObject {
 
   loadActors () {
     const allActors = this.doc.actors
-    Logger.log('loading actors', allActors)
+    Logger.log('loading actors:', allActors?.length)
     this.actors = []
     // @ts-ignore
     allActors.map( actorDoc => {
@@ -61,6 +61,15 @@ class Room extends GameObject {
       Logger.log('cannot find item:', itemName)
       return false
     }
+  }
+
+  findActor (name) {
+    const actor = this.actors.find(one => one.doc.name === name)
+    if (!actor) {
+      Logger.log('room.actors', this.actors)
+      throw ('cannot find actor:' + name)
+    }
+    return actor
   }
 
   async examine(itemName, player, context) {

@@ -12,18 +12,18 @@ const Dispatcher = {
     if (!gameSession) {
       gameSession = new Game(sid)
       GameList[sid] = gameSession
-      await gameSession.reset(false)
+      gameSession.reset(false)
       Logger.log('new game', sid)
       Logger.log('init routes gameObj.story', gameSession.story.room.name)
     }
-    Logger.log('returning game', gameSession)
+    Logger.log('returning game', gameSession.sid)
     return gameSession
   },
 
   // run within game for session
   async gameRun (cmd, context) {
     const game = await Dispatcher.findGame(context.session.id)
-    console.log('cmd', cmd)
+    Logger.log('gameRun.cmd=', cmd)
     if (game[cmd]) {
       game[cmd](context)
     } else {
@@ -33,7 +33,8 @@ const Dispatcher = {
 
   // TODO refactor these but have to move to typescript first
   async echo (context) {
-    Dispatcher.gameRun('echo', context)
+    Logger.log('start echo')
+    await Dispatcher.gameRun('echo', context)
   },
   async look (context) {
     Dispatcher.gameRun('look', context)
@@ -91,6 +92,19 @@ const Dispatcher = {
     const game = await Dispatcher.findGame(context.session.id)
     Logger.logObj('examine item: ', item)
     await game.story.examine(item, this.player, context)
+  },
+
+  async ask (
+    context,
+    {
+      match: {
+        groups: { message, actor },
+      },
+    }
+  ) {
+    const game = await Dispatcher.findGame(context.session.id)
+    Logger.logObj('ask', {actor, message})
+    await game.story.room.ask(actor, message)
   },
 
 }
