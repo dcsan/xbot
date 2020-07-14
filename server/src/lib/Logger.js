@@ -2,7 +2,7 @@ const yaml = require('js-yaml')
 
 const Logger = {
 
-  log (msg, rest) {
+  log (msg, ...rest) {
     console.log(msg, rest)
   },
 

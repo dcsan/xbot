@@ -3,10 +3,14 @@ const Item = require('./Item')
 const Logger = require('../lib/Logger')
 const SlackAdapter = require('../lib/adapters/SlackAdapter')
 const GameObject = require('./GameObject')
+const Actor = require('./Actor')
+const Util = require('../lib/Util')
 
 class Room extends GameObject {
-  constructor(doc) {
+
+  constructor(doc, story) {
     super(doc)
+    this.story = story  // handle to its parent
     this.items = []
     this.doc.items.forEach((itemData) => {
       const item = new Item(itemData, this)
@@ -16,6 +20,17 @@ class Room extends GameObject {
 
   get name() {
     return this.doc.name
+  }
+
+  loadActors () {
+    const allActors = this.doc.actors
+    Logger.log('loading actors', allActors)
+    this.actors = []
+    // @ts-ignore
+    allActors.map( actorDoc => {
+      const actor = new Actor(actorDoc, this)
+      this.actors.push(actor)
+    })
   }
 
   look(context) {

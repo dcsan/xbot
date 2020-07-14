@@ -1,8 +1,9 @@
 const fs = require('fs')
 const path = require('path')
+const yaml = require('js-yaml')
 
-const posTagger = require('wink-pos-tagger');
-
+// const posTagger = require('wink-pos-tagger');
+const AppConfig = require('../lib/AppConfig')
 const Util = require('../lib/Util')
 const Logger = require('../lib/Logger')
 const SlackAdapter = require('../lib/adapters/SlackAdapter')
@@ -13,36 +14,43 @@ const Menu = require('./Menu')
 
 // const tagger = posTagger()
 
-const config = {
-  storyName: 'office-hack',
-}
 
 class Game {
 
   constructor(sid) {
-    const filepath = path.join(__dirname, '../data/help.txt')
     this.sid = sid
-    this.helpDoc = fs.readFileSync(filepath, 'utf8')
     this.menu = new Menu()
     this.story = new Story()
     this.player = new Player()
-    Logger.log('new game', { story: this.story })
-    Logger.log('new game', { player: this.player })
+    // Logger.log('new game', { player: this.player })
   }
 
-  echo (context) {
-    context.sendText(`game echo sid : ${this.sid}`)
+  loadHelp (storyName) {
+    const filepath = path.join(__dirname, '../data/help.txt')
+    this.helpDoc = fs.readFileSync(filepath, 'utf8')
   }
 
   async reset (context) {
-    this.story.reload(config.storyName)
-    this.player.reset()
+    this.loadHelp()
+    this.story.reload(AppConfig.config.storyName, context)
     this.story.reset()
-    Logger.logObj('game.reset', { player: this.player })
+    this.player.reset()
+
+    Logger.logObj('game.reset', { sid: this.sid, player: this.player })
     Logger.log('room', { room: this.story.room.name })
     if (context) {
       await context.sendText("reset done!")
     }
+  }
+
+  reload (storyName, context) {
+    storyName = storyName || AppConfig.config.storyName
+    this.story.reload(storyName, context)
+    context.sendText('reloaded' + storyName)
+  }
+
+  echo (context) {
+    context.sendText(`game echo sid : ${this.sid}`)
   }
 
   // any items for testing
@@ -64,12 +72,6 @@ class Game {
 
   async SayTest (context) {
     await context.sendText('Testing OK!')
-  }
-
-  async reload (context) {
-    await context.sendText('reloading...')
-    this.story.reload(config.storyName)
-    await context.sendText('loaded!')
   }
 
   async look (context) {

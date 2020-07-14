@@ -1,16 +1,13 @@
-const fs = require('fs')
-const path = require('path')
-const debug = require('debug')('mup:Story')
-const yaml = require('js-yaml')
 const Logger = require('../lib/Logger')
-
+const Util = require('../lib/Util')
 const SlackAdapter = require('../lib/adapters/SlackAdapter')
 const Room = require('./Room')
+// const assert = require('chai').assert
+const assert = require('assert').strict
 
 class Story {
 
   constructor() {
-
   }
 
   get room() {
@@ -18,32 +15,30 @@ class Story {
     return this.currentRoom
   }
 
-  reload(filename) {
-    debug('loading:', filename)
-    const filepath = path.join(__dirname, '../data', filename + '.yaml')
-    debug('filepath', filepath)
-    try {
-      const doc = yaml.safeLoad(fs.readFileSync(filepath, 'utf8'))
-      this.doc = doc
-      // @ts-ignore
-      Logger.logObj('loaded story', {name: doc.name})
-      this.build(doc)
-    } catch (err) {
-      console.error('failed to load', filename, err)
-    }
+  // reload script without resetting player positions
+  reload (storyName, context) {
+    assert.ok(storyName.length)
+    this.doc = Util.loadYaml(`stories/${storyName}/story.yaml`)
+    this.build(this.doc)
+    // @ts-ignore
+    Logger.logObj('loaded story', {name: this.doc.name})
+    Logger.log('loading story:', storyName)
+
+    // @ts-ignore
+    this.room.loadActors(this.doc.name)
+  }
+
+  reset () {
+    this.currentRoom = this.rooms[0]
   }
 
   build(doc) {
     this.rooms = []
     doc.rooms.forEach((roomData) => {
-      const room = new Room(roomData)
+      const room = new Room(roomData, this)
       this.rooms.push(room)
     })
     this.reset()
-  }
-
-  reset() {
-    this.currentRoom = this.rooms[0]
   }
 
   async start (context) {

@@ -18,6 +18,22 @@ rooms:
         pass:
           text: You say ATOV to noone in particular. Maybe you need to look for something else?
 
+    actors:
+      - name: Sid
+        greeting: Hey this is Sid!
+        defaultReplies:
+          - Sorry I don't understand
+          - what?
+          - Hmm, dunno.
+        triggers:
+          - match: hi|hello|what's up
+            reply: Hi back!
+          - match: test
+            reply: Testing back!
+          - match: give note
+            reply: Hmm, you found my written down password! I feel bad now!
+
+
     items:
     - name: desk
       description: The desk

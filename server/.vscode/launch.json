@@ -5,18 +5,40 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "debug npm",
+      "request": "launch",
+      "runtimeArgs": [
+        "run-script",
+        "debug"
+      ],
+      "runtimeExecutable": "npm",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "type": "pwa-node",
+      "env": { "NODE_ENV": "development" }
+    },
+
+    {
       "type": "node",
       "name": "vscode-jest-tests",
       "request": "launch",
       "args": [
         "--runInBand"
       ],
+      "runtimeArgs": [
+        "--inspect-brk",
+        "${workspaceRoot}/node_modules/.bin/jest",
+        "--runInBand"
+      ],
+
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
       "disableOptimisticBPs": true,
       "program": "${workspaceFolder}/node_modules/jest/bin/jest"
     },
+
     {
       "type": "node",
       "request": "launch",
@@ -26,6 +48,7 @@
       ],
       "program": "${workspaceFolder}/server.js",
       "env": { "NODE_ENV": "development" }
-    }
+    },
+
   ]
 }

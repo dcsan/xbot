@@ -1,5 +1,11 @@
 # TODO
 
+TopLevel:
+  ☐ buttons menu / demo (inventory? item? help?
+  ☐ compound sentences parser use X on Y
+    give A to B
+
+
 UserExperience:
   ☐ welcome message
   ☐ ATOV in the room
@@ -33,7 +39,6 @@ UserExperience:
   > Do what with the Glasses?
   - wear glasses
   > you put the glasses on
-
 
 NPCs:
   ☐ inherit from GameObject
@@ -84,6 +89,8 @@ Content:
 
 Core:
   ☐ randomize?
+  ☐ load player info and store in DB (nickanme etc)
+  ☐ templating - replace player info
 
 
 

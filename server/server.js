@@ -5,6 +5,8 @@ const morgan = require('morgan')
 const bodyParser = require('body-parser');
 const express = require('express');
 
+const AppConfig = require('./src/lib/AppConfig')
+
 const { bottender } = require('bottender');
 // const { bottender } = require('../bottender/packages/bottender/dist')
 
@@ -12,12 +14,12 @@ const { bottender } = require('bottender');
 
 const Logger = require('./src/lib/Logger')
 
+AppConfig.init()
+
+// bottender setup
 const bot = bottender({
   dev: process.env.NODE_ENV !== 'production',
 });
-
-
-
 // the request handler of the bottender app
 const handle = bot.getRequestHandler();
 
@@ -68,6 +70,13 @@ bot.prepare().then(() => {
   });
 });
 
+if (!process.env.LISTENING_TO_UNHANDLED_REJECTION) {
+  process.on('unhandledRejection', reason => {
+    throw reason
+  })
+  // Avoid memory leak by adding too many listeners
+  // process.env.LISTENING_TO_UNHANDLED_REJECTION = true
+}
 
 const BotApp = require('./src/botRoutes');
 // BotApp(game)

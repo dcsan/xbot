@@ -2,10 +2,10 @@ const SlackAdapter = require('../lib/adapters/SlackAdapter')
 
 class GameObject {
 
-  constructor(doc) {
+  constructor(doc, room) {
     this.doc = doc
+    this.room = room
   }
-
 
 }
 

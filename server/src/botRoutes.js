@@ -49,4 +49,4 @@ module.exports = async function App () {
   return routes
 }
 
-console.log('parsed botRoutes')
+// console.log('parsed botRoutes')

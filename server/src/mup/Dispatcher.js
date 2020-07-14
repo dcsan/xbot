@@ -24,7 +24,11 @@ const Dispatcher = {
   async gameRun (cmd, context) {
     const game = await Dispatcher.findGame(context.session.id)
     console.log('cmd', cmd)
-    game[cmd](context)
+    if (game[cmd]) {
+      game[cmd](context)
+    } else {
+      Logger.error('no game cmd for ' + cmd)
+    }
   },
 
   // TODO refactor these but have to move to typescript first
@@ -58,6 +62,13 @@ const Dispatcher = {
   async welcome (context) {
     Dispatcher.gameRun('welcome', context)
   },
+  async reload (context) {
+    Dispatcher.gameRun('reload', context)
+  },
+  async reset (context) {
+    Dispatcher.gameRun('reset', context)
+  },
+
   async fallback (context) {
     Logger.log('fallback', context.chat)
   },
@@ -82,7 +93,7 @@ const Dispatcher = {
     await game.story.examine(item, this.player, context)
   },
 
-
 }
+
 
 module.exports = Dispatcher

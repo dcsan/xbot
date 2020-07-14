@@ -7,8 +7,7 @@ const GameObject = require('./GameObject')
 class Item extends GameObject {
 
   constructor(doc, room) {
-    super(doc)
-    this.room = room
+    super(doc, room)
     this.state = this.doc.state || 'default'
   }
 
