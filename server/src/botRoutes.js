@@ -1,9 +1,9 @@
 const { router, text, slack } = require('bottender/router')
-const Logger = require('./lib/Logger')
+// const Logger = require('./lib/Logger')
 
-const SlackAdapter = require('./lib/adapters/SlackAdapter')
-const debug = require('debug')('mup:index')
-const Util = require('./lib/Util')
+// const SlackAdapter = require('./lib/adapters/SlackAdapter')
+// const debug = require('debug')('mup:index')
+// const Util = require('./lib/Util')
 
 // const Game = require('./mup/Game')
 const Dispatcher = require('./mup/Dispatcher')
@@ -37,6 +37,7 @@ module.exports = async function App () {
     // text('image', Dispatcher.menu.testImage),
     // text(/delay/i, Dispatcher.delay),
 
+    text(/^(s|say) (?<item>.*) (to) (?<item>.*)$/i, Dispatcher.examine),
 
     text('welcome', Dispatcher.welcome),
     slack.event('member_joined_channel', Dispatcher.welcome),

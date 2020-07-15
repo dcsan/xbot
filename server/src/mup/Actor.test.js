@@ -5,6 +5,9 @@ const Game = require('./Game.js');
 const TestUtils = require('../lib/TestUtils')
 const context = TestUtils.context
 
+const game = new Game(1234)
+const actor = game.story.room.findActor('Sid')
+
 // @ts-ignore
 test('mock api', () => {
   context.sendText('test msg')
@@ -15,7 +18,6 @@ test('mock api', () => {
 //@ts-ignore
 test('game loading', () => {
 
-  const game = new Game(1234)
   game.reset(false)
   expect(game.story.room.actors.length).toBe(1)
   const actor = game.story.room.actors[0]
@@ -24,6 +26,10 @@ test('game loading', () => {
 
   actor.ask('hi', context)
   expect(context.text).toBe('Sid: Hi back!')
+
+})
+
+test('default replies', () => {
 
   const defs = actor.doc.defaultReplies
   expect(defs.length).toBe(3)
@@ -46,3 +52,16 @@ test('game loading', () => {
   expect(context.text).toBe(expected)
 
 })
+
+test('greeting', () => {
+  actor.ask('hi', context)
+  expect(context.text).toBe("Sid: Hi back!")
+})
+
+test('ask password', () => {
+  actor.ask('password', context)
+  expect(context.text).toBe("Sid: I'm not telling you!")
+})
+
+
+
