@@ -4,32 +4,6 @@ const TestUtils = require('../../lib/TestUtils');
 const Logger = require('../../lib/Logger.js');
 const context = TestUtils.context
 
-// //@ts-ignore
-// test('RexParser.actorMessages', async () => {
-
-//   // const route = RouteMatchers.ask
-//   // Logger.testLog('route', route)
-
-//   RexParser.actorRules.forEach(route => {
-
-//     route.tests.forEach(test => {
-//       // Logger.testLog('test', test)
-//       const [input, output] = test
-//       const result = route.rex.exec(input)
-//       if (!result || !result.groups) {
-//         Logger.testLog('failed to find groups in route', route.name)
-//         Logger.testLog('input:', input)
-//         Logger.testLog('expect:', output)
-//         Logger.testLog('result:', result)
-//       }
-//       expect(result.groups.actor).toBe('Sid')
-//       expect(result.groups.message).toBe(output)
-//     })
-
-//   })
-
-// })
-
 test('RexParser.actorRules', async () => {
 
   // const route = RouteMatchers.ask
@@ -63,8 +37,6 @@ test('RexParser.actorRules', async () => {
 
 })
 
-
-
 test('RexParser.thingMessages', async () => {
 
   // const route = RouteMatchers.ask
@@ -87,8 +59,11 @@ test('RexParser.thingMessages', async () => {
         })
       }
       // let it fail
+      // @ts-ignore
       expect(result.groups.action).toBe(expected.action)
+      // @ts-ignore
       expect(result.groups.thing1).toBe(expected.thing1)
+      // @ts-ignore
       expect(result.groups.thing1).toBe(expected.thing1)
 
     })
