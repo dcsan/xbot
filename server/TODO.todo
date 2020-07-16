@@ -1,6 +1,7 @@
 # TODO
 
 TopLevel:
+  ☐ NPC i/o dispatcher
   ☐ buttons menu / demo (inventory? item? help?
   ☐ compound sentences parser use X on Y
     give A to B
@@ -91,6 +92,7 @@ Core:
   ☐ randomize?
   ☐ load player info and store in DB (nickanme etc)
   ☐ templating - replace player info
+  ☐ JSX transpiler  https://github.com/speee/jsx-slack/blob/master/docs/how-to-setup-jsx-transpiler.md
 
 
 

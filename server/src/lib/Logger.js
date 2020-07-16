@@ -1,13 +1,12 @@
 const yaml = require('js-yaml')
 
+const forceLogging = true   // override even for testing
+
 const Logger = {
 
   log (msg, ...rest) {
-    if (process.env.NODE_ENV !== 'test') {
+    if (process.env.NODE_ENV !== 'test' || forceLogging) {
       console.log(msg, ...rest)
-    } else {
-      // skip logs
-      // console.log('test')
     }
   },
 

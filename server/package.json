@@ -11,7 +11,7 @@
     "jest": "jest",
     "watch": "jest --watch",
     "jtest": "node --trace-warnings node_modules/.bin/jest --no-cache && ava",
-    "test": "ava",
+    "test": "jest",
     "testone": "ava --watch src/mup/Dispatcher.test.js",
     "production": "NODE_ENV=production node server.js"
   },

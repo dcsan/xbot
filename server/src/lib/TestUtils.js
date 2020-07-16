@@ -1,3 +1,5 @@
+const config = require('./AppConfig')
+
 const TestUtils = {
 
   context: {

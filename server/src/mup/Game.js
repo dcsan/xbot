@@ -1,6 +1,5 @@
 const fs = require('fs')
 const path = require('path')
-const yaml = require('js-yaml')
 
 // const posTagger = require('wink-pos-tagger');
 const AppConfig = require('../lib/AppConfig')
@@ -20,36 +19,62 @@ class Game {
   constructor(sid) {
     this.sid = sid
     this.menu = new Menu()
-    this.story = new Story()
+    this.story = new Story(this)
     this.player = new Player()
-    this.reset()
+    this.init()
     // Logger.log('new game', { player: this.player })
+  }
+
+  init (context) {
+    this.loadStory({storyName: null, context: null}) // needs params
+    this.loadHelp()
+
+    this.story.reset()
+    this.player.reset()
+
+    Logger.logObj('game.reset', {
+      storyName: this.storyName,
+      sid: this.sid,
+      player: this.player,
+    })
+    Logger.log('room', { room: this.story.room.name })
+    if (context) {
+      context.sendText("reset game! " + this.storyName )
+    }
+  }
+
+  /**
+   * specify a story to reload
+   * for testing other material
+   * @param {*} param0
+   */
+  loadStory ({ storyName, context }) {
+    if (storyName) {
+      // load an explicit story from params
+      this.storyName = storyName
+    } else {
+      // reload default config
+      storyName = AppConfig.read('STORYNAME')
+      this.storyName = storyName
+    }
+    this.story.load({ storyName, context })
+    if (context) {
+      context.sendText('loaded!' + storyName)
+    }
+  }
+
+  /**
+   * simple reload of current story without resetting user vars
+   * for when you change the YAML
+   * @param {*} context
+   */
+  reload (context) {
+    this.story.load({storyName: this.storyName, context})
   }
 
   loadHelp (storyName) {
     const filepath = path.join(__dirname, '../data/help.txt')
     this.helpDoc = fs.readFileSync(filepath, 'utf8')
-  }
-
-  reset (context) {
-    Logger.log('reset')
-
-    this.loadHelp()
-    this.story.reload(AppConfig.config.storyName, context)
-    this.story.reset()
-    this.player.reset()
-
-    Logger.logObj('game.reset', { sid: this.sid, player: this.player })
-    Logger.log('room', { room: this.story.room.name })
-    if (context) {
-      context.sendText("reset game!")
-    }
-  }
-
-  reload (storyName, context) {
-    storyName = storyName || AppConfig.config.storyName
-    this.story.reload(storyName, context)
-    context.sendText('reloaded' + storyName)
   }
 
   async echo (context) {

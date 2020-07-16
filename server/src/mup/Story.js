@@ -4,10 +4,12 @@ const SlackAdapter = require('../lib/adapters/SlackAdapter')
 const Room = require('./Room')
 // const assert = require('chai').assert
 const assert = require('assert').strict
+const AppConfig = require('../lib/AppConfig')
 
 class Story {
 
-  constructor() {
+  constructor(game) {
+    this.game = game
   }
 
   get room() {
@@ -15,15 +17,17 @@ class Story {
     return this.currentRoom
   }
 
-  // reload script without resetting player positions
-  reload (storyName, context) {
-    assert.ok(storyName.length)
+  /**
+   * either of the params can be empty
+   * load story script without resetting state
+   * @param {*} param0
+   */
+  load ({storyName, context}) {
+    Logger.log('loading storyName', storyName)
     this.doc = Util.loadYaml(`stories/${storyName}/story.yaml`)
-    this.build(this.doc)
+    this.buildStory(this.doc)
     // @ts-ignore
     Logger.logObj('loaded story', {name: this.doc.name})
-    Logger.log('loading story:', storyName)
-
     // @ts-ignore
     this.room.loadActors(this.doc.name)
   }
@@ -32,7 +36,7 @@ class Story {
     this.currentRoom = this.rooms[0]
   }
 
-  build(doc) {
+  buildStory(doc) {
     this.rooms = []
     doc.rooms.forEach((roomData) => {
       const room = new Room(roomData, this)
