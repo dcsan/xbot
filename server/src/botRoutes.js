@@ -29,7 +29,7 @@ module.exports = async function App () {
     text(['rl', 'reload'], Dispatcher.reload),
 
     // TODO - build list of actions on entering room
-    text(/^(?<action>open|use|read|get|take|give|drop) (?<item>.*)$/i, Dispatcher.actions),
+    // text(/^(?<action>open|use|read|get|take|give|drop) (?<item>.*)$/i, Dispatcher.actions),
     text(['things'], Dispatcher.things),
 
     // testing
@@ -37,7 +37,7 @@ module.exports = async function App () {
     // text('image', Dispatcher.menu.testImage),
     // text(/delay/i, Dispatcher.delay),
 
-    text(/^(s|say) (?<item>.*) (to) (?<item>.*)$/i, Dispatcher.examine),
+    // text(/^(s|say) (?<item>.*) (to) (?<actor>.*)$/i, Dispatcher.ask),
 
     text('welcome', Dispatcher.welcome),
     slack.event('member_joined_channel', Dispatcher.welcome),

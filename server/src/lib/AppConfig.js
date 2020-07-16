@@ -1,10 +1,10 @@
-const dotEnv = require('dotenv-flow').config();
-
+const dotEnv = require('dotenv-flow');
 
 const AppConfig = {
   init () {
-    console.log('NODE_ENV:', process.env.NODE_ENV)
-    console.log('STORYNAME:', process.env.STORYNAME)
+    dotEnv.config()
+    // console.log('NODE_ENV:', process.env.NODE_ENV)
+    // console.log('STORYNAME:', process.env.STORYNAME)
   },
 
   read (key) {
@@ -17,7 +17,5 @@ const AppConfig = {
   }
 
 }
-
-// AppConfig.init()
 
 module.exports = AppConfig

@@ -1,11 +1,16 @@
 const yaml = require('js-yaml')
 
-const forceLogging = true   // override even for testing
+// const forceLogging = true   // override even for testing
+const forceLogging = false   // override even for testing
 
 const Logger = {
 
+  nodeEnv () {
+    console.log('env', process.env.NODE_ENV)
+  },
+
   log (msg, ...rest) {
-    if (process.env.NODE_ENV !== 'test' || forceLogging) {
+    if (forceLogging || process.env.NODE_ENV !== 'test') {
       console.log(msg, ...rest)
     }
   },

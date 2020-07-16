@@ -8,24 +8,28 @@ const context = TestUtils.context
 const game = new Game(1234)
 const actor = game.story.room.findActor('Sid')
 
+beforeEach(() => {
+  context.reset()
+})
+
 // @ts-ignore
 test('mock api', () => {
   context.sendText('test msg')
-  expect(context.text).toBe('test msg')
+  expect(context.sent.text).toBe('test msg')
 })
 
 
 //@ts-ignore
 test('game loading', () => {
 
-  game.reset(false)
+  game.init(false)
   expect(game.story.room.actors.length).toBe(1)
   const actor = game.story.room.actors[0]
   expect(actor.doc.name).toBe('Sid')
-  expect(actor.doc.triggers.length).toBe(4)
+  expect(actor.doc.triggers.length).toBe(6)
 
-  actor.ask('hi', context)
-  expect(context.text).toBe('Sid: Hi back!')
+  actor.replyTo('hi', context)
+  expect(context.sent.text).toBe('Sid: Hi back!')
 
 })
 
@@ -35,32 +39,39 @@ test('default replies', () => {
   expect(defs.length).toBe(3)
 
   // check it steps through in sequence
-  actor.ask('random', context)
+  actor.replyWithDefault('random', context)
   let expected = `${actor.doc.name}: ` + defs[1]
-  expect(context.text).toBe(expected)
+  expect(context.sent.text).toBe(expected)
 
-  actor.ask('random', context)
+  actor.replyWithDefault('random', context)
   expected = `${actor.doc.name}: ` + defs[2]
-  expect(context.text).toBe(expected)
+  expect(context.sent.text).toBe(expected)
 
-  actor.ask('random', context)
+  actor.replyWithDefault('random', context)
   expected = `${actor.doc.name}: ` + defs[0]
-  expect(context.text).toBe(expected)
+  expect(context.sent.text).toBe(expected)
 
-  actor.ask('random', context)
+  actor.replyWithDefault('random', context)
   expected = `${actor.doc.name}: ` + defs[1]
-  expect(context.text).toBe(expected)
+  expect(context.sent.text).toBe(expected)
 
 })
 
 test('greeting', () => {
-  actor.ask('hi', context)
-  expect(context.text).toBe("Sid: Hi back!")
+  actor.replyTo('hi', context)
+  expect(context.sent.text).toBe("Sid: Hi back!")
 })
 
 test('ask password', () => {
-  actor.ask('password', context)
-  expect(context.text).toBe("Sid: I'm not telling you!")
+  actor.replyTo('password', context)
+  expect(context.sent.text).toBe("Sid: I'm not telling you!")
+})
+
+
+test('ask Sid about the note', () => {
+  const reply = actor.replyTo("about the note", context)
+  console.log(reply)
+  expect(context.sent.text).toBe("Sid: Hmm it looks like a combination or a PIN code")
 })
 
 

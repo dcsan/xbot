@@ -1,5 +1,6 @@
 const Game = require("./Game")
 const Logger = require('../lib/Logger')
+const RexParser = require('./parser/RexParser')
 
 let GameList = {}
 
@@ -12,7 +13,7 @@ const Dispatcher = {
     if (!gameSession) {
       gameSession = new Game(sid)
       GameList[sid] = gameSession
-      gameSession.reset(false)
+      gameSession.init(false)
       Logger.log('new game', sid)
       Logger.log('init routes gameObj.story', gameSession.story.room.name)
     }
@@ -70,10 +71,6 @@ const Dispatcher = {
     Dispatcher.gameRun('reset', context)
   },
 
-  async fallback (context) {
-    Logger.log('fallback', context.chat)
-  },
-
   async button (context) {
     Logger.logObj('event', context.event)
     await context.sendText(
@@ -105,6 +102,22 @@ const Dispatcher = {
     const game = await Dispatcher.findGame(context.session.id)
     Logger.logObj('ask', {actor, message})
     await game.story.room.ask(actor, message)
+  },
+
+  async fallback (context) {
+    const input = context.event.text
+    Logger.log('fallback:', input)
+    const parsed = RexParser.actorActions(input)
+    console.log('parsed', parsed)
+    if (parsed && parsed.groups.actor) {
+      const game = await Dispatcher.findGame(context.session.id)
+      const actorName = parsed.groups.actor
+      const actor = game.story.room.findActor(actorName)
+      const reply = actor.parserReply(parsed, context)
+      return reply // for tests
+    } else {
+      return false  // not handled
+    }
   },
 
 }

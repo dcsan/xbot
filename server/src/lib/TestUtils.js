@@ -1,16 +1,25 @@
-const config = require('./AppConfig')
+const AppConfig = require('./AppConfig')
+AppConfig.init()
 
 const TestUtils = {
 
   context: {
-    text: 'not set',
+
+    sent: {},
+
     session: {
       id: 1234
     },
 
     sendText (text) {
-      this.text = text
+      this.sent.text = text
+    },
+
+    // between tests
+    reset () {
+      this.sent = { }
     }
+
   }
 
 }

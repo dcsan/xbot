@@ -1,4 +1,5 @@
 // do this first
-const appConfig = require('./src/lib/AppConfig')
+const AppConfig = require('./src/lib/AppConfig')
+AppConfig.init()
 
 module.exports = require('./src/botRoutes');

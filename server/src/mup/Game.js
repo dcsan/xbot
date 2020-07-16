@@ -32,7 +32,7 @@ class Game {
     this.story.reset()
     this.player.reset()
 
-    Logger.logObj('game.reset', {
+    Logger.logObj('game.init', {
       storyName: this.storyName,
       sid: this.sid,
       player: this.player,

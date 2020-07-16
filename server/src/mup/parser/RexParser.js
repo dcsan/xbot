@@ -18,24 +18,43 @@ const RexParser = {
       ]
     },
 
+
+    // ["tell Sid to turn off the light", {
+    //   actor: 'Sid',
+    //   message: 'turn off light'
+    // }],
+    // ["tell Sid to shut up!", {
+    //   actor: 'Sid',
+    //   message: 'shut up!'
+    // }],
+
+    // about a THING
     {
       name: 'askAbout',
-      rex: /^(ask|tell) (?<actor>.*) (?:to|about the|about) (?<message>.*)$/i,
+      rex: /^(ask|tell) (?<actor>\w+) (about) (?<thing>.*)$/i,
       tests: [
         ["ask Sid about password", {
-          message: 'password'
-        }],
-        ["tell Sid to turn off the light", {
-          actor: 'Sid',
-          message: 'turn off light'
+          thing: 'password'
         }],
         ["ask Sid about the password", {
           actor: 'Sid',
-          message: 'password'
+          thing: 'password'
         }],
-        ["tell Sid to shut up!", {
+      ],
+      event: Dispatcher.ask,
+    },
+
+    // fall through ask about anything
+    {
+      name: 'plainAsk',
+      rex: /^(ask|tell) (?<actor>\w+) (?<message>.*)$/i,
+      tests: [
+        ["ask Sid how are you doing", {
+          message: 'how are you doing'
+        }],
+        ["ask Sid what is your name", {
           actor: 'Sid',
-          message: 'shut up!'
+          message: 'what is your name'
         }],
       ],
       event: Dispatcher.ask,
@@ -121,6 +140,20 @@ const RexParser = {
     }
     const result = rex.exec(input)
     return result
+  },
+
+  actorActions (input, context) {
+    let reply
+    RexParser.actorRules.some(rule => {
+      rule.tests.some(test => {
+        reply = RexParser.parse(input, rule)
+        if (reply) {
+          return true   // inner some
+        }
+      })
+      if (reply) return true  // to break the some continue outer loop
+    })
+    return reply
   }
 
 }
