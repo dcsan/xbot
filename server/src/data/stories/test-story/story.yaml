@@ -36,9 +36,10 @@ rooms:
             reply: I'm not telling you!
           - match: how are you
             reply: I'm doing great thanks
-          - match: about the note
+          - match: note
             reply: Hmm it looks like a combination or a PIN code
-
+          - query: chest
+            reply: It's always been here
 
     items:
     - name: desk

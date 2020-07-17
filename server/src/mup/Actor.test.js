@@ -26,7 +26,7 @@ test('game loading', () => {
   expect(game.story.room.actors.length).toBe(1)
   const actor = game.story.room.actors[0]
   expect(actor.doc.name).toBe('Sid')
-  expect(actor.doc.triggers.length).toBe(6)
+  expect(actor.doc.triggers.length).toBe(7)
 
   actor.replyTo('hi', context)
   expect(context.sent.text).toBe('Sid: Hi back!')

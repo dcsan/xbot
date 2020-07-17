@@ -7,15 +7,26 @@ const RexParser = {
     {
       name: 'sayTo',
       rex: /^(s|say) (?<message>.*) to (?<actor>\w+)$/i,
-      event: Dispatcher.ask,
       tests: [
         ['say welcome to Sid', {
-          message: 'welcome'
+          groups: {
+            message: 'welcome',
+            actor: 'sid'
+          },
+          event: 'replyWithDefault',
+          target: 'actor',
         }],
         ['say How are you? to Sid', {
-          message: 'How are you?'
+          groups: {
+            message: 'how are you?',
+            actor: 'sid'
+          },
+          event: 'replyWithDefault',
+          target: 'actor',
         }]
-      ]
+      ],
+      target: 'actor',
+      event: 'replyWithDefault'
     },
 
 
@@ -31,62 +42,96 @@ const RexParser = {
     // about a THING
     {
       name: 'askAbout',
-      rex: /^(ask|tell) (?<actor>\w+) (about) (?<thing>.*)$/i,
+      rex: /^(ask) (?<actor>\w+) (about) (?<thing>.*)$/i,
+      target: 'actor',
+      event: 'askAboutThing',
       tests: [
         ["ask Sid about password", {
-          thing: 'password'
+          groups: {
+            thing: 'password',
+            actor: 'sid'
+          },
+          target: 'actor',
+          event: 'askAboutThing',
         }],
-        ["ask Sid about the password", {
-          actor: 'Sid',
-          thing: 'password'
+        ["ask Sid about password", {
+          groups: {
+            thing: 'password',
+            actor: 'sid'
+          },
+          target: 'actor',
+          event: 'askAboutThing',
         }],
       ],
-      event: Dispatcher.ask,
     },
 
     // fall through ask about anything
     {
       name: 'plainAsk',
       rex: /^(ask|tell) (?<actor>\w+) (?<message>.*)$/i,
+      target: 'actor',
+      event: 'replyWithDefault',
       tests: [
         ["ask Sid how are you doing", {
-          message: 'how are you doing'
+          groups: {
+            message: 'how are you doing',
+            actor: 'sid'
+          },
+          event: 'replyWithDefault',
+          target: 'actor'
         }],
         ["ask Sid what is your name", {
-          actor: 'Sid',
-          message: 'what is your name'
+          groups: {
+            message: 'what is your name',
+            actor: 'sid'
+          },
+          event: 'replyWithDefault',
+          target: 'actor',
         }],
       ],
-      event: Dispatcher.ask,
     },
 
     {
       name: 'giveActorThing',
       rex: /^(give) (?<actor>\w+) (?<thing>.*)$/i,
+      target: 'actor',
+      event: 'giveThing',
       tests: [
         ["give Sid the money", {
-          actor: 'Sid',
-          thing: 'money'
+          groups: {
+            actor: 'sid',
+            thing: 'money',
+          },
+          event: 'giveThing',
+          target: 'actor'
         }],
         ["give Sid a kiss", {
-          actor: 'Sid',
-          thing: 'kiss'
+          groups: {
+            actor: 'sid',
+            thing: 'kiss',
+          },
+          event: 'giveThing',
+          target: 'actor'
         }],
 
       ],
-      event: Dispatcher.give,
     },
 
     {
       name: 'giveThingActor',
       rex: /^(give) (?<thing>\w+) (the|to) (?<actor>\w+)$/i,
       tests: [
-        ["give the money to Sid", {
-          thing: 'money',
-          actor: 'Sid'
+        ["give the bottle to Sid", {
+          groups: {
+            actor: 'sid',
+            thing: 'bottle',
+          },
+          event: 'giveThing',
+          target: 'actor'
         }],
       ],
-      event: Dispatcher.ask,
+      target: 'actor',
+      event: 'giveThing',
     }
 
   ],
@@ -94,6 +139,8 @@ const RexParser = {
   actionRules: [
     {
       name: 'useThing',
+      target: 'thing',
+      event: 'useThing',
       rexParts: [
         '^(?<action>take|use|try|open|put|place|close)',
         '(?<thing1>.*)',
@@ -104,41 +151,61 @@ const RexParser = {
       // rex: /^(?<action>put|place|open) (?<thing1>\w+) (?<how>with|on) (?<thing2>.*)$/,
       tests: [
         ["open the lock with the key", {
-          action: 'open',
-          thing1: 'lock',
-          how: 'with',
-          thing2: 'key'
+          groups: {
+            action: 'open',
+            thing1: 'lock',
+            how: 'with',
+            thing2: 'key',
+          },
+          event: 'useThing',
+          target: 'thing'
         }],
 
         ['put the key in the door', {
-          action: 'put',
-          thing1: 'key',
-          how: 'in',
-          thing2: 'door'
+          groups: {
+            action: 'put',
+            thing1: 'key',
+            how: 'in',
+            thing2: 'door',
+          },
+          event: 'useThing',
+          target: 'thing'
         }],
 
         ['place the card inside your laptop', {
-          action: 'place',
-          thing1: 'card',
-          how: 'inside',
-          thing2: 'your laptop'
+          groups: {
+            action: 'place',
+            thing1: 'card',
+            how: 'inside',
+            thing2: 'your laptop',
+          },
+          target: 'thing',
+          event: 'useThing',
         }]
-
       ],
-      event: Dispatcher.ask,
     }
 
   ],
 
   parse (input, rule) {
     input = input.replace(/the |a |an |that /gim, '')  // these just get in the way
+    input = input.toLowerCase()
+    // TODO remove punctuation
     let rex = rule.rex
     if (!rex) {
       // build it
       const rexString = rule.rexParts.join(' ')
       rex = new RegExp(rexString, 'gim')
     }
-    const result = rex.exec(input)
+    const match = rex.exec(input)
+    if (!match) return false
+    // else
+
+    const result = {
+      target: rule.target,
+      event: rule.event,
+      groups: {...match.groups} // remove null object for test comparison
+    }
     return result
   },
 

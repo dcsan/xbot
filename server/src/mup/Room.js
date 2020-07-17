@@ -64,7 +64,11 @@ class Room extends GameObject {
   }
 
   findActor (name) {
-    const actor = this.actors.find(one => one.doc.name === name)
+    if (!name) {
+      Logger.error('findActor but no name!')
+    }
+    name = name.toLowerCase()
+    const actor = this.actors.find(one => one.cname === name)
     if (!actor) {
       Logger.log('room.actors', this.actors)
       throw ('cannot find actor:' + name)

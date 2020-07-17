@@ -29,6 +29,7 @@ const Logger = {
     if (obj) {
       Logger.logObj('obj', obj)
     }
+    throw(msg)
   },
 
   logObj (msg, obj) {

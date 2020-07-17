@@ -9,10 +9,16 @@ class Actor extends GameObject {
     this.defaultCount = 0
   }
 
-  get name () {
-    return this.doc.name
+  // not lowercase
+  get formalName () {
+    let s = this.doc.name
+    return s.charAt(0).toUpperCase() + s.slice(1)
   }
 
+  // for searching and comparison DB keys
+  get cname () {
+    return this.doc.name.toLowerCase()
+  }
 
   findTrigger (input) {
     const found = this.doc.triggers.find(trig => {
@@ -62,7 +68,7 @@ class Actor extends GameObject {
    * @param {} text
    */
   formatReply (text) {
-    return `${this.doc.name}: ${text}`
+    return `${this.formalName}: ${text}`
   }
 
   /**
