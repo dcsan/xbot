@@ -3,10 +3,12 @@ const Logger = require('../../lib/Logger')
 
 const RexParser = {
 
-  actorRules: [
+  ruleSet: [
     {
       name: 'sayTo',
       rex: /^(s|say) (?<message>.*) to (?<actor>\w+)$/i,
+      target: 'actor',
+      event: 'replyWithDefault',
       tests: [
         ['say welcome to Sid', {
           groups: {
@@ -25,19 +27,7 @@ const RexParser = {
           target: 'actor',
         }]
       ],
-      target: 'actor',
-      event: 'replyWithDefault'
     },
-
-
-    // ["tell Sid to turn off the light", {
-    //   actor: 'Sid',
-    //   message: 'turn off light'
-    // }],
-    // ["tell Sid to shut up!", {
-    //   actor: 'Sid',
-    //   message: 'shut up!'
-    // }],
 
     // about a THING
     {
@@ -45,12 +35,14 @@ const RexParser = {
       rex: /^(ask) (?<actor>\w+) (about) (?<thing>.*)$/i,
       target: 'actor',
       event: 'askAboutThing',
+      verb: 'about',
       tests: [
         ["ask Sid about password", {
           groups: {
             thing: 'password',
             actor: 'sid'
           },
+          verb: 'about',
           target: 'actor',
           event: 'askAboutThing',
         }],
@@ -59,6 +51,7 @@ const RexParser = {
             thing: 'password',
             actor: 'sid'
           },
+          verb: 'about',
           target: 'actor',
           event: 'askAboutThing',
         }],
@@ -132,11 +125,8 @@ const RexParser = {
       ],
       target: 'actor',
       event: 'giveThing',
-    }
+    },
 
-  ],
-
-  actionRules: [
     {
       name: 'useThing',
       target: 'thing',
@@ -204,14 +194,15 @@ const RexParser = {
     const result = {
       target: rule.target,
       event: rule.event,
+      verb: rule.verb,
       groups: {...match.groups} // remove null object for test comparison
     }
     return result
   },
 
-  actorActions (input, context) {
+  parseRules (input, context) {
     let reply
-    RexParser.actorRules.some(rule => {
+    RexParser.ruleSet.some(rule => {
       rule.tests.some(test => {
         reply = RexParser.parse(input, rule)
         if (reply) {

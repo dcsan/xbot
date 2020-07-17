@@ -93,6 +93,10 @@ const SlackAdapter = {
   },
 
   async sendBlocks (blocks, context) {
+    if (!context || !context.chat) {
+      Logger.error('tried to sendBlocks with no context.chat:', context)
+    }
+
     const msg = SlackAdapter.wrapBlocks(blocks)
     Logger.logObj('msg', msg)
     context.chat.postMessage(msg)
@@ -106,7 +110,7 @@ const SlackAdapter = {
       if (stateInfo.imageUrl) {
         blocks.push(SlackAdapter.imageBlock(stateInfo, item))
       }
-      blocks.push(SlackAdapter.textBlock(stateInfo.text))
+      blocks.push(SlackAdapter.textBlock(stateInfo.long || stateInfo.short))
     }
     SlackAdapter.sendBlocks(blocks, context)
   }

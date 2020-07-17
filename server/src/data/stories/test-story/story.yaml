@@ -21,6 +21,15 @@ rooms:
     actors:
       - name: Sid
         greeting: Hey this is Sid!
+        description: Sid is a happy coder
+        states:
+          - name: default
+            imageUrl: rooms/office-chest-closed.jpg
+            short: Sid is a junior programmer
+            long:
+              Sid hasn't been working here very long, so he's not jaded yet.
+              He's learning the basics but keeps making careless little mistakes.
+              One more and he could lose his job...
         defaultReplies:
           - Sorry I don't understand
           - what?
@@ -38,8 +47,14 @@ rooms:
             reply: I'm doing great thanks
           - match: note
             reply: Hmm it looks like a combination or a PIN code
-          - query: chest
+          - match: chest
             reply: It's always been here
+          - match: about password
+            reply: What password?!
+          - match: about note
+            reply: It's a weird looking memo written there, looks like a combination or something.
+          - match: about chest
+            reply: It's always been there... not sure where it came from.
 
     items:
     - name: desk
@@ -60,10 +75,10 @@ rooms:
       description: A simple note
       states:
         - name: default
-          text: There seem to be a sequence of letters
+          short: There seem to be a sequence of letters
           imageUrl: items/note-sm.png
         - name: read
-          text: "You've seen it before. The letters ATOV don't mean much"
+          short: "You've seen it before. The letters ATOV don't mean much"
           imageUrl: items/note-sm.png
       actions:
         - match: get|take
@@ -87,14 +102,14 @@ rooms:
       state: locked
       states:
         - name: locked
-          text: The chest is locked
+          short: The chest is locked
           imageUrl: items/chest-closed.png
         - name: open
-          text: the chest is open and you can see a large key inside
+          short: the chest is open and you can see a large key inside
           imageUrl: items/chest-open-key.png
         - name: empty
           imageUrl: items/chest-open-empty.jpg
-          text: A large chest. It's open, but you can't see anything inside.
+          short: A large chest. It's open, but you can't see anything inside.
       actions:
         - match: open|unlock
           needs: open-lock
@@ -114,10 +129,10 @@ rooms:
       # imageUrl: lock.gif
       states:
         - name: locked
-          text: An unusual looking combination lock. It seems to use lettters rather than numbers.
+          short: An unusual looking combination lock. It seems to use lettters rather than numbers.
           imageUrl: items/combolock-closed-sm.png
         - name: unlocked
-          text: you opened the lock!
+          short: you opened the lock!
           imageUrl: items/combolock-open-sm.png
       actions:
         - match: open|ATOV|atov|unlock|use|open lock with code|open lock with atov
@@ -145,9 +160,9 @@ rooms:
       description: An antique looking key
       states:
         - name: default
-          text: ...
+          short: ...
         - name: holding-key
-          text: The key looks like it could open a door somewhere...
+          short: The key looks like it could open a door somewhere...
       actions:
         - match: get|take
           needs: open-lock
@@ -161,10 +176,9 @@ rooms:
       description: A heavy door
       states:
         - name: locked
-          text: The door is locked.
+          short: The door is locked.
         - name: unlocked
-          text: the door is unlocked.
-      text: The lock is creaking
+          short: the door is unlocked.
       actions:
         - match: open
           needs: key

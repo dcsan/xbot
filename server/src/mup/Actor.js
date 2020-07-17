@@ -7,26 +7,15 @@ class Actor extends GameObject {
   constructor(doc, room) {
     super(doc, room)
     this.defaultCount = 0
+    this.state = 'default'
   }
 
-  // not lowercase
-  get formalName () {
-    let s = this.doc.name
-    return s.charAt(0).toUpperCase() + s.slice(1)
-  }
-
-  // for searching and comparison DB keys
-  get cname () {
-    return this.doc.name.toLowerCase()
-  }
-
-  findTrigger (input) {
-    const found = this.doc.triggers.find(trig => {
-      const rex = new RegExp(trig.match)
+  findTrigger (text) {
+    const found = this.doc.triggers.find(trigger => {
+      const rex = new RegExp(trigger.match)
       Logger.log('check', rex)
-      if (input.match(rex)) {
-        return trig.reply
-        // return reply
+      if (text.match(rex)) {
+        return trigger
       }
     })
     return found
@@ -37,12 +26,24 @@ class Actor extends GameObject {
    * @param {*} text
    * @param {*} context
    */
-  replyWithDefault (text, context) {
+  replyWithDefault (parsed, context) {
+    const text = parsed.groups.message // just responds to `message`
     const found = this.replyTo(text, context)
     if (!found) {
       context.sendText(this.defaultReply())
     }
     return found
+  }
+
+  askAboutThing (parsed, context) {
+    const text = `${parsed.verb} ${parsed.groups.thing}`  // about chest
+    console.log('built text', text)
+    const reply = this.replyTo(text, context)
+    if (!reply) {
+      const msg = `I don't know about ${parsed.groups.thing}`
+      context.sendText(msg)
+    }
+    return reply
   }
 
   /**

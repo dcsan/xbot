@@ -50,9 +50,9 @@ class Room extends GameObject {
     await SlackAdapter.sendList(reply, context)
   }
 
-  findItemByName (itemName) {
+  findItem (itemName) {
     const name = itemName.toLowerCase()
-    const found = this.items.filter((item) => item.name === name)
+    const found = this.items.filter((item) => item.cname === name)
     if (found.length) {
       const item = found[0] // dont modify items
       Logger.logObj('found Item:', {itemName, item})
@@ -68,12 +68,12 @@ class Room extends GameObject {
       Logger.error('findActor but no name!')
     }
     name = name.toLowerCase()
-    const actor = this.actors.find(one => one.cname === name)
-    if (!actor) {
-      Logger.log('room.actors', this.actors)
-      throw ('cannot find actor:' + name)
+    const foundActor = this.actors.find(actor => actor.cname === name)
+    if (!foundActor) {
+      // Logger.log('room.actors', this.actors)
+      Logger.warn ('cannot find actor named:' + name)
     }
-    return actor
+    return foundActor
   }
 
   async examine(itemName, player, context) {
@@ -82,14 +82,16 @@ class Room extends GameObject {
       return
     }
 
-    const item = this.findItemByName(itemName)
+    const item =
+      this.findItem(itemName) ||
+      this.findActor(itemName)
     if (!item) {
       debug('not found', itemName, 'in', this.items)
       const msg = `you don't see a ${itemName}`
       await SlackAdapter.sendText(msg, context)
     } else {
       Logger.log('ex item', item)
-      // check if there's a special 'examine' event
+      // check if there's a special 'examine' event with trigger
       const foundAction = await item.itemActions('examine', player, context)
       Logger.log('foundAction', foundAction)
       if (!foundAction) {

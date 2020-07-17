@@ -107,14 +107,23 @@ const Dispatcher = {
   async fallback (context) {
     const input = context.event.text
     Logger.log('fallback:', input)
-    const parsed = RexParser.actorActions(input)
-    console.log('parsed', parsed)
-    if (parsed && parsed.groups.actor) {
+    const parsed = RexParser.parseRules(input)
+    // console.log('parsed', parsed)
+    if (parsed && parsed.target) {
       const game = await Dispatcher.findGame(context.session.id)
-      const actorName = parsed.groups.actor
-      const actor = game.story.room.findActor(actorName)
-      const reply = actor.parserReply(parsed, context)
-      return reply // for tests
+      switch (parsed.target) {
+        case 'actor':
+          const actorName = parsed.groups.actor
+          const actor = game.story.room.findActor(actorName)
+          const event = parsed.event
+          // event is set by parser ruleSet
+          const reply = actor[event](parsed, context)
+          return reply // for tests
+
+        case 'thing':
+          Logger.warn('thing events not handled yet')
+          return false  // not handled
+      }
     } else {
       return false  // not handled
     }

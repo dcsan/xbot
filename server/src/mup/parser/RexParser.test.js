@@ -8,7 +8,6 @@ const context = TestUtils.context
 
 function testRuleSet (rule) {
 
-
   rule.tests.forEach(test => {
     // Logger.testLog('test', test)
     let [input, expected] = test
@@ -34,19 +33,19 @@ function testRuleSet (rule) {
 }
 
 test('RexParser.actorRules', async () => {
-  RexParser.actorRules.forEach(rule => {
+  RexParser.ruleSet.forEach(rule => {
     testRuleSet(rule)
   })
 
 })
 
-test('RexParser.thingMessages', async () => {
+// test('RexParser.thingMessages', async () => {
 
-  // const route = RouteMatchers.ask
-  // Logger.testLog('route', route)
+//   // const route = RouteMatchers.ask
+//   // Logger.testLog('route', route)
 
-  RexParser.actionRules.forEach(rule => {
-    testRuleSet(rule)
-  })
+//   RexParser.actionRules.forEach(rule => {
+//     testRuleSet(rule)
+//   })
 
-})
+// })

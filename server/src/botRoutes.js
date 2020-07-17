@@ -20,7 +20,7 @@ module.exports = async function App () {
 
     text(/^help$/i, Dispatcher.help),
     text(/^i$|^inv$|^inventory$/i, Dispatcher.inventory),
-    text(/^(x|examine) (?<item>.*)$/i, Dispatcher.examine),
+    text(/^(x|examine|l|look at) (?<item>.*)$/i, Dispatcher.examine),
 
     // // debug commands
     text(/^start$/i, Dispatcher.start),
