@@ -99,7 +99,7 @@ const SlackAdapter = {
 
     const msg = SlackAdapter.wrapBlocks(blocks)
     Logger.logObj('msg', msg)
-    context.chat.postMessage(msg)
+    await context.chat.postMessage(msg)
   },
 
   async sendItemCard (stateInfo, item, context) {
@@ -112,7 +112,7 @@ const SlackAdapter = {
       }
       blocks.push(SlackAdapter.textBlock(stateInfo.long || stateInfo.short))
     }
-    SlackAdapter.sendBlocks(blocks, context)
+    await SlackAdapter.sendBlocks(blocks, context)
   }
 
 }

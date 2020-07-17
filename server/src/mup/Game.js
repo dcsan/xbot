@@ -127,18 +127,18 @@ class Game {
     this.story.runCommand('/hint', context)
   }
 
-  async actions (
-    context,
-    {
-      match: {
-        groups: { action, item },
-      },
-    }
-  ) {
-    Logger.logObj('actions: ', item)
-    // await context.sendText(`trying ${action} on ${item} ...`)
-    await this.story.room.runActions(action, item, this.player, context)
-  }
+  // async actions (
+  //   context,
+  //   {
+  //     match: {
+  //       groups: { action, item },
+  //     },
+  //   }
+  // ) {
+  //   Logger.logObj('actions: ', item)
+  //   // await context.sendText(`trying ${action} on ${item} ...`)
+  //   await this.story.room.runActions(action, item, this.player, context)
+  // }
 
   async handleSlack (context) {
     // Logger.logObj('slack.any', context)

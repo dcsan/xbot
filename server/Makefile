@@ -23,3 +23,15 @@ slack-config:
 	echo "use the proxy baseUrl + /api/webhooks/slack"
 
 
+# single test
+testRoomLook:
+	npm run jest -- --watch -t 'look room'
+
+testRoom:
+	npm run jest -- --watch Room
+
+testParser:
+	npm run jest -- --watch RexParser
+
+testGameObject:
+	npm run jest -- --watch GameObject

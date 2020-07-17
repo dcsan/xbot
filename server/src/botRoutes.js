@@ -15,12 +15,12 @@ module.exports = async function App () {
     text(/^e$|^echo$/i, Dispatcher.echo),
 
     // text(/^test$/i, gameObj.SayTest),
-    text(/^l$|^look$/i, Dispatcher.look ),
+    // text(/^l$|^look$/i, Dispatcher.look ),
     text(/^h$|^hint$/i, Dispatcher.hint),
 
     text(/^help$/i, Dispatcher.help),
     text(/^i$|^inv$|^inventory$/i, Dispatcher.inventory),
-    text(/^(x|examine|l|look at) (?<item>.*)$/i, Dispatcher.examine),
+    // text(/^(x|examine|l|look at) (?<item>.*)$/i, Dispatcher.examine),
 
     // // debug commands
     text(/^start$/i, Dispatcher.start),

@@ -55,6 +55,12 @@ rooms:
             reply: It's a weird looking memo written there, looks like a combination or something.
           - match: about chest
             reply: It's always been there... not sure where it came from.
+        actions:
+          - match: greet
+            pass:
+              text: Welcome! Nice to see you too.
+              gets: coin  # TODO
+              hintStep: 2
 
     items:
     - name: desk
@@ -62,7 +68,7 @@ rooms:
       states:
         - name: default
           imageUrl: rooms/office-chest-closed.jpg
-          text:
+          short:
             "A messy desk. There's a post it `note` with some letters scrawled on it. \n
             There's an antique looking `chest` under the desk. \n
             :mag: <https://cbg.rik.ai/rooms/office|click here to look around>"

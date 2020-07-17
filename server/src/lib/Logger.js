@@ -25,7 +25,7 @@ const Logger = {
   },
 
   error (msg, obj) {
-    console.error(msg)
+    console.log("ERROR", msg)
     if (obj) {
       Logger.logObj('obj', obj)
     }

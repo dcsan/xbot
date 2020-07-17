@@ -9,7 +9,7 @@ class GameObject {
     this.state = this.doc.state || 'default'
   }
 
-  async examine (context, player) {
+  async examine (parsed, context, player) {
     const stateInfo = this.doc.states.filter(s => s.name === this.state).pop()
     Logger.logObj('stateInfo', { state: this.state, stateInfo })
     Logger.log('item.examine', this.cname)
@@ -36,6 +36,10 @@ class GameObject {
     return this.cname.match(text)
   }
 
+  get articleName () {
+    return `a ${this.formalName}`
+  }
+
   /**
    * special actions defined on the doc
    *
@@ -45,8 +49,8 @@ class GameObject {
    * @returns
    * @memberof GameObject
    */
-  async itemActions (actionName, player, context) {
-    Logger.log('itemActions', actionName, 'on', this.name)
+  async runActions (parsed, context, player) {
+    Logger.log('runActions', parsed, 'on', this.cname)
     let foundAction = false
     this.doc.actions?.forEach(async (actionData) => {
       let rex = new RegExp(actionData.match)

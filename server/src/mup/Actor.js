@@ -37,7 +37,7 @@ class Actor extends GameObject {
 
   askAboutThing (parsed, context) {
     const text = `${parsed.verb} ${parsed.groups.thing}`  // about chest
-    console.log('built text', text)
+    // console.log('built text', text)
     const reply = this.replyTo(text, context)
     if (!reply) {
       const msg = `I don't know about ${parsed.groups.thing}`

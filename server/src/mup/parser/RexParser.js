@@ -1,5 +1,6 @@
 const Dispatcher = require('../Dispatcher')
 const Logger = require('../../lib/Logger')
+const WordUtils = require('../../lib/WordUtils')
 
 const RexParser = {
 
@@ -205,22 +206,42 @@ const RexParser = {
       ],
     },
 
+    // can be any item or actor
     {
-      name: 'examineActor',
-      rex: /^(x|examine) (?<actor>\w+)$/i,
+      name: 'examineItem',
+      rex: /^(x|examine|look at|look) (?<item>\w+)$/i,
       verb: 'examine',
-      target: 'firstActor',
+      target: 'firstItem',
       event: 'examine',
       tests: [
         ["x Sid", {
           groups: {
-            actor: 'sid'
+            item: 'sid'
           },
-          ruleName: 'examineActor',
+          ruleName: 'examineItem',
           verb: 'examine',
           event: 'examine',
-          target: 'firstActor'
+          target: 'firstItem'
         }],
+        ["x note", {
+          groups: {
+            item: 'note'
+          },
+          ruleName: 'examineItem',
+          verb: 'examine',
+          event: 'examine',
+          target: 'firstItem'
+        }],
+        ["look at desk", {
+          groups: {
+            item: 'desk'
+          },
+          ruleName: 'examineItem',
+          verb: 'examine',
+          event: 'examine',
+          target: 'firstItem'
+        }],
+
       ],
     },
 
@@ -278,13 +299,34 @@ const RexParser = {
           event: 'useThing',
         }]
       ],
-    }
+    },
+
+    // this has to come after the one above as the rex is shorter and would match
+    // {
+    //   name: 'runActions',
+    //   target: 'firstItem',
+    //   event: 'runActions',
+    //   ruleName: 'runActions',
+    //   verb: 'action',
+    //   rex: /^(?<action>take|use|try|open|put|place|close|greet|read) (?<item>\w+)/gim,
+    //   tests: [
+    //     ["open the lock", {
+    //       groups: {
+    //         action: 'open',
+    //         item: 'lock',
+    //       },
+    //       ruleName: 'runActions',
+    //       verb: 'action',
+    //       event: 'runActions',
+    //       target: 'item'
+    //     }],
+    //   ]
+    // },
 
   ],
 
-  parse (input, rule) {
-    input = input.replace(/the |a |an |that /gim, '')  // these just get in the way
-    input = input.toLowerCase()
+  parseOne (input, rule) {
+    input = WordUtils.cheapNormalize(input)
     // TODO remove punctuation
     let rex = rule.rex
     if (!rex) {
@@ -310,7 +352,7 @@ const RexParser = {
     let reply
     RexParser.ruleSet.some(rule => {
       rule.tests.some(test => {
-        reply = RexParser.parse(input, rule)
+        reply = RexParser.parseOne(input, rule)
         if (reply) {
           return true   // inner some
         }

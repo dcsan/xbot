@@ -112,20 +112,29 @@ const Dispatcher = {
     if (parsed && parsed.event) {
       const game = await Dispatcher.findGame(context.session.id)
       let actor, event, reply, actorName
+      const player = game.player
 
       switch (parsed.target) {
+
+        case 'firstItem':
+          event = parsed.event
+          actor = game.story.room.firstItem(parsed.groups.item)
+          reply = await actor[event](parsed, context, player)
+          return reply // for tests
+
         case 'firstActor':
           event = parsed.event
           actor = game.story.room.firstActor()
-          reply = await actor[event](parsed, context)
+          reply = await actor[event](parsed, context, player)
           return reply // for tests
 
+        // named actor
         case 'actor':
           actorName = parsed.groups.actor
           actor = actor = game.story.room.findActor(actorName)
           // event is set by parser ruleSet
           event = parsed.event
-          reply = await actor[event](parsed, context)
+          reply = await actor[event](parsed, context, player)
           return reply // for tests
 
         case 'thing':
@@ -133,9 +142,22 @@ const Dispatcher = {
           return false  // not handled
       }
     } else {
-      return false  // not handled
+      Dispatcher.finalActions(context)
     }
   },
+
+  // // run through all the objects in a room
+  // // and if matching check all the 'actions'
+  // async finalAction (context) {
+  //   let input = context.event.text
+  //   const game = await Dispatcher.findGame(context.session.id)
+  //   console.log('rex', rex)
+
+  //   if (rex.test(input)) {
+
+  //   }
+
+  // }
 
 }
 

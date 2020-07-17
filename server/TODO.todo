@@ -5,7 +5,7 @@ TopLevel:
   ☐ buttons menu / demo (inventory? item? help?
   ☐ compound sentences parser use X on Y
     give A to B
-
+  ☐ fix room.examine
 
 UserExperience:
   ☐ welcome message

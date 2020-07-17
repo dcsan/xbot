@@ -45,16 +45,14 @@ test('fallback firstActor reply', async () => {
 })
 
 test('examine object', async () => {
-  // const context = Object.assign({}, TestUtils.context)
-  expect(context.sent.text).toBeUndefined()
-  const event = {
-    text: "x note"
-  }
-  context.event = event
+  context.event = { text: "x note" }
 
   const reply = await Dispatcher.fallback(context)
-  // console.log('reply', reply)
-  // console.log('called', context.sent.text)
-  expect(context.sent.text).toBe("Sid: Hmm it looks like a combination or a PIN code")
+  const atts = context.chat.msg.attachments
+  const blocks = atts[0].blocks
+  // console.log('att', atts)
+  // console.log('blocks', blocks)
+  expect(blocks).toHaveLength(2)
+  expect(blocks[1].text.text).toMatch(/^There seem to be a sequence of letters/)
 })
 
