@@ -63,6 +63,15 @@ class Room extends GameObject {
     }
   }
 
+  firstActor () {
+    const foundActor = this.actors[0]
+    if (!foundActor) {
+      // Logger.log('room.actors', this.actors)
+      Logger.warn ('no actors in room!' + this.cname)
+    }
+    return foundActor
+  }
+
   findActor (name) {
     if (!name) {
       Logger.error('findActor but no name!')

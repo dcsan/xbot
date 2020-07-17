@@ -24,7 +24,7 @@ rooms:
         description: Sid is a happy coder
         states:
           - name: default
-            imageUrl: rooms/office-chest-closed.jpg
+            imageUrl: actors/sid-sm.png
             short: Sid is a junior programmer
             long:
               Sid hasn't been working here very long, so he's not jaded yet.

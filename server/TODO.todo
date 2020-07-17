@@ -9,6 +9,16 @@ TopLevel:
 
 UserExperience:
   ☐ welcome message
+  ☐ who / what is here
+  ☐ move caption below
+  ☐ s or say command -> finds first actor?
+  ☐ fix look at ITEM
+  ☐ ask X about ... broken
+
+  ☐ JSX ->
+  ☐ help with buttons
+
+  ☐ hint system steps
   ☐ ATOV in the room
   ☐ h broken?
   ☐ hint system should increment?

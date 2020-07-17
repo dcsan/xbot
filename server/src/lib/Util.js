@@ -10,9 +10,17 @@ const Util = {
     })
   },
 
+  // so we always get latest images
+  // can remove this when thigns arent changing often
+  cacheBust () {
+    const oneMinute = (1 * 60 * 1000)
+    const ts = Math.floor(Date.now() / oneMinute)
+    return('?x=' + ts) // 10 minute
+  },
+
   // wrap relative image URLs
   imageUrl (file) {
-    return process.env.STATIC_SERVER + file
+    return process.env.STATIC_SERVER + file + Util.cacheBust()
   },
 
   loadYaml(pathFromData) {

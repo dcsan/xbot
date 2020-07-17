@@ -29,3 +29,32 @@ test('fallback with actor reply', async () => {
   expect(context.sent.text).toBe("Sid: I'm doing great thanks")
 })
 
+
+test('fallback firstActor reply', async () => {
+  // const context = Object.assign({}, TestUtils.context)
+  expect(context.sent.text).toBeUndefined()
+  const event = {
+    text: "ask about the note"
+  }
+  context.event = event
+
+  const reply = await Dispatcher.fallback(context)
+  // console.log('reply', reply)
+  // console.log('called', context.sent.text)
+  expect(context.sent.text).toBe("Sid: Hmm it looks like a combination or a PIN code")
+})
+
+test('examine object', async () => {
+  // const context = Object.assign({}, TestUtils.context)
+  expect(context.sent.text).toBeUndefined()
+  const event = {
+    text: "x note"
+  }
+  context.event = event
+
+  const reply = await Dispatcher.fallback(context)
+  // console.log('reply', reply)
+  // console.log('called', context.sent.text)
+  expect(context.sent.text).toBe("Sid: Hmm it looks like a combination or a PIN code")
+})
+

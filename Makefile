@@ -1,7 +1,10 @@
 #! make
 
-deploydir='/mnt/ext250/web-apps/cbg.rik.ai'
+deployDir='/mnt/ext250/web-apps/cbg.rik.ai'
 login=root@rik.ai
+
+login:
+	ssh ${login}
 
 # just run this once
 nginxSetup:
@@ -13,10 +16,10 @@ nginxSetup:
 
 firstDeploy:
 	# make deploy dir
-	ssh ${login} "mkdir -p ${deploydir}"
+	ssh ${login} "mkdir -p ${deployDir}"
 
 pm2first:
-	ssh ${login} "cd ${deploydir} && NODE_ENV=production pm2 --name=cbg start server.js"
+	ssh ${login} "cd ${deployDir} && NODE_ENV=production pm2 --name=cbg start server.js"
 
 pm2restart:
 	ssh ${login} "pm2 restart cbg"
@@ -45,7 +48,7 @@ prep: clean build move
 
 sync: fixPermissions
 	rsync -avi --delete \
-		server/ ${login}:${deploydir}
+		server/ ${login}:${deployDir}
 
 	echo "done"
 

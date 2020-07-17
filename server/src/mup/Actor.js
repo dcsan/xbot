@@ -81,8 +81,8 @@ class Actor extends GameObject {
       const reply = this.replyTo(parsed.groups.message, context)
       return reply
     }
-
   }
+
   /**
    * walk through the default replies in sequence
    */

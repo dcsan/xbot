@@ -88,7 +88,7 @@ const Dispatcher = {
   ) {
     const game = await Dispatcher.findGame(context.session.id)
     Logger.logObj('examine item: ', item)
-    await game.story.examine(item, this.player, context)
+    await game.story.examine(item, game.player, context)
   },
 
   async ask (
@@ -109,15 +109,23 @@ const Dispatcher = {
     Logger.log('fallback:', input)
     const parsed = RexParser.parseRules(input)
     // console.log('parsed', parsed)
-    if (parsed && parsed.target) {
+    if (parsed && parsed.event) {
       const game = await Dispatcher.findGame(context.session.id)
+      let actor, event, reply, actorName
+
       switch (parsed.target) {
+        case 'firstActor':
+          event = parsed.event
+          actor = game.story.room.firstActor()
+          reply = await actor[event](parsed, context)
+          return reply // for tests
+
         case 'actor':
-          const actorName = parsed.groups.actor
-          const actor = game.story.room.findActor(actorName)
-          const event = parsed.event
+          actorName = parsed.groups.actor
+          actor = actor = game.story.room.findActor(actorName)
           // event is set by parser ruleSet
-          const reply = actor[event](parsed, context)
+          event = parsed.event
+          reply = await actor[event](parsed, context)
           return reply // for tests
 
         case 'thing':

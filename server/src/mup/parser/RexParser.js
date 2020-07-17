@@ -5,16 +5,19 @@ const RexParser = {
 
   ruleSet: [
     {
-      name: 'sayTo',
+      name: 'sayToActor',
       rex: /^(s|say) (?<message>.*) to (?<actor>\w+)$/i,
       target: 'actor',
       event: 'replyWithDefault',
+      verb: 'say',
       tests: [
         ['say welcome to Sid', {
           groups: {
             message: 'welcome',
             actor: 'sid'
           },
+          verb: 'say',
+          ruleName: 'sayToActor',
           event: 'replyWithDefault',
           target: 'actor',
         }],
@@ -23,15 +26,46 @@ const RexParser = {
             message: 'how are you?',
             actor: 'sid'
           },
+          verb: 'say',
+          ruleName: 'sayToActor',
           event: 'replyWithDefault',
           target: 'actor',
         }]
       ],
     },
 
+    {
+      name: 'sayToAnyone',
+      rex: /^(s|say) (?<message>.*)$/i,
+      target: 'firstActor',
+      event: 'replyWithDefault',
+      verb: 'say',
+      tests: [
+        ['say welcome', {
+          groups: {
+            message: 'welcome',
+          },
+          verb: 'say',
+          ruleName: 'sayToAnyone',
+          event: 'replyWithDefault',
+          target: 'firstActor',
+        }],
+        ['say How are you?', {
+          groups: {
+            message: 'how are you?',
+          },
+          verb: 'say',
+          ruleName: 'sayToAnyone',
+          event: 'replyWithDefault',
+          target: 'firstActor',
+        }]
+      ],
+    },
+
+
     // about a THING
     {
-      name: 'askAbout',
+      name: 'askActorAboutThing',
       rex: /^(ask) (?<actor>\w+) (about) (?<thing>.*)$/i,
       target: 'actor',
       event: 'askAboutThing',
@@ -45,6 +79,7 @@ const RexParser = {
           verb: 'about',
           target: 'actor',
           event: 'askAboutThing',
+          ruleName: 'askActorAboutThing'
         }],
         ["ask Sid about password", {
           groups: {
@@ -54,6 +89,36 @@ const RexParser = {
           verb: 'about',
           target: 'actor',
           event: 'askAboutThing',
+          ruleName: 'askActorAboutThing'
+        }],
+      ],
+    },
+
+    // about a THING
+    {
+      name: 'askFirstActorAboutThing',
+      rex: /^(a|ask) (about) (?<thing>.*)$/i,
+      target: 'firstActor',
+      event: 'askAboutThing',
+      verb: 'about',
+      tests: [
+        ["ask about doorbell", {
+          groups: {
+            thing: 'doorbell',
+          },
+          verb: 'about',
+          target: 'firstActor',
+          event: 'askAboutThing',
+          ruleName: 'askFirstActorAboutThing'
+        }],
+        ["ask about more games", {
+          groups: {
+            thing: 'more games',
+          },
+          verb: 'about',
+          target: 'firstActor',
+          event: 'askAboutThing',
+          ruleName: 'askFirstActorAboutThing'
         }],
       ],
     },
@@ -64,20 +129,25 @@ const RexParser = {
       rex: /^(ask|tell) (?<actor>\w+) (?<message>.*)$/i,
       target: 'actor',
       event: 'replyWithDefault',
+      verb: 'ask',
       tests: [
         ["ask Sid how are you doing", {
           groups: {
             message: 'how are you doing',
             actor: 'sid'
           },
+          verb: 'ask',
           event: 'replyWithDefault',
-          target: 'actor'
+          target: 'actor',
+          ruleName: 'plainAsk'
         }],
         ["ask Sid what is your name", {
           groups: {
             message: 'what is your name',
             actor: 'sid'
           },
+          ruleName: 'plainAsk',
+          verb: 'ask',
           event: 'replyWithDefault',
           target: 'actor',
         }],
@@ -89,12 +159,15 @@ const RexParser = {
       rex: /^(give) (?<actor>\w+) (?<thing>.*)$/i,
       target: 'actor',
       event: 'giveThing',
+      verb: 'give',
       tests: [
         ["give Sid the money", {
           groups: {
             actor: 'sid',
             thing: 'money',
           },
+          ruleName: 'giveActorThing',
+          verb: 'give',
           event: 'giveThing',
           target: 'actor'
         }],
@@ -103,6 +176,8 @@ const RexParser = {
             actor: 'sid',
             thing: 'kiss',
           },
+          ruleName: 'giveActorThing',
+          verb: 'give',
           event: 'giveThing',
           target: 'actor'
         }],
@@ -113,24 +188,48 @@ const RexParser = {
     {
       name: 'giveThingActor',
       rex: /^(give) (?<thing>\w+) (the|to) (?<actor>\w+)$/i,
+      verb: 'give',
+      target: 'actor',
+      event: 'giveThing',
       tests: [
         ["give the bottle to Sid", {
           groups: {
             actor: 'sid',
             thing: 'bottle',
           },
+          ruleName: 'giveThingActor',
+          verb: 'give',
           event: 'giveThing',
           target: 'actor'
         }],
       ],
-      target: 'actor',
-      event: 'giveThing',
+    },
+
+    {
+      name: 'examineActor',
+      rex: /^(x|examine) (?<actor>\w+)$/i,
+      verb: 'examine',
+      target: 'firstActor',
+      event: 'examine',
+      tests: [
+        ["x Sid", {
+          groups: {
+            actor: 'sid'
+          },
+          ruleName: 'examineActor',
+          verb: 'examine',
+          event: 'examine',
+          target: 'firstActor'
+        }],
+      ],
     },
 
     {
       name: 'useThing',
       target: 'thing',
       event: 'useThing',
+      ruleName: 'useThing',
+      verb: 'use',
       rexParts: [
         '^(?<action>take|use|try|open|put|place|close)',
         '(?<thing1>.*)',
@@ -147,6 +246,8 @@ const RexParser = {
             how: 'with',
             thing2: 'key',
           },
+          ruleName: 'useThing',
+          verb: 'use',
           event: 'useThing',
           target: 'thing'
         }],
@@ -158,6 +259,8 @@ const RexParser = {
             how: 'in',
             thing2: 'door',
           },
+          ruleName: 'useThing',
+          verb: 'use',
           event: 'useThing',
           target: 'thing'
         }],
@@ -169,6 +272,8 @@ const RexParser = {
             how: 'inside',
             thing2: 'your laptop',
           },
+          ruleName: 'useThing',
+          verb: 'use',
           target: 'thing',
           event: 'useThing',
         }]
@@ -192,6 +297,7 @@ const RexParser = {
     // else
 
     const result = {
+      ruleName: rule.name,
       target: rule.target,
       event: rule.event,
       verb: rule.verb,

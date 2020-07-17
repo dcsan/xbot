@@ -80,12 +80,13 @@ class GameObject {
       const [newState, itemName] = pair.split(' ')
       let targetItem
       if (itemName) {
-        targetItem = this.room.findItemByName(itemName)
+        targetItem = this.room.findItem(itemName)
       } else {
         // defaults to this if no 2nd arg for itemName
         targetItem = this
       }
-      Logger.logObj('updateStates', { targetItem, newState })
+      // targetItem,
+      Logger.logObj('updateStates', {newState })
       targetItem.setState(newState)
     })
   }

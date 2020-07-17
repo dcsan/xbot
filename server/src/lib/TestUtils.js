@@ -41,6 +41,7 @@ const TestUtils = {
 
 // add to process when this is included
 process.on('unhandledRejection', reason => {
+  console.log('stopped', reason)
   throw reason
 })
 

@@ -4,5 +4,7 @@ commands:
 - `i` items you're carrying
 - `h` hint of what to do
 - `?` show this help
+- `s` say something to the nearest person
+- `a` ask about something
 
 Try different actions on things you find like `read`, `open` or `eat` ...
