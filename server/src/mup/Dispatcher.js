@@ -142,26 +142,15 @@ const Dispatcher = {
           return false  // not handled
       }
     } else {
-      Dispatcher.finalActions(context)
+      return Dispatcher.finalActions(context)
     }
   },
 
+  // try event on all items in the room
   async finalActions (context) {
-    
+    const game = await Dispatcher.findGame(context.session.id)
+    return game.story.room.tryActions(context)
   }
-
-  // // run through all the objects in a room
-  // // and if matching check all the 'actions'
-  // async finalAction (context) {
-  //   let input = context.event.text
-  //   const game = await Dispatcher.findGame(context.session.id)
-  //   console.log('rex', rex)
-
-  //   if (rex.test(input)) {
-
-  //   }
-
-  // }
 
 }
 
