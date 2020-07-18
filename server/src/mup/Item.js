@@ -10,10 +10,6 @@ class Item extends GameObject {
     super(doc, room)
   }
 
-  get description () {
-    return this.doc.text || this.doc.description || this.doc.name
-  }
-
 }
 
 module.exports = Item

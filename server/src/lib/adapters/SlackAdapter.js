@@ -25,16 +25,16 @@ const SlackAdapter = {
     }
   },
 
-  imageBlock (opts, item) {
+  imageBlock (doc, item) {
     item = item || { name: 'item'} // default
     return {
       "type": "image",
       "title": {
         "type": "plain_text",   // no mrkdwn?
-        "text": item.name || "item",
+        "text": item.name,
         "emoji": true
       },
-      "image_url": Util.imageUrl(opts.imageUrl),
+      "image_url": Util.imageUrl(doc.imageUrl),
       "alt_text": "item",    // should be item.name
     }
   },
@@ -105,12 +105,14 @@ const SlackAdapter = {
   async sendItemCard (stateInfo, item, context) {
     let blocks = []
     if (!stateInfo) {
-      blocks.push(SlackAdapter.textBlock(item.description))
+      blocks.push(SlackAdapter.textBlock(item.short))
     } else {
       if (stateInfo.imageUrl) {
         blocks.push(SlackAdapter.imageBlock(stateInfo, item))
       }
-      blocks.push(SlackAdapter.textBlock(stateInfo.long || stateInfo.short))
+      // FIXME decide consistent naming or fallback
+      const text = stateInfo.long || stateInfo.short || stateInfo.text
+      blocks.push(SlackAdapter.textBlock(text))
     }
     await SlackAdapter.sendBlocks(blocks, context)
   }

@@ -6,21 +6,33 @@ const GameObject = require('./GameObject')
 const Actor = require('./Actor')
 const Util = require('../lib/Util')
 const WordUtils = require('../lib/WordUtils')
+const RexParser = require('./parser/RexParser')
 
 class Room extends GameObject {
 
   constructor(doc, story) {
     super(doc)
     this.story = story  // handle to its parent
+    this.reset()
+  }
+
+  reset () {
     this.items = []
+    this.hintStep = this.doc.setHint || 'start'
     this.doc.items.forEach((itemData) => {
       const item = new Item(itemData, this)
       this.items.push(item)
+      item.reset()
     })
   }
 
   get name() {
     return this.doc.name
+  }
+
+  get player () {
+    // not sure about this reaching back up the tree...
+    return this.story.game.player
   }
 
   loadActors () {
@@ -46,7 +58,6 @@ class Room extends GameObject {
     return names.join(', ')
   }
 
-
   itemCnames () {
     const names = this.items.map(item => {
       return item.cname
@@ -66,6 +77,11 @@ class Room extends GameObject {
     ]
     await SlackAdapter.sendBlocks(blocks, context)
     return blocks
+  }
+
+  findAllThings () {
+    const things = [...this.actors, ...this.items]
+    return things
   }
 
   async status(context) {
@@ -176,13 +192,9 @@ class Room extends GameObject {
    */
   makeRoomItemsRex () {
     let names = this.itemCnames()
-    let rexNames = names.join('\b|\b')
-    // /(?<item>note|chest)/.exec('read note')
-    let rexStr = `(?<item>${rexNames})`
-    const rex = new RegExp(rexStr, 'i')  // not global as we only want to remove the first item
-    console.log({rexStr, rexNames})
+    return WordUtils.findWords()
     // console.log('rex', {rex})
-    return { rex, rexStr }
+
   }
 
   // findActionItemRegex (input) {
@@ -206,7 +218,7 @@ class Room extends GameObject {
   // }
 
   /**
-   * replace item name in input and split it out 
+   * replace item name in input and split it out
    * 'unlock the chest' becomes 'unlock', 'chest'
    * @param {*} input
    * @returns
@@ -214,7 +226,7 @@ class Room extends GameObject {
    */
   findActionItem (input) {
     const cnames = this.itemCnames()
-    const clean = WordUtils.cheapNormalize(input)
+
     const pair = cnames.find(cname => {
       const rst = `${cname}\b|$`
       const rex = new RegExp(rst)
@@ -230,6 +242,19 @@ class Room extends GameObject {
     return pair
   }
 
+  /**
+   *
+   *
+   * @param {*} context
+   * @returns
+   * @memberof Room
+   */
+  async tryActions (context) {
+    const input = context.event.text
+    const result = RexParser.basicInputParser(input, this)
+    const reply = await result.foundItem.tryAction(result, context)
+    return reply
+  }
 
 }
 

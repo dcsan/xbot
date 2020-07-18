@@ -24,8 +24,8 @@ slack-config:
 
 
 # single test
-testRoomLook:
-	npm run jest -- --watch -t 'look room'
+testRoomItemActions:
+	npm run jest -- --watch -t 'room item actions'
 
 testRoom:
 	npm run jest -- --watch Room
@@ -35,3 +35,6 @@ testParser:
 
 testGameObject:
 	npm run jest -- --watch GameObject
+
+testWordUtils:
+	npm run jest -- --no-colors --watch WordUtils

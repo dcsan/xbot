@@ -7,13 +7,16 @@ rooms:
     description: A large empty room with a corner `desk`
     imageUrl: rooms/office-chest-closed.jpg
     caption: "<https://cbg.rik.ai/rooms/office| :mag: corner office>"
+    setHint: start
+
     hints:
-      - 1. Have a `look` around for anything interesting!
-      - 2. Try reading the note
-      - 3. Does the note help you open the lock?
-      - 4. What's inside the chest?
-      - 5. Where could you use that key?
-    actions:
+      start: Have a `look` around for anything interesting!
+      read-note: read the note
+      open-lock: try opening the lock with what you read
+      open-chest: What's inside the chest?
+      use-key: Where could you use that key?
+
+      actions:
       - match: atov/i
         pass:
           text: You say ATOV to noone in particular. Maybe you need to look for something else?
@@ -62,13 +65,16 @@ rooms:
               gets: coin  # TODO
               hintStep: 2
 
+# ----------- items -----------
+
     items:
     - name: desk
       description: The desk
       states:
         - name: default
           imageUrl: rooms/office-chest-closed.jpg
-          short:
+          short: A messy desk
+          long:
             "A messy desk. There's a post it `note` with some letters scrawled on it. \n
             There's an antique looking `chest` under the desk. \n
             :mag: <https://cbg.rik.ai/rooms/office|click here to look around>"
@@ -76,6 +82,8 @@ rooms:
         - match: open
           pass:
             text: You open the drawers. Not much interesting stuff inside.
+
+# ----------- note -----------
 
     - name: note
       description: A simple note
@@ -91,24 +99,31 @@ rooms:
           pass:
             text: You pick up the note
             gets: note
-            hintStep: 2
+            setHint: read-note
         - match: read|examine|inspect|look at
           needs: false
+          reply: You read the note
           pass:
             text: "The note just has 4 letters on it: ATOV
               It seems like some kind of combination"
             imageUrl: items/note-sm.png
             gets: combination
-            hintStep: 3
-            updates:
+            # name of the hint step
+            setHint: open-lock
+            # list of state changes: [state, item]
+            # or just [state] for this item
+            setStates:
               - read note
+
+# ----------- chest -----------
 
     - name: chest
       description: A large treasure chest
       state: locked
       states:
         - name: locked
-          short: The chest is locked
+          short: A locked chest
+          long: The chest is locked with an old fashioned looking combination lock.
           imageUrl: items/chest-closed.png
         - name: open
           short: the chest is open and you can see a large key inside
@@ -121,7 +136,7 @@ rooms:
           needs: open-lock
           pass:
             text: You open up the chest, there's a key inside.
-            updates:
+            setStates:
               - open chest
           fail:
             text: You try to open the chest, but there's an old combination lock on it.
@@ -150,7 +165,7 @@ rooms:
             text: you turn the dials to spell ATOV and it opens!
             gets: open-lock
             hintStep: 4
-            updates:
+            setStates:
               - open chest
               - open lock
         - match: take

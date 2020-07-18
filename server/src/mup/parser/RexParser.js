@@ -2,6 +2,8 @@ const Dispatcher = require('../Dispatcher')
 const Logger = require('../../lib/Logger')
 const WordUtils = require('../../lib/WordUtils')
 
+const log = console.log
+
 const RexParser = {
 
   ruleSet: [
@@ -155,36 +157,36 @@ const RexParser = {
       ],
     },
 
-    {
-      name: 'giveActorThing',
-      rex: /^(give) (?<actor>\w+) (?<thing>.*)$/i,
-      target: 'actor',
-      event: 'giveThing',
-      verb: 'give',
-      tests: [
-        ["give Sid the money", {
-          groups: {
-            actor: 'sid',
-            thing: 'money',
-          },
-          ruleName: 'giveActorThing',
-          verb: 'give',
-          event: 'giveThing',
-          target: 'actor'
-        }],
-        ["give Sid a kiss", {
-          groups: {
-            actor: 'sid',
-            thing: 'kiss',
-          },
-          ruleName: 'giveActorThing',
-          verb: 'give',
-          event: 'giveThing',
-          target: 'actor'
-        }],
+    // {
+    //   name: 'giveActorThing',
+    //   rex: /^(give) (?<actor>\w+) (?<thing>.*)$/i,
+    //   target: 'actor',
+    //   event: 'giveThing',
+    //   verb: 'give',
+    //   tests: [
+    //     ["give Sid the money", {
+    //       groups: {
+    //         actor: 'sid',
+    //         thing: 'money',
+    //       },
+    //       ruleName: 'giveActorThing',
+    //       verb: 'give',
+    //       event: 'giveThing',
+    //       target: 'actor'
+    //     }],
+    //     ["give Sid a kiss", {
+    //       groups: {
+    //         actor: 'sid',
+    //         thing: 'kiss',
+    //       },
+    //       ruleName: 'giveActorThing',
+    //       verb: 'give',
+    //       event: 'giveThing',
+    //       target: 'actor'
+    //     }],
 
-      ],
-    },
+    //   ],
+    // },
 
     {
       name: 'giveThingActor',
@@ -343,7 +345,7 @@ const RexParser = {
       target: rule.target,
       event: rule.event,
       verb: rule.verb,
-      groups: {...match.groups} // remove null object for test comparison
+      groups: { ...match.groups } // remove null object for test comparison
     }
     return result
   },
@@ -360,6 +362,55 @@ const RexParser = {
       if (reply) return true  // to break the some continue outer loop
     })
     return reply
+  },
+
+/**
+ * simple parser like this:
+ * `action` `item` `modifier`
+ *  open lock with key
+ *  unlock chest with door
+ *  lock chest with lock
+ * @param {*} input
+ * @param {*} actions
+ * @param {*} items
+ * @returns
+ */
+  basicInputParser (input, room) {
+    const clean = WordUtils.cheapNormalize(input)
+    const [actionName, itemName, ...modWords] = clean.split(' ')
+
+    const modifier = WordUtils.removeStopWords(modWords)
+
+    // log({ actionName, itemName, modifier })
+    const allThings = room.findAllThings()
+
+    const foundItem = allThings.find(item => {
+      if (item.cname === itemName) return item
+    })
+
+
+    return { actionName, itemName, modifier, foundItem }
+
+    // let splitWords = list.join('\b|\b')
+
+    // let rexStr = `(?<item>\b${splitWords})`
+    // const rex = new RegExp(rexStr, 'i')  // not global as we only want to remove the first item
+
+    // console.log({ clean, rex, rexStr })
+    // console.log(rexStr)
+
+    // const found = rex.test(clean)
+    // if (found) {
+    //   log('found', found)
+    //   const match = rex.exec(clean)
+    //   const item = match.groups?.item
+    //   const action = clean.replace(item, '')
+    //   return { action, item }
+    // }
+
+    // log('not found', )
+
+    // return { rex, rexStr }
   }
 
 }

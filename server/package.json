@@ -21,6 +21,7 @@
     "js-yaml": "^3.14.0",
     "lodash": "^4.17.19",
     "morgan": "^1.10.0",
+    "stopword": "^1.0.1",
     "wink-pos-tagger": "^2.2.2"
   },
   "devDependencies": {
