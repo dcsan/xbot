@@ -1,10 +1,16 @@
-commands:
-- `l` look around the room
-- `x` `item` examine that item
-- `i` items you're carrying
-- `h` hint of what to do
-- `?` show this help
-- `s` say something to the nearest person
-- `a` ask about something
+Commands:
+- `l`  look around the room
+- `x`  `item` eXamine that item
+- `i`  items you're carrying
+- `s`  say something to the nearest person
+- `a` `actor` about something
+- `?`  show this help
+- `h`  hint of what to do
 
-Try different actions on things you find like `read`, `open` or `eat` ...
+- `restart` to start again
+- `status`  to see game status
+
+Things also respond to special verbs like `eat fruit` or `open chest`.
+Try different actions on things you find!
+
+If you're stuck, try a `hint`!

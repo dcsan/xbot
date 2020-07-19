@@ -134,8 +134,13 @@ const Dispatcher = {
           actor = actor = game.story.room.findActor(actorName)
           // event is set by parser ruleSet
           event = parsed.event
-          reply = await actor[event](parsed, context, player)
-          return reply // for tests
+          if (actor[event]) {
+            reply = await actor[event](parsed, context, player)
+            return reply // for tests
+          } else {
+            context.sendText(`I don't know how to ${event}  ${actor.name}`)
+            Logger.warn('cannot find event ', event, 'on actor:', actor.name)
+          }
 
         case 'thing':
           Logger.warn('thing events not handled yet')

@@ -2,8 +2,8 @@
 
 TopLevel:
   ✔ talk to Sid - broken @critical @done (7/18/2020, 6:10:43 PM)
+  ☐ buttons help menu
   ☐ NPC i/o dispatcher
-  ☐ buttons menu / demo (inventory? item? help?
   ☐ states on item.describe (~ Sid is angry )
   ☐ Rooms!
 

@@ -50,9 +50,9 @@ rooms:
               hintStep: 2
           - match: talk
             reply: Hey, how are you!
-          - match: about note
+          - match: about note|note
             reply: It's a weird looking memo written there, looks like a combination or something.
-          - match: about chest
+          - match: about chest|chest
             reply: It's always been there... not sure where it came from.
           - match: hi|hello|what's up
             reply: Hi back!
@@ -64,8 +64,6 @@ rooms:
             reply: I'm not telling you!
           - match: how are you
             reply: I'm doing great thanks
-          - match: note
-            reply: Hmm it looks like a combination or a PIN code
           - match: chest
             reply: It's always been here
           - match: about password
