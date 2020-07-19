@@ -79,6 +79,10 @@ class Room extends GameObject {
     return blocks
   }
 
+  get allThings () {
+    return this.findAllThings()
+  }
+
   findAllThings () {
     const things = [...this.actors, ...this.items]
     return things
@@ -86,7 +90,7 @@ class Room extends GameObject {
 
   async status(context) {
     const reply = ["room items:"]
-    this.items.forEach((item) => {
+    this.allThings.forEach((item) => {
       reply.push( `- ${item.doc.name}: ${item.state}`)
     })
     await SlackAdapter.sendList(reply, context)
@@ -107,19 +111,23 @@ class Room extends GameObject {
 
   /**
    * search both actor or item for named match
-   * @param {*} name
+   * @param {*} cname
    * @returns
    * @memberof Room
    */
-  firstItem (name) {
-    const item = this.findActor(name) || this.findItem(name)
+  findThing (cname) {
+    const item = this.findActor(cname) || this.findItem(cname)
     if (!item) {
-      Logger.log('firstItem cannot find item for', name)
+      Logger.log('room.findThing failed for', cname)
       return false
     }
     return item
   }
 
+  /**
+   * when we don't have a named actor
+   * for talking out loud in a room
+   */
   firstActor () {
     const foundActor = this.actors[0]
     if (!foundActor) {
@@ -252,8 +260,13 @@ class Room extends GameObject {
   async tryActions (context) {
     const input = context.event.text
     const result = RexParser.basicInputParser(input, this)
-    const reply = await result.foundItem.tryAction(result, context)
-    return reply
+    if (result?.foundItem) {
+      const reply = await result.foundItem.tryAction(result, context)
+      return reply
+    } else {
+      Logger.log('nothing found for input', input)
+      return false
+    }
   }
 
 }

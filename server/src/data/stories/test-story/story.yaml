@@ -1,4 +1,4 @@
-name: office-hack
+name: test story
 intro: You wake up in a strange room. The door is locked.
   You don't remember how you got in here but just know you have to get out!
 
@@ -25,6 +25,7 @@ rooms:
       - name: Sid
         greeting: Hey this is Sid!
         description: Sid is a happy coder
+        prefix: Sid says
         states:
           - name: default
             imageUrl: actors/sid-sm.png
@@ -33,11 +34,26 @@ rooms:
               Sid hasn't been working here very long, so he's not jaded yet.
               He's learning the basics but keeps making careless little mistakes.
               One more and he could lose his job...
+          - name: angry
+            short: Sid looks angry
+            long: Seems like you pissed him off.
+
         defaultReplies:
           - Sorry I don't understand
           - what?
           - Hmm, dunno.
-        triggers:
+        actions:
+          - match: greet
+            pass:
+              text: Welcome! Nice to see you too.
+              gets: coin  # TODO
+              hintStep: 2
+          - match: talk
+            reply: Hey, how are you!
+          - match: about note
+            reply: It's a weird looking memo written there, looks like a combination or something.
+          - match: about chest
+            reply: It's always been there... not sure where it came from.
           - match: hi|hello|what's up
             reply: Hi back!
           - match: test
@@ -54,18 +70,12 @@ rooms:
             reply: It's always been here
           - match: about password
             reply: What password?!
-          - match: about note
-            reply: It's a weird looking memo written there, looks like a combination or something.
-          - match: about chest
-            reply: It's always been there... not sure where it came from.
-        actions:
-          - match: greet
-            pass:
-              text: Welcome! Nice to see you too.
-              gets: coin  # TODO
-              hintStep: 2
+          - match: fuck|shit|piss|crap|suck|idiot
+            reply: You talk to your mother with that mouth?
+            setStates:
+              - sid angry
 
-# ----------- items -----------
+            # ----------- items -----------
 
     items:
     - name: desk

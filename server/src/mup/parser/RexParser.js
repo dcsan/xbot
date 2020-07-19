@@ -129,7 +129,7 @@ const RexParser = {
     // fall through ask about anything
     {
       name: 'plainAsk',
-      rex: /^(ask|tell) (?<actor>\w+) (?<message>.*)$/i,
+      rex: /^(ask|tell|hey) (?<actor>\w+) (?<message>.*)$/i,
       target: 'actor',
       event: 'replyWithDefault',
       verb: 'ask',
@@ -213,7 +213,7 @@ const RexParser = {
       name: 'examineItem',
       rex: /^(x|examine|look at|look) (?<item>\w+)$/i,
       verb: 'examine',
-      target: 'firstItem',
+      target: 'findThing',
       event: 'examine',
       tests: [
         ["x Sid", {
@@ -223,7 +223,7 @@ const RexParser = {
           ruleName: 'examineItem',
           verb: 'examine',
           event: 'examine',
-          target: 'firstItem'
+          target: 'findThing'
         }],
         ["x note", {
           groups: {
@@ -232,7 +232,7 @@ const RexParser = {
           ruleName: 'examineItem',
           verb: 'examine',
           event: 'examine',
-          target: 'firstItem'
+          target: 'findThing'
         }],
         ["look at desk", {
           groups: {
@@ -241,7 +241,7 @@ const RexParser = {
           ruleName: 'examineItem',
           verb: 'examine',
           event: 'examine',
-          target: 'firstItem'
+          target: 'findThing'
         }],
 
       ],
@@ -303,28 +303,6 @@ const RexParser = {
       ],
     },
 
-    // this has to come after the one above as the rex is shorter and would match
-    // {
-    //   name: 'runActions',
-    //   target: 'firstItem',
-    //   event: 'runActions',
-    //   ruleName: 'runActions',
-    //   verb: 'action',
-    //   rex: /^(?<action>take|use|try|open|put|place|close|greet|read) (?<item>\w+)/gim,
-    //   tests: [
-    //     ["open the lock", {
-    //       groups: {
-    //         action: 'open',
-    //         item: 'lock',
-    //       },
-    //       ruleName: 'runActions',
-    //       verb: 'action',
-    //       event: 'runActions',
-    //       target: 'item'
-    //     }],
-    //   ]
-    // },
-
   ],
 
   parseOne (input, rule) {
@@ -376,41 +354,16 @@ const RexParser = {
  * @returns
  */
   basicInputParser (input, room) {
-    const clean = WordUtils.cheapNormalize(input)
+    let clean = WordUtils.cheapNormalize(input)
+    clean = WordUtils.removeStopWords(clean)
     const [actionName, itemName, ...modWords] = clean.split(' ')
 
     const modifier = WordUtils.removeStopWords(modWords)
 
-    // log({ actionName, itemName, modifier })
-    const allThings = room.findAllThings()
-
-    const foundItem = allThings.find(item => {
-      if (item.cname === itemName) return item
-    })
-
-
-    return { actionName, itemName, modifier, foundItem }
-
-    // let splitWords = list.join('\b|\b')
-
-    // let rexStr = `(?<item>\b${splitWords})`
-    // const rex = new RegExp(rexStr, 'i')  // not global as we only want to remove the first item
-
-    // console.log({ clean, rex, rexStr })
-    // console.log(rexStr)
-
-    // const found = rex.test(clean)
-    // if (found) {
-    //   log('found', found)
-    //   const match = rex.exec(clean)
-    //   const item = match.groups?.item
-    //   const action = clean.replace(item, '')
-    //   return { action, item }
-    // }
-
-    // log('not found', )
-
-    // return { rex, rexStr }
+    const foundItem = room.findThing(itemName)
+    const result = { actionName, itemName, modifier, foundItem }
+    Logger.logObj('basicParser', { input, result })
+    return result
   }
 
 }

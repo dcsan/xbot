@@ -1,19 +1,27 @@
 # TODO
 
 TopLevel:
+  ✔ talk to Sid - broken @critical @done (7/18/2020, 6:10:43 PM)
   ☐ NPC i/o dispatcher
   ☐ buttons menu / demo (inventory? item? help?
+  ☐ states on item.describe (~ Sid is angry )
+  ☐ Rooms!
+
   ☐ compound sentences parser use X on Y
     give A to B
   ☐ fix room.examine
 
 UserExperience:
   ☐ welcome message
+  ☐ inspect note - shoudl 'read' it and get item
   ☐ who / what is here
+  ☐ L chest didn't work
   ☐ move caption below
   ☐ s or say command -> finds first actor?
   ☐ fix look at ITEM
   ☐ ask X about ... broken
+  ☐ timeout since last game - reset? or welcome message? 'type restart to play again'
+  ☐ every 5 turns / hint message.
 
   ☐ JSX ->
   ☐ help with buttons

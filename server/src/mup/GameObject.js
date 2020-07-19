@@ -76,45 +76,6 @@ class GameObject {
     await SlackAdapter.sendItemCard(stateInfo, this, context)
   }
 
-  // /**
-  //  * special actions defined on the doc
-  //  *
-  //  * @param {*} actionName
-  //  * @param {*} player
-  //  * @param {*} context
-  //  * @returns
-  //  * @memberof GameObject
-  //  */
-  // async runActions (parsed, context, player) {
-  //   Logger.log('runActions', parsed, 'on', this.cname)
-  //   let foundAction = false
-  //   this.doc.actions?.forEach(async (actionData) => {
-  //     let rex = new RegExp(actionData.match)
-  //     // Logger.log('check', actionName, actionData)
-  //     if (actionName.match(rex)) {
-  //       foundAction = true
-  //       const needs = actionData.needs
-  //       if (!needs || player.hasItem(needs)) {
-  //         // success!
-  //         const passData = actionData.pass
-  //         Logger.log('action passed', passData)
-  //         if (passData.gets) {
-  //           player.addItemByName(actionData.pass.gets)
-  //         }
-  //         if (passData.updates) {
-  //           await this.runUpdates(passData.updates, context)
-  //         }
-  //         SlackAdapter.sendItemCard(actionData.pass, this, context)
-  //       } else {
-  //         Logger.log('action fail', actionName, actionData)
-  //         SlackAdapter.sendItemCard(actionData.fail, this, context)
-  //       }
-  //     }
-  //   })
-  //   Logger.log('foundAction', foundAction)
-  //   return foundAction
-  // }
-
   /**
    * returns true|false if an action was found/matched
    * NOT if it passed/failed (fail is still run/replied to)
@@ -139,20 +100,35 @@ class GameObject {
     return false
   }
 
+  // FIXME merge with tryAction - this came from actors before
+  // but it's the same for both
+  findAction (text) {
+    const found = this.doc.actions.find(action => {
+      const rex = new RegExp(action.match)
+      Logger.log('check', rex)
+      if (text.match(rex)) {
+        return action
+      }
+    })
+    return found
+  }
+
   async runAction (actionData, context) {
     const player = this.player
 
+    // quick reply
     if (actionData.reply) await context.sendText(actionData.reply)
 
     const needs = actionData.needs
     if (!needs || player.hasItem(needs)) {
       // success!
       const passData = actionData.pass
-      Logger.log('action passed', passData)
-      if (passData.gets) player.addItemByName(actionData.pass.gets)
-      if (passData.setStates) await this.updateStates(passData.setStates, context)
-      SlackAdapter.sendItemCard(actionData.pass, this, context)
-
+      if (passData) {
+        Logger.log('action passed', passData)
+        if (passData?.gets) player.addItemByName(actionData.pass.gets)
+        if (passData.setStates) await this.updateStates(passData.setStates, context)
+        SlackAdapter.sendItemCard(actionData.pass, this, context)
+      }
     } else {
       // fail
       Logger.log('action fail', actionData.name, actionData)

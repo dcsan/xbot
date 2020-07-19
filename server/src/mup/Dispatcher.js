@@ -116,9 +116,9 @@ const Dispatcher = {
 
       switch (parsed.target) {
 
-        case 'firstItem':
+        case 'findThing':
           event = parsed.event
-          actor = game.story.room.firstItem(parsed.groups.item)
+          actor = game.story.room.findThing(parsed.groups.item)
           reply = await actor[event](parsed, context, player)
           return reply // for tests
 

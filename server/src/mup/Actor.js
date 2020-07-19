@@ -10,16 +10,6 @@ class Actor extends GameObject {
     this.state = 'default'
   }
 
-  findTrigger (text) {
-    const found = this.doc.triggers.find(trigger => {
-      const rex = new RegExp(trigger.match)
-      Logger.log('check', rex)
-      if (text.match(rex)) {
-        return trigger
-      }
-    })
-    return found
-  }
 
   /**
    * with default reply
@@ -51,18 +41,19 @@ class Actor extends GameObject {
    * @param {*} text
    * @param {*} context
    */
-  replyTo (text, context) {
-    if (!text || text.length < 1) {
-      Logger.error("ask with no text")
-      return false
-    }
-    const found = this.findTrigger(text)
-    if (found) {
-      const msg = this.formatReply(found.reply)
-      context.sendText(msg)
-    }
-    return found
-  }
+  // replyTo (text, context) {
+  //   if (!text || text.length < 1) {
+  //     Logger.error("ask with no text")
+  //     return false
+  //   }
+  //   const found =
+  //   // const found = this.findAction(text)
+  //   // if (found) {
+  //   //   const msg = this.formatReply(found.reply)
+  //   //   context.sendText(msg)
+  //   // }
+  //   return found
+  // }
 
   /**
    * add actors name
@@ -74,11 +65,17 @@ class Actor extends GameObject {
 
   /**
    * pres is a fomatted parser reply
+   * TODO fix called API standardize interface
    */
   parserReply (parsed, context) {
     if (parsed.groups.message) {
       // simple reply to
-      const reply = this.replyTo(parsed.groups.message, context)
+      const reply = this.tryAction({
+        actionName: parsed.groups.message,
+        itemName: parsed.groups.item,
+        modifier: parsed.groups.modifier,
+        parsed
+      }, context)
       return reply
     }
   }

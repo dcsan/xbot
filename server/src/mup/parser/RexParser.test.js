@@ -69,4 +69,12 @@ test('basicInputParser', async () => {
   expect(parsed.modifier).toBe('open chest')
   expect(parsed.foundItem.cname).toBe('sid')
 
+
+  input = "talk to sid"
+  parsed = RexParser.basicInputParser(input, game.story.room)
+  expect(parsed.actionName).toBe('talk')
+  expect(parsed.itemName).toBe('sid')
+  expect(parsed.modifier).toBe('')
+  expect(parsed.foundItem.cname).toBe('sid')
+
 })

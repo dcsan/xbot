@@ -23,7 +23,7 @@ class Story {
    * @param {*} param0
    */
   load ({storyName, context}) {
-    Logger.log('loading storyName', storyName)
+    // Logger.log('loading storyName', storyName)
     this.doc = Util.loadYaml(`stories/${storyName}/story.yaml`)
     this.buildStory(this.doc)
     // @ts-ignore
