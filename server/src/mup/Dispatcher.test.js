@@ -41,7 +41,7 @@ test('fallback firstActor reply', async () => {
   const reply = await Dispatcher.fallback(context)
   // console.log('reply', reply)
   // console.log('called', context.sent.text)
-  expect(context.sent.text).toBe("Sid: Hmm it looks like a combination or a PIN code")
+  expect(context.sent.text).toMatch(/Sid: It's a weird looking memo written there/)
 })
 
 test('examine object', async () => {

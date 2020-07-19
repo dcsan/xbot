@@ -17,7 +17,7 @@ beforeEach( async() => {
 
 test('item names', async () => {
   const names = game.story.room.itemFormalNamesOneLine()
-  expect(names).toEqual('a Desk, a Note, a Chest, a Lock, a Key, a Door')
+  expect(names).toEqual("a `Desk`, a `Note`, a `Chest`, a `Lock`, a `Key`, a `Door`")
   // expect(names).toEqual(["a Desk", "a Note", "a Chest", "a Lock", "a Key", "a Door"])
 })
 
@@ -29,7 +29,7 @@ test('look room', async () => {
   expect(blocks).toHaveLength(4)
   expect(blocks[0].type).toBe('image')
   expect(blocks[3].type).toBe('section')  // items
-  expect(blocks[3].text.text).toMatch(/^You see a Desk, a Note/)  // items
+  expect(blocks[3].text.text).toMatch(/You see a `Desk`, a `Note`/)
 })
 
 
@@ -83,35 +83,6 @@ test('examine item', async () => {
 })
 
 
-// test('room items regex maker', async () => {
-//   const game = new Game(1234)
-//   await game.init(false)
-//   const { rex, rexStr } = game.story.room.makeRoomItemsRex()
-//   expect(rexStr).toEqual( '(?<item>\bdesk|note|chest|lock|key|door\b)' )
-// })
-
-
-// test('room item actions', async () => {
-//   // remove item name
-
-//   const tests = [
-//     ['unlock the chest', 'unlock', 'chest'],
-//     ['foobar the snoozle', undefined, undefined],
-//     // ['read note', 'read', 'note'],
-//     // ['open the chest with the key', 'open with key', 'chest'],
-//     // ['open the chest', 'open', 'chest'],
-//     // ['foobar the door', 'foobar', 'door'],    // not exist verb
-//   ]
-//   tests.forEach( test => {
-//     let [input, expectAction, expectItem] = test
-//     input = WordUtils.cheapNormalize(input)
-//     const found = game.story.room.findActionItem(input)
-//     console.log('ret found', input, found)
-//     expect(item).toBe(expectItem)
-//     expect(action).toBe(expectAction)
-//   })
-// })
-
 test('room item actions', async () => {
   const input = "read the note"
   context.setInput(input)
@@ -128,13 +99,6 @@ test('room item actions', async () => {
 
   // expect(blocks[1].text.text).toMatch(/^The note has .*/)
   expect(blocks[1].text.text).toMatch('The note just has')
-
-  // const atts = context.chat.msg.attachments
-  // log({ atts })
-  // const blocks = atts[0].blocks
-  // log({ blocks })
-  // log({ b1: blocks[1] })
-
 
   expect(result).toEqual(true)
 })

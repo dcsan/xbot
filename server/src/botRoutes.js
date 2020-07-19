@@ -1,11 +1,6 @@
 const { router, text, slack } = require('bottender/router')
 // const Logger = require('./lib/Logger')
 
-// const SlackAdapter = require('./lib/adapters/SlackAdapter')
-// const debug = require('debug')('mup:index')
-// const Util = require('./lib/Util')
-
-// const Game = require('./mup/Game')
 const Dispatcher = require('./mup/Dispatcher')
 
 module.exports = async function App () {
@@ -18,7 +13,6 @@ module.exports = async function App () {
     text(/^l$|^look$/i, Dispatcher.look),
     text(/^h$|^hint$/i, Dispatcher.hint),
 
-    text(/^help$/i, Dispatcher.help),
     text(/^i$|^inv$|^inventory$/i, Dispatcher.inventory),
     // text(/^(x|examine|l|look at) (?<item>.*)$/i, Dispatcher.examine),
 
@@ -30,10 +24,11 @@ module.exports = async function App () {
 
     // TODO - build list of actions on entering room
     // text(/^(?<action>open|use|read|get|take|give|drop) (?<item>.*)$/i, Dispatcher.actions),
-    text(['things'], Dispatcher.things),
+    // text(['things'], Dispatcher.things),
 
+    text(/^help$/i, Dispatcher.help),
+    // text('', Dispatcher.menu),
     // testing
-    // text('menu', Dispatcher.menu.show),
     // text('image', Dispatcher.menu.testImage),
     // text(/delay/i, Dispatcher.delay),
 

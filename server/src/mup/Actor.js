@@ -13,12 +13,12 @@ class Actor extends GameObject {
 
   /**
    * with default reply
-   * @param {*} text
+   * @param {*} parsed
    * @param {*} context
    */
-  replyWithDefault (parsed, context) {
+  async replyWithDefault (parsed, context) {
     const actionName = parsed.groups.message // just responds to `message`
-    const found = this.tryAction({ actionName }, context)
+    const found = await this.tryAction({ actionName }, context)
     if (!found) {
       context.sendText(this.defaultReply())
     }

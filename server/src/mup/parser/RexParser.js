@@ -357,10 +357,12 @@ const RexParser = {
     let clean = WordUtils.cheapNormalize(input)
     clean = WordUtils.removeStopWords(clean)
     const [actionName, itemName, ...modWords] = clean.split(' ')
+    let foundItem
 
     const modifier = WordUtils.removeStopWords(modWords)
-
-    const foundItem = room.findThing(itemName)
+    if (itemName) {
+      foundItem = room.findThing(itemName)
+    }
     const result = { actionName, itemName, modifier, foundItem }
     Logger.logObj('basicParser', { input, result })
     return result

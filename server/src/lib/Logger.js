@@ -29,7 +29,7 @@ const Logger = {
     if (obj) {
       Logger.logObj('obj', obj)
     }
-    throw(msg)
+    throw new Error(msg)
   },
 
   logObj (msg, obj) {

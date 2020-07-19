@@ -9,7 +9,9 @@ const SlackAdapter = require('../lib/adapters/SlackAdapter')
 
 const { Story } = require('./Story')
 const { Player } = require('./Player')
+
 const Menu = require('./Menu')
+const menu = new Menu()
 
 // const tagger = posTagger()
 
@@ -41,6 +43,13 @@ class Game {
     if (context) {
       context.sendText("reset game! " + this.storyName )
     }
+  }
+
+  // TODO can merge with init?
+  async restart (context) {
+    this.init()
+    await this.story.restart(context)
+    await this.help(context)
   }
 
   /**
@@ -86,12 +95,11 @@ class Game {
     this.player.addItem('combination')
   }
 
-  async start (context) {
-    await this.story.start(context)
-    await this.help(context)
+  async help (context) {
+    await menu.help(context)
   }
 
-  async help (context) {
+  async moreHelp (context) {
     const help = SlackAdapter.textBlock(this.helpDoc)
     const msg = SlackAdapter.wrapBlocks([help])
     // await context.postEphemeral(msg)

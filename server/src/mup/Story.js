@@ -45,7 +45,7 @@ class Story {
     this.reset()
   }
 
-  async start (context) {
+  async restart (context) {
     let blocks = []
     // @ts-ignore
     blocks.push(SlackAdapter.textBlock(this.doc.intro))

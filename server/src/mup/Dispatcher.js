@@ -1,10 +1,11 @@
 const Game = require("./Game")
 const Logger = require('../lib/Logger')
 const RexParser = require('./parser/RexParser')
+const Menu = require('./Menu')
 
 let GameList = {}
 
-// static methods for the router
+const menu = new Menu()
 
 const Dispatcher = {
 
@@ -17,7 +18,7 @@ const Dispatcher = {
       Logger.log('new game', sid)
       Logger.log('init routes gameObj.story', gameSession.story.room.name)
     }
-    Logger.log('returning game', gameSession.sid)
+    // Logger.log('returning game', gameSession.sid)
     return gameSession
   },
 
@@ -26,7 +27,7 @@ const Dispatcher = {
     const game = await Dispatcher.findGame(context.session.id)
     Logger.log('gameRun.cmd=', cmd)
     if (game[cmd]) {
-      game[cmd](context)
+      return game[cmd](context)
     } else {
       Logger.error('no game cmd for ' + cmd)
     }
@@ -35,47 +36,72 @@ const Dispatcher = {
   // TODO refactor these but have to move to typescript first
   async echo (context) {
     Logger.log('start echo')
-    await Dispatcher.gameRun('echo', context)
+    return await Dispatcher.gameRun('echo', context)
   },
   async look (context) {
-    Dispatcher.gameRun('look', context)
+    return Dispatcher.gameRun('look', context)
   },
   async hint (context) {
-    Dispatcher.gameRun('hint', context)
-  },
-  async help (context) {
-    Dispatcher.gameRun('help', context)
+    return Dispatcher.gameRun('hint', context)
   },
   async inventory (context) {
-    Dispatcher.gameRun('inventory', context)
+    return Dispatcher.gameRun('inventory', context)
   },
-  async start (context) {
-    Dispatcher.gameRun('start', context)
+  async restart (context) {
+    return Dispatcher.gameRun('restart', context)
   },
   async status (context) {
-    Dispatcher.gameRun('status', context)
+    return Dispatcher.gameRun('status', context)
   },
   async action (context) {
-    Dispatcher.gameRun('action', context)
+    return Dispatcher.gameRun('action', context)
   },
   async things (context) {
-    Dispatcher.gameRun('things', context)
+    return Dispatcher.gameRun('things', context)
   },
   async welcome (context) {
-    Dispatcher.gameRun('welcome', context)
+    return Dispatcher.gameRun('welcome', context)
   },
   async reload (context) {
-    Dispatcher.gameRun('reload', context)
+    return Dispatcher.gameRun('reload', context)
   },
   async reset (context) {
-    Dispatcher.gameRun('reset', context)
+    return Dispatcher.gameRun('reset', context)
+  },
+
+  async help (context) {
+    const game = await Dispatcher.findGame(context.session.id)
+    await game.help(context)
+  },
+
+  async morehelp (context) {
+    // return Dispatcher.gameRun('morehelp', context)
+    const game = await Dispatcher.findGame(context.session.id)
+    await game.moreHelp(context)
   },
 
   async button (context) {
-    Logger.logObj('event', context.event)
-    await context.sendText(
-      `I received your '${context.event.callbackId}' action`
-    )
+    // const game = await Dispatcher.findGame(context.session.id)
+    const buttonAction = context.event.rawEvent.actions[0]
+    const value = buttonAction.value // look | examine | more
+    switch (value) {
+      case 'look':
+        return Dispatcher.gameRun('look', context)
+      case 'examine':
+        return Dispatcher.examineWhat(context)
+      case 'inventory':
+        return Dispatcher.inventory(context)
+      case 'morehelp':
+        return Dispatcher.morehelp(context)
+      default:
+        Logger.warn('cannot find event', context.event)
+    }
+  },
+
+  // TODO - show the list of items and remember context
+  // or a popup dialog?
+  async examineWhat (context) {
+    await context.sendText('type `x thing` to pick what or who you want to look at')
   },
 
   async examine (
@@ -154,6 +180,7 @@ const Dispatcher = {
   // try event on all items in the room
   async finalActions (context) {
     const game = await Dispatcher.findGame(context.session.id)
+    Logger.log('finalActions', context.event.text)
     return game.story.room.tryActions(context)
   }
 

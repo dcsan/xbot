@@ -35,6 +35,11 @@ class GameObject {
     return s.charAt(0).toUpperCase() + s.slice(1)
   }
 
+  // a|an|the
+  get article () {
+    return this.doc.article || 'a'
+  }
+
   get player () {
     // not sure about this reaching back up the tree...
     return this.room.story.game.player
@@ -113,11 +118,19 @@ class GameObject {
     return found
   }
 
+  // overridden by subclasses eg actor
+  formatReply (text) {
+    return text
+  }
+
   async runAction (actionData, context) {
     const player = this.player
 
     // quick reply
-    if (actionData.reply) await context.sendText(actionData.reply)
+    if (actionData.reply) {
+      const msg = this.formatReply(actionData.reply)
+      await context.sendText(msg)
+    }
 
     const needs = actionData.needs
     if (!needs || player.hasItem(needs)) {

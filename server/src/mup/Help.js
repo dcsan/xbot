@@ -1,25 +1,9 @@
 const debug = require('debug')('mup:menu')
 const Logger = require('../lib/Logger')
 
+class Help {
 
-
-class Menu {
-
-  handleButton (context, game) {
-    // const buttonEvents = {
-    //   helpMenu: {
-    //     value: 'look',
-    //   }
-    // }
-    // switch (context.event.callbackId) {
-    //   case 'helpmenu'
-    // }
-    // await context.sendText(
-    //   `I received your '${context.event.callbackId}' action`
-    // )
-  }
-
-  async help (context) {
+  async show (context) {
     // send a message with buttons and menu
     await context.chat.postMessage({
       attachments: [
@@ -58,18 +42,11 @@ class Menu {
               name: 'more',
               text: 'More...',
               type: 'button',
-              value: 'morehelp',
+              value: 'more',
             },
 
           ],
         },
-      ],
-    });
-  }
-
-  async inventory (context, game) {
-    await context.chat.postMessage({
-      attachments: [
         {
           text: 'Choose a game to play',
           fallback:
@@ -115,11 +92,10 @@ class Menu {
             },
           ],
         },
-      ]
-    })
+      ],
+    });
   }
+
 }
 
-
-module.exports = Menu
-
+module.exports = Help

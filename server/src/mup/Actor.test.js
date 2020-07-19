@@ -26,14 +26,14 @@ test('game loading', () => {
   expect(game.story.room.actors.length).toBe(1)
   const actor = game.story.room.actors[0]
   expect(actor.doc.name).toBe('Sid')
-  expect(actor.doc.actions.length).toBe(13)
+  expect(actor.doc.actions.length).toBe(12)
 
   actor.tryAction({ actionName: 'hi' }, context)
-  expect(context.sent.text).toBe('Hi back!')
+  expect(context.sent.text).toBe('Sid: Hi back!')
 
 })
 
-test('default replies', () => {
+test('default replies', async () => {
 
   const defs = actor.doc.defaultReplies
   expect(defs.length).toBe(3)
@@ -44,39 +44,39 @@ test('default replies', () => {
     }
   }
   // check it steps through in sequence
-  actor.replyWithDefault(parsed, context)
+  await actor.replyWithDefault(parsed, context)
   let expected = `${actor.doc.name}: ` + defs[1]
   expect(context.sent.text).toBe(expected)
 
-  actor.replyWithDefault(parsed, context)
+  await actor.replyWithDefault(parsed, context)
   expected = `${actor.doc.name}: ` + defs[2]
   expect(context.sent.text).toBe(expected)
 
-  actor.replyWithDefault(parsed, context)
+  await actor.replyWithDefault(parsed, context)
   expected = `${actor.doc.name}: ` + defs[0]
   expect(context.sent.text).toBe(expected)
 
-  actor.replyWithDefault(parsed, context)
+  await actor.replyWithDefault(parsed, context)
   expected = `${actor.doc.name}: ` + defs[1]
   expect(context.sent.text).toBe(expected)
 
 })
 
-test('greeting', () => {
-  actor.replyTo('hi', context)
+test('greeting', async() => {
+  await actor.tryAction({ actionName: 'hi', }, context)
   expect(context.sent.text).toBe("Sid: Hi back!")
 })
 
-test('ask password', () => {
-  actor.replyTo('password', context)
+test('ask password', async () => {
+  await actor.tryAction({ actionName: 'password' }, context)
   expect(context.sent.text).toBe("Sid: I'm not telling you!")
 })
 
 
-test('ask Sid about the note', () => {
-  const reply = actor.replyTo("about the note", context)
+test('ask Sid about the note', async() => {
+  await actor.tryAction({ actionName: 'about the note' }, context)
   // console.log(reply)
-  expect(context.sent.text).toBe("Sid: Hmm it looks like a combination or a PIN code")
+  expect(context.sent.text).toMatch(/It's a weird looking memo written/)
 })
 
 

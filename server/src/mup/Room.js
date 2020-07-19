@@ -53,7 +53,7 @@ class Room extends GameObject {
 
   itemFormalNamesOneLine () {
     const names = this.items.map(item => {
-      return item.articleName
+      return item.article + ' `' + item.formalName + '`'   // tick marks to highlight
     })
     return names.join(', ')
   }
@@ -117,6 +117,7 @@ class Room extends GameObject {
    * @memberof Room
    */
   findThing (cname) {
+    if (!cname) return false
     const item = this.findActor(cname) || this.findItem(cname)
     if (!item) {
       Logger.log('room.findThing failed for', cname)
