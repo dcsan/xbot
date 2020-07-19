@@ -211,7 +211,7 @@ const RexParser = {
     // can be any item or actor
     {
       name: 'examineItem',
-      rex: /^(x|examine|look at|look) (?<item>\w+)$/i,
+      rex: /^(x|examine|look at|look|l|l at) (?<item>\w+)$/i,
       verb: 'examine',
       target: 'findThing',
       event: 'examine',
