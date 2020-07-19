@@ -1,14 +1,7 @@
 const { router, text, slack } = require('bottender/router')
-// const Logger = require('./lib/Logger')
-
-// const SlackAdapter = require('./lib/adapters/SlackAdapter')
-// const debug = require('debug')('mup:index')
-// const Util = require('./lib/Util')
-
-// const Game = require('./mup/Game')
 const Dispatcher = require('./mup/Dispatcher')
 
-module.exports = async function App () {
+const botRoutes = async function App () {
   // Logger.log('init routes game', game)
 
   const routes = router([
@@ -50,4 +43,4 @@ module.exports = async function App () {
   return routes
 }
 
-// console.log('parsed botRoutes')
+module.exports = botRoutes

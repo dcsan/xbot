@@ -86,6 +86,7 @@ class GameObject {
    * @memberof GameObject
    */
   async tryAction ({ actionName, itemName, modifier }, context) {
+    if (!actionData) return false
     for (const actionData of this.doc.actions) {
     // this.doc.actions?.forEach(async (actionData) => {
       const fullAction = `${actionName} ${modifier}`

@@ -1,20 +1,20 @@
-// do this first!
-require('dotenv-flow').config();
+// do this first
+const AppConfig = require('./lib/AppConfig')
+AppConfig.init()
+
 const path = require('path')
 const morgan = require('morgan')
 const bodyParser = require('body-parser');
 const express = require('express');
 
-const AppConfig = require('./src/lib/AppConfig')
 
 const { bottender } = require('bottender');
 // const { bottender } = require('../bottender/packages/bottender/dist')
 
 // const Game = require('./src/mup/Game')
 
-const Logger = require('./src/lib/Logger')
+const Logger = require('./lib/Logger')
 
-AppConfig.init()
 
 // bottender setup
 const bot = bottender({
@@ -75,6 +75,7 @@ process.on('unhandledRejection', reason => {
   throw reason
 })
 
-const BotApp = require('./src/botRoutes');
-// BotApp(game)
-module.exports = BotApp
+module.exports = bot
+
+
+

@@ -10,7 +10,6 @@ class Actor extends GameObject {
     this.state = 'default'
   }
 
-
   /**
    * with default reply
    * @param {*} text

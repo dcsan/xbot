@@ -38,3 +38,7 @@ testGameObject:
 
 testWordUtils:
 	npm run jest -- --no-colors --watch WordUtils
+
+clean:
+	rm -rf build
+
