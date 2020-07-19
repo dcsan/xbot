@@ -96,9 +96,12 @@ const SlackAdapter = {
     if (!context || !context.chat) {
       Logger.error('tried to sendBlocks with no context.chat:', context)
     }
+    if (!blocks || !blocks.length) {
+      Logger.error('tried to sendBlocks with no blocks:', blocks)
+    }
 
     const msg = SlackAdapter.wrapBlocks(blocks)
-    Logger.logObj('msg', msg)
+    Logger.logObj('sendBlocks:', blocks.length)
     await context.chat.postMessage(msg)
   },
 

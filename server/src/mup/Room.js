@@ -66,6 +66,7 @@ class Room extends GameObject {
   }
 
   async look (context) {
+    Logger.log('room.look')
     const firstActor = this.firstActor()
     const itemsInfo = `You see ` + this.itemFormalNamesOneLine()
     const blocks = [

@@ -103,7 +103,6 @@ class Game {
   }
 
   async look (context) {
-    Logger.log('look .game', this)
     await this.story.look(context)
   }
 
