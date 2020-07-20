@@ -9,7 +9,13 @@ on: [push, pull_request]
   # pull_request:
   #   branches: [ master ]
 
-
+env:
+  endpoint: http://xbot-d9fc7b57.localhost.run/webhooks/slack
+  SLACK_ACCESS_TOKEN: xoxb-1220986307159-1242029704116-1E24WIyaQwv6dy1vWXLdLBFn
+  SLACK_SIGNING_SECRET: 1790574d6c39f936b026ff7ff937b5e8
+  PORT: 33010
+  STATIC_SERVER: https://cbg.rik.ai/cdn/assets/
+  STORYNAME: test-story
 
 jobs:
   build:
