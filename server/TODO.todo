@@ -2,12 +2,16 @@
 
 TopLevel:
   ✔ talk to Sid - broken @critical @done (7/18/2020, 6:10:43 PM)
+
+  ✔ buttons help menu @done (7/19/2020, 7:30:55 AM)
+  ☐ states on item.describe (~ Sid is angry )
+  ☐ s/say command -> firstActor
+  ☐ Rooms/Doors/Navigation
+  ☐ Map command
+
   ☐ move to typescript
   ☐ setup slack JSX
-  ☐ buttons help menu
-  ☐ NPC i/o dispatcher
-  ☐ states on item.describe (~ Sid is angry )
-  ☐ Rooms!
+  ✔ NPC i/o dispatcher @done (7/19/2020, 7:30:58 AM)
 
   ☐ compound sentences parser use X on Y
     give A to B

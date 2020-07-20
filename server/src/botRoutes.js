@@ -17,9 +17,9 @@ module.exports = async function App () {
     // text(/^(x|examine|l|look at) (?<item>.*)$/i, Dispatcher.examine),
 
     // // debug commands
-    text(/^start$/i, Dispatcher.start),
-    text(/^st$|^status$/i, Dispatcher.status),
     text(['rs', 'restart'], Dispatcher.restart),
+    text(/^rs$|^start$|^restart$/i, Dispatcher.restart),
+    text(/^st$|^status$/i, Dispatcher.status),
     text(['rl', 'reload'], Dispatcher.reload),
 
     // TODO - build list of actions on entering room
