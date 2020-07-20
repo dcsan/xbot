@@ -4,11 +4,12 @@
 
 name: Node.js CI
 
-on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+on: [push, pull_request]
+  #   branches: [ master ]
+  # pull_request:
+  #   branches: [ master ]
+
+
 
 jobs:
   build:
@@ -21,13 +22,24 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
       working-directory: ./server
       run: npm i
+
+    - name: alert
+      run: echo "set working_dir"
+      working-directory: ./server
+
+    - name: getdir
+      run: pwd
+      working-directory: ./server
+
     - run: npm run build --if-present
       working-directory: ./server
+
     - run: npm test
       working-directory: ./server
