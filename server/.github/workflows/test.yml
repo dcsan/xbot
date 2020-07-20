@@ -6,6 +6,8 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Install modules
+      working-directory: ./server
       run: yarn
     - name: Run tests
       run: yarn test
+      working-directory: ./server
