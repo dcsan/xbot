@@ -66,20 +66,20 @@ jobs:
       if: always()
 
 
-    - name: slack status
-      uses: actions/slack-notifier-action@v1
-      with:
-        webhook_url: 'https://hooks.slack.com/services/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'
-        job: ${{ toJson(job) }}
+    # - name: slack status
+    #   uses: actions/slack-notifier-action@v1
+    #   with:
+    #     webhook_url: 'https://hooks.slack.com/services/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'
+    #     job: ${{ toJson(job) }}
 
-    # https://github.com/marketplace/actions/slack-notify
-    - name: Slack Notification
-      uses: rtCamp/action-slack-notify@master
-      env:
-        SLACK_WEBHOOK: https://hooks.slack.com/services/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
-        SLACK_TITLE: Completed CI
-        SLACK_CHANNEL: devfeed
-        # SLACK_COLOR: '#3278BD'
-        # SLACK_ICON: https://github.com/rtCamp.png?size=48
-        # SLACK_MESSAGE: 'Post Content :rocket:'
-        # SLACK_USERNAME: rtCamp
+    # # https://github.com/marketplace/actions/slack-notify
+    # - name: Slack Notification
+    #   uses: rtCamp/action-slack-notify@master
+    #   env:
+    #     SLACK_WEBHOOK: https://hooks.slack.com/services/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
+    #     SLACK_TITLE: Completed CI
+    #     SLACK_CHANNEL: devfeed
+    #     # SLACK_COLOR: '#3278BD'
+    #     # SLACK_ICON: https://github.com/rtCamp.png?size=48
+    #     # SLACK_MESSAGE: 'Post Content :rocket:'
+    #     # SLACK_USERNAME: rtCamp
