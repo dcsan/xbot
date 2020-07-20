@@ -16,9 +16,8 @@ env:
   PORT: 33010
   STATIC_SERVER: https://cbg.rik.ai/cdn/assets/
   STORYNAME: test-story
-
-
-
+  SLACK_WEBHOOK_URL: https://hooks.slack.com/services/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
+  # SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
 jobs:
   build:
@@ -30,6 +29,11 @@ jobs:
         node-version: [14.x]
 
     steps:
+    - uses: act10ns/slack@v1
+      with:
+        status: starting
+      if: always()
+
     - uses: actions/checkout@v2
 
     - name: Use Node.js ${{ matrix.node-version }}
@@ -54,6 +58,13 @@ jobs:
 
     - run: npm test
       working-directory: ./server
+
+    - name: slack notif
+      uses: act10ns/slack@v1
+      with:
+        status: ${{ job.status }}
+      if: always()
+
 
     - name: slack status
       uses: actions/slack-notifier-action@v1
