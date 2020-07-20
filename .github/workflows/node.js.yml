@@ -51,3 +51,9 @@ jobs:
 
     - run: npm test
       working-directory: ./server
+
+    # https://github.com/marketplace/actions/slack-notify
+    - name: Slack Notification
+      uses: rtCamp/action-slack-notify@master
+      env:
+        SLACK_WEBHOOK: https://hooks.slack.com/services/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
