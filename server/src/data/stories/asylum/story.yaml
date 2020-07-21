@@ -1,217 +1,106 @@
+type: story
 name: "Escape From Bell Hill (Asylum #6)"
-intro: You wake up in a strange room. The door is locked.
-  You don't remember how you got in here but just know you have to get out!
+cname: asylum   # internal reference
+goto: start
 
 rooms:
-  - name: lobby
-    intro: A solitary cell
-    imageUrl: rooms/cell.jpg
-    caption: "<https://cbg.rik.ai/rooms/office| :mag: corner office>"
-    setHint: start
-
+  - name: start
+    long: Escape From 'Escape From Bell Hill (Asylum #6)'
     hints:
-      start: Have a `look` around for anything interesting!
-      read-note: read the note
-      open-lock: try opening the lock with what you read
-      open-chest: What's inside the chest?
-      use-key: Where could you use that key?
+      - type 'start' to play
+    actions:
+      - match: start
+        goto: intro
+    buttons:
+      - start
 
-      actions:
-      - match: atov/i
-        pass:
-          text: You say ATOV to noone in particular. Maybe you need to look for something else?
+  - name: intro
+    long:
+      You have accepted an invitation via Facebook ad to playtest a new physical escape room in your city. The setting of the game is a mental asylum called "Bell Hill".
+      Having signed the game’s terms & conditions and a standard NDA online, you climb into bed early Friday night, full of anticipation. After all, you love escape rooms.
+    hints:
+      - maybe time to get some rest
+      - some `sleep`?
+    actions:
+      - match: sleep|rest|tired
+        reply: You get a good night’s rest.
+        goto: lobby
 
-    actors:
-      - name: Orderlies
-        greeting: Hey this is Sid!
-        description: Sid is a happy coder
-        prefix: Sid says
-        states:
-          - name: default
-            imageUrl: office/actors/sid-sm.png
-            short: Sid is a junior programmer
-            long:
-              Sid hasn't been working here very long, so he's not jaded yet.
-              He's learning the basics but keeps making careless little mistakes.
-              One more and he could lose his job...
-          - name: angry
-            short: Sid looks angry
-            long: Seems like you pissed him off.
+  - name: lobby
+    long:
+      'Saturday late morning, you arrive at the venue and are greeted by a host wearing a white lab coat.
+      After placing all of your personal belongings in a locker, you are ushered down a long hallway which leads directly into the first room of the game: a simple bedroom for you, a male inmate of Bell Hill.
+      The host informs you that the game will last one hour and will be followed by a debrief. If you are ever stuck or want to leave, just say the safe word “macaroni”.
+      She then wishes you good luck and exits through the door by which you both came.
+      The door closes seamlessly behind, becoming part of a blank wall of the room.
+      '
+    buttons:
+      - continue
+    hints:
+      - type `continue` when you're ready.
+    actions:
+      - match: continue
+        goto: orderlies
 
-        defaultReplies:
-          - Sorry I don't understand
-          - what?
-          - Hmm, dunno.
-        actions:
-          - match: greet
-            pass:
-              text: Welcome! Nice to see you too.
-              gets: coin  # TODO
-              hintStep: 2
-          - match: talk
-            reply: Hey, how are you!
-          - match: about note|note
-            reply: It's a weird looking memo written there, looks like a combination or something.
-          - match: about chest|chest
-            reply: It's always been there... not sure where it came from.
-          - match: hi|hello|what's up
-            reply: Hi back!
-          - match: test
-            reply: Testing back!
-          - match: give note
-            reply: Hmm, you found my written down password! I feel bad now!
-          - match: password
-            reply: I'm not telling you!
-          - match: how are you
-            reply: I'm doing great thanks
-          - match: chest
-            reply: It's always been here
-          - match: about password
-            reply: What password?!
-          - match: fuck|shit|piss|crap|suck|idiot
-            reply: You talk to your mother with that mouth?
-            setStates:
-              - sid angry
+  - name: orderlies
+    long:
+      You have just begun to examine your surroundings when the *real* door of the room opens,
+      and two burly men dressed as what you take to be orderlies enter.
+    actions:
+      - match: talk
+        long:
+          Before you can speak, one of the men locks you in bear-like grip while the other strips your pants off your legs roughly.
+          You attempt to protest, but your shirt is torn directly down the center by the first gorilla,
+          and you are left standing naked apart from underwear and socks.
+          “Is this part of the game?!” you stammer angrily.
 
-            # ----------- items -----------
+          “It’s all in the terms and conditions you signed,” says the second orderly.
 
+          “Enjoy the game!” says the first, following the second out.
+
+          The door shuts with a resounding click.
+        goto: cell
+
+  - name: cell
+    short: You are in an inmate’s bedroom.
     items:
-    - name: desk
-      description: The desk
-      states:
-        - name: default
-          imageUrl: office/rooms/office-chest-closed.jpg
-          short: A messy desk
-          long:
-            "A messy desk. There's a post it `note` with some letters scrawled on it. \n
-            There's an antique looking `chest` under the desk. \n
-            :mag: <https://cbg.rik.ai/rooms/office|click here to look around>"
-      actions:
-        - match: open
-          pass:
-            text: You open the drawers. Not much interesting stuff inside.
-
-# ----------- note -----------
-
-    - name: note
-      description: A simple note
-      states:
-        - name: default
-          short: There seem to be a sequence of letters
-          imageUrl: office/items/note-sm.png
-        - name: read
-          short: "You've seen it before. The letters ATOV don't mean much"
-          imageUrl: items/note-sm.png
-      actions:
-        - match: get|take
-          pass:
-            text: You pick up the note
-            gets: note
-            setHint: read-note
-        - match: read|examine|inspect|look at
-          needs: false
-          reply: You read the note
-          pass:
-            text: "The note just has 4 letters on it: ATOV
-              It seems like some kind of combination"
-            imageUrl: office/items/note-sm.png
-            gets: combination
-            # name of the hint step
-            setHint: open-lock
-            # list of state changes: [state, item]
-            # or just [state] for this item
+      - name: wardrobe
+        state: closed
+        states:
+          closed:
+            short: A free-standing wooden wardrobe is against one wall.
+            long:
+              Cheaper than the one your remember from your college dorm.
+              It has two narrow doors with rounded handles that look like flower petals.
+          open:
+            short: The wardrobe is now open.
+        actions:
+          - match: look inside
+            reply: Suspended from a plastic hanger is a light blue gown. Directly beneath is a matching pair of blue rubber sandals.
             setStates:
-              - read note
+              - open
 
-# ----------- chest -----------
+      - name: bathrobe
+        actions:
 
-    - name: chest
-      description: A large treasure chest
-      state: locked
-      states:
-        - name: locked
-          short: A locked chest
-          long: The chest is locked with an old fashioned looking combination lock.
-          imageUrl: office/items/chest-closed.png
-        - name: open
-          short: the chest is open and you can see a large key inside
-          imageUrl: office/items/chest-open-key.png
-        - name: empty
-          imageUrl: office/items/chest-open-empty.jpg
-          short: A large chest. It's open, but you can't see anything inside.
-      actions:
-        - match: open|unlock
-          needs: open-lock
-          pass:
-            text: You open up the chest, there's a key inside.
-            setStates:
-              - open chest
-          fail:
-            text: You try to open the chest, but there's an old combination lock on it.
-        - match: get
-          pass:
-            text: It's too heavy to carry
+      - name: bed
+        short: A narrow metal bed is here
 
-    - name: lock
-      description: A rusty combination lock
-      state: locked
-      # imageUrl: office/lock.gif
-      states:
-        - name: locked
-          short: An unusual looking combination lock. It seems to use lettters rather than numbers.
-          imageUrl: office/items/combolock-closed-sm.png
-        - name: unlocked
-          short: you opened the lock!
-          imageUrl: office/items/combolock-open-sm.png
-      actions:
-        - match: open|ATOV|atov|unlock|use|open lock with code|open lock with atov
-          needs: combination
-          fail:
-            text: You try to open the lock, but you don't know the combination
-            hintStep: 3
-          pass:
-            text: you turn the dials to spell ATOV and it opens!
-            gets: open-lock
-            hintStep: 4
-            setStates:
-              - open chest
-              - open lock
-        - match: take
-          needs: open-lock
-          fail:
-            text: It's locked to the chest
-            hintStep: 3
-          pass:
-            text: you take the lock
-            gets: open-lock
+      - name: desk
+        short: A squat desk with chair sits beside
 
-    - name: key
-      description: An antique looking key
-      states:
-        - name: default
-          short: ...
-        - name: holding-key
-          short: The key looks like it could open a door somewhere...
-      actions:
-        - match: get|take
-          needs: open-lock
-          pass:
-            text: You take the key
-            gets: key
-          fail:
-            text: You try to open the chest, but it's locked.
+      - name: sink
+        short: There is a sink built into the opposite wall
 
-    - name: door
-      description: A heavy door
-      states:
-        - name: locked
-          short: The door is locked.
-        - name: unlocked
-          short: the door is unlocked.
-      actions:
-        - match: open
-          needs: key
-          fail:
-            text: You try to open the door, but it's locked. If only you had a key...
-          pass:
-            text: You put the key in the door and it opens! You're free!
+      - name: lights
+        short: A vertical row of small lightbulbs is above the sink
+
+      - name: posters
+        short: Some posters are on the wall.
+
+      - name: window
+        short: A rectangular window with bars is recessed into the far wall. A door leads out.
+        long:
+          The window is frosted and protected by metal bars from your side.
+          Upon closer inspection, you notice that the unnatural yellow light from without is pulsing slightly, with the faint electrical buzz of artificial lighting.
+

@@ -32,6 +32,15 @@ const Logger = {
     throw new Error(msg)
   },
 
+  // error and throw
+  fatal (msg, obj) {
+    console.log("FATAL", msg)
+    if (obj) {
+      Logger.logObj('obj', obj)
+    }
+    throw new Error(msg)
+  },
+
   logObj (msg, obj) {
     if (process.env.NODE_ENV == 'test') return
     const blob = yaml.dump(obj)

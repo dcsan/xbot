@@ -1,8 +1,8 @@
-const Game = require('./Game.js');
-const WordUtils = require('../lib/WordUtils')
+const Game = require('./Game.js')
+// const WordUtils = require('../lib/WordUtils')
 const TestUtils = require('../lib/TestUtils');
-const RexParser = require('./parser/RexParser.js');
-const { basicInputParser } = require('./parser/RexParser.js');
+// const RexParser = require('./parser/RexParser.js');
+// const { basicInputParser } = require('./parser/RexParser.js');
 
 const log = console.log
 
@@ -11,7 +11,7 @@ const game = new Game(1234)
 
 beforeEach( async() => {
   context.reset()
-  await game.init(false)
+  await game.init({})
   await game.story.room.reset()
 })
 
@@ -20,8 +20,6 @@ test('item names', async () => {
   expect(names).toEqual("a `Desk`, a `Note`, a `Chest`, a `Lock`, a `Key`, a `Door`")
   // expect(names).toEqual(["a Desk", "a Note", "a Chest", "a Lock", "a Key", "a Door"])
 })
-
-
 
 test('look room', async () => {
   const blocks = await game.story.room.look(context)
@@ -32,16 +30,12 @@ test('look room', async () => {
   expect(blocks[3].text.text).toMatch(/You see a `Desk`, a `Note`/)
 })
 
-
-
 //@ts-ignore
 test('Game setup', async () => {
   const actor = await game.story.room.findActor('sid')
   expect(actor.cname).toBe('sid')
   expect(game.story.room.doc.name).toBe('office')
 })
-
-
 
 //@ts-ignore
 test('room examine actor', async () => {
@@ -82,7 +76,6 @@ test('examine item', async () => {
   expect(blocks[1].text.text).toMatch(/^The chest is locked/)
 })
 
-
 test('room item actions', async () => {
   const input = "read the note"
   context.setInput(input)
@@ -103,5 +96,21 @@ test('room item actions', async () => {
   expect(result).toEqual(true)
 })
 
+test('load named story', async () => {
+  game.init({ storyName: 'asylum', context })
+  expect(game.story.doc.cname).toBe('asylum')
+  game.story.goto('cell')
+  expect(game.story.room.name).toBe('cell')
+})
+
+
+test('try room action', async () => {
+  game.init({ storyName: 'asylum', context })
+  game.story.goto('intro')
+  context.setInput('sleep')
+  const reply = await game.story.room.tryActions(context)
+  expect(game.story.room.name).toBe('lobby')
+  expect(context.received.text).toMatch(/You get a good night/)
+})
 
 

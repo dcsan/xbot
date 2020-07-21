@@ -37,4 +37,7 @@ testGameObject:
 	npm run jest -- --watch GameObject
 
 testWordUtils:
-	npm run jest -- --no-colors --watch WordUtils
+	npm run jest -- --watch WordUtils
+
+testDispatch:
+	npm run jest -- --watch Dispatch

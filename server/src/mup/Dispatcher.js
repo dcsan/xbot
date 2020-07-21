@@ -173,7 +173,7 @@ const Dispatcher = {
           return false  // not handled
       }
     } else {
-      return Dispatcher.finalActions(context)
+      return await Dispatcher.finalActions(context)
     }
   },
 
@@ -181,7 +181,7 @@ const Dispatcher = {
   async finalActions (context) {
     const game = await Dispatcher.findGame(context.session.id)
     Logger.log('finalActions', context.event.text)
-    return game.story.room.tryActions(context)
+    return await game.story.room.tryActions(context)
   }
 
 }

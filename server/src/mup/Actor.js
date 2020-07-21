@@ -25,9 +25,9 @@ class Actor extends GameObject {
     return found
   }
 
-  askAboutThing (parsed, context) {
+  async askAboutThing (parsed, context) {
     const actionName = `${parsed.verb} ${parsed.groups.thing}`  // about chest
-    const reply = this.tryAction({actionName}, context)
+    const reply = await this.tryAction({actionName}, context)
     if (!reply) {
       const msg = `I don't know about ${parsed.groups.thing}`
       context.sendText(msg)

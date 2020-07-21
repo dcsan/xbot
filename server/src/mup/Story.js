@@ -89,6 +89,14 @@ class Story {
     this.room.things(context)
   }
 
+  findRoom (roomName) {
+    return this.rooms.find( room => room.name === roomName )
+  }
+
+  goto (roomName) {
+    this.currentRoom = this.findRoom(roomName)
+  }
+
 }
 
 module.exports = { Story }

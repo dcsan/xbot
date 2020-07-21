@@ -1,5 +1,5 @@
 const Dispatcher = require('./Dispatcher.js');
-
+const Game = require('./Game.js');
 const TestUtils = require('../lib/TestUtils');
 const Logger = require('../lib/Logger.js');
 
@@ -54,5 +54,16 @@ test('examine object', async () => {
   // console.log('blocks', blocks)
   expect(blocks).toHaveLength(2)
   expect(blocks[1].text.text).toMatch(/^There seem to be a sequence of letters/)
+})
+
+test('go to asylum and look', async () => {
+  const game = await Dispatcher.findGame(1234)
+  await game.init({storyName: 'asylum'})
+  await game.story.goto('intro')
+  expect(game.story.room.name).toBe('intro')
+  context.setInput('sleep')
+  const reply = await Dispatcher.fallback(context)
+  expect(context.received.text).toMatch(/You get a good night/)
+  expect(game.story.room.name).toBe('lobby')
 })
 

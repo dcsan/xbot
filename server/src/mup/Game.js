@@ -23,12 +23,12 @@ class Game {
     this.menu = new Menu()
     this.story = new Story(this)
     this.player = new Player()
-    this.init()
+    this.init({})
     // Logger.log('new game', { player: this.player })
   }
 
-  init (context) {
-    this.loadStory({storyName: null, context: null}) // needs params
+  init ({storyName=undefined, context=undefined}) {
+    this.loadStory({storyName, context: null}) // needs params
     this.loadHelp()
 
     this.story.reset()

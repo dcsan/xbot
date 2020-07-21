@@ -5,8 +5,10 @@ TopLevel:
   ✔ buttons help menu @done (7/19/2020, 7:30:55 AM)
 
   ☐ asylum outline
-  ☐ fix web links
+  ☐ fix web links (needs story name)
+  ☐ look on BACK of item (NLP inputs?)
 
+  ☐ placeholder image?
   ☐ states on item.describe (~ Sid is angry )
   ☐ s/say command -> firstActor
 

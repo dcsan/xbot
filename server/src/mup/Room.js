@@ -19,7 +19,7 @@ class Room extends GameObject {
   reset () {
     this.items = []
     this.hintStep = this.doc.setHint || 'start'
-    this.doc.items.forEach((itemData) => {
+    this.doc.items?.forEach((itemData) => {
       const item = new Item(itemData, this)
       this.items.push(item)
       item.reset()
@@ -40,7 +40,7 @@ class Room extends GameObject {
     Logger.log('loading actors:', allActors?.length)
     this.actors = []
     // @ts-ignore
-    allActors.map( actorDoc => {
+    allActors?.map( actorDoc => {
       const actor = new Actor(actorDoc, this)
       this.actors.push(actor)
     })
@@ -154,46 +154,6 @@ class Room extends GameObject {
     return foundActor
   }
 
-  // // FIXME - normalize API with other item.examine etc
-  // async examineAny(itemName, player, context) {
-  //   if (!itemName) {
-  //     debug('examine: no itemname')
-  //     return
-  //   }
-  //   const item =
-  //     this.findItem(itemName) ||
-  //     this.findActor(itemName)
-  //   if (!item) {
-  //     debug('not found', itemName, 'in', this.items)
-  //     const msg = `you don't see a ${itemName}`
-  //     await SlackAdapter.sendText(msg, context)
-  //     return false  // maybe fallthrough to other handling method
-  //   } else {
-  //     Logger.log('ex item', item)
-  //     // check if there's a special 'examine' event with trigger
-  //     const foundAction = await item.itemActions('examine', player, context)
-  //     Logger.log('foundAction', foundAction)
-  //     if (!foundAction) {
-  //       // default examine
-  //       await item.examine(context, player)
-  //     }
-  //     return true
-  //   }
-  // }
-
-  // // TODO refactor move to GameObject ?
-  // // triggers can interact between items in the same room
-  // runActions (action, itemName, player, context) {
-  //   // this.runRoomActions()  // TODO
-  //   return this.items.map((item) => {
-  //     if (itemName === item.name) {
-  //       item.itemActions(action, player, context)
-  //     }
-  //   })
-  // }
-
-  // finalActions()
-
   /**
    * word boundaries dont seem to work CRAP
    *
@@ -206,26 +166,6 @@ class Room extends GameObject {
     // console.log('rex', {rex})
 
   }
-
-  // findActionItemRegex (input) {
-  //   const {rex} = this.makeRoomItemsRex()
-  //   const match = rex.exec(input)
-  //   // console.log('match.groups', match.groups)
-  //   let output = input.replace(rex, '')
-  //   output = output.trim()
-  //   output = output.replace(/  /gm, ' ') // double spaces
-
-  //   if (!match) {
-  //     return false
-  //   }
-
-  //   return {
-  //     input,
-  //     match,
-  //     groups: {...match.groups},
-  //     action: output
-  //   }
-  // }
 
   /**
    * replace item name in input and split it out
@@ -260,15 +200,20 @@ class Room extends GameObject {
    * @memberof Room
    */
   async tryActions (context) {
+    let reply
     const input = context.event.text
-    const result = RexParser.basicInputParser(input, this)
-    if (result?.foundItem) {
-      const reply = await result.foundItem.tryAction(result, context)
+    const parsed = RexParser.basicInputParser(input, this)
+    if (parsed?.foundItem) {
+      reply = await parsed.foundItem.tryAction(parsed, context)
       return reply
-    } else {
-      Logger.log('nothing found for input', input)
-      return false
     }
+    // else try on the room
+    reply = await this.tryAction(parsed, context)
+    if (reply) {
+      return reply
+    }
+    Logger.log('nothing found for input', input)
+    return false
   }
 
 }

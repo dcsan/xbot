@@ -14,6 +14,7 @@ class DummyContext {
 
   constructor() {
     this.reset()
+    this.event = {}
   }
 
   get received () {
