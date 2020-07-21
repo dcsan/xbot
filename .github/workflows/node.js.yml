@@ -15,7 +15,7 @@ env:
   SLACK_SIGNING_SECRET: 1790574d6c39f936b026ff7ff937b5e8
   PORT: 33010
   STATIC_SERVER: https://cbg.rik.ai/cdn/assets/
-  STORYNAME: test-story
+  STORYNAME: office
   SLACK_WEBHOOK_URL: https://hooks.slack.com/services/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
   # SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
@@ -29,10 +29,11 @@ jobs:
         node-version: [14.x]
 
     steps:
-    - uses: act10ns/slack@v1
-      with:
-        status: starting
-      if: always()
+
+    # - uses: act10ns/slack@v1
+    #   with:
+    #     status: starting
+    #   if: always()
 
     - uses: actions/checkout@v2
 
@@ -45,9 +46,9 @@ jobs:
       working-directory: ./server
       run: npm i
 
-    - name: alert
-      run: echo "set working_dir"
-      working-directory: ./server
+    # - name: alert-start
+    #   run: echo "set working_dir"
+    #   working-directory: ./server
 
     - name: getdir
       run: pwd

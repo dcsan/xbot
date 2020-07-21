@@ -3,8 +3,8 @@ intro: You wake up in a strange room. The door is locked.
   You don't remember how you got in here but just know you have to get out!
 
 rooms:
-  - name: cell
-    description: A solitary cell
+  - name: lobby
+    intro: A solitary cell
     imageUrl: rooms/cell.jpg
     caption: "<https://cbg.rik.ai/rooms/office| :mag: corner office>"
     setHint: start
@@ -22,7 +22,7 @@ rooms:
           text: You say ATOV to noone in particular. Maybe you need to look for something else?
 
     actors:
-      - name: Sid
+      - name: Orderlies
         greeting: Hey this is Sid!
         description: Sid is a happy coder
         prefix: Sid says
