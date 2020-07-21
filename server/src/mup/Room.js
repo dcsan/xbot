@@ -67,15 +67,21 @@ class Room extends GameObject {
 
   async look (context) {
     Logger.log('room.look')
+    let blocks = []
+    if (this.doc.imageUrl) {
+      blocks.push( SlackAdapter.imageBlock(this.doc) )
+    }
+    blocks.push(
+      SlackAdapter.textBlock(this.doc.long)
+    )
     const firstActor = this.firstActor()
-    const itemsInfo = `You see ` + this.itemFormalNamesOneLine()
-    const blocks = [
-      SlackAdapter.imageBlock(this.doc),
-      SlackAdapter.textBlock(this.doc.description),
-      // SlackAdapter.textBlock(this.doc.caption) || '...',  // FIXME always check we have a caption
-      SlackAdapter.textBlock(`${firstActor.formalName} is here.`),
-      SlackAdapter.textBlock(itemsInfo)
-    ]
+    if (firstActor) {
+      const actorIntro = `${firstActor.formalName} is here.`
+      blocks.push(SlackAdapter.textBlock(actorIntro))
+    }
+    const itemsInfo = this.itemFormalNamesOneLine()
+    if (itemsInfo) blocks.push(SlackAdapter.textBlock(`You see ` + itemsInfo))
+
     await SlackAdapter.sendBlocks(blocks, context)
     return blocks
   }

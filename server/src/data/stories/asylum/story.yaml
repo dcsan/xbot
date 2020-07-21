@@ -5,7 +5,9 @@ goto: start
 
 rooms:
   - name: start
-    long: Escape From 'Escape From Bell Hill (Asylum #6)'
+    long:
+      "Welcome to 'Escape From Bell Hill (Asylum #6)'\n
+      Type `start` to begin playing."
     hints:
       - type 'start' to play
     actions:

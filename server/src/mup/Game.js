@@ -27,7 +27,8 @@ class Game {
     // Logger.log('new game', { player: this.player })
   }
 
-  init ({storyName=undefined, context=undefined}) {
+  init (opts = {} ) {
+    const {storyName=undefined, context=undefined} = opts
     this.loadStory({storyName, context: null}) // needs params
     this.loadHelp()
 

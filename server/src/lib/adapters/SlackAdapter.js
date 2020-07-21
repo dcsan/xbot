@@ -99,10 +99,14 @@ const SlackAdapter = {
     if (!blocks || !blocks.length) {
       Logger.error('tried to sendBlocks with no blocks:', blocks)
     }
-
     const msg = SlackAdapter.wrapBlocks(blocks)
     Logger.logObj('sendBlocks:', blocks.length)
-    await context.chat.postMessage(msg)
+    try {
+      await context.chat.postMessage(msg)
+    } catch (err) {
+      Logger.logObj('ERROR chat.postMessage error. msg=>', msg)
+      Logger.error('ERROR', err)
+    }
   },
 
   async sendItemCard (stateInfo, item, context) {
