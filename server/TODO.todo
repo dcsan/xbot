@@ -2,10 +2,15 @@
 
 TopLevel:
   ✔ talk to Sid - broken @critical @done (7/18/2020, 6:10:43 PM)
-
   ✔ buttons help menu @done (7/19/2020, 7:30:55 AM)
+
+  ☐ asylum outline
+  ☐ fix web links
+
   ☐ states on item.describe (~ Sid is angry )
   ☐ s/say command -> firstActor
+
+  ☐ dialogflow parser
   ☐ Rooms/Doors/Navigation
   ☐ Map command
 
@@ -13,6 +18,8 @@ TopLevel:
   ☐ setup slack JSX
   ✔ NPC i/o dispatcher @done (7/19/2020, 7:30:58 AM)
 
+  ☐ hint system
+  ☐ add hints to 'help'
   ☐ compound sentences parser use X on Y
     give A to B
   ☐ fix room.examine

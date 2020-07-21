@@ -5,7 +5,7 @@ intro: You wake up in a strange room. The door is locked.
 rooms:
   - name: office
     description: A large empty room with a corner `desk`
-    imageUrl: rooms/office-chest-closed.jpg
+    imageUrl: office/rooms/office-chest-closed.jpg
     caption: "<https://cbg.rik.ai/rooms/office| :mag: corner office>"
     setHint: start
 
@@ -28,7 +28,7 @@ rooms:
         prefix: Sid says
         states:
           - name: default
-            imageUrl: actors/sid-sm.png
+            imageUrl: office/actors/sid-sm.png
             short: Sid is a junior programmer
             long:
               Sid hasn't been working here very long, so he's not jaded yet.
@@ -80,7 +80,7 @@ rooms:
       description: The desk
       states:
         - name: default
-          imageUrl: rooms/office-chest-closed.jpg
+          imageUrl: office/rooms/office-chest-closed.jpg
           short: A messy desk
           long:
             "A messy desk. There's a post it `note` with some letters scrawled on it. \n
@@ -98,7 +98,7 @@ rooms:
       states:
         - name: default
           short: There seem to be a sequence of letters
-          imageUrl: items/note-sm.png
+          imageUrl: office/items/note-sm.png
         - name: read
           short: "You've seen it before. The letters ATOV don't mean much"
           imageUrl: items/note-sm.png
@@ -114,7 +114,7 @@ rooms:
           pass:
             text: "The note just has 4 letters on it: ATOV
               It seems like some kind of combination"
-            imageUrl: items/note-sm.png
+            imageUrl: office/items/note-sm.png
             gets: combination
             # name of the hint step
             setHint: open-lock
@@ -132,12 +132,12 @@ rooms:
         - name: locked
           short: A locked chest
           long: The chest is locked with an old fashioned looking combination lock.
-          imageUrl: items/chest-closed.png
+          imageUrl: office/items/chest-closed.png
         - name: open
           short: the chest is open and you can see a large key inside
-          imageUrl: items/chest-open-key.png
+          imageUrl: office/items/chest-open-key.png
         - name: empty
-          imageUrl: items/chest-open-empty.jpg
+          imageUrl: office/items/chest-open-empty.jpg
           short: A large chest. It's open, but you can't see anything inside.
       actions:
         - match: open|unlock
@@ -155,14 +155,14 @@ rooms:
     - name: lock
       description: A rusty combination lock
       state: locked
-      # imageUrl: lock.gif
+      # imageUrl: office/lock.gif
       states:
         - name: locked
           short: An unusual looking combination lock. It seems to use lettters rather than numbers.
-          imageUrl: items/combolock-closed-sm.png
+          imageUrl: office/items/combolock-closed-sm.png
         - name: unlocked
           short: you opened the lock!
-          imageUrl: items/combolock-open-sm.png
+          imageUrl: office/items/combolock-open-sm.png
       actions:
         - match: open|ATOV|atov|unlock|use|open lock with code|open lock with atov
           needs: combination
