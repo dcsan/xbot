@@ -67,7 +67,9 @@ const Dispatcher = {
   async button (context) {
     // const game = await RouterService.findGame(context.session.id)
     const buttonAction = context.event.rawEvent.actions[0]
+    Logger.logObj('buttonAction', buttonAction)
     const value = buttonAction.value // look | examine | more
+
     switch (value) {
       case 'look':
         return Dispatcher.gameRun('look', context)
@@ -79,7 +81,16 @@ const Dispatcher = {
         return Dispatcher.morehelp(context)
       default:
         Logger.warn('cannot find event', context.event)
+            // just send it as text input
+        context.event.text = value
+        await Dispatcher.fallback(value)
     }
+  },
+
+  async otherEvent (context) {
+    Logger.logObj('other event', context.event)
+    Logger.logObj('other.text', context.event.text)
+    Logger.logObj('other.command', context.event.command)
   },
 
   // TODO - show the list of items and remember context

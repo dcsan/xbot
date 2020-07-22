@@ -27,7 +27,7 @@ bot.prepare().then(() => {
   const server = express();
 
   // log all requests
-  server.use(morgan('tiny'))
+  server.use(morgan('dev'))
 
   const verify = (req, _, buf) => {
     req.rawBody = buf.toString();

@@ -14,10 +14,10 @@ rooms:
     hints:
       - type 'OK' to begin
     actions:
-      - match: .*
+      - match: continue|.*   # .* match anything
         goto: intro
     buttons:
-      - start
+      - continue
 
   - name: intro
     long:
@@ -30,6 +30,8 @@ rooms:
       - match: sleep|rest|tired
         reply: You get a good night’s rest.
         goto: lobby
+    buttons:
+      - sleep
 
   - name: lobby
     long:
@@ -42,13 +44,14 @@ rooms:
 
       The door closes seamlessly behind, becoming part of a blank wall of the room.
       '
-    buttons:
-      - continue
     hints:
       - type `continue` when you're ready.
     actions:
-      - match: .*
+      - match: talk|.*
         goto: orderlies
+
+    buttons:
+      - talk to orderlies
 
   - name: orderlies
     long:

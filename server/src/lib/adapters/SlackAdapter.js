@@ -10,6 +10,39 @@ const SlackAdapter = {
     SlackAdapter.logging = flag
   },
 
+  buttonItem (text, value = false) {
+    value = value || text
+    return {
+        "type": "button",
+        "text": {
+          "type": "plain_text",
+          "text": text,
+          "emoji": true
+        },
+        "value": value
+      }
+  },
+
+  wrapActionsInBlock (elements) {
+    return (
+      {
+        "type": "actions",
+        elements
+      }
+    )
+  },
+
+  buttonsBlock (buttons) {
+    const buttonElements = buttons.map(b => SlackAdapter.buttonItem(b))
+    const block = SlackAdapter.wrapActionsInBlock(buttonElements)
+    return block
+  },
+
+  sendButtons (buttons, context) {
+    const block = SlackAdapter.buttonsBlock(buttons)
+    SlackAdapter.sendBlocks([block], context)
+  },
+
   textBlock (text) {
     if (!text) {
       Logger.fatal('textBlock with no text!:', text)

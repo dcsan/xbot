@@ -46,8 +46,21 @@ class Room extends GameObject {
     })
   }
 
+  /**
+   * on entering a new room we look around
+   * @param {*} context
+   * @memberof Room
+   */
   async enter (context) {
-    context.sendText(this.description)
+    await this.look(context)
+  }
+
+  async describe (context) {
+    await context.sendText(this.description)
+    if (this.doc.buttons) {
+      Logger.logObj('enter.buttons', this.doc.buttons)
+      await SlackAdapter.sendButtons(this.doc.buttons, context)
+    }
   }
 
   async things (context) {
@@ -76,7 +89,7 @@ class Room extends GameObject {
       blocks.push( SlackAdapter.imageBlock(this.doc) )
     }
     blocks.push(
-      SlackAdapter.textBlock(this.long)
+      SlackAdapter.textBlock(this.description)
     )
     const firstActor = this.firstActor()
     if (firstActor) {
@@ -86,6 +99,12 @@ class Room extends GameObject {
     const itemsInfo = this.itemFormalNamesOneLine()
     if (itemsInfo) {
       blocks.push(SlackAdapter.textBlock(`You see ` + itemsInfo))
+    }
+
+    if (this.doc.buttons) {
+      Logger.logObj('enter.buttons', this.doc.buttons)
+      const buttonsBlock = SlackAdapter.buttonsBlock(this.doc.buttons)
+      blocks.push(buttonsBlock)
     }
 
     await SlackAdapter.sendBlocks(blocks, context)

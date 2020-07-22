@@ -17,7 +17,7 @@ module.exports = async function App () {
     // text(/^(x|examine|l|look at) (?<item>.*)$/i, Dispatcher.examine),
 
     // // debug commands
-    text(['rs', 'restart'], Dispatcher.restart),
+    // text(['rs', 'restart'], Dispatcher.restart),
     text(/^st$|^status$/i, Dispatcher.status),
     text(['rl', 'reload'], Dispatcher.reload),
 
@@ -30,15 +30,13 @@ module.exports = async function App () {
     // testing
     // text('image', Dispatcher.menu.testImage),
     // text(/delay/i, Dispatcher.delay),
-
     // text(/^(s|say) (?<item>.*) (to) (?<actor>.*)$/i, Dispatcher.ask),
-
-    text('welcome', Dispatcher.welcome),
+    // text('welcome', Dispatcher.welcome),
     slack.event('member_joined_channel', Dispatcher.welcome),
     // @ts-ignore
     slack.event('interactive_message', Dispatcher.button),
+    slack.any(Dispatcher.otherEvent),
     text('*', Dispatcher.fallback),
-    // slack.any(Dispatcher.HandleSlack),
 
   ])
   // Logger.log('router done', Dispatcher.story)
