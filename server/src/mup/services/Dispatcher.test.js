@@ -1,7 +1,7 @@
 const Dispatcher = require('./Dispatcher.js');
-const Game = require('./Game.js');
-const TestUtils = require('../lib/TestUtils');
-const Logger = require('../lib/Logger.js');
+const TestUtils = require('../../lib/TestUtils');
+const RouterService = require('./RouterService')
+const Logger = require('../../lib/Logger.js');
 
 const context = TestUtils.context
 
@@ -48,6 +48,7 @@ test('examine object', async () => {
   context.event = { text: "x note" }
 
   const reply = await Dispatcher.fallback(context)
+  Logger.logObj('x note reply', reply)
   const atts = context.chat.msg.attachments
   const blocks = atts[0].blocks
   // console.log('att', atts)
@@ -57,13 +58,20 @@ test('examine object', async () => {
 })
 
 test('go to asylum and look', async () => {
-  const game = await Dispatcher.findGame(1234)
+  const game = await RouterService.findGame(1234)
   await game.init({storyName: 'asylum'})
-  await game.story.goto('intro')
+  await game.story.gotoRoom('intro')
   expect(game.story.room.name).toBe('intro')
   context.setInput('sleep')
   const reply = await Dispatcher.fallback(context)
   expect(context.received.text).toMatch(/You get a good night/)
   expect(game.story.room.name).toBe('lobby')
 })
+
+xtest('base router', async () => {
+  context.setInput('restart')
+  await Dispatcher.fallback(context)
+  expect(context.received).toMatch('restart')
+})
+
 

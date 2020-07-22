@@ -19,8 +19,9 @@ const Util = {
   },
 
   // wrap relative image URLs
-  imageUrl (file) {
-    return process.env.STATIC_SERVER + file + Util.cacheBust()
+  imageUrl (filepath) {
+    if (filepath.startsWith('http')) return filepath
+    return process.env.STATIC_SERVER + filepath + Util.cacheBust()
   },
 
   loadYaml(pathFromData) {

@@ -11,7 +11,17 @@ dev-slack:
 
 # verbose
 proxy:
-	ssh -v -R 80:localhost:33010 xbot@ssh.localhost.run
+	echo "--- connecting ---"
+	# ssh -v -R 80:localhost:33010 xbot@ssh.localhost.run &2> logs/proxy.log &
+	# ssh -v -R 80:localhost:33010 xbot@ssh.localhost.run | grep "Connect to" | xargs echo "$1/api/slack/webhooks"
+	ssh -v -R 80:localhost:33010 xbot@ssh.localhost.run | grep "Connect to"
+	# ssh -v -R 80:localhost:33010 xbot@ssh.localhost.run
+
+	# grep "Connect to" logs/proxy.log | xargs "$1/api/slack/webhooks"
+	# sleep 2
+	# echo "--- done ---"
+	# cat logs/proxy.log
+	# grep "Connect to" logs/proxy.log
 	# ssh -R 80:localhost:5000 serveo.net
 
 # change slack endpoints
@@ -41,3 +51,6 @@ testWordUtils:
 
 testDispatch:
 	npm run jest -- --watch Dispatch
+
+testRouter:
+	npm run jest -- --watch RexRouter

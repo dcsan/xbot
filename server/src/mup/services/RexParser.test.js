@@ -1,6 +1,6 @@
 const _ = require('lodash')
 const RexParser = require('./RexParser.js');
-const Game = require('../Game.js');
+const Game = require('../models/Game.js');
 
 const TestUtils = require('../../lib/TestUtils');
 const Logger = require('../../lib/Logger.js');
@@ -13,9 +13,8 @@ const game = new Game(1234)
 
 beforeEach( async () => {
   context.reset()
-  await game.init(false)
+  await game.init({ storyName: 'office' })
 })
-
 
 function testRuleSet (rule) {
 
@@ -48,7 +47,6 @@ test('RexParser.actorRules', async () => {
     testRuleSet(rule)
   })
 })
-
 
 test('basicInputParser', async () => {
 

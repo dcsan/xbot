@@ -1,5 +1,5 @@
 const debug = require('debug')('mup:menu')
-const Logger = require('../lib/Logger')
+const Logger = require('../../lib/Logger')
 
 class Help {
 

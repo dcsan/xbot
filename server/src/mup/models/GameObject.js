@@ -1,5 +1,5 @@
-const SlackAdapter = require('../lib/adapters/SlackAdapter')
-const Logger = require('../lib/Logger')
+const SlackAdapter = require('../../lib/adapters/SlackAdapter')
+const Logger = require('../../lib/Logger')
 
 const log = console.log
 
@@ -14,19 +14,14 @@ class GameObject {
   }
 
   reset () {
-    // FIXme - check if that state exists
-    if (!this.doc.states) {
-      // Logger.warn('no states for thing:', this.cname)
+    try {
+      const state = this.doc.state ||
+      this.doc.states ? this.doc.states[0].name : DEFAULT_STATE
+      this.state = state
+    } catch (err) {
+      log('failed to reset item')
+      log('reset this.doc', this.doc)
     }
-    this.state = this.initialState()
-  }
-
-  initialState () {
-    const state = this.doc.state
-    if (!state && this.doc.states) {
-      this.doc.states[0].name || DEFAULT_STATE
-    }
-    return DEFAULT_STATE
   }
 
   // FIXME - dont use both
@@ -95,7 +90,7 @@ class GameObject {
    * returns true|false if an action was found/matched
    * NOT if it passed/failed (fail is still run/replied to)
    *
-   * @param {*} { actionName, itemName, modifier }
+   * @param {*} parsed { actionName, itemName, modifier }
    * @param {*} context
    * @returns
    * @memberof GameObject
@@ -115,8 +110,8 @@ class GameObject {
       // Logger.log('check', actionName, actionData)
       if (fullAction.match(rex)) {
         Logger.log('action match', actionName)
-        await this.runAction(actionData, context)
-        return true
+        const result = await this.runAction(actionData, context)
+        return {result, actionData}
       }
     }
     return false
@@ -140,6 +135,15 @@ class GameObject {
     return text
   }
 
+  // game>story>room  room.story.game
+  // FIXME - reaching UP through the hierarchy
+  // a gameObject could be a room itself or we need thing.room
+  gotoRoom (roomName) {
+    const thisRoom = this.room || this
+    // @ts-ignore
+    thisRoom.story.gotoRoom(roomName)
+  }
+
   // FIXME - this applies to things and rooms
   // which are a different level of hierarchy
   // making polymorphism harder
@@ -153,10 +157,7 @@ class GameObject {
     }
 
     if (actionData.goto) {
-      // a gameObject could be a room itself or we need thing.room
-      const thisRoom = this.room || this
-      const gotoRoom = thisRoom.story.findRoom(actionData.goto)
-      thisRoom.story.currentRoom = gotoRoom
+      this.gotoRoom(actionData.goto)
     }
 
     const needs = actionData.needs

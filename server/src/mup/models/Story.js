@@ -1,10 +1,10 @@
-const Logger = require('../lib/Logger')
-const Util = require('../lib/Util')
-const SlackAdapter = require('../lib/adapters/SlackAdapter')
+const Logger = require('../../lib/Logger')
+const Util = require('../../lib/Util')
+const SlackAdapter = require('../../lib/adapters/SlackAdapter')
 const Room = require('./Room')
 // const assert = require('chai').assert
 const assert = require('assert').strict
-const AppConfig = require('../lib/AppConfig')
+const AppConfig = require('../../lib/AppConfig')
 
 class Story {
 
@@ -17,12 +17,15 @@ class Story {
     return this.currentRoom
   }
 
-  /**
-   * either of the params can be empty
-   * load story script without resetting state
-   * @param {*} param0
-   */
-  load ({storyName, context}) {
+/**
+ *
+ * 
+ * @param {*} opts
+ * @memberof Story
+ */
+load (opts) {
+    const storyName = opts?.storyName || AppConfig.read('STORYNAME')
+
     // Logger.log('loading storyName', storyName)
     this.doc = Util.loadYaml(`stories/${storyName}/story.yaml`)
     this.buildStory(this.doc)
@@ -34,6 +37,14 @@ class Story {
 
   reset () {
     this.currentRoom = this.rooms[0]
+  }
+
+  findRoom (roomName) {
+    return this.rooms.find( room => room.name === roomName )
+  }
+
+  gotoRoom (roomName) {
+    this.currentRoom = this.findRoom(roomName)
   }
 
   buildStory(doc) {
@@ -65,8 +76,12 @@ class Story {
   }
 
   async status (context) {
-    let msg = `_room_: ${this.room.doc.name}`
-    await SlackAdapter.sendText(msg, context)
+    let msg = [
+      // @ts-ignore
+      `_story_: \`${this.doc.cname}\` ${this.doc.name}`,
+      `_room_: \`${this.room.doc.name}\``
+    ]
+    await SlackAdapter.sendList(msg, context)
   }
 
   hint (context) {
@@ -87,14 +102,6 @@ class Story {
 
   things(context) {
     this.room.things(context)
-  }
-
-  findRoom (roomName) {
-    return this.rooms.find( room => room.name === roomName )
-  }
-
-  goto (roomName) {
-    this.currentRoom = this.findRoom(roomName)
   }
 
 }

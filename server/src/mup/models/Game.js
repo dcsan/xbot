@@ -2,10 +2,10 @@ const fs = require('fs')
 const path = require('path')
 
 // const posTagger = require('wink-pos-tagger');
-const AppConfig = require('../lib/AppConfig')
-const Util = require('../lib/Util')
-const Logger = require('../lib/Logger')
-const SlackAdapter = require('../lib/adapters/SlackAdapter')
+const AppConfig = require('../../lib/AppConfig')
+const Util = require('../../lib/Util')
+const Logger = require('../../lib/Logger')
+const SlackAdapter = require('../../lib/adapters/SlackAdapter')
 
 const { Story } = require('./Story')
 const { Player } = require('./Player')
@@ -16,35 +16,47 @@ const menu = new Menu()
 // const tagger = posTagger()
 
 
+
 class Game {
 
-  constructor(sid) {
+  constructor(sid, storyName = null) {
     this.sid = sid
+  }
+
+  // not done in constructor as it is async
+  async init (opts) {
+    // create objects used below
     this.menu = new Menu()
     this.story = new Story(this)
     this.player = new Player()
-    this.init({})
-    // Logger.log('new game', { player: this.player })
-  }
 
-  init (opts = {} ) {
-    const {storyName=undefined, context=undefined} = opts
-    this.loadStory({storyName, context: null}) // needs params
+    await this.story.load(opts)
+
     this.loadHelp()
-
-    this.story.reset()
-    this.player.reset()
-
-    Logger.logObj('game.init', {
-      storyName: this.storyName,
-      sid: this.sid,
-      player: this.player,
-    })
-    Logger.log('room', { room: this.story.room.name })
-    if (context) {
-      context.sendText("reset game! " + this.storyName )
+    this.reset()
+    if (opts?.context) {
+      opts.context.sendText("reset game! " + this.story.name )
     }
   }
+
+  reset () {
+    this.story.reset()
+    this.player.reset()
+    this.story.room.reset()
+  }
+
+  // /**
+  //  * specify a story to reload
+  //  * for testing other material
+  //  * @param {*} opts
+  //  */
+  // loadStory (opts) {
+  //   this.storyName = storyName
+  //   this.story.load({ storyName, context })
+  //   if (context) {
+  //     context.sendText('loaded!' + storyName)
+  //   }
+  // }
 
   // TODO can merge with init?
   async restart (context) {
@@ -53,25 +65,6 @@ class Game {
     await this.help(context)
   }
 
-  /**
-   * specify a story to reload
-   * for testing other material
-   * @param {*} param0
-   */
-  loadStory ({ storyName, context }) {
-    if (storyName) {
-      // load an explicit story from params
-      this.storyName = storyName
-    } else {
-      // reload default config
-      storyName = AppConfig.read('STORYNAME')
-      this.storyName = storyName
-    }
-    this.story.load({ storyName, context })
-    if (context) {
-      context.sendText('loaded!' + storyName)
-    }
-  }
 
   /**
    * simple reload of current story without resetting user vars
@@ -83,7 +76,7 @@ class Game {
   }
 
   loadHelp (storyName) {
-    const filepath = path.join(__dirname, '../data/help.txt')
+    const filepath = path.join(__dirname, '../../data/help.txt')
     this.helpDoc = fs.readFileSync(filepath, 'utf8')
   }
 
@@ -135,19 +128,6 @@ class Game {
     this.story.runCommand('/hint', context)
   }
 
-  // async actions (
-  //   context,
-  //   {
-  //     match: {
-  //       groups: { action, item },
-  //     },
-  //   }
-  // ) {
-  //   Logger.logObj('actions: ', item)
-  //   // await context.sendText(`trying ${action} on ${item} ...`)
-  //   await this.story.room.runActions(action, item, this.player, context)
-  // }
-
   async handleSlack (context) {
     // Logger.logObj('slack.any', context)
     // if (context.chat)
@@ -186,13 +166,6 @@ class Game {
     await this.story.room.status(context)
     await context.sendText('state ```\n' + JSON.stringify(context.state, null, 2) + '```')
   }
-
-  // async fallback (context) {
-  //   const text = context.event.text
-  //   Logger.log('fallback', text)
-  //   const pos = tagger.tagSentence(text)
-  //   Logger.log('pos', pos)
-  // }
 
 }
 

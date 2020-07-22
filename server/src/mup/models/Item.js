@@ -1,8 +1,6 @@
-const debug = require('debug')('mup:Item')
-const Logger = require('../lib/Logger')
-
-const SlackAdapter = require('../lib/adapters/SlackAdapter')
+const Logger = require('../../lib/Logger')
 const GameObject = require('./GameObject')
+const SlackAdapter = require('../../lib/adapters/SlackAdapter')
 
 class Item extends GameObject {
 

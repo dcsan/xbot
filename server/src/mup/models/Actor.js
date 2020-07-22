@@ -1,5 +1,5 @@
 const GameObject = require('./GameObject')
-const Logger = require('../lib/Logger')
+const Logger = require('../../lib/Logger')
 var assert = require('assert');
 
 class Actor extends GameObject {

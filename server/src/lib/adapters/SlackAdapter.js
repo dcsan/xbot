@@ -1,7 +1,14 @@
 const Logger = require("../Logger")
 const Util = require('../Util')
 
+
 const SlackAdapter = {
+
+  logging: true,
+
+  setLogging (flag) {
+    SlackAdapter.logging = flag
+  },
 
   textBlock (text) {
     const block = {
@@ -94,13 +101,13 @@ const SlackAdapter = {
 
   async sendBlocks (blocks, context) {
     if (!context || !context.chat) {
-      Logger.error('tried to sendBlocks with no context.chat:', context)
+      Logger.error('tried to sendBlocks with no context.chat:', context.chat)
     }
     if (!blocks || !blocks.length) {
       Logger.error('tried to sendBlocks with no blocks:', blocks)
     }
     const msg = SlackAdapter.wrapBlocks(blocks)
-    Logger.logObj('sendBlocks:', blocks.length)
+    Logger.log('sendBlocks:', blocks.length)
     try {
       await context.chat.postMessage(msg)
     } catch (err) {

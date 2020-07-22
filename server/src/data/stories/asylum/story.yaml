@@ -5,13 +5,15 @@ goto: start
 
 rooms:
   - name: start
+    imageUrl: https://via.placeholder.com/500x200.png?text=Facebook+Ad+On+Screen
+    intro: Are you ready?
     long:
       "Welcome to 'Escape From Bell Hill (Asylum #6)'\n
-      Type `start` to begin playing."
+      Ready?"
     hints:
-      - type 'start' to play
+      - type 'OK' to begin
     actions:
-      - match: start
+      - match: .*
         goto: intro
     buttons:
       - start
@@ -41,7 +43,7 @@ rooms:
     hints:
       - type `continue` when you're ready.
     actions:
-      - match: continue
+      - match: .*
         goto: orderlies
 
   - name: orderlies
@@ -69,12 +71,12 @@ rooms:
       - name: wardrobe
         state: closed
         states:
-          closed:
+          - name: closed
             short: A free-standing wooden wardrobe is against one wall.
             long:
               Cheaper than the one your remember from your college dorm.
               It has two narrow doors with rounded handles that look like flower petals.
-          open:
+          - name: open
             short: The wardrobe is now open.
         actions:
           - match: look inside

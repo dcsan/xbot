@@ -1,5 +1,5 @@
 const debug = require('debug')('mup:Player')
-const SlackAdapter = require('../lib/adapters/SlackAdapter')
+const SlackAdapter = require('../../lib/adapters/SlackAdapter')
 
 class Player {
   constructor() {

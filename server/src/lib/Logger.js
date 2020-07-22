@@ -41,10 +41,21 @@ const Logger = {
     throw new Error(msg)
   },
 
-  logObj (msg, obj) {
-    if (process.env.NODE_ENV == 'test') return
-    const blob = yaml.dump(obj)
-    console.log(msg, blob)
+  logObj (msg, obj, force=false) {
+    // dont noisy log for tests
+    if (process.env.NODE_ENV == 'test' && !force) return
+    const json = JSON.stringify(obj, null, 2)
+    // console.log('json', json)
+    const blob = yaml.dump(json)
+    //   , {
+    //     styles: {
+    //       '!!null': 'canonical' // dump null as ~
+    //     },
+    //     'sortKeys': true        // sort object keys
+    //   }
+    // )
+    console.log(`--- ${msg}\n`, blob)
+
   }
 
 }

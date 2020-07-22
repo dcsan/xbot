@@ -1,10 +1,26 @@
-const Dispatcher = require('../Dispatcher')
+// const Dispatcher = require('../Dispatcher')
 const Logger = require('../../lib/Logger')
 const WordUtils = require('../../lib/WordUtils')
+const RouterService = require('./RouterService')
 
 const log = console.log
 
 const RexParser = {
+
+  fixedRoutes: [
+    {
+      match: 'boo',
+      call: RouterService.boo
+    },
+
+    {
+      match: 'start|restart',
+      cname: 'restart',
+      event: RouterService.startGame,
+      eventName: 'startGame'
+    },
+
+  ],
 
   ruleSet: [
     {
@@ -342,6 +358,18 @@ const RexParser = {
     return reply
   },
 
+  routeParser (input) {
+    let clean = WordUtils.cheapNormalize(input)
+    clean = WordUtils.removeStopWords(clean)
+    const found = RexParser.fixedRoutes.find(route => {
+      const rex = new RegExp(route.match)
+      const parsed = rex.exec(input)
+      // console.log('parsed', parsed)
+      return parsed // truthy to exit
+    })
+    return found
+  },
+
 /**
  * simple parser like this:
  * `action` `item` `modifier`
@@ -360,6 +388,7 @@ const RexParser = {
     let foundItem
 
     const modifier = WordUtils.removeStopWords(modWords)
+    // FIXME parser shouldnt know about 'room'
     if (itemName) {
       foundItem = room.findThing(itemName)
     }

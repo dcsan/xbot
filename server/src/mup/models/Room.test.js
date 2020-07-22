@@ -1,6 +1,7 @@
 const Game = require('./Game.js')
 // const WordUtils = require('../lib/WordUtils')
-const TestUtils = require('../lib/TestUtils');
+const TestUtils = require('../../lib/TestUtils');
+const RexParser = require('../services/RexParser.js');
 // const RexParser = require('./parser/RexParser.js');
 // const { basicInputParser } = require('./parser/RexParser.js');
 
@@ -11,7 +12,7 @@ const game = new Game(1234)
 
 beforeEach( async() => {
   context.reset()
-  await game.init({})
+  await game.init({ storyName: 'office' })
   await game.story.room.reset()
 })
 
@@ -78,8 +79,9 @@ test('examine item', async () => {
 
 test('room item actions', async () => {
   const input = "read the note"
-  context.setInput(input)
-  const result = await game.story.room.tryActions(context)
+  // context.setInput(input)
+  const parsed = RexParser.basicInputParser(input, game.story.currentRoom)
+  const result = await game.story.currentRoom.tryAllActions(parsed, context)
   // log({sent: context.sent, chat: context.chat.msg})
 
   expect(context.received.text).toMatch(/You read the note/)
@@ -93,24 +95,35 @@ test('room item actions', async () => {
   // expect(blocks[1].text.text).toMatch(/^The note has .*/)
   expect(blocks[1].text.text).toMatch('The note just has')
 
-  expect(result).toEqual(true)
+  expect(result.type).toEqual('itemAction')
 })
 
 test('load named story', async () => {
-  game.init({ storyName: 'asylum', context })
+  await game.init({ storyName: 'asylum', context })
+  // @ts-ignore
   expect(game.story.doc.cname).toBe('asylum')
-  game.story.goto('cell')
+  game.story.gotoRoom('cell')
   expect(game.story.room.name).toBe('cell')
 })
 
+test('gotoRoom', async () => {
+  await game.init({ storyName: 'asylum', context })
+  expect(game.story.room.cname).toBe('start')
+  game.story.gotoRoom('lobby')
+  expect(game.story.room.cname).toBe('lobby')
+  game.story.currentRoom.gotoRoom('cell')
+  expect(game.story.currentRoom.cname).toBe('cell')
+})
 
 test('try room action', async () => {
-  game.init({ storyName: 'asylum', context })
-  game.story.goto('intro')
-  context.setInput('sleep')
-  const reply = await game.story.room.tryActions(context)
-  expect(game.story.room.name).toBe('lobby')
-  expect(context.received.text).toMatch(/You get a good night/)
+  await game.init({ storyName: 'asylum', context })
+  const input = 'sleep'
+  const parsed = RexParser.basicInputParser(input, game.story.currentRoom)
+  const reply = await game.story.room.tryAllActions(parsed, context)
+  expect(reply.type).toBe('roomAction')
+  expect(reply.action.actionData.goto).toBe('intro')
+  expect(game.story.room.name).toBe('intro')
+  // expect(context.received.text).toMatch(/You get a good night/)
 })
 
 

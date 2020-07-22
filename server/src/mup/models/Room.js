@@ -1,12 +1,12 @@
 const debug = require('debug')('mup:Room')
 const Item = require('./Item')
-const Logger = require('../lib/Logger')
-const SlackAdapter = require('../lib/adapters/SlackAdapter')
+const Logger = require('../../lib/Logger')
+const SlackAdapter = require('../../lib/adapters/SlackAdapter')
 const GameObject = require('./GameObject')
 const Actor = require('./Actor')
-const Util = require('../lib/Util')
-const WordUtils = require('../lib/WordUtils')
-const RexParser = require('./parser/RexParser')
+const Util = require('../../lib/Util')
+const WordUtils = require('../../lib/WordUtils')
+const RexParser = require('../services/RexParser')
 
 class Room extends GameObject {
 
@@ -87,10 +87,6 @@ class Room extends GameObject {
   }
 
   get allThings () {
-    return this.findAllThings()
-  }
-
-  findAllThings () {
     const things = [...this.actors, ...this.items]
     return things
   }
@@ -205,20 +201,26 @@ class Room extends GameObject {
    * @returns
    * @memberof Room
    */
-  async tryActions (context) {
-    let reply
-    const input = context.event.text
-    const parsed = RexParser.basicInputParser(input, this)
+  async tryAllActions (parsed, context) {
+    let action
+
     if (parsed?.foundItem) {
-      reply = await parsed.foundItem.tryAction(parsed, context)
-      return reply
+      action = await parsed.foundItem.tryAction(parsed, context)
+      return {
+        type: 'itemAction',
+        action
+      }
     }
     // else try on the room
-    reply = await this.tryAction(parsed, context)
-    if (reply) {
-      return reply
+    action = await this.tryAction(parsed, context)
+    if (action) {
+      return {
+        type: 'roomAction',
+        action
+      }
+
     }
-    Logger.log('nothing found for input', input)
+
     return false
   }
 

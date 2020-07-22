@@ -1,30 +1,14 @@
-const Game = require("./Game")
-const Logger = require('../lib/Logger')
-const RexParser = require('./parser/RexParser')
-const Menu = require('./Menu')
-
-let GameList = {}
-
-const menu = new Menu()
+const Logger = require('../../lib/Logger')
+const RexParser = require('./RexParser')
+const RouterService = require('./RouterService')
+// const Menu = require('./Menu')
+// const menu = new Menu()
 
 const Dispatcher = {
 
-  async findGame (sid) {
-    let gameSession = GameList[sid]
-    if (!gameSession) {
-      gameSession = new Game(sid)
-      GameList[sid] = gameSession
-      gameSession.init(false)
-      Logger.log('new game', sid)
-      Logger.log('init routes gameObj.story', gameSession.story.room.name)
-    }
-    // Logger.log('returning game', gameSession.sid)
-    return gameSession
-  },
-
   // run within game for session
   async gameRun (cmd, context) {
-    const game = await Dispatcher.findGame(context.session.id)
+    const game = await RouterService.findGame(context.session.id)
     Logger.log('gameRun.cmd=', cmd)
     if (game[cmd]) {
       return game[cmd](context)
@@ -70,18 +54,18 @@ const Dispatcher = {
   },
 
   async help (context) {
-    const game = await Dispatcher.findGame(context.session.id)
+    const game = await RouterService.findGame(context.session.id)
     await game.help(context)
   },
 
   async morehelp (context) {
     // return Dispatcher.gameRun('morehelp', context)
-    const game = await Dispatcher.findGame(context.session.id)
+    const game = await RouterService.findGame(context.session.id)
     await game.moreHelp(context)
   },
 
   async button (context) {
-    // const game = await Dispatcher.findGame(context.session.id)
+    // const game = await RouterService.findGame(context.session.id)
     const buttonAction = context.event.rawEvent.actions[0]
     const value = buttonAction.value // look | examine | more
     switch (value) {
@@ -112,7 +96,7 @@ const Dispatcher = {
       },
     }
   ) {
-    const game = await Dispatcher.findGame(context.session.id)
+    const game = await RouterService.findGame(context.session.id)
     Logger.logObj('examine item: ', item)
     await game.story.examine(item, game.player, context)
   },
@@ -125,7 +109,7 @@ const Dispatcher = {
       },
     }
   ) {
-    const game = await Dispatcher.findGame(context.session.id)
+    const game = await RouterService.findGame(context.session.id)
     Logger.logObj('ask', {actor, message})
     await game.story.room.ask(actor, message)
   },
@@ -133,10 +117,18 @@ const Dispatcher = {
   async fallback (context) {
     const input = context.event.text
     Logger.log('fallback:', input)
+    const found =
+      await Dispatcher.fixedRoutes(context) ||
+      await Dispatcher.parsedRoutes(context) ||
+      await Dispatcher.itemActions(context)
+  },
+
+  async parsedRoutes (context) {
+    const input = context.event.text
     const parsed = RexParser.parseRules(input)
     // console.log('parsed', parsed)
     if (parsed && parsed.event) {
-      const game = await Dispatcher.findGame(context.session.id)
+      const game = await RouterService.findGame(context.session.id)
       let actor, event, reply, actorName
       const player = game.player
 
@@ -167,21 +159,37 @@ const Dispatcher = {
             context.sendText(`I don't know how to ${event}  ${actor.name}`)
             Logger.warn('cannot find event ', event, 'on actor:', actor.name)
           }
+          return true
 
         case 'thing':
           Logger.warn('thing events not handled yet')
           return false  // not handled
       }
-    } else {
-      return await Dispatcher.finalActions(context)
     }
+
+  },
+
+  async fixedRoutes (context) {
+    const input = context.event.text
+    const foundRoute = RexParser.routeParser(input)
+    if (foundRoute) {
+      Logger.logObj('foundRoute', foundRoute, true)
+      const func = foundRoute.event || RouterService[foundRoute.eventName]
+      console.log('event', foundRoute.event)
+      // Logger.logObj('calling', {func}, true)
+      await func(context)
+      return foundRoute
+    }
+    return false
   },
 
   // try event on all items in the room
-  async finalActions (context) {
-    const game = await Dispatcher.findGame(context.session.id)
+  async itemActions (context) {
+    const game = await RouterService.findGame(context.session.id)
+    const input = context.event.text
+    const parsed = RexParser.basicInputParser(input, game.story.currentRoom)
     Logger.log('finalActions', context.event.text)
-    return await game.story.room.tryActions(context)
+    return await game.story.room.tryAllActions(parsed, context)
   }
 
 }

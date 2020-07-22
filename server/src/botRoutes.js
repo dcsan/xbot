@@ -18,7 +18,6 @@ module.exports = async function App () {
 
     // // debug commands
     text(['rs', 'restart'], Dispatcher.restart),
-    text(/^rs$|^start$|^restart$/i, Dispatcher.restart),
     text(/^st$|^status$/i, Dispatcher.status),
     text(['rl', 'reload'], Dispatcher.reload),
 
@@ -36,6 +35,7 @@ module.exports = async function App () {
 
     text('welcome', Dispatcher.welcome),
     slack.event('member_joined_channel', Dispatcher.welcome),
+    // @ts-ignore
     slack.event('interactive_message', Dispatcher.button),
     text('*', Dispatcher.fallback),
     // slack.any(Dispatcher.HandleSlack),
