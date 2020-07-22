@@ -102,16 +102,16 @@ test('load named story', async () => {
   await game.init({ storyName: 'asylum', context })
   // @ts-ignore
   expect(game.story.doc.cname).toBe('asylum')
-  game.story.gotoRoom('cell')
+  await game.story.gotoRoom('cell', context)
   expect(game.story.room.name).toBe('cell')
 })
 
 test('gotoRoom', async () => {
   await game.init({ storyName: 'asylum', context })
   expect(game.story.room.cname).toBe('start')
-  game.story.gotoRoom('lobby')
+  await game.story.gotoRoom('lobby', context)
   expect(game.story.room.cname).toBe('lobby')
-  game.story.currentRoom.gotoRoom('cell')
+  await game.story.currentRoom.gotoRoom('cell', context)
   expect(game.story.currentRoom.cname).toBe('cell')
 })
 

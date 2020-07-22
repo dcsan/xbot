@@ -14,7 +14,7 @@ const sendMessage = async (input) => {
   return context
 }
 
-test('start', async () => {
+xtest('start', async () => {
   const game = await RouterService.findGame(1234)
   await sendMessage('start')
   expect(context.received).toBe('goto room')

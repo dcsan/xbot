@@ -33,6 +33,10 @@ const Util = {
       console.error('ERROR failed to load yaml:', pathFromData)
       throw(err)
     }
+  },
+
+  quoteCode (s) {
+    return('```' + s + '```')
   }
 
 }

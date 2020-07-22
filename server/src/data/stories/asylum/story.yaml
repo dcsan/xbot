@@ -6,7 +6,7 @@ intro: This is the introduction
 
 rooms:
   - name: start
-    imageUrl: https://via.placeholder.com/500x200.png?text=Facebook+Ad+On+Screen
+    imageUrl: https://via.placeholder.com/500x200/444488/CCC.png?text=Facebook+Ad+On+Screen
     intro: Are you ready?
     long:
       "Welcome to 'Escape From Bell Hill (Asylum #6)'\n
@@ -35,8 +35,11 @@ rooms:
     long:
       'Saturday late morning, you arrive at the venue and are greeted by a host wearing a white lab coat.
       After placing all of your personal belongings in a locker, you are ushered down a long hallway which leads directly into the first room of the game: a simple bedroom for you, a male inmate of Bell Hill.
+
       The host informs you that the game will last one hour and will be followed by a debrief. If you are ever stuck or want to leave, just say the safe word “macaroni”.
+
       She then wishes you good luck and exits through the door by which you both came.
+
       The door closes seamlessly behind, becoming part of a blank wall of the room.
       '
     buttons:
@@ -53,7 +56,7 @@ rooms:
       and two burly men dressed as what you take to be orderlies enter.
     actions:
       - match: talk
-        long:
+        reply:
           Before you can speak, one of the men locks you in bear-like grip while the other strips your pants off your legs roughly.
           You attempt to protest, but your shirt is torn directly down the center by the first gorilla,
           and you are left standing naked apart from underwear and socks.

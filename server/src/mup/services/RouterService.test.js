@@ -11,9 +11,9 @@ const log = console.log
 const context = TestUtils.context
 
 test('routeParser', async () => {
-  const route = await RexParser.routeParser('start')
-  expect(route.cname).toBe('restart')
-  expect(route.event).toBe(RouterService.startGame)
+  const found = await RexParser.fixedRouteParser('start')
+  expect(found.route.cname).toBe('restart')
+  expect(found.route.event).toBe(RouterService.startGame)
 })
 
 test('cheat command', async () => {
@@ -27,3 +27,4 @@ test('cheat command', async () => {
   // TODO - more detail for matcher?
   expect(context.received.text).toMatch(/room/gim)
 })
+

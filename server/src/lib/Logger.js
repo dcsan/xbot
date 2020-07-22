@@ -67,6 +67,14 @@ const Logger = {
     // )
     console.log(`--- ${msg}\n`, blob)
 
+  },
+
+  checkItem (obj, field) {
+    const res = obj[field]
+    if (!res) {
+      console.warn('checkItem: missing field:', field)
+      console.log('in obj =>', obj)
+    }
   }
 
 }

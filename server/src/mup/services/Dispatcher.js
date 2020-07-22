@@ -143,13 +143,17 @@ const Dispatcher = {
         case 'firstActor':
           event = parsed.event
           actor = game.story.room.firstActor()
-          reply = await actor[event](parsed, context, player)
-          return reply // for tests
+          if (actor) {
+            reply = await actor[event](parsed, context, player)
+            return reply // for tests
+          }
+          break
 
         // named actor
         case 'actor':
           actorName = parsed.groups.actor
           actor = actor = game.story.room.findActor(actorName)
+          if (!actor) break
           // event is set by parser ruleSet
           event = parsed.event
           if (actor[event]) {
@@ -170,14 +174,12 @@ const Dispatcher = {
 
   async fixedRoutes (context) {
     const input = context.event.text
-    const foundRoute = RexParser.routeParser(input)
-    if (foundRoute) {
-      Logger.logObj('foundRoute', foundRoute, true)
-      const func = foundRoute.event || RouterService[foundRoute.eventName]
-      console.log('event', foundRoute.event)
-      // Logger.logObj('calling', {func}, true)
-      await func(context)
-      return foundRoute
+    const found = RexParser.fixedRouteParser(input)
+    if (found?.route) {
+      Logger.logObj('fixedRoutes.found', found)
+      const func = found.route.event
+      await func(context, found)
+      return found
     }
     return false
   },

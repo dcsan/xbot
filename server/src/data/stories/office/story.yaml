@@ -5,6 +5,7 @@ intro: You wake up in a strange room. The door is locked.
 rooms:
   - name: office
     description: A large empty room with a corner `desk`
+    long: A boring looking tech company's office. Seems like you've been here before, but it just looks the same as any other one.
     imageUrl: office/rooms/office-chest-closed.jpg
     caption: "<https://cbg.rik.ai/rooms/office| :mag: corner office>"
     setHint: start

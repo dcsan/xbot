@@ -9,12 +9,17 @@ const RexParser = {
 
   fixedRoutes: [
     {
-      match: 'cheat',
+      rex: /cheat/,
       event: RouterService.cheat
     },
 
     {
-      match: 'start|restart',
+      rex: /^(goto|gt) (?<roomName>\w+)$/,
+      event: RouterService.goto
+    },
+
+    {
+      rex: /start|restart/,
       cname: 'restart',
       event: RouterService.startGame,
       // eventName: 'startGame'
@@ -358,14 +363,17 @@ const RexParser = {
     return reply
   },
 
-  routeParser (input) {
+  fixedRouteParser (input) {
     let clean = WordUtils.cheapNormalize(input)
     clean = WordUtils.removeStopWords(clean)
-    const found = RexParser.fixedRoutes.find(route => {
-      const rex = new RegExp(route.match)
-      const parsed = rex.exec(input)
-      // console.log('parsed', parsed)
-      return parsed // truthy to exit
+    let found
+    // breaks when first item found but we capture a different value
+    RexParser.fixedRoutes.find(route => {
+      // const rex = new RegExp(route.match)
+      const parsed = route.rex.exec(input)
+      if (parsed) {
+        found = { parsed, route }
+      } // else keep looking
     })
     return found
   },

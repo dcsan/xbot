@@ -19,7 +19,7 @@ class Story {
 
 /**
  *
- * 
+ *
  * @param {*} opts
  * @memberof Story
  */
@@ -43,8 +43,9 @@ load (opts) {
     return this.rooms.find( room => room.name === roomName )
   }
 
-  gotoRoom (roomName) {
+  async gotoRoom (roomName, context) {
     this.currentRoom = this.findRoom(roomName)
+    await this.currentRoom.enter(context)
   }
 
   buildStory(doc) {

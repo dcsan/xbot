@@ -46,6 +46,10 @@ class Room extends GameObject {
     })
   }
 
+  async enter (context) {
+    context.sendText(this.description)
+  }
+
   async things (context) {
     const msg = this.items.map(thing => thing.name)
     context.sendText( msg.join(','))
@@ -72,7 +76,7 @@ class Room extends GameObject {
       blocks.push( SlackAdapter.imageBlock(this.doc) )
     }
     blocks.push(
-      SlackAdapter.textBlock(this.doc.long)
+      SlackAdapter.textBlock(this.long)
     )
     const firstActor = this.firstActor()
     if (firstActor) {
@@ -80,14 +84,18 @@ class Room extends GameObject {
       blocks.push(SlackAdapter.textBlock(actorIntro))
     }
     const itemsInfo = this.itemFormalNamesOneLine()
-    if (itemsInfo) blocks.push(SlackAdapter.textBlock(`You see ` + itemsInfo))
+    if (itemsInfo) {
+      blocks.push(SlackAdapter.textBlock(`You see ` + itemsInfo))
+    }
 
     await SlackAdapter.sendBlocks(blocks, context)
     return blocks
   }
 
   get allThings () {
-    const things = [...this.actors, ...this.items]
+    const things = []
+    if (this.actors) things.push(...this.actors)
+    if (this.items) things.push(...this.items)
     return things
   }
 
@@ -133,6 +141,7 @@ class Room extends GameObject {
    * for talking out loud in a room
    */
   firstActor () {
+    if (!this.actors) return
     const foundActor = this.actors[0]
     if (!foundActor) {
       // Logger.log('room.actors', this.actors)

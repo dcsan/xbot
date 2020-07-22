@@ -51,9 +51,19 @@ class GameObject {
   }
 
   get stateInfo () {
-    const info = this.doc.states.filter(s => s.name === this.state).pop() ||
+    if (!this.doc.states) { return false }
+    const info =
+      this.doc.states?.filter(s => s.name === this.state).pop() ||
       this.doc.states[0]
     return info
+  }
+
+  get long () {
+    Logger.checkItem(this.doc, 'long')
+    return this.doc.long ||
+      this.doc.description ||
+      this.doc.short ||
+      this.doc.name
   }
 
   get description () {
@@ -62,7 +72,7 @@ class GameObject {
 
   get short () {
     const info = this.stateInfo
-    return info.short || info.long || this.doc.description || this.formalName
+    return info?.short || info?.long || this.doc.short || this.doc.long || this.doc.description || this.formalName
   }
 
   setState (newState) {
@@ -138,10 +148,10 @@ class GameObject {
   // game>story>room  room.story.game
   // FIXME - reaching UP through the hierarchy
   // a gameObject could be a room itself or we need thing.room
-  gotoRoom (roomName) {
+  gotoRoom (roomName, context) {
     const thisRoom = this.room || this
     // @ts-ignore
-    thisRoom.story.gotoRoom(roomName)
+    thisRoom.story.gotoRoom(roomName, context)
   }
 
   // FIXME - this applies to things and rooms
@@ -157,7 +167,7 @@ class GameObject {
     }
 
     if (actionData.goto) {
-      this.gotoRoom(actionData.goto)
+      this.gotoRoom(actionData.goto, context)
     }
 
     const needs = actionData.needs

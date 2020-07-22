@@ -20,8 +20,18 @@ class DummyContext {
   get received () {
     return {
       text: this.sent.text,
+      list: this.sent.list,
       posted: this.chat.msg
     }
+  }
+
+  // check full list
+  hasText (text) {
+    return (this.allText.includes(text))
+  }
+
+  get allText () {
+    return this.sent.list.join('\n')
   }
 
   flatBlocks () {
@@ -33,6 +43,7 @@ class DummyContext {
 
   reset () {
     this.sent = {
+      list: [],
       text: undefined,
       msg: undefined
     }
@@ -45,6 +56,7 @@ class DummyContext {
 
   sendText (text) {
     this.sent.text = text
+    this.sent.list.push(text)
   }
 
   setInput (text) {

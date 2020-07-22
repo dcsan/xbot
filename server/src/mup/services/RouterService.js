@@ -1,6 +1,6 @@
 const Game = require('../models/Game')
 const Logger = require('../../lib/Logger')
-
+const Util = require('../../lib/Util')
 let GameList = {}
 
 const RouterService = {
@@ -19,13 +19,11 @@ const RouterService = {
   },
 
   boo: async (context) => {
-    console.log('service.boo!')
     context.sendText('boo')
   },
 
   getActionMatchesList (actions) {
     let lines = []
-    console.log('actions', actions)
     actions?.forEach(thing => {
       lines.push(this.getActionMatchesThing(thing))
     })
@@ -44,12 +42,19 @@ const RouterService = {
     const actors = RouterService.getActionMatchesList(game.story.currentRoom.actors)
     const cheatInfo = { room, items, actors }
     // Logger.logObj('cheatInfo', cheatInfo)
-    context.sendText(JSON.stringify(cheatInfo, null, 2))
+    context.sendText(Util.quoteCode(JSON.stringify(cheatInfo, null, 2)))
     return cheatInfo
   },
 
+  // found: {route, parsed}
+  goto: async (context, found) => {
+    Logger.logObj('goto.found', found)
+    const roomName = found.parsed.groups.roomName
+    const game = await RouterService.findGame(context.session.id)
+    await game.story.gotoRoom(roomName, context)
+  },
+
   startGame: async (context) => {
-    console.log('game is', Game)
     const game = await RouterService.findGame(context.session.id)
     await game.restart(context)
   },
