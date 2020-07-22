@@ -1,7 +1,7 @@
 const { router, text, slack } = require('bottender/router')
 // const Logger = require('./lib/Logger')
 
-const Dispatcher = require('./mup/Dispatcher')
+const Dispatcher = require('./mup/services/Dispatcher')
 
 module.exports = async function App () {
   // Logger.log('init routes game', game)

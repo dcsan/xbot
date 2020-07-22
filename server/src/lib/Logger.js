@@ -26,10 +26,14 @@ const Logger = {
 
   error (msg, obj) {
     console.log("ERROR", msg)
-    if (obj) {
-      Logger.logObj('obj', obj)
-    }
-    throw new Error(msg)
+    console.log(obj)
+    console.log('typeof', typeof (obj))
+    console.log('keys', Object.keys(obj))
+
+    // if (obj) {
+    //   Logger.logObj('obj', obj)
+    // }
+    // throw new Error(msg)
   },
 
   // error and throw
@@ -39,6 +43,13 @@ const Logger = {
       Logger.logObj('obj', obj)
     }
     throw new Error(msg)
+  },
+
+  /**
+   * yaml log is stripping out Functions
+   */
+  logJson (msg, obj, force = false) {
+    console.log(msg, JSON.stringify(obj))
   },
 
   logObj (msg, obj, force=false) {

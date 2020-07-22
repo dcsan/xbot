@@ -11,6 +11,9 @@ const SlackAdapter = {
   },
 
   textBlock (text) {
+    if (!text) {
+      Logger.fatal('textBlock with no text!:', text)
+    }
     const block = {
       "type": "section",
       // "block_id": "section567",
@@ -111,8 +114,8 @@ const SlackAdapter = {
     try {
       await context.chat.postMessage(msg)
     } catch (err) {
-      Logger.logObj('ERROR chat.postMessage error. msg=>', msg)
-      Logger.error('ERROR', err)
+      Logger.logJson('ERROR chat.postMessage error. msg=>', msg)
+      Logger.error('ERROR', err.response.data)
     }
   },
 

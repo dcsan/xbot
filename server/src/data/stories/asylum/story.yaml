@@ -2,6 +2,7 @@ type: story
 name: "Escape From Bell Hill (Asylum #6)"
 cname: asylum   # internal reference
 goto: start
+intro: This is the introduction
 
 rooms:
   - name: start

@@ -9,6 +9,11 @@ rooms:
     caption: "<https://cbg.rik.ai/rooms/office| :mag: corner office>"
     setHint: start
 
+    actions:
+    - match: atov/i
+      pass:
+        text: You say ATOV to noone in particular. Maybe you need to look for something else?
+
     hints:
       start: Have a `look` around for anything interesting!
       read-note: read the note
@@ -16,10 +21,6 @@ rooms:
       open-chest: What's inside the chest?
       use-key: Where could you use that key?
 
-      actions:
-      - match: atov/i
-        pass:
-          text: You say ATOV to noone in particular. Maybe you need to look for something else?
 
     actors:
       - name: Sid

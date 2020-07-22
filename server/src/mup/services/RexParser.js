@@ -9,15 +9,15 @@ const RexParser = {
 
   fixedRoutes: [
     {
-      match: 'boo',
-      call: RouterService.boo
+      match: 'cheat',
+      event: RouterService.cheat
     },
 
     {
       match: 'start|restart',
       cname: 'restart',
       event: RouterService.startGame,
-      eventName: 'startGame'
+      // eventName: 'startGame'
     },
 
   ],
