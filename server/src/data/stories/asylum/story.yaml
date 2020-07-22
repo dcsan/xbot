@@ -71,9 +71,12 @@ rooms:
 
   - name: cell
     short: You are in an inmate’s bedroom.
+    imageUrl: /asylum/rooms/cell.jpg
+
     items:
       - name: wardrobe
         state: closed
+        imageUrl: https://via.placeholder.com/500x200/444488/CCC.png?text=Wardrobe+Closeup
         states:
           - name: closed
             short: A free-standing wooden wardrobe is against one wall.
@@ -89,24 +92,31 @@ rooms:
               - open
 
       - name: bathrobe
+        imageUrl: https://via.placeholder.com/500x200/444488/CCC.png?text=Bathrobe
         actions:
 
       - name: bed
+        imageUrl: https://via.placeholder.com/500x200/444488/CCC.png?text=The+Bed
         short: A narrow metal bed is here
 
       - name: desk
+        imageUrl: https://via.placeholder.com/500x200/444488/CCC.png?text=The+Desk
         short: A squat desk with chair sits beside
 
       - name: sink
+        imageUrl: https://via.placeholder.com/500x200/444488/CCC.png?text=The+Sink
         short: There is a sink built into the opposite wall
 
       - name: lights
+        imageUrl: https://via.placeholder.com/500x200/444488/CCC.png?text=Lights
         short: A vertical row of small lightbulbs is above the sink
 
       - name: posters
+        imageUrl: https://via.placeholder.com/500x200/444488/CCC.png?text=Posters
         short: Some posters are on the wall.
 
       - name: window
+        imageUrl: https://via.placeholder.com/500x200/444488/CCC.png?text=A+window
         short: A rectangular window with bars is recessed into the far wall. A door leads out.
         long:
           The window is frosted and protected by metal bars from your side.

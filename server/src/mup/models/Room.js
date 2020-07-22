@@ -155,6 +155,7 @@ class Room extends GameObject {
     if (!name) {
       Logger.error('findActor but no name!')
     }
+    if (!this.actors) return false
     name = name.toLowerCase()
     const foundActor = this.actors.find(actor => actor.cname === name)
     if (!foundActor) {
