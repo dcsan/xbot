@@ -9,17 +9,21 @@
   "license": "MIT",
   "keywords": [],
   "scripts": {
-    "describe": "npm-scripts-info",
+    "build": "run-s clean build:main",
+    "build:main": "tsc -p tsconfig.json",
+    "clean": "trash build test",
+    "tsdev": "LOG_LEVEL=debug nodemon src/index.ts",
+    "dev": "NODE_ENV=development LOG_LEVEL=debug run-s build:main mon",
+    "test": "run-s build test:unit",
     "test:unit": "jest --coverage",
-    "test": "run-s build test:*",
+    "describe": "npm-scripts-info",
+    "start:node": "NODE_ENV=development node dist/index.js",
     "test:watch": "run-s clean build:main && run-p \"build:main -- -w\" \"test:unit -- --watch\"",
     "start:dev": "run-s clean build:main && run-p \"build:main -- -w\" \"mon\"",
     "mon": "nodemon dist/index.js",
     "xdev": "ts-node src/index.ts",
     "tdev": "ts-node-dev ./src/index.ts",
-    "dev": "NODE_ENV=development LOG_LEVEL=debug nodemon src/index.ts",
     "build:all": "run-s clean && run-p build:*",
-    "build:main": "tsc -p tsconfig.json",
     "build:module": "tsc -p tsconfig.module.json",
     "fix": "run-s fix:*",
     "fix:prettier": "prettier \"src/**/*.ts\" --write",
@@ -30,12 +34,11 @@
     "cov:send": "nyc report --reporter=lcov && codecov",
     "cov:check": "nyc report && nyc check-coverage --lines 100 --functions 100 --branches 100",
     "doc": "run-s doc:html && open-cli build/docs/index.html",
-    "doc:html": "typedoc src/ --exclude **/*.spec.ts --target ES6 --mode file --out build/docs",
-    "doc:json": "typedoc src/ --exclude **/*.spec.ts --target ES6 --mode file --json build/docs/typedoc.json",
+    "doc:html": "typedoc src/ --exclude node_modules --target ES6 --mode file --out build/docs",
+    "doc:json": "typedoc src/ --exclude **/*.test.ts --target ES6 --mode file --json build/docs/typedoc.json",
     "doc:publish": "gh-pages -m \"[ci skip] Updates\" -d build/docs",
     "version": "standard-version",
     "reset": "git clean -dfx && git reset --hard && npm i",
-    "clean": "trash build test",
     "prepare-release": "run-s reset test cov:check doc:html version doc:publish"
   },
   "scripts-info": {
@@ -59,7 +62,8 @@
     "botbuilder-storage-mongodb": "^0.9.5",
     "botkit": "^4.9.0",
     "botkit-plugin-cms": "^1.0.3",
-    "dotenv": "^7.0.0"
+    "dotenv": "^7.0.0",
+    "morgan": "^1.10.0"
   },
   "devDependencies": {
     "@bitjson/npm-scripts-info": "^1.0.0",
@@ -83,7 +87,7 @@
     "tslint": "^5.18.0",
     "tslint-config-prettier": "^1.18.0",
     "tslint-immutable": "^6.0.1",
-    "typescript": "^3.5.3"
+    "typescript": "^3.9.7"
   },
   "config": {
     "commitizen": {
