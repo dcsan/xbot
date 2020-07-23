@@ -2,8 +2,15 @@
   "watch": [
     "src"
   ],
-  "ext": "ts",
+  "restartable": "rs",
   "ignore": [
+    ".git",
+    "node_modules/**/node_modules",
     "src/**/*.test.ts"
-  ]
+  ],
+  "verbose": true,
+  "execMap": {
+    "ts": "node -r ts-node/register -r tsconfig-paths/register"
+  },
+  "ext": "js,json,ts"
 }

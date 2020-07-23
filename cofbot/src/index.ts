@@ -96,6 +96,7 @@ controller.ready(() => {
 controller.webserver.get('/', (_req, res) => {
   const output = {
     msg: `This app is running Botkit ${ controller.version }.`,
+    ver: '0.0.2x',
     env: process.env.NODE_ENV
   }
   res.json(output)
