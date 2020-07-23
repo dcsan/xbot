@@ -4,7 +4,6 @@
   ],
   "ext": "ts",
   "ignore": [
-    "src/**/*.spec.ts"
-  ],
-  "exec": "ts-node -r ./register-ts-config-path.ts ./src/index.ts"
+    "src/**/*.test.ts"
+  ]
 }

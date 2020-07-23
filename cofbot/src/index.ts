@@ -13,6 +13,7 @@ import { config } from 'dotenv'
 config()
 
 console.log('using MONGO_URI', process.env.MONGO_URI)
+console.log('using NODE_ENV', process.env.NODE_ENV)
 
 let storage = undefined
 if (process.env.MONGO_URI) {
@@ -93,7 +94,11 @@ controller.ready(() => {
 })
 
 controller.webserver.get('/', (_req, res) => {
-  res.send(`This app is running Botkit ${ controller.version }.`)
+  const output = {
+    msg: `This app is running Botkit ${ controller.version }.`,
+    env: process.env.NODE_ENV
+  }
+  res.json(output)
 })
 
 controller.webserver.get('/install', (_req, res) => {

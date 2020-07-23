@@ -6,6 +6,8 @@ module.exports = function (controller: Botkit) {
   })
 
   controller.on('message,direct_message', async (bot, message) => {
-    await bot.reply(message, `Echo: ${ message.text }`)
+    const reply = `echo: ${ message.text }`
+    console.log('echo', reply)
+    await bot.reply(message, reply)
   })
 }
