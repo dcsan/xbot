@@ -12,7 +12,7 @@ import { MongoDbStorage } from 'botbuilder-storage-mongodb'
 import { config } from 'dotenv'
 config()
 
-let storage = null
+let storage = undefined
 if (process.env.MONGO_URI) {
   storage = new MongoDbStorage({
     url: process.env.MONGO_URI,
@@ -63,6 +63,7 @@ if (process.env.CMS_URI) {
   controller.usePlugin(
     new BotkitCMSHelper({
       uri: process.env.CMS_URI,
+      // @ts-ignore
       token: process.env.CMS_TOKEN,
     })
   )
@@ -83,15 +84,16 @@ controller.ready(() => {
         // do not continue middleware!
         return false
       }
+      return
     })
   }
 })
 
-controller.webserver.get('/', (req, res) => {
+controller.webserver.get('/', (_req, res) => {
   res.send(`This app is running Botkit ${ controller.version }.`)
 })
 
-controller.webserver.get('/install', (req, res) => {
+controller.webserver.get('/install', (_req, res) => {
   // getInstallLink points to slack's oauth endpoint and includes clientId and scopes
   res.redirect(controller.adapter.getInstallLink())
 })
