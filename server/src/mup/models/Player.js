@@ -10,14 +10,14 @@ class Player {
     this.items = []
   }
 
-  async status (context) {
-    let reply = ["inventory: "]
+  async status () {
+    let reply = []
     if (!this.items.length) {
       reply.push('nothing')
     } else this.items.map(item => {
       reply.push[`- ${item.name}`]
     })
-    await SlackAdapter.sendList( reply, context )
+    return reply
   }
 
   addItem(item) {

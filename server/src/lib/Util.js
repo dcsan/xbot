@@ -19,9 +19,12 @@ const Util = {
   },
 
   // wrap relative image URLs
-  imageUrl (filepath) {
-    if (filepath.startsWith('http')) return filepath
-    return process.env.STATIC_SERVER + filepath + Util.cacheBust()
+  // also allows `text=xxx` links
+  imageUrl (urlInfo) {
+    if (urlInfo.startsWith('http')) return urlInfo
+    if (urlInfo.startsWith('text=')) return `https://via.placeholder.com/500x200/444488/CCC.png?${urlInfo}`
+
+    return process.env.STATIC_SERVER + urlInfo + Util.cacheBust()
   },
 
   loadYaml(pathFromData) {

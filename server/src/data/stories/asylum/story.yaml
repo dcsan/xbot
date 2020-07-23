@@ -6,8 +6,8 @@ intro: This is the introduction
 
 rooms:
   - name: start
-    imageUrl: https://via.placeholder.com/500x200/444488/CCC.png?text=Facebook+Ad+On+Screen
     intro: Are you ready?
+    imageUrl: /asylum/rooms/title.jpg
     long:
       "Welcome to 'Escape From Bell Hill (Asylum #6)'\n
       Ready?"
@@ -15,14 +15,17 @@ rooms:
       - type 'OK' to begin
     actions:
       - match: continue|.*   # .* match anything
-        goto: intro
+        goto: prologue
     buttons:
       - continue
 
-  - name: intro
+  - name: prologue
+    imageUrl: text=Facebook+Ad+On+Screen
     long:
       You have accepted an invitation via Facebook ad to playtest a new physical escape room in your city. The setting of the game is a mental asylum called "Bell Hill".
-      Having signed the game’s terms & conditions and a standard NDA online, you climb into bed early Friday night, full of anticipation. After all, you love escape rooms.
+      Having signed the game’s terms & conditions and a standard NDA online, you climb into bed early Friday night, full of anticipation.
+
+      After all, you love escape rooms.
     hints:
       - maybe time to get some rest
       - some `sleep`?
@@ -33,48 +36,92 @@ rooms:
     buttons:
       - sleep
 
-  - name: lobby
+  - name: lobby1
     long:
       'Saturday late morning, you arrive at the venue and are greeted by a host wearing a white lab coat.
       After placing all of your personal belongings in a locker, you are ushered down a long hallway which leads directly into the first room of the game: a simple bedroom for you, a male inmate of Bell Hill.
+      '
+    hints:
+      - type `continue` when you're ready.
+    buttons:
+      - continue
+    actions:
+      - match: continue|.*
+        goto: lobby2
 
-      The host informs you that the game will last one hour and will be followed by a debrief. If you are ever stuck or want to leave, just say the safe word “macaroni”.
-
+  - name: lobby2
+    imageUrl: /asylum/rooms/hallway.jpg
+    long:
+      'The host informs you that the game will last one hour and will be followed by a debrief.
+      If you are ever stuck or want to leave, just say the safe word “macaroni”.
       She then wishes you good luck and exits through the door by which you both came.
-
       The door closes seamlessly behind, becoming part of a blank wall of the room.
       '
     hints:
       - type `continue` when you're ready.
-    actions:
-      - match: talk|.*
-        goto: orderlies
-
     buttons:
-      - talk to orderlies
+      - continue
+    actions:
+      - match: continue|.*
+        goto: lobby3
+
+  - name: lobby3
+    long:
+      Before you can begin, the *real* door of the room opens, and two burly men dressed as what you take to be orderlies enter.
+    hints:
+      - type `continue` when you're ready.
+    buttons:
+      - continue
+    actions:
+      - match: continue|.*
+        goto: orderlies
 
   - name: orderlies
     long:
-      You have just begun to examine your surroundings when the *real* door of the room opens,
-      and two burly men dressed as what you take to be orderlies enter.
+      '
+      “Is this part of the game?!” you stammer angrily.
+      \n
+      “It’s all in the terms and conditions you signed,” responds the second orderly.
+      \n
+      “Enjoy the game!” says the first, following the second out.
+      \n
+      The door shuts with a resounding click.
+      '
     actions:
-      - match: talk
-        reply:
-          Before you can speak, one of the men locks you in bear-like grip while the other strips your pants off your legs roughly.
-          You attempt to protest, but your shirt is torn directly down the center by the first gorilla,
-          and you are left standing naked apart from underwear and socks.
-          “Is this part of the game?!” you stammer angrily.
-
-          “It’s all in the terms and conditions you signed,” says the second orderly.
-
-          “Enjoy the game!” says the first, following the second out.
-
-          The door shuts with a resounding click.
+      - match: continue|.*
         goto: cell
+
+#--------------- cell --------------------
 
   - name: cell
     short: You are in an inmate’s bedroom.
     imageUrl: /asylum/rooms/cell.jpg
+    actions:
+      - match: enter bed
+        reply: You're not tired
+      - match: enter wardrobe
+        reply: this is not a C.S. Lewis novel
+      - match: enter window
+        reply: The bars prevent access to the window
+      - match: exit|leave|back
+        reply: The door is locked tight
+        ## TODO - conditions
+        if:
+          - door locked
+        then:
+          reply: It's locked
+        else:
+          reply: It's not locked
+          goto: other-room
+      - match: exercise
+        reply: can you be moer specific?
+      - match: jump|jumping jacks|jacks
+        reply: how many?
+      - match: do 18 (jumping) jacks|18 jacks
+        reply:
+          You slip out of your blue sandals and perform 18 jumping jacks in your socks.
+          You can’t remember doing these since childhood. It’s rather fun, actually
+
 
     items:
       - name: wardrobe

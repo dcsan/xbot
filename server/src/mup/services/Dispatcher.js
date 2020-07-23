@@ -129,16 +129,6 @@ const Dispatcher = {
     await game.story.room.ask(actor, message)
   },
 
-  // allows us to override input
-  async fallback (context, input = false) {
-    input = input || context.event.text
-    Logger.log('fallback:', input)
-    const found =
-      await Dispatcher.fixedRoutes(context, input) ||
-      await Dispatcher.parsedRoutes(context, input) ||
-      await Dispatcher.itemActions(context, input)
-  },
-
   async parsedRoutes (context, input) {
     input = input || context.event.text
     const parsed = RexParser.parseRules(input)
@@ -207,7 +197,22 @@ const Dispatcher = {
     const parsed = RexParser.basicInputParser(input, game.story.currentRoom)
     Logger.log('finalActions', context.event.text)
     return await game.story.room.tryAllActions(parsed, context)
-  }
+  },
+
+  // allows us to override input
+  async fallback (context, input) {
+    Logger.logObj('fallback =>', { input, event: context.event })
+    if (typeof input !== 'string') {
+      // we got an empty object from the botTender
+      input = context.event.text
+    }
+
+    Logger.log('fallback:.input', input)
+    const found =
+      await Dispatcher.fixedRoutes(context, input) ||
+      await Dispatcher.parsedRoutes(context, input) ||
+      await Dispatcher.itemActions(context, input)
+  },
 
 }
 

@@ -1,5 +1,6 @@
 const fs = require('fs')
 const path = require('path')
+const yaml = require('js-yaml')
 
 // const posTagger = require('wink-pos-tagger');
 const AppConfig = require('../../lib/AppConfig')
@@ -161,10 +162,14 @@ class Game {
   }
 
   async status (context) {
-    await this.story.status(context)
-    await this.player.inventory(context)
-    await this.story.room.status(context)
-    await context.sendText('state ```\n' + JSON.stringify(context.state, null, 2) + '```')
+    const statusInfo = {
+      story: await this.story.status(),
+      room: await this.story.room.status(),
+      inventory: await this.player.status(),
+    }
+    // await context.sendText('state ```\n' + JSON.stringify(context.state, null, 2) + '```')
+    const blob = yaml.dump(statusInfo)
+    await context.sendText(Util.quoteCode(blob))
   }
 
 }

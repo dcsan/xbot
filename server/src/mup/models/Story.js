@@ -3,7 +3,7 @@ const Util = require('../../lib/Util')
 const SlackAdapter = require('../../lib/adapters/SlackAdapter')
 const Room = require('./Room')
 // const assert = require('chai').assert
-const assert = require('assert').strict
+// const assert = require('assert').strict
 const AppConfig = require('../../lib/AppConfig')
 
 class Story {
@@ -77,13 +77,11 @@ class Story {
     }
   }
 
-  async status (context) {
-    let msg = [
-      // @ts-ignore
-      `_story_: \`${this.doc.cname}\` ${this.doc.name}`,
-      `_room_: \`${this.room.doc.name}\``
-    ]
-    await SlackAdapter.sendList(msg, context)
+  async status () {
+    // let msg = `\`${this.doc.cname}\``
+    return {
+      name: this.doc.cname
+    }
   }
 
   hint (context) {

@@ -118,12 +118,18 @@ class Room extends GameObject {
     return things
   }
 
-  async status(context) {
-    const reply = ["room items:"]
-    this.allThings.forEach((item) => {
-      reply.push( `- ${item.doc.name}: ${item.state}`)
+  async status() {
+    const reply = {
+      items: [],
+      actors: []
+    }
+    this.items.forEach((item) => {
+      reply.items.push( `- ${item.name} | ${item.state}`)
     })
-    await SlackAdapter.sendList(reply, context)
+    this.actors.forEach((thing) => {
+      reply.actors.push( `- ${thing.name} | ${thing.state}`)
+    })
+    return reply
   }
 
   findItem (itemName) {
