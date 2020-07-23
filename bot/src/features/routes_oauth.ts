@@ -48,7 +48,7 @@ if (process.env.USERS) {
   userCache = JSON.parse(process.env.USERS)
 }
 
-async function getTokenForTeam (teamId) {
+async function getTokenForTeam(teamId) {
   if (tokenCache[teamId]) {
     return new Promise((resolve) => {
       setTimeout(function () {
@@ -60,7 +60,7 @@ async function getTokenForTeam (teamId) {
   }
 }
 
-async function getBotUserByTeam (teamId) {
+async function getBotUserByTeam(teamId) {
   if (userCache[teamId]) {
     return new Promise((resolve) => {
       setTimeout(function () {

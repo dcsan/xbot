@@ -1,6 +1,12 @@
 const path = require('path'),
-  webpack = require('webpack'),
-  cleanWebpackPlugin = require('clean-webpack-plugin');
+  webpack = require('webpack')
+
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+
+// CleanWebpackPlugin = require('clean-webpack-plugin');
+
+// const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+
 
 module.exports = {
   target: 'node',
@@ -28,7 +34,9 @@ module.exports = {
     extensions: ['.js', '.ts', '.tsx', '.jsx', '.json']
   },
   plugins: [
-    new cleanWebpackPlugin(['dist']),
+    new CleanWebpackPlugin({
+      cleanAfterEveryBuildPatterns: ['dist']
+    }),
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('production')
     })
