@@ -152,3 +152,6 @@ async function getBotUserByTeam(teamId) {
     console.error('Team not found in userCache: ', teamId)
   }
 }
+
+module.exports = adapter
+
