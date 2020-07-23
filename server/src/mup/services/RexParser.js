@@ -9,7 +9,7 @@ const RexParser = {
 
   fixedRoutes: [
     {
-      rex: /cheat/,
+      rex: /^cheat$/,
       event: RouterService.cheat
     },
 
@@ -19,7 +19,7 @@ const RexParser = {
     },
 
     {
-      rex: /^start$|^restart$/,
+      rex: /^(start|restart)$/,
       cname: 'restart',
       event: RouterService.startGame,
       // eventName: 'startGame'

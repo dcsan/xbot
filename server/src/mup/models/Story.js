@@ -17,14 +17,15 @@ class Story {
     return this.currentRoom
   }
 
-/**
- *
- *
- * @param {*} opts
- * @memberof Story
- */
-load (opts) {
+  /**
+   *
+   *
+   * @param {*} opts
+   * @memberof Story
+   */
+  load (opts) {
     const storyName = opts?.storyName || AppConfig.read('STORYNAME')
+    this.storyName = storyName // save for reload
 
     // Logger.log('loading storyName', storyName)
     this.doc = Util.loadYaml(`stories/${storyName}/story.yaml`)

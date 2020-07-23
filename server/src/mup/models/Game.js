@@ -35,7 +35,7 @@ class Game {
     this.loadHelp()
     this.reset()
     if (opts?.context) {
-      opts.context.sendText("reset game! " + this.story.name )
+      opts.context.sendText("reset game! ")
     }
   }
 
@@ -60,9 +60,9 @@ class Game {
 
   // TODO can merge with init?
   async restart (context) {
-    this.init()
-    await this.story.restart(context)
-    await this.help(context)
+    this.init({context})
+    this.story.currentRoom.enter(context)
+    // await this.help(context)
   }
 
 

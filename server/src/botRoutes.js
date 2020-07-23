@@ -32,11 +32,11 @@ module.exports = async function App () {
     // text(/delay/i, Dispatcher.delay),
     // text(/^(s|say) (?<item>.*) (to) (?<actor>.*)$/i, Dispatcher.ask),
     // text('welcome', Dispatcher.welcome),
+    text('*', Dispatcher.fallback),
     slack.event('member_joined_channel', Dispatcher.welcome),
     // @ts-ignore
     slack.event('interactive_message', Dispatcher.button),
     slack.any(Dispatcher.otherEvent),
-    text('*', Dispatcher.fallback),
 
   ])
   // Logger.log('router done', Dispatcher.story)
