@@ -35,7 +35,9 @@ module.exports = async function App () {
     text('*', Dispatcher.fallback),
     slack.event('member_joined_channel', Dispatcher.welcome),
     // @ts-ignore
-    slack.event('interactive_message', Dispatcher.button),
+    slack.event('interactive_message', Dispatcher.slashCommand),
+    // @ts-ignore
+    slack.event('block_actions', Dispatcher.blockAction),
     slack.any(Dispatcher.otherEvent),
 
   ])

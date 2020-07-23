@@ -54,6 +54,9 @@ sync: fixPermissions
 
 deploy: prep sync pm2restart
 
+# just server code
+quickDeploy: sync pm2restart
+
 renewCert:
 	certbot certonly -n -d cbg.rik.ai --nginx
 

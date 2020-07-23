@@ -64,7 +64,11 @@ const Dispatcher = {
     await game.moreHelp(context)
   },
 
-  async button (context) {
+  async blockAction (context) {
+    Logger.logObj('button', context.event)
+    Logger.logObj('event.text', context.event.text)
+    Logger.logObj('event.command', context.event.command)
+
     // const game = await RouterService.findGame(context.session.id)
     const buttonAction = context.event.rawEvent.actions[0]
     Logger.logObj('buttonAction', buttonAction)
@@ -81,14 +85,14 @@ const Dispatcher = {
         return Dispatcher.morehelp(context)
       default:
         Logger.warn('cannot find event', context.event)
-            // just send it as text input
-        context.event.text = value
-        await Dispatcher.fallback(value)
+        // just send it as text input
+        await Dispatcher.fallback(context, value)
     }
   },
 
   async otherEvent (context) {
     Logger.logObj('other event', context.event)
+    Logger.logObj('event.rawEvent.actions', context.event.rawEvent.actions)
     Logger.logObj('other.text', context.event.text)
     Logger.logObj('other.command', context.event.command)
   },
@@ -125,17 +129,18 @@ const Dispatcher = {
     await game.story.room.ask(actor, message)
   },
 
-  async fallback (context) {
-    const input = context.event.text
+  // allows us to override input
+  async fallback (context, input = false) {
+    input = input || context.event.text
     Logger.log('fallback:', input)
     const found =
-      await Dispatcher.fixedRoutes(context) ||
-      await Dispatcher.parsedRoutes(context) ||
-      await Dispatcher.itemActions(context)
+      await Dispatcher.fixedRoutes(context, input) ||
+      await Dispatcher.parsedRoutes(context, input) ||
+      await Dispatcher.itemActions(context, input)
   },
 
-  async parsedRoutes (context) {
-    const input = context.event.text
+  async parsedRoutes (context, input) {
+    input = input || context.event.text
     const parsed = RexParser.parseRules(input)
     // console.log('parsed', parsed)
     if (parsed && parsed.event) {
@@ -183,8 +188,8 @@ const Dispatcher = {
     }
   },
 
-  async fixedRoutes (context) {
-    const input = context.event.text
+  async fixedRoutes (context, input) {
+    input = input || context.event.text
     const found = RexParser.fixedRouteParser(input)
     if (found?.route) {
       Logger.logObj('fixedRoutes.found', found)
@@ -196,9 +201,9 @@ const Dispatcher = {
   },
 
   // try event on all items in the room
-  async itemActions (context) {
+  async itemActions (context, input) {
+    input = input || context.event.text
     const game = await RouterService.findGame(context.session.id)
-    const input = context.event.text
     const parsed = RexParser.basicInputParser(input, game.story.currentRoom)
     Logger.log('finalActions', context.event.text)
     return await game.story.room.tryAllActions(parsed, context)
