@@ -82,7 +82,7 @@ class Room extends GameObject {
     return names
   }
 
-  async look (context) {
+  async look (context, found) {
     Logger.log('room.look')
     let blocks = []
     if (this.doc.imageUrl) {
@@ -109,6 +109,17 @@ class Room extends GameObject {
 
     await SlackAdapter.sendBlocks(blocks, context)
     return blocks
+  }
+
+  // found.parsed
+  async lookAt (context, found) {
+    const name = found.parsed.groups.thing
+    const item = this.findThing(name)
+    if (!item) {
+      Logger.warn('cannot find item', name)
+      return false
+    }
+    await item.examine(found, context)
   }
 
   get allThings () {
@@ -154,6 +165,7 @@ class Room extends GameObject {
    */
   findThing (cname) {
     if (!cname) return false
+    cname = Util.safeName(cname)
     const item = this.findItem(cname) || this.findActor(cname)
     if (!item) {
       Logger.log('room.findThing failed for', cname)
@@ -202,7 +214,6 @@ class Room extends GameObject {
     let names = this.itemCnames()
     return WordUtils.findWords()
     // console.log('rex', {rex})
-
   }
 
   /**
@@ -230,6 +241,17 @@ class Room extends GameObject {
     return pair
   }
 
+  async tryRoomActions (input, context) {
+    const action = await this.tryMatchAction(input, context)
+    if (action) {
+      return {
+        type: 'roomAction',
+        action
+      }
+    }
+    return false
+  }
+
   /**
    *
    *
@@ -247,16 +269,6 @@ class Room extends GameObject {
         action
       }
     }
-    // else try on the room
-    action = await this.tryAction(parsed, context)
-    if (action) {
-      return {
-        type: 'roomAction',
-        action
-      }
-
-    }
-
     return false
   }
 

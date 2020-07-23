@@ -1,6 +1,7 @@
 const SlackAdapter = require('../../lib/adapters/SlackAdapter')
 const Logger = require('../../lib/Logger')
 const Util = require('../../lib/Util')
+const WordUtils = require('../../lib/WordUtils')
 
 const log = console.log
 
@@ -121,6 +122,22 @@ class GameObject {
       // Logger.log('check', actionName, actionData)
       if (fullAction.match(rex)) {
         Logger.log('action match', actionName)
+        const result = await this.runAction(actionData, context)
+        return {result, actionData}
+      }
+    }
+    return false
+  }
+
+  async tryMatchAction (input, context) {
+    input = WordUtils.fullNormalize(input)
+    if (!this.doc.actions) {
+      Logger.warn('no actions for item:', this.doc.name)
+    }
+    for (const actionData of this.doc.actions) {
+      let rex = new RegExp(actionData.match)
+      if (input.match(rex)) {
+        Logger.log('action match', actionData)
         const result = await this.runAction(actionData, context)
         return {result, actionData}
       }

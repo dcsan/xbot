@@ -7,7 +7,8 @@ const log = console.log
 
 const RexParser = {
 
-  fixedRoutes: [
+  // basic commands
+  commandRoutes: [
     {
       rex: /^cheat$/,
       event: RouterService.cheat
@@ -22,6 +23,20 @@ const RexParser = {
       rex: /^(start|restart)$/,
       cname: 'restart',
       event: RouterService.startGame,
+      // eventName: 'startGame'
+    },
+
+    {
+      rex: /^(x|examine|look)$/,
+      cname: 'restart',
+      event: RouterService.lookRoom,
+      // eventName: 'startGame'
+    },
+
+    {
+      rex: /^(x|examine|look|look at) (?<thing>\w+)$/,
+      cname: 'restart',
+      event: RouterService.lookThing,
       // eventName: 'startGame'
     },
 
@@ -349,7 +364,7 @@ const RexParser = {
     return result
   },
 
-  parseRules (input, context) {
+  parseRegexRules (input) {
     let reply
     RexParser.ruleSet.some(rule => {
       rule.tests.some(test => {
@@ -363,12 +378,12 @@ const RexParser = {
     return reply
   },
 
-  fixedRouteParser (input) {
+  commandParser (input) {
     let clean = WordUtils.cheapNormalize(input)
     clean = WordUtils.removeStopWords(clean)
     let found
     // breaks when first item found but we capture a different value
-    RexParser.fixedRoutes.find(route => {
+    RexParser.commandRoutes.find(route => {
       // const rex = new RegExp(route.match)
       const parsed = route.rex.exec(input)
       if (parsed) {

@@ -19,6 +19,12 @@ const WordUtils = {
     }
     const clean = stopword.removeStopwords(words)
     return clean.join(' ')
+  },
+
+  fullNormalize (input) {
+    input = WordUtils.cheapNormalize(input)
+    input = WordUtils.removeStopWords(input)
+    return input
   }
 
 }

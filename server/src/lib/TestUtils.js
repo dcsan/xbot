@@ -50,7 +50,7 @@ class DummyContext {
     this.session = {
       id: 1234
     }
-    this.event = undefined
+    this.event = {}
     this.chat = new chatReceiver()
   }
 

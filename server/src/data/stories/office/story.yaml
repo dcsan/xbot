@@ -25,6 +25,8 @@ rooms:
         reply: you found a cupboard door and pull it open
         pass:
           goto: cupboard
+      - match: smash window
+        reply: you throw rock at the window
 
     hints:
       start: Have a `look` around for anything interesting!
@@ -32,7 +34,6 @@ rooms:
       open-lock: try opening the lock with what you read
       open-chest: What's inside the chest?
       use-key: Where could you use that key?
-
 
     actors:
       - name: Sid

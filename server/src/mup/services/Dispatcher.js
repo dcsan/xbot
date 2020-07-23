@@ -129,9 +129,9 @@ const Dispatcher = {
     await game.story.room.ask(actor, message)
   },
 
-  async parsedRoutes (context, input) {
-    input = input || context.event.text
-    const parsed = RexParser.parseRules(input)
+  // complex actions like `use X on Y`
+  async parseRegexRoutes (context, input) {
+    const parsed = RexParser.parseRegexRules(input)
     // console.log('parsed', parsed)
     if (parsed && parsed.event) {
       const game = await RouterService.findGame(context.session.id)
@@ -178,9 +178,16 @@ const Dispatcher = {
     }
   },
 
-  async fixedRoutes (context, input) {
+  /**
+   * basic routes like `restart` or `examine X`
+   *
+   * @param {*} context
+   * @param {*} input
+   * @returns
+   */
+  async commandActions (context, input) {
     input = input || context.event.text
-    const found = RexParser.fixedRouteParser(input)
+    const found = RexParser.commandParser(input)
     if (found?.route) {
       Logger.logObj('fixedRoutes.found', found)
       const func = found.route.event
@@ -190,12 +197,25 @@ const Dispatcher = {
     return false
   },
 
+  /**
+   * try event on all items in the room
+   * then the room itself
+   * @param {*} context
+   * @param {*} input
+   * @returns
+   */
+  async roomActions (context, input) {
+    const game = await RouterService.findGame(context.session.id)
+    return await game.story.room.tryRoomActions(input, context)
+  },
+
+
   // try event on all items in the room
-  async itemActions (context, input) {
+  // then the room itself
+  async basicInputActions (context, input) {
     input = input || context.event.text
     const game = await RouterService.findGame(context.session.id)
     const parsed = RexParser.basicInputParser(input, game.story.currentRoom)
-    Logger.log('finalActions', context.event.text)
     return await game.story.room.tryAllActions(parsed, context)
   },
 
@@ -209,9 +229,10 @@ const Dispatcher = {
 
     Logger.log('fallback:.input', input)
     const found =
-      await Dispatcher.fixedRoutes(context, input) ||
-      await Dispatcher.parsedRoutes(context, input) ||
-      await Dispatcher.itemActions(context, input)
+      await Dispatcher.commandActions(context, input) ||
+      await Dispatcher.roomActions(context, input) ||
+      await Dispatcher.basicInputActions(context, input) ||
+      await Dispatcher.parseRegexRoutes(context, input)
   },
 
 }

@@ -21,7 +21,7 @@ function testRuleSet (rule) {
   rule.tests.forEach(test => {
     // Logger.testLog('test', test)
     let [input, expected] = test
-    let result = RexParser.parseRules(input, rule)
+    let result = RexParser.parseRegexRules(input, rule)
     const blob = JSON.stringify(result)
     try {
       expect(result).toEqual(expected)
@@ -76,3 +76,11 @@ test('basicInputParser', async () => {
   expect(parsed.foundItem.cname).toBe('sid')
 
 })
+
+test('complex parser', async () => {
+  let input, parsed
+
+  input = 'examine the note'
+
+})
+

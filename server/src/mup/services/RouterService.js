@@ -62,6 +62,16 @@ const RouterService = {
     await game.restart(context)
   },
 
+  lookRoom: async (context, found) => {
+    const game = await RouterService.findGame(context.session.id)
+    return await game.story.room.lookAt(context, found)
+  },
+
+  lookThing: async (context, found) => {
+    const game = await RouterService.findGame(context.session.id)
+    return await game.story.room.lookAt(context, found)
+  }
+
 }
 
 module.exports = RouterService
