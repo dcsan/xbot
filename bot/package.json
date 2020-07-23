@@ -1,0 +1,63 @@
+{
+  "name": "cbgbot",
+  "version": "0.0.2",
+  "description": "CBG bot",
+  "author": "DC",
+  "homepage": "https://github.com",
+  "scripts": {
+    "dev": "ts-node-dev --inspect --no-notify -r ./register-ts-config-path.ts ./src/index.ts",
+    "nodemon": "nodemon",
+    "tslint:fix": "tslint --fix -c tslint.json \"*.{ts,tsx}\"",
+    "lint": "eslint . --ext .ts",
+    "lint-fix": "eslint . --ext .ts --fix",
+    "test": "jest --coverage",
+    "build": "webpack",
+    "update:packages": "node ./bin/wipe-dependencies.js && rm -rf node_modules && npm update --save-dev && npm update --save",
+    "prettier-watch": "onchange 'src/**/*.ts' -- prettier --write {{changed}}"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/firsttris/typescript-node-starter.git"
+  },
+  "main": "dist/index",
+  "dependencies": {
+    "botbuilder-adapter-slack": "^1.0.11",
+    "botbuilder-storage-mongodb": "^0.9.5",
+    "botkit": "^4.9.0",
+    "botkit-plugin-cms": "^1.0.3",
+    "dotenv": "^7.0.0"
+  },
+  "devDependencies": {
+    "@types/jest": "*",
+    "@types/node": "*",
+    "@typescript-eslint/eslint-plugin": "^3.7.0",
+    "@typescript-eslint/parser": "^3.7.0",
+    "clean-webpack-plugin": "*",
+    "eslint": "^7.5.0",
+    "eslint-config-prettier": "^6.11.0",
+    "jest": "*",
+    "nodemon": "*",
+    "onchange": "^7.0.2",
+    "prettier": "*",
+    "ts-jest": "*",
+    "ts-loader": "*",
+    "ts-node": "*",
+    "ts-node-dev": "*",
+    "tsconfig-paths": "*",
+    "tslint": "*",
+    "tslint-config-prettier": "*",
+    "tslint-loader": "*",
+    "tslint-plugin-prettier": "*",
+    "typescript": "*",
+    "webpack": "*"
+  },
+  "keywords": [
+    "microserver",
+    "nodejs",
+    "typescript",
+    "jest",
+    "webpack",
+    "prettier"
+  ],
+  "license": "MIT"
+}

@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {                    
+    "target": "ES2017",
+    "module": "commonjs",
+    "allowJs": true,
+    "sourceMap": true,
+    "outDir": "./dist",                        
+    "noUnusedLocals": true, 
+    "moduleResolution": "node",
+    "baseUrl": ".",
+    "paths": {
+    }
+  }
+}

@@ -5,14 +5,14 @@ const morgan = require('morgan')
 const bodyParser = require('body-parser');
 const express = require('express');
 
-const AppConfig = require('./src/lib/AppConfig')
+const AppConfig = require('./lib/AppConfig')
 
 const { bottender } = require('bottender');
 // const { bottender } = require('../bottender/packages/bottender/dist')
 
 // const Game = require('./src/mup/Game')
 
-const Logger = require('./src/lib/Logger')
+const Logger = require('./lib/Logger')
 
 AppConfig.init()
 
@@ -75,6 +75,6 @@ process.on('unhandledRejection', reason => {
   throw reason
 })
 
-const BotApp = require('./src/botRoutes');
+const BotApp = require('./botRoutes');
 // BotApp(game)
 module.exports = BotApp
