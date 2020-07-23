@@ -12,10 +12,13 @@ import { MongoDbStorage } from 'botbuilder-storage-mongodb'
 import { config } from 'dotenv'
 config()
 
+console.log('using MONGO_URI', process.env.MONGO_URI)
+
 let storage = undefined
 if (process.env.MONGO_URI) {
   storage = new MongoDbStorage({
     url: process.env.MONGO_URI,
+    useUnifiedTopology: true
   })
   // @ts-ignore
   // mongoStorage = storage
