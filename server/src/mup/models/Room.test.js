@@ -18,7 +18,7 @@ beforeEach( async() => {
 
 test('item names', async () => {
   const names = game.story.room.itemFormalNamesOneLine()
-  expect(names).toEqual("a `Desk`, a `Note`, a `Chest`, a `Lock`, a `Key`, a `Door`")
+  expect(names).toMatch(/a `Lamp`, a `Desk`, a `Note`, a `Chest/)
   // expect(names).toEqual(["a Desk", "a Note", "a Chest", "a Lock", "a Key", "a Door"])
 })
 
@@ -28,7 +28,7 @@ test('look room', async () => {
   expect(blocks).toHaveLength(4)
   expect(blocks[0].type).toBe('image')
   expect(blocks[3].type).toBe('section')  // items
-  expect(blocks[3].text.text).toMatch(/You see a `Desk`, a `Note`/)
+  expect(blocks[3].text.text).toMatch(/You see a `Lamp`, a `Desk`, a `Note`/)
 })
 
 //@ts-ignore
@@ -57,7 +57,6 @@ test('room examine actor', async () => {
   expect(blocks[1].text.text).toMatch(/^Sid hasn't been/)
 })
 
-
 //@ts-ignore
 test('examine item', async () => {
   const item = game.story.room.findItem('chest')
@@ -77,53 +76,47 @@ test('examine item', async () => {
   expect(blocks[1].text.text).toMatch(/^The chest is locked/)
 })
 
+test('load named story', async () => {
+  await game.init({ storyName: 'office', context })
+  // @ts-ignore
+  expect(game.story.doc.cname).toBe('office')
+  expect(game.story.doc.name).toBe('The Office')
+})
+
+test('gotoRoom', async () => {
+  await game.init({ storyName: 'office', context })
+  // expect(game.story.room.cname).toBe('start')
+  await game.story.gotoRoom('lobby', context)
+  expect(game.story.room.cname).toBe('lobby')
+  await game.story.currentRoom.gotoRoom('office', context)
+  expect(game.story.currentRoom.cname).toBe('office')
+})
+
+// FIXME - do this for the test story
+test('try room action', async () => {
+  await game.init({ storyName: 'office', context })
+  const input = 'rub lamp'
+  const parsed = RexParser.basicInputParser(input, game.story.currentRoom)
+  const reply = await game.story.room.tryAllActions(parsed, context)
+  // console.log('reply', reply)
+  expect(reply.type).toBe('itemAction')
+  expect(reply.action.actionData.goto).toBe('lobby')
+  expect(game.story.room.name).toBe('lobby')
+  expect(context.received.text).toMatch(/You rub the lamp and suddenly/)
+})
+
 test('room item actions', async () => {
   const input = "read the note"
   // context.setInput(input)
   const parsed = RexParser.basicInputParser(input, game.story.currentRoom)
   const result = await game.story.currentRoom.tryAllActions(parsed, context)
   // log({sent: context.sent, chat: context.chat.msg})
-
   expect(context.received.text).toMatch(/You read the note/)
-
   const blocks = context.flatBlocks()
   expect(blocks).toHaveLength(2)
-
   expect(blocks[0].type).toBe('image')
   expect(blocks[0].title.text).toBe('Note')
-
   // expect(blocks[1].text.text).toMatch(/^The note has .*/)
   expect(blocks[1].text.text).toMatch('The note just has')
-
   expect(result.type).toEqual('itemAction')
 })
-
-test('load named story', async () => {
-  await game.init({ storyName: 'asylum', context })
-  // @ts-ignore
-  expect(game.story.doc.cname).toBe('asylum')
-  await game.story.gotoRoom('cell', context)
-  expect(game.story.room.name).toBe('cell')
-})
-
-test('gotoRoom', async () => {
-  await game.init({ storyName: 'asylum', context })
-  expect(game.story.room.cname).toBe('start')
-  await game.story.gotoRoom('prologue', context)
-  expect(game.story.room.cname).toBe('prologue')
-  await game.story.currentRoom.gotoRoom('cell', context)
-  expect(game.story.currentRoom.cname).toBe('cell')
-})
-
-test('try room action', async () => {
-  await game.init({ storyName: 'asylum', context })
-  const input = 'sleep'
-  const parsed = RexParser.basicInputParser(input, game.story.currentRoom)
-  const reply = await game.story.room.tryAllActions(parsed, context)
-  expect(reply.type).toBe('roomAction')
-  expect(reply.action.actionData.goto).toBe('prologue')
-  expect(game.story.room.name).toBe('prologue')
-  // expect(context.received.text).toMatch(/You get a good night/)
-})
-
-

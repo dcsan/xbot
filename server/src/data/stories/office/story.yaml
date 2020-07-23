@@ -1,8 +1,13 @@
-name: test story
-intro: You wake up in a strange room. The door is locked.
-  You don't remember how you got in here but just know you have to get out!
+story:
+  name: The Office
+  cname: office
+  startRoom: office
+  intro:
+    You wake up in a strange room. The door is locked.
+    You don't remember how you got in here but just know you have to get out!
 
 rooms:
+
   - name: office
     description: A large empty room with a corner `desk`
     long: A boring looking tech company's office. Seems like you've been here before, but it just looks the same as any other one.
@@ -11,9 +16,15 @@ rooms:
     setHint: start
 
     actions:
-    - match: atov/i
-      pass:
-        text: You say ATOV to noone in particular. Maybe you need to look for something else?
+      - match: smell
+        reply: A musty smell of industrial carpet and cigarette smoke fills the room.
+      - match: atov/i
+        pass:
+          text: You say ATOV to noone in particular. Maybe you need to look for something else?
+      - match: open cupboard
+        reply: you found a cupboard door and pull it open
+        pass:
+          goto: cupboard
 
     hints:
       start: Have a `look` around for anything interesting!
@@ -75,9 +86,16 @@ rooms:
             setStates:
               - sid angry
 
-            # ----------- items -----------
+# ----------- items -----------
 
     items:
+    - name: lamp
+      description: An item to test jumping
+      actions:
+        - match: rub
+          reply: You rub the lamp and suddenly find yourself transported
+          goto: lobby
+
     - name: desk
       description: The desk
       states:
@@ -217,3 +235,16 @@ rooms:
             text: You try to open the door, but it's locked. If only you had a key...
           pass:
             text: You put the key in the door and it opens! You're free!
+
+  - name: lobby
+    long: You're in a shabby lobby. A door to the right leads to another office.
+    actions:
+      - match: lights
+        reply: you flick the lights on and off
+      - match: cont|.*
+        goto: office
+    buttons:
+      - continue
+
+  - name: cupboard
+    long: A broom cupboard with what looks like junk...

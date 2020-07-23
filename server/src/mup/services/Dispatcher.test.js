@@ -57,26 +57,15 @@ test('examine object', async () => {
   expect(blocks[1].text.text).toMatch(/^There seem to be a sequence of letters/)
 })
 
-test('go to asylum and look', async () => {
-  const game = await RouterService.findGame(1234)
-  await game.init({storyName: 'asylum'})
-  await game.story.gotoRoom('intro', context)
-  expect(game.story.room.name).toBe('intro')
-  context.setInput('sleep')
-  const reply = await Dispatcher.fallback(context)
-  const has = context.hasText("You get a good night")
-  expect(game.story.room.name).toBe('lobby')
-})
-
-
 test('goto command', async () => {
   context.reset()
   const game = await RouterService.findGame(1234)
-  await game.init({ storyName: 'asylum' })
-  context.setInput('goto cell')
+  await game.init({ storyName: 'office' })
+  expect(game.story.room.name).toBe('office')
+  context.setInput('goto cupboard')
   const reply = await Dispatcher.fallback(context)
   // TODO - more detail for matcher?
-  expect(game.story.room.name).toBe('cell')
+  expect(game.story.room.name).toBe('cupboard')
 })
 
 
