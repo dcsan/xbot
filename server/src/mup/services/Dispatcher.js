@@ -201,7 +201,7 @@ const Dispatcher = {
 
   // allows us to override input
   async fallback (context, input) {
-    Logger.logObj('fallback =>', { input, event: context.event })
+    // Logger.logObj('fallback =>', { input, event: context.event })
     if (typeof input !== 'string') {
       // we got an empty object from the botTender
       input = context.event.text

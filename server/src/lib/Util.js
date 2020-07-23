@@ -38,6 +38,12 @@ const Util = {
     }
   },
 
+  // FIXME add full regex non WS support
+  safeName (name) {
+    name = name.toLowerCase()
+    return name.replace(/ /gim, '-')
+  },
+
   quoteCode (s) {
     return('```' + s + '```')
   }

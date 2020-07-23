@@ -28,16 +28,23 @@ class Story {
     this.storyName = storyName // save for reload
 
     // Logger.log('loading storyName', storyName)
-    this.doc = Util.loadYaml(`stories/${storyName}/story.yaml`)
-    this.buildStory(this.doc)
+    const fullDoc = Util.loadYaml(`stories/${storyName}/story.yaml`)
+    // @ts-ignore
+    this.doc = fullDoc.story
+    this.buildStory(fullDoc)
     // @ts-ignore
     Logger.logObj('loaded story', {name: this.doc.name})
     // @ts-ignore
     this.room.loadActors(this.doc.name)
   }
 
-  reset () {
-    this.currentRoom = this.rooms[0]
+  reset (context) {
+    const startRoomName = this.doc.startRoom
+    if (startRoomName) {
+      this.currentRoom = this.findRoom(startRoomName)
+    } else {
+      this.currentRoom = this.rooms[0]
+    }
   }
 
   findRoom (roomName) {
@@ -59,11 +66,8 @@ class Story {
   }
 
   async restart (context) {
-    let blocks = []
-    // @ts-ignore
-    blocks.push(SlackAdapter.textBlock(this.doc.intro))
-    await SlackAdapter.sendBlocks(blocks, context)
-    await this.room.look(context)
+    this.currentRoom.enter(context)
+    // await this.help(context)
   }
 
   runCommand (commandName, context) {
@@ -80,6 +84,7 @@ class Story {
   async status () {
     // let msg = `\`${this.doc.cname}\``
     return {
+      // @ts-ignore
       name: this.doc.cname
     }
   }

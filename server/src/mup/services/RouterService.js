@@ -1,3 +1,4 @@
+const yaml = require('js-yaml')
 const Game = require('../models/Game')
 const Logger = require('../../lib/Logger')
 const Util = require('../../lib/Util')
@@ -23,27 +24,29 @@ const RouterService = {
   },
 
   getActionMatchesList (actions) {
-    let lines = []
-    actions?.forEach(thing => {
-      lines.push(this.getActionMatchesThing(thing))
+    let lines = actions?.map(thing => {
+      return { [thing.cname]: this.getActionMatchesThing(thing) }
     })
     return lines
   },
 
   getActionMatchesThing (thing) {
     const line = thing.doc?.actions?.map(action => action.match)
-    return line
+    return line || ''
   },
 
   cheat: async (context) => {
     const game = await RouterService.findGame(context.session.id)
-    const room = RouterService.getActionMatchesThing(game.story.currentRoom)
-    const items = RouterService.getActionMatchesList(game.story.currentRoom.items)
-    const actors = RouterService.getActionMatchesList(game.story.currentRoom.actors)
-    const cheatInfo = { room, items, actors }
-    // Logger.logObj('cheatInfo', cheatInfo)
-    context.sendText(Util.quoteCode(JSON.stringify(cheatInfo, null, 2)))
-    return cheatInfo
+
+    const info = {
+      roomEvents: RouterService.getActionMatchesThing(game.story.currentRoom),
+      itemEvents: RouterService.getActionMatchesList(game.story.currentRoom.items),
+      actors: RouterService.getActionMatchesList(game.story.currentRoom.actors)
+    }
+    Logger.logObj('cheatInfo', info)
+    const blob = yaml.dump(info)
+    context.sendText(Util.quoteCode(blob))
+    return info
   },
 
   // found: {route, parsed}

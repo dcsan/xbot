@@ -120,15 +120,16 @@ class Room extends GameObject {
 
   async status() {
     const reply = {
+      name: this.name,
       items: [],
       actors: []
     }
-    this.items.forEach((item) => {
-      reply.items.push( `- ${item.name} | ${item.state}`)
-    })
-    this.actors.forEach((thing) => {
-      reply.actors.push( `- ${thing.name} | ${thing.state}`)
-    })
+    reply.items = this.items?.map((thing) => {
+      return { [thing.name]: thing.state}
+    }) || []
+    reply.actors = this.actors?.map((thing) => {
+      return { [thing.name]: thing.state}
+    }) || []
     return reply
   }
 
@@ -153,7 +154,7 @@ class Room extends GameObject {
    */
   findThing (cname) {
     if (!cname) return false
-    const item = this.findActor(cname) || this.findItem(cname)
+    const item = this.findItem(cname) || this.findActor(cname)
     if (!item) {
       Logger.log('room.findThing failed for', cname)
       return false

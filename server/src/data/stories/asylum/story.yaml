@@ -1,8 +1,9 @@
-type: story
-name: "Escape From Bell Hill (Asylum #6)"
-cname: asylum   # internal reference
-goto: start
-intro: This is the introduction
+story:
+  name: "Escape From Bell Hill (Asylum #6)"
+  cname: asylum   # internal reference
+  goto: start
+  intro: This is the introduction
+  startRoom: cell  # for debugging jump to this room on load
 
 rooms:
   - name: start
@@ -14,7 +15,7 @@ rooms:
     hints:
       - type 'OK' to begin
     actions:
-      - match: continue|.*   # .* match anything
+      - match: ^cont|.*   # .* match anything
         goto: prologue
     buttons:
       - continue
@@ -32,7 +33,7 @@ rooms:
     actions:
       - match: sleep|rest|tired
         reply: You get a good night’s rest.
-        goto: lobby
+        goto: lobby1
     buttons:
       - sleep
 
@@ -62,7 +63,7 @@ rooms:
     buttons:
       - continue
     actions:
-      - match: continue|.*
+      - match: cont|.*
         goto: lobby3
 
   - name: lobby3
@@ -73,23 +74,23 @@ rooms:
     buttons:
       - continue
     actions:
-      - match: continue|.*
+      - match: cont|.*
         goto: orderlies
 
   - name: orderlies
     long:
-      '
-      “Is this part of the game?!” you stammer angrily.
-      \n
+      “Is this part of the game?!” you stammer angrily.\n
       “It’s all in the terms and conditions you signed,” responds the second orderly.
-      \n
+
       “Enjoy the game!” says the first, following the second out.
-      \n
+
       The door shuts with a resounding click.
-      '
+
     actions:
-      - match: continue|.*
+      - match: cont|.*
         goto: cell
+    buttons:
+      - continue
 
 #--------------- cell --------------------
 
@@ -121,7 +122,6 @@ rooms:
         reply:
           You slip out of your blue sandals and perform 18 jumping jacks in your socks.
           You can’t remember doing these since childhood. It’s rather fun, actually
-
 
     items:
       - name: wardrobe

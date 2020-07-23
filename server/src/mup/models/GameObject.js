@@ -1,5 +1,6 @@
 const SlackAdapter = require('../../lib/adapters/SlackAdapter')
 const Logger = require('../../lib/Logger')
+const Util = require('../../lib/Util')
 
 const log = console.log
 
@@ -31,7 +32,7 @@ class GameObject {
 
   // for searching and comparison DB keys
   get cname () {
-    return this.doc.name.toLowerCase()
+    return this.doc.cname || Util.safeName(this.doc.name)
   }
 
   // not lowercase

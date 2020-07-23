@@ -40,32 +40,20 @@ class Game {
     }
   }
 
-  reset () {
-    this.story.reset()
+  reset (context) {
+    this.story.reset(context)
     this.player.reset()
     this.story.room.reset()
   }
 
-  // /**
-  //  * specify a story to reload
-  //  * for testing other material
-  //  * @param {*} opts
-  //  */
-  // loadStory (opts) {
-  //   this.storyName = storyName
-  //   this.story.load({ storyName, context })
-  //   if (context) {
-  //     context.sendText('loaded!' + storyName)
-  //   }
-  // }
-
   // TODO can merge with init?
   async restart (context) {
-    this.init({context})
-    this.story.currentRoom.enter(context)
-    // await this.help(context)
+    this.init({ context })
+    await this.story.restart(context)
+    if (context) {
+      await context.sendText('restarted')
+    }
   }
-
 
   /**
    * simple reload of current story without resetting user vars
@@ -73,7 +61,8 @@ class Game {
    * @param {*} context
    */
   reload (context) {
-    this.story.load({storyName: this.storyName, context})
+    // @ts-ignore
+    this.story.load({storyName: this.story.name, context})
   }
 
   loadHelp (storyName) {
@@ -129,29 +118,6 @@ class Game {
     this.story.runCommand('/hint', context)
   }
 
-  async handleSlack (context) {
-    // Logger.logObj('slack.any', context)
-    // if (context.chat)
-    Logger.logObj('rawEvent', context.event.rawEvent)
-    Logger.logObj('event.type', context.event.type)
-    Logger.logObj('event.subtype', context.event.subtype)
-    Logger.logObj('event.action', context.event.action)
-    Logger.logObj('event.command', context.event.command)
-
-    if (context.event.action) {
-      Logger.logObj('.action:', context.event.action.value)
-      context.sendText(`event.action: ${context.event.action.value}`)
-    } else if (context.event.command) {
-      const commandText = context.event.command
-      Logger.logObj('commandText:', commandText)
-      this.story.runCommand(commandText, context)
-      // context.chat.postMessage(result)
-      // context.sendText(`other event ${context.event.type}`)
-    } else {
-      Logger.logObj('unknown slack event:', context.event)
-    }
-  }
-
   async welcome (context) {
     Logger.logObj('context', context)
     Logger.logObj('rawRvent', context.event.rawEvent)
@@ -161,6 +127,7 @@ class Game {
     context.sendText(`Welcome! ${userId}`)
   }
 
+  // TODO add debug/admin on user check
   async status (context) {
     const statusInfo = {
       story: await this.story.status(),
