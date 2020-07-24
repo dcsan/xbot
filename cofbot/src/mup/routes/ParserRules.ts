@@ -10,34 +10,34 @@ interface OneRule {
 const StaticRules: OneRule[] = [
   {
     cname: 'cheat',
-    rex: /^cheat$/gim,
+    rex: /^cheat$/i,
     event: RouterService.handleCheat,
     type: 'command'
   },
 
   {
     cname: 'goto',
-    rex: /^(goto|gt) (?<roomName>\w+)$/gim,
+    rex: /^(goto|gt) (?<roomName>.*)/i,
     event: RouterService.goto,
     type: 'command'
   },
 
   {
     cname: 'lookRoom',
-    rex: /^(look|l)$/gim,
+    rex: /^(look|l)$/i,
     event: RouterService.lookRoom,
     type: 'command'
   },
 
   {
     cname: 'lookThing',
-    rex: /^(look|look at|x|examine|x at) (?<thing>\w+)$/gim,
+    rex: /^(look|look at|x|examine|x at) (?<thing>\w+)$/i,
     event: RouterService.lookThing,
     type: 'command'
   },
 
   {
-    rex: /^(start|restart)$/,
+    rex: /^(start|restart)$/i,
     cname: 'restart',
     event: RouterService.startGame,
     type: 'command'
@@ -46,7 +46,7 @@ const StaticRules: OneRule[] = [
 
   {
     cname: 'restart',
-    rex: /^(x|examine|look)$/,
+    rex: /^(x|examine|look)$/i,
     event: RouterService.lookRoom,
     type: 'command'
     // eventName: 'startGame'
@@ -54,7 +54,7 @@ const StaticRules: OneRule[] = [
 
   {
     cname: 'examine',
-    rex: /^(x|examine|look|look at) (?<thing>\w+)$/,
+    rex: /^(x|examine|look|look at) (?<thing>\w+)$/i,
     event: RouterService.lookThing,
     type: 'command'
     // eventName: 'startGame'

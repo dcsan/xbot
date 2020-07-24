@@ -40,11 +40,11 @@ const RouterService = {
   },
 
   // found: {route, parsed}
-  goto: async (context, found) => {
-    Logger.logObj('goto.found', found)
-    const roomName = found.parsed.groups.roomName
-    const game = await RouterService.findGame(context.session.id)
-    await game.story.gotoRoom(roomName, context)
+  goto: async (evt: SceneEvent) => {
+    const roomName = evt.result.parsed?.groups.roomName
+    Logger.logObj('goto', roomName)
+    const game = await RouterService.findGame(evt.pal)
+    await game.story.gotoRoom(evt, roomName)
   },
 
   startGame: async (context) => {

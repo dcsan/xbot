@@ -1,21 +1,20 @@
 story:
   name: "Escape From Bell Hill (Asylum #6)"
-  cname: asylum   # internal reference
+  cname: asylum # internal reference
   goto: start
   intro: This is the introduction
-  startRoom: cell  # for debugging jump to this room on load
+  startRoom: cell # for debugging jump to this room on load
 
 rooms:
   - name: start
     intro: Are you ready?
     imageUrl: /asylum/rooms/title.jpg
-    long:
-      "Welcome to 'Escape From Bell Hill (Asylum #6)'\n
+    long: "Welcome to 'Escape From Bell Hill (Asylum #6)'\
       Ready?"
     hints:
       - type 'OK' to begin
     actions:
-      - match: ^cont|.*   # .* match anything
+      - match: ^cont|.* # .* match anything
         goto: prologue
     buttons:
       - continue
@@ -39,9 +38,9 @@ rooms:
 
   - name: lobby1
     long:
-      'Saturday late morning, you arrive at the venue and are greeted by a host wearing a white lab coat.
+      "Saturday late morning, you arrive at the venue and are greeted by a host wearing a white lab coat.
       After placing all of your personal belongings in a locker, you are ushered down a long hallway which leads directly into the first room of the game: a simple bedroom for you, a male inmate of Bell Hill.
-      '
+      "
     hints:
       - type `continue` when you're ready.
     buttons:
@@ -53,11 +52,11 @@ rooms:
   - name: lobby2
     imageUrl: /asylum/rooms/hallway.jpg
     long:
-      'The host informs you that the game will last one hour and will be followed by a debrief.
+      "The host informs you that the game will last one hour and will be followed by a debrief.
       If you are ever stuck or want to leave, just say the safe word “macaroni”.
       She then wishes you good luck and exits through the door by which you both came.
       The door closes seamlessly behind, becoming part of a blank wall of the room.
-      '
+      "
     hints:
       - type `continue` when you're ready.
     buttons:
@@ -67,8 +66,7 @@ rooms:
         goto: lobby3
 
   - name: lobby3
-    long:
-      Before you can begin, the *real* door of the room opens, and two burly men dressed as what you take to be orderlies enter.
+    long: Before you can begin, the *real* door of the room opens, and two burly men dressed as what you take to be orderlies enter.
     hints:
       - type `continue` when you're ready.
     buttons:
@@ -78,8 +76,7 @@ rooms:
         goto: orderlies
 
   - name: orderlies
-    long:
-      “Is this part of the game?!” you stammer angrily.\n
+    long: “Is this part of the game?!” you stammer angrily.\n
       “It’s all in the terms and conditions you signed,” responds the second orderly.
 
       “Enjoy the game!” says the first, following the second out.
@@ -92,7 +89,7 @@ rooms:
     buttons:
       - continue
 
-#--------------- cell --------------------
+  #--------------- cell --------------------
 
   - name: cell
     short: You are in an inmate’s bedroom.
@@ -130,8 +127,7 @@ rooms:
         states:
           - name: closed
             short: A free-standing wooden wardrobe is against one wall.
-            long:
-              Cheaper than the one your remember from your college dorm.
+            long: Cheaper than the one your remember from your college dorm.
               It has two narrow doors with rounded handles that look like flower petals.
           - name: open
             short: The wardrobe is now open.
@@ -168,7 +164,5 @@ rooms:
       - name: window
         imageUrl: https://via.placeholder.com/500x200/444488/CCC.png?text=A+window
         short: A rectangular window with bars is recessed into the far wall. A door leads out.
-        long:
-          The window is frosted and protected by metal bars from your side.
+        long: The window is frosted and protected by metal bars from your side.
           Upon closer inspection, you notice that the unnatural yellow light from without is pulsing slightly, with the faint electrical buzz of artificial lighting.
-

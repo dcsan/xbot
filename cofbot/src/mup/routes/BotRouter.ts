@@ -10,15 +10,22 @@ const BotRouter = {
   async textEvent(slackEvent) {
     Logger.logObj('slackEvent text', slackEvent.message.text)
     // const { message: MessageEvent, say: SayFn } = slackEvent
-    const { message, say } = slackEvent
-    const result: ParserResult | undefined = RexParser.parseAll(slackEvent.message.text)
     const pal = new Pal(slackEvent)
+    const { message } = slackEvent
+
+    const result: ParserResult | undefined = RexParser.parseAll(slackEvent.message.text)
+
+    await pal.sendText(`input: ${ message.text }`)
 
     if (result) {
-      Logger.logObj('result', result)
+      // await pal.sendText(`parsed: ${ result.parsed.groups }`)
+      await pal.sendText(`rule: ${ result.rule.cname }`)
       const evt: SceneEvent = { pal, result }
-      result.rule.event(evt)
+      // dispatch the method
+      await result.rule.event(evt)
+      Logger.logObj('result', result)
     } else {
+      await pal.sendText('cannot find route')
       Logger.log('cannot find route', message)
     }
 
@@ -28,7 +35,6 @@ const BotRouter = {
     //   await Dispatcher.basicInputActions(context, input) ||
     //   await Dispatcher.parseRegexRoutes(context, input)
 
-    await say(`you said ${ message.text }`)
   }
 
 }

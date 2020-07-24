@@ -6,6 +6,7 @@ import Game from './Game'
 // const assert = require('chai').assert
 // const assert = require('assert').strict
 import AppConfig from '../../lib/AppConfig'
+import { SceneEvent } from '../routes/RouterService'
 
 class Story {
   game: Game
@@ -27,14 +28,6 @@ class Story {
       Logger.fatal('no current room', this.rooms)
     }
     return this.currentRoom
-  }
-
-  findRoom(roomName): Room {
-    const found = this.rooms.find(room => room.name === roomName)
-    if (!found) {
-      return Logger.fatal('cannot find room', roomName)
-    }
-    return found
   }
 
   reset() {
@@ -67,9 +60,20 @@ class Story {
     this.room.loadActors(this.doc.name)
   }
 
-  async gotoRoom(roomName, context) {
+  findRoom(roomName): Room {
+    if (!roomName) {
+      Logger.error('findRoom but no roomName given')
+    }
+    const found = this.rooms.find(room => room.name === roomName)
+    if (!found) {
+      return Logger.fatal('cannot find room:', { roomName })
+    }
+    return found
+  }
+
+  async gotoRoom(evt: SceneEvent, roomName: string) {
     this.currentRoom = this.findRoom(roomName)
-    await this.room.enter(context)
+    await this.room.enter(evt)
   }
 
   buildStory(doc) {

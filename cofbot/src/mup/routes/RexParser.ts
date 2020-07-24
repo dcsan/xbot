@@ -12,7 +12,7 @@ interface RegExpResult {
 }
 
 interface ParserResult {
-  parsed: RegExpResult,
+  parsed: RegExpResult | null,
   rule: OneRule
 }
 
@@ -381,18 +381,39 @@ const RexParser = {
   parseAll(input: string): ParserResult | undefined {
     let clean = WordUtils.cheapNormalize(input)
     clean = WordUtils.removeStopWords(clean)
-    let found: ParserResult
     // breaks when first item found but we capture a different value
-    for (const rule of StaticRules) {
-      // const rex = new RegExp(route.match)
-      const parsed: RegExpResult | null = rule.rex.exec(input)
-      if (parsed) {
-        found = { parsed, rule }
-        break
+    // for (const rule of StaticRules) {
+    //   // const rex = new RegExp(route.match)
+    //   const parsed: RegExpResult | null = rule.rex.exec(input)
+    //   if (parsed) {
+    //     found = { parsed, rule }
+    //     break
+    //   }
+    // }
+
+    let rule: OneRule | undefined = StaticRules.find((oneRule: OneRule) => {
+      if (oneRule.rex.test(input)) return true
+      return false
+    })
+
+    if (rule) {
+      // rule.rex = /^(goto|gt) (?<roomName>.*)/gim
+      const parsed = rule.rex.exec(input)
+      // console.log('input', input)
+      // console.log('rule', rule)
+      // console.log('rule.rex', rule.rex)
+      // console.log('parsed', parsed)
+      if (parsed) parsed.groups = { ...parsed.groups } // null object
+      const parserResult: ParserResult = {
+        parsed, rule
       }
+      // console.log('parserResult', parserResult)
+      Logger.logObj('found match for input:', { input, parserResult })
+      return parserResult
+    } else {
+      return undefined    // FIXME used before defined?
     }
-    // @ts-ignore
-    return found    // FIXME used before defined?
+
   },
 
 }

@@ -65,8 +65,8 @@ class Room extends GameObject {
    * @param {*} context
    * @memberof Room
    */
-  async enter(context) {
-    await this.lookRoom(context)
+  async enter(evt: SceneEvent) {
+    await this.lookRoom(evt)
   }
 
   async lookRoom(evt: SceneEvent) {

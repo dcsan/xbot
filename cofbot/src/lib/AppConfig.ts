@@ -4,8 +4,9 @@ dotEnv.config()
 const AppConfig = {
 
   init() {
-    console.log('NODE_ENV:', process.env.NODE_ENV)
-    console.log('STORYNAME:', process.env.STORYNAME)
+    // this is run after module has been used elsewhere so not good
+    // console.log('NODE_ENV:', process.env.NODE_ENV)
+    // console.log('STORYNAME:', process.env.STORYNAME)
   },
 
   // TODO - merge props below

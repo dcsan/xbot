@@ -19,6 +19,7 @@
     "tdev": "NODE_ENV=development ts-node-dev ./src/index.ts",
     "test": "run-s build test:unit",
     "test:unit": "jest --coverage",
+    "jest:watch": "jest --watch",
     "describe": "npm-scripts-info",
     "test:watch": "run-s clean build:main && run-p \"build:main -- -w\" \"test:unit -- --watch\"",
     "start:dev": "run-s clean build:main && run-p \"build:main -- -w\" \"mon\"",
