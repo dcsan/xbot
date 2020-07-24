@@ -4,8 +4,8 @@ const AppConfig = {
 
   init() {
     dotEnv.config()
-    // console.log('NODE_ENV:', process.env.NODE_ENV)
-    // console.log('STORYNAME:', process.env.STORYNAME)
+    console.log('NODE_ENV:', process.env.NODE_ENV)
+    console.log('STORYNAME:', process.env.STORYNAME)
   },
 
   // TODO - merge props below
@@ -30,5 +30,6 @@ const AppConfig = {
   redirectUri: process.env.REDIRECT_URI,
 }
 
+AppConfig.init()
 
 export default AppConfig
