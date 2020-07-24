@@ -47,14 +47,14 @@ const RouterService = {
     await game.story.gotoRoom(evt, roomName)
   },
 
-  startGame: async (context) => {
-    const game = await RouterService.findGame(context.session.id)
-    await game.restart(context)
+  startGame: async (evt: SceneEvent) => {
+    const game = await RouterService.findGame(evt.pal)
+    await game.restart(evt.pal)
   },
 
-  lookThing: async (context, found) => {
-    const game = await RouterService.findGame(context.session.id)
-    return await game.story.room.lookAt(context, found)
+  lookThing: async (evt: SceneEvent) => {
+    const game = await RouterService.findGame(evt.pal)
+    return await game.story.room.lookThing(evt)
   }
 
   // boo: async (context) => {

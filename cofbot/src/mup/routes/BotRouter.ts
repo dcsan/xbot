@@ -15,11 +15,11 @@ const BotRouter = {
 
     const result: ParserResult | undefined = RexParser.parseAll(slackEvent.message.text)
 
-    await pal.sendText(`input: ${ message.text }`)
+    await pal.debugMessage(`input: ${ message.text }`)
 
     if (result) {
       // await pal.sendText(`parsed: ${ result.parsed.groups }`)
-      await pal.sendText(`rule: ${ result.rule.cname }`)
+      await pal.debugMessage(`rule: ${ result.rule.cname }`)
       const evt: SceneEvent = { pal, result }
       // dispatch the method
       await result.rule.event(evt)
@@ -28,12 +28,6 @@ const BotRouter = {
       await pal.sendText('cannot find route')
       Logger.log('cannot find route', message)
     }
-
-    // const found =
-    //   await Dispatcher.commandActions(context, input) ||
-    //   await Dispatcher.roomActions(context, input) ||
-    //   await Dispatcher.basicInputActions(context, input) ||
-    //   await Dispatcher.parseRegexRoutes(context, input)
 
   }
 

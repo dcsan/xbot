@@ -1,10 +1,14 @@
-import SlackAdapter from '../../lib/adapters/SlackAdapter'
+import SlackBuilder from '../../lib/adapters/SlackBuilder'
 import Logger from '../../lib/Logger'
 import Util from '../../lib/Util'
 import WordUtils from '../../lib/WordUtils'
 import Room from './Room'
+import Actor from './Actor'
+import Item from './Item'
 import Player from './Player'
 const log = console.log
+
+import { SceneEvent } from '../routes/RouterService'
 
 const DEFAULT_STATE = 'default'
 
@@ -17,10 +21,14 @@ class GameObject {
   room?: Room
   state: string
   // player: Player
+  items: Item[]
+  actors: Actor[]
 
   constructor(doc, room?: Room) {
     this.doc = doc
     this.room = room
+    this.items = []
+    this.actors = []
     this.state = 'default'
     this.reset()
   }
@@ -97,6 +105,59 @@ class GameObject {
     return this.cname.match(text)
   }
 
+  itemNames() {
+    return this.items.map(item => item.name).join(', ')
+  }
+
+  // may work for rooms and things
+  async lookThing(evt: SceneEvent) {
+    Logger.log('lookThing')
+    let blocks: any[] = []
+    if (this.doc.imageUrl) {
+      blocks.push(SlackBuilder.imageBlock(this.doc, this))
+    }
+    blocks.push(
+      SlackBuilder.textBlock(this.description)
+    )
+    const firstActor = this.firstActor()
+    if (firstActor) {
+      const actorIntro = `${ firstActor.formalName } is here.`
+      blocks.push(SlackBuilder.textBlock(actorIntro))
+    }
+    const itemsInfo = this.itemNames()
+    if (itemsInfo) {
+      blocks.push(SlackBuilder.textBlock(`You see: ` + itemsInfo))
+    }
+    if (this.doc.buttons) {
+      Logger.logObj('enter.buttons', this.doc.buttons)
+      const buttonsBlock = SlackBuilder.buttonsBlock(this.doc.buttons)
+      blocks.push(buttonsBlock)
+    }
+    await evt.pal.sendBlocks(blocks)
+    return blocks
+  }
+
+  // might need to patch as a room?
+  async lookRoom(evt: SceneEvent) {
+    return this.lookThing(evt)
+  }
+
+
+  /**
+   * when we don't have a named actor
+   * for talking out loud in a room
+   */
+  firstActor() {
+    if (!this.actors) return
+    const foundActor = this.actors[0]
+    if (!foundActor) {
+      // Logger.log('room.actors', this.actors)
+      Logger.log('no actors in room!' + this.cname)
+      return false
+    }
+    return foundActor
+  }
+
   // add 'the' or 'an' based on item article
   get articleName() {
     return `a ${ this.formalName }`
@@ -106,7 +167,7 @@ class GameObject {
     const stateInfo = this.stateInfo
     // Logger.logObj('stateInfo', { state: this.state, stateInfo })
     // Logger.log('item.examine', this.cname)
-    await SlackAdapter.sendItemCard(stateInfo, this, context)
+    await SlackBuilder.sendItemCard(stateInfo, this, context)
   }
 
   /**
@@ -207,12 +268,12 @@ class GameObject {
         Logger.log('action passed', passData)
         if (passData?.gets) player?.addItemByName(actionData.pass.gets)
         if (passData.setStates) await this.updateStates(passData.setStates, context)
-        SlackAdapter.sendItemCard(actionData.pass, this, context)
+        SlackBuilder.sendItemCard(actionData.pass, this, context)
       }
     } else {
       // fail
       Logger.log('action fail', actionData.name, actionData)
-      SlackAdapter.sendItemCard(actionData.fail, this, context)
+      SlackBuilder.sendItemCard(actionData.fail, this, context)
     }
 
   }

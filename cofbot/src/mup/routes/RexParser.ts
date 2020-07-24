@@ -397,7 +397,6 @@ const RexParser = {
     })
 
     if (rule) {
-      // rule.rex = /^(goto|gt) (?<roomName>.*)/gim
       const parsed = rule.rex.exec(input)
       // console.log('input', input)
       // console.log('rule', rule)

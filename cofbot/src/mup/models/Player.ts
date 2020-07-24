@@ -1,4 +1,4 @@
-import SlackAdapter from '../../lib/adapters/SlackAdapter'
+import SlackBuilder from '../../lib/adapters/SlackBuilder'
 import Item from './Item'
 import Logger from '../../lib/Logger'
 
@@ -51,10 +51,10 @@ class Player {
   async inventory(context) {
     await context.sendText('You are holding:')
     if (!this.items.length) {
-      return await SlackAdapter.sendText('nothing', context)
+      return await SlackBuilder.sendText('nothing', context)
     } // else
     const itemNames = this.items.map((item) => item.name)
-    await SlackAdapter.sendList(itemNames, context)
+    await SlackBuilder.sendList(itemNames, context)
   }
 
 }

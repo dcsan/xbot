@@ -1,6 +1,6 @@
 import Logger from '../../lib/Logger'
 import Util from '../../lib/Util'
-import SlackAdapter from '../../lib/adapters/SlackAdapter'
+import SlackBuilder from '../../lib/adapters/SlackBuilder'
 import Room from './Room'
 import Game from './Game'
 // const assert = require('chai').assert
@@ -110,8 +110,8 @@ class Story {
   }
 
   hint(context) {
-    const block = SlackAdapter.textBlock(":bulb: try reading the note")
-    const msg = SlackAdapter.wrapBlocks([block])
+    const block = SlackBuilder.textBlock(":bulb: try reading the note")
+    const msg = SlackBuilder.wrapBlocks([block])
     Logger.log('hint', msg)
     context.chat.postEphemeral(msg)
     // return msg
@@ -125,9 +125,9 @@ class Story {
   //   return this.room.examine(itemName, context)
   // }
 
-  things(context) {
-    this.room.things(context)
-  }
+  // things(context) {
+  //   this.room.things(context)
+  // }
 
 }
 

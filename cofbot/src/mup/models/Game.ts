@@ -6,8 +6,8 @@ import yaml from 'js-yaml'
 import AppConfig from '../../lib/AppConfig'
 import Util from '../../lib/Util'
 import Logger from '../../lib/Logger'
-import SlackAdapter from '../../lib/adapters/SlackAdapter'
-
+import SlackBuilder from '../../lib/adapters/SlackBuilder'
+import { Pal } from '../pal/Pal'
 import Story from './Story'
 import Player from './Player'
 
@@ -40,8 +40,8 @@ class Game {
     Logger.log('init game')
     this.loadHelp(opts?.storyName)
     this.reset()
-    if (opts?.context) {
-      opts.context.sendText("reset game! ")
+    if (opts?.pal) {
+      opts.pal.sendText("reset game! ")
     }
   }
 
@@ -52,22 +52,22 @@ class Game {
   }
 
   // TODO can merge with init?
-  async restart(context) {
-    this.init({ context })
-    await this.story.restart(context)
-    if (context) {
-      await context.sendText('restarted')
+  async restart(pal: Pal) {
+    this.init({ pal })
+    await this.story.restart(pal)
+    if (pal) {
+      await pal.sendText('restarted')
     }
   }
 
   /**
    * simple reload of current story without resetting user vars
    * for when you change the YAML
-   * @param {*} context
+   * @param {*} pal
    */
-  reload(context) {
+  reload(pal: Pal) {
     // @ts-ignore
-    this.story.load({ storyName: this.story.name, context })
+    this.story.load({ storyName: this.story.name, pal })
   }
 
   loadHelp(_storyName) {
@@ -75,8 +75,8 @@ class Game {
     this.helpDoc = fs.readFileSync(filepath, 'utf8')
   }
 
-  async echo(context) {
-    await context.sendText(`game [${ this.sid }] echo!`)
+  async echo(pal: Pal) {
+    await pal.sendText(`game [${ this.sid }] echo!`)
   }
 
   // any items for testing
@@ -84,64 +84,59 @@ class Game {
     this.player.addItem('combination')
   }
 
-  async help(context) {
-    await menu.help(context)
+  async help(pal: Pal) {
+    await menu.help(pal)
   }
 
-  async moreHelp(context) {
-    const help = SlackAdapter.textBlock(this.helpDoc)
-    const msg = SlackAdapter.wrapBlocks([help])
-    // await context.postEphemeral(msg)
-    await context.chat.postMessage(msg)
+  async moreHelp(pal: Pal) {
+    const help = SlackBuilder.textBlock(this.helpDoc)
+    const msg = SlackBuilder.wrapBlocks([help])
+    // await pal.postEphemeral(msg)
+    await pal.postMessage(msg)
   }
 
-  async SayTest(context) {
-    await context.sendText('Testing OK!')
+  async SayTest(pal: Pal) {
+    await pal.sendText('Testing OK!')
   }
 
-  // async look(context) {
-  //   await this.story.look(context)
+  // async look(pal: Pal) {
+  //   await this.story.look(pal)
   // }
 
-  async delay(context) {
-    await context.postMessage("wait...")
+  async delay(pal: Pal) {
+    await pal.postMessage("wait...")
     await Util.sleep(5000)
-    await context.postMessage("... done")
+    await pal.postMessage("... done")
   }
 
-  async things(context) {
-    const msg = this.story.things(context)
-    await context.sendText(msg)
+  // async things(pal: Pal) {
+  //   const msg = this.story.things(pal)
+  //   await pal.sendText(msg)
+  // }
+
+  async inventory(pal: Pal) {
+    await this.player.inventory(pal)
   }
 
-  async inventory(context) {
-    await this.player.inventory(context)
+  async hint(pal: Pal) {
+    // pal.postEphemeral({ text: 'Hint!' });
+    this.story.runCommand('/hint', pal)
   }
 
-  async hint(context) {
-    // context.postEphemeral({ text: 'Hint!' });
-    this.story.runCommand('/hint', context)
-  }
-
-  async welcome(context) {
-    Logger.logObj('context', context)
-    Logger.logObj('rawRvent', context.event.rawEvent)
-    Logger.logObj('authed_users', context.authed_users)
-    const userId = context.event?.message?.user
-    Logger.logObj('userId', userId)
-    context.sendText(`Welcome! ${ userId }`)
+  async welcome(pal: Pal) {
+    pal.sendText(`Welcome!`)  // FIXME - welcome player by name
   }
 
   // TODO add debug/admin on user check
-  async status(context) {
+  async status(pal: Pal) {
     const statusInfo = {
       story: await this.story.status(),
       room: await this.story.room.status(),
       inventory: await this.player.status(),
     }
-    // await context.sendText('state ```\n' + JSON.stringify(context.state, null, 2) + '```')
+    // await pal.sendText('state ```\n' + JSON.stringify(pal.state, null, 2) + '```')
     const blob = yaml.dump(statusInfo)
-    await context.sendText(Util.quoteCode(blob))
+    await pal.sendText(Util.quoteCode(blob))
   }
 
 }

@@ -1,7 +1,5 @@
 import Logger from '../../lib/Logger'
-import SlackAdapter from '../../lib/adapters/SlackAdapter'
-
-
+import SlackBuilder from '../../lib/adapters/SlackBuilder'
 import GameObject from './GameObject'
 import Actor from './Actor'
 import Item from './Item'
@@ -17,15 +15,11 @@ import { SceneEvent } from '../routes/RouterService'
 class Room extends GameObject {
 
   story: Story
-  items: Item[]
-  actors: Actor[]
   hintStep: string
 
   constructor(doc, story) {
     super(doc)
     this.story = story  // handle to its parent
-    this.items = []
-    this.actors = []
     this.hintStep = 'start'
     this.reset()
   }
@@ -69,17 +63,10 @@ class Room extends GameObject {
     await this.lookRoom(evt)
   }
 
-  async lookRoom(evt: SceneEvent) {
-    await evt.pal.sendText(this.description)
-    if (this.doc.buttons) {
-      await evt.pal.sendButtons(this.doc.buttons)
-    }
-  }
-
-  async things(context) {
-    const msg = this.items.map(thing => thing.name)
-    context.sendText(msg.join(','))
-  }
+  // async things(evt: SceneEvent) {
+  //   const msg = this.items.map(thing => thing.name)
+  //   evt.pal.sendText(msg.join(','))
+  // }
 
   itemFormalNamesOneLine() {
     const names = this.items.map(item => {
@@ -95,47 +82,22 @@ class Room extends GameObject {
     return names
   }
 
-  async lookThing(context) {
-    Logger.log('room.look')
-    let blocks: any[] = []
-    if (this.doc.imageUrl) {
-      blocks.push(SlackAdapter.imageBlock(this.doc, this))
-    }
-    blocks.push(
-      SlackAdapter.textBlock(this.description)
-    )
-    const firstActor = this.firstActor()
-    if (firstActor) {
-      const actorIntro = `${ firstActor.formalName } is here.`
-      blocks.push(SlackAdapter.textBlock(actorIntro))
-    }
-    const itemsInfo = this.itemFormalNamesOneLine()
-    if (itemsInfo) {
-      blocks.push(SlackAdapter.textBlock(`You see ` + itemsInfo))
-    }
 
-    if (this.doc.buttons) {
-      Logger.logObj('enter.buttons', this.doc.buttons)
-      const buttonsBlock = SlackAdapter.buttonsBlock(this.doc.buttons)
-      blocks.push(buttonsBlock)
-    }
+  // async lookRoom(evt: SceneEvent) {
 
-    await SlackAdapter.sendBlocks(blocks, context)
-    return blocks
-  }
 
   // found.parsed
   // look at thing
-  async lookAt(context, found) {
-    const name = found.parsed.groups.thing
-    const item = this.findThing(name)
-    if (!item) {
-      Logger.warn('cannot find item', name)
-      return false
-    }
-    await item.examine(found, context)
-    return true
-  }
+  // async lookThing(evt: SceneEvent) {
+  //   const name = evt.parsed.groups.thing
+  //   const item = this.findThing(name)
+  //   if (!item) {
+  //     Logger.warn('cannot find item', name)
+  //     return false
+  //   }
+  //   await item.examine(found, context)
+  //   return true
+  // }
 
   get allThings() {
     const things: GameObject[] = []
@@ -192,20 +154,6 @@ class Room extends GameObject {
     return item
   }
 
-  /**
-   * when we don't have a named actor
-   * for talking out loud in a room
-   */
-  firstActor() {
-    if (!this.actors) return
-    const foundActor = this.actors[0]
-    if (!foundActor) {
-      // Logger.log('room.actors', this.actors)
-      Logger.log('no actors in room!' + this.cname)
-      return false
-    }
-    return foundActor
-  }
 
   findActor(name) {
     if (!name) {
@@ -221,18 +169,6 @@ class Room extends GameObject {
     }
     return foundActor
   }
-
-  /**
-   * word boundaries dont seem to work CRAP
-   *
-   * @returns
-   * @memberof Room
-   */
-  // makeRoomItemsRex() {
-  //   let names = this.itemCnames()
-  //   return WordUtils.findWords()
-  //   // console.log('rex', {rex})
-  // }
 
   /**
    * replace item name in input and split it out
@@ -278,18 +214,18 @@ class Room extends GameObject {
    * @returns
    * @memberof Room
    */
-  async tryAllActions(parsed, context) {
-    let action
+  // async tryAllActions(evt: SceneEvent) {
+  //   let action
 
-    if (parsed?.foundItem) {
-      action = await parsed.foundItem.tryAction(parsed, context)
-      return {
-        type: 'itemAction',
-        action
-      }
-    }
-    return false
-  }
+  //   if (evt.result.parsed) {
+  //     action = await evt.result.parsed.foundItem.tryAction(parsed, context)
+  //     return {
+  //       type: 'itemAction',
+  //       action
+  //     }
+  //   }
+  //   return false
+  // }
 
 }
 

@@ -1,14 +1,13 @@
-const Logger = require("../Logger")
-const Util = require('../Util')
-import GameObject from '../../mup/models/GameObject'
+import Logger from "../Logger"
+import Util from '../Util'
 import Item from '../../mup/models/Item'
 
-const SlackAdapter = {
+const SlackBuilder = {
 
   logging: true,
 
   setLogging(flag) {
-    SlackAdapter.logging = flag
+    SlackBuilder.logging = flag
   },
 
   buttonItem(text, value = false) {
@@ -34,14 +33,14 @@ const SlackAdapter = {
   },
 
   buttonsBlock(buttons) {
-    const buttonElements = buttons.map(b => SlackAdapter.buttonItem(b))
-    const block = SlackAdapter.wrapActionsInBlock(buttonElements)
+    const buttonElements = buttons.map(b => SlackBuilder.buttonItem(b))
+    const block = SlackBuilder.wrapActionsInBlock(buttonElements)
     return block
   },
 
   sendButtons(buttons, context) {
-    const block = SlackAdapter.buttonsBlock(buttons)
-    SlackAdapter.sendBlocks([block], context)
+    const block = SlackBuilder.buttonsBlock(buttons)
+    SlackBuilder.sendBlocks([block], context)
   },
 
   textBlock(text) {
@@ -143,7 +142,7 @@ const SlackAdapter = {
     if (!blocks || !blocks.length) {
       Logger.error('tried to sendBlocks with no blocks:', blocks)
     }
-    const msg = SlackAdapter.wrapBlocks(blocks)
+    const msg = SlackBuilder.wrapBlocks(blocks)
     Logger.log('sendBlocks:', blocks.length)
     try {
       await context.chat.postMessage(msg)
@@ -156,18 +155,18 @@ const SlackAdapter = {
   async sendItemCard(stateInfoDoc, item: Item, context) {
     let blocks: any[] = []
     if (!stateInfoDoc) {
-      blocks.push(SlackAdapter.textBlock(item.short))
+      blocks.push(SlackBuilder.textBlock(item.short))
     } else {
       if (stateInfoDoc.imageUrl) {
-        blocks.push(SlackAdapter.imageBlock(stateInfoDoc, item))
+        blocks.push(SlackBuilder.imageBlock(stateInfoDoc, item))
       }
       // FIXME decide consistent naming or fallback
       const text = stateInfoDoc.long || stateInfoDoc.short || stateInfoDoc.text
-      blocks.push(SlackAdapter.textBlock(text))
+      blocks.push(SlackBuilder.textBlock(text))
     }
-    await SlackAdapter.sendBlocks(blocks, context)
+    await SlackBuilder.sendBlocks(blocks, context)
   }
 
 }
 
-export default SlackAdapter
+export default SlackBuilder
