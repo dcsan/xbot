@@ -1,6 +1,6 @@
 import Logger from '../../lib/Logger'
-import RexParser from './RexParser'
-import RouterService from './RouterService'
+import { RexParser } from '../routes/RexParser'
+import RouterService from '../routes/RouterService'
 // const Menu = require('./Menu')
 // const menu = new Menu()
 

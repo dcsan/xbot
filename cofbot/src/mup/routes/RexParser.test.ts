@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import RexParser from './RexParser.js';
+import { RexParser } from './RexParser.js';
 import Game from '../models/Game.js';
 
 import TestUtils from '../../lib/TestUtils';
@@ -11,12 +11,12 @@ const log = console.log
 const context = TestUtils.context
 const game = new Game(1234)
 
-beforeEach( async () => {
+beforeEach(async () => {
   context.reset()
   await game.init({ storyName: 'office' })
 })
 
-function testRuleSet (rule) {
+function testRuleSet(rule) {
 
   rule.tests.forEach(test => {
     // Logger.testLog('test', test)

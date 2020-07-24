@@ -37,8 +37,8 @@ class Game {
     // create objects used below
 
     await this.story.load(opts)
-
-    this.loadHelp(opts.storyName)
+    Logger.log('init game')
+    this.loadHelp(opts?.storyName)
     this.reset()
     if (opts?.context) {
       opts.context.sendText("reset game! ")

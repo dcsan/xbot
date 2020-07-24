@@ -1,13 +1,18 @@
 import Logger from '../../lib/Logger'
 import SlackAdapter from '../../lib/adapters/SlackAdapter'
 
+
 import GameObject from './GameObject'
 import Actor from './Actor'
 import Item from './Item'
 import Story from './Story'
 import Util from '../../lib/Util'
 import WordUtils from '../../lib/WordUtils'
-import RexParser from '../services/RexParser'
+// import { RexParser } from '../routes/RexParser'
+import { ParserResult } from '../routes/RexParser'
+import { Pal } from '../pal/Pal'
+
+import { SceneEvent } from '../routes/RouterService'
 
 class Room extends GameObject {
 
@@ -61,14 +66,13 @@ class Room extends GameObject {
    * @memberof Room
    */
   async enter(context) {
-    await this.look(context)
+    await this.lookRoom(context)
   }
 
-  async describe(context) {
-    await context.sendText(this.description)
+  async lookRoom(evt: SceneEvent) {
+    await evt.pal.sendText(this.description)
     if (this.doc.buttons) {
-      Logger.logObj('enter.buttons', this.doc.buttons)
-      await SlackAdapter.sendButtons(this.doc.buttons, context)
+      await evt.pal.sendButtons(this.doc.buttons)
     }
   }
 
@@ -91,7 +95,7 @@ class Room extends GameObject {
     return names
   }
 
-  async look(context) {
+  async lookThing(context) {
     Logger.log('room.look')
     let blocks: any[] = []
     if (this.doc.imageUrl) {

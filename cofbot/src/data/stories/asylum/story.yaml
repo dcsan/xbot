@@ -1,0 +1,174 @@
+story:
+  name: "Escape From Bell Hill (Asylum #6)"
+  cname: asylum   # internal reference
+  goto: start
+  intro: This is the introduction
+  startRoom: cell  # for debugging jump to this room on load
+
+rooms:
+  - name: start
+    intro: Are you ready?
+    imageUrl: /asylum/rooms/title.jpg
+    long:
+      "Welcome to 'Escape From Bell Hill (Asylum #6)'\n
+      Ready?"
+    hints:
+      - type 'OK' to begin
+    actions:
+      - match: ^cont|.*   # .* match anything
+        goto: prologue
+    buttons:
+      - continue
+
+  - name: prologue
+    imageUrl: text=Facebook+Ad+On+Screen
+    long:
+      You have accepted an invitation via Facebook ad to playtest a new physical escape room in your city. The setting of the game is a mental asylum called "Bell Hill".
+      Having signed the game’s terms & conditions and a standard NDA online, you climb into bed early Friday night, full of anticipation.
+
+      After all, you love escape rooms.
+    hints:
+      - maybe time to get some rest
+      - some `sleep`?
+    actions:
+      - match: sleep|rest|tired
+        reply: You get a good night’s rest.
+        goto: lobby1
+    buttons:
+      - sleep
+
+  - name: lobby1
+    long:
+      'Saturday late morning, you arrive at the venue and are greeted by a host wearing a white lab coat.
+      After placing all of your personal belongings in a locker, you are ushered down a long hallway which leads directly into the first room of the game: a simple bedroom for you, a male inmate of Bell Hill.
+      '
+    hints:
+      - type `continue` when you're ready.
+    buttons:
+      - continue
+    actions:
+      - match: continue|.*
+        goto: lobby2
+
+  - name: lobby2
+    imageUrl: /asylum/rooms/hallway.jpg
+    long:
+      'The host informs you that the game will last one hour and will be followed by a debrief.
+      If you are ever stuck or want to leave, just say the safe word “macaroni”.
+      She then wishes you good luck and exits through the door by which you both came.
+      The door closes seamlessly behind, becoming part of a blank wall of the room.
+      '
+    hints:
+      - type `continue` when you're ready.
+    buttons:
+      - continue
+    actions:
+      - match: cont|.*
+        goto: lobby3
+
+  - name: lobby3
+    long:
+      Before you can begin, the *real* door of the room opens, and two burly men dressed as what you take to be orderlies enter.
+    hints:
+      - type `continue` when you're ready.
+    buttons:
+      - continue
+    actions:
+      - match: cont|.*
+        goto: orderlies
+
+  - name: orderlies
+    long:
+      “Is this part of the game?!” you stammer angrily.\n
+      “It’s all in the terms and conditions you signed,” responds the second orderly.
+
+      “Enjoy the game!” says the first, following the second out.
+
+      The door shuts with a resounding click.
+
+    actions:
+      - match: cont|.*
+        goto: cell
+    buttons:
+      - continue
+
+#--------------- cell --------------------
+
+  - name: cell
+    short: You are in an inmate’s bedroom.
+    imageUrl: /asylum/rooms/cell.jpg
+    actions:
+      - match: enter bed
+        reply: You're not tired
+      - match: enter wardrobe
+        reply: this is not a C.S. Lewis novel
+      - match: enter window
+        reply: The bars prevent access to the window
+      - match: exit|leave|back
+        reply: The door is locked tight
+        ## TODO - conditions
+        if:
+          - door locked
+        then:
+          reply: It's locked
+        else:
+          reply: It's not locked
+          goto: other-room
+      - match: exercise
+        reply: can you be moer specific?
+      - match: jump|jumping jacks|jacks
+        reply: how many?
+      - match: do 18 (jumping) jacks|18 jacks
+        reply:
+          You slip out of your blue sandals and perform 18 jumping jacks in your socks.
+          You can’t remember doing these since childhood. It’s rather fun, actually
+
+    items:
+      - name: wardrobe
+        state: closed
+        imageUrl: https://via.placeholder.com/500x200/444488/CCC.png?text=Wardrobe+Closeup
+        states:
+          - name: closed
+            short: A free-standing wooden wardrobe is against one wall.
+            long:
+              Cheaper than the one your remember from your college dorm.
+              It has two narrow doors with rounded handles that look like flower petals.
+          - name: open
+            short: The wardrobe is now open.
+        actions:
+          - match: look inside
+            reply: Suspended from a plastic hanger is a light blue gown. Directly beneath is a matching pair of blue rubber sandals.
+            setStates:
+              - open
+
+      - name: bathrobe
+        imageUrl: https://via.placeholder.com/500x200/444488/CCC.png?text=Bathrobe
+        actions:
+
+      - name: bed
+        imageUrl: https://via.placeholder.com/500x200/444488/CCC.png?text=The+Bed
+        short: A narrow metal bed is here
+
+      - name: desk
+        imageUrl: https://via.placeholder.com/500x200/444488/CCC.png?text=The+Desk
+        short: A squat desk with chair sits beside
+
+      - name: sink
+        imageUrl: https://via.placeholder.com/500x200/444488/CCC.png?text=The+Sink
+        short: There is a sink built into the opposite wall
+
+      - name: lights
+        imageUrl: https://via.placeholder.com/500x200/444488/CCC.png?text=Lights
+        short: A vertical row of small lightbulbs is above the sink
+
+      - name: posters
+        imageUrl: https://via.placeholder.com/500x200/444488/CCC.png?text=Posters
+        short: Some posters are on the wall.
+
+      - name: window
+        imageUrl: https://via.placeholder.com/500x200/444488/CCC.png?text=A+window
+        short: A rectangular window with bars is recessed into the far wall. A door leads out.
+        long:
+          The window is frosted and protected by metal bars from your side.
+          Upon closer inspection, you notice that the unnatural yellow light from without is pulsing slightly, with the faint electrical buzz of artificial lighting.
+

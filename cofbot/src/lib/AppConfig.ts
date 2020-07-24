@@ -1,9 +1,9 @@
 import dotEnv from 'dotenv-flow';
+dotEnv.config()
 
 const AppConfig = {
 
   init() {
-    dotEnv.config()
     console.log('NODE_ENV:', process.env.NODE_ENV)
     console.log('STORYNAME:', process.env.STORYNAME)
   },
@@ -28,6 +28,11 @@ const AppConfig = {
   clientId: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
   redirectUri: process.env.REDIRECT_URI,
+
+  // BOLT
+  token: process.env.SLACK_BOT_TOKEN,
+  signingSecret: process.env.SLACK_SIGNING_SECRET
+
 }
 
 AppConfig.init()
