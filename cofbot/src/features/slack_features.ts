@@ -1,10 +1,6 @@
-/**
- * Copyright (c) Microsoft Corporation. All rights reserved.
- * Licensed under the MIT License.
- */
 import { SlackDialog } from 'botbuilder-adapter-slack'
 
-module.exports = function (controller) {
+export default function (controller) {
   controller.ready(async () => {
     if (process.env.MYTEAM) {
       let bot = await controller.spawn(process.env.MYTEAM)
@@ -23,11 +19,11 @@ module.exports = function (controller) {
   })
 
   controller.on('direct_mention', async (bot, message) => {
-    await bot.reply(message, `I heard a direct mention that said "${message.text}"`)
+    await bot.reply(message, `I heard a direct mention that said "${ message.text }"`)
   })
 
   controller.on('mention', async (bot, message) => {
-    await bot.reply(message, `You mentioned me when you said "${message.text}"`)
+    await bot.reply(message, `You mentioned me when you said "${ message.text }"`)
   })
 
   controller.hears('ephemeral', 'message,direct_message', async (bot, message) => {
@@ -134,7 +130,7 @@ module.exports = function (controller) {
   })
 
   controller.on('block_actions', async (bot, message) => {
-    await bot.reply(message, `Sounds like your choice is ${message.incoming_message.channelData.actions[0].value}`)
+    await bot.reply(message, `Sounds like your choice is ${ message.incoming_message.channelData.actions[0].value }`)
   })
 
   controller.on('slash_command', async (bot, message) => {

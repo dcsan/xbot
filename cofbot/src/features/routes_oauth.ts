@@ -5,7 +5,7 @@
 /**
  * This module implements the oauth routes needed to install an app
  */
-module.exports = function (_controller) {
+export default function (_controller) {
   // controller.webserver.get('/install', (req, res) => {
   //     // getInstallLink points to slack's oauth endpoint and includes clientId and scopes
   //     res.redirect(controller.adapter.getInstallLink());

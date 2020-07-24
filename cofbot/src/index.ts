@@ -1,3 +1,4 @@
+import AppConfig from './lib/AppConfig'
 // This is the main file for the cbgbot bot
 import morgan from 'morgan'
 
@@ -28,18 +29,6 @@ if (process.env.MONGO_URI) {
   // mongoStorage = storage
 }
 
-const AppConfig = {
-  verificationToken: process.env.VERIFICATION_TOKEN,
-  clientSigningSecret: process.env.CLIENT_SIGNING_SECRET,
-
-  // auth token for a single-team app
-  botToken: process.env.BOT_TOKEN,
-
-  // credentials used to set up oauth for multi-team apps
-  clientId: process.env.CLIENT_ID,
-  clientSecret: process.env.CLIENT_SECRET,
-  redirectUri: process.env.REDIRECT_URI,
-}
 
 const adapter = new SlackAdapter({
   // REMOVE THIS OPTION AFTER YOU HAVE CONFIGURED YOUR APP!
@@ -99,7 +88,8 @@ controller.middleware.receive.use(morgan('short'));
 // Once the bot has booted up its internal services
 controller.ready(() => {
   // load traditional developer-created local custom feature modules
-  controller.loadModules(__dirname + '/features')
+  // controller.loadModules(__dirname + '/features')
+  controller.loadModules(__dirname + '/mup/router')
 
   /* catch-all that uses the CMS to trigger dialogs */
   if (controller.plugins.cms) {
@@ -188,5 +178,5 @@ async function getBotUserByTeam(teamId) {
   }
 }
 
-module.exports = adapter
+export default adapter
 
