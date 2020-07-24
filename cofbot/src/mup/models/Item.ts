@@ -1,5 +1,5 @@
 import Logger from '../../lib/Logger'
-import GameObject from './GameObject'
+import { GameObject } from './GameObject'
 import SlackBuilder from '../../lib/adapters/SlackBuilder'
 
 class Item extends GameObject {

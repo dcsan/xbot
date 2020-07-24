@@ -41,7 +41,6 @@ const StaticRules: OneRule[] = [
     cname: 'restart',
     event: RouterService.startGame,
     type: 'command'
-    // eventName: 'startGame'
   },
 
   // {

@@ -378,7 +378,7 @@ const RexParser = {
   //   return result
   // }
 
-  parseAll(input: string): ParserResult | undefined {
+  parseCommands(input: string): ParserResult | undefined {
     let clean = WordUtils.cheapNormalize(input)
     clean = WordUtils.removeStopWords(clean)
     // breaks when first item found but we capture a different value

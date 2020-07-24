@@ -7,7 +7,7 @@ import Actor from './Actor'
 import Item from './Item'
 import Player from './Player'
 const log = console.log
-
+import { Pal } from '../pal/Pal'
 import { SceneEvent } from '../routes/RouterService'
 
 const DEFAULT_STATE = 'default'
@@ -16,6 +16,29 @@ const DEFAULT_STATE = 'default'
 //  Actor < RoomObject < GameObject
 //  Room  < GameObject
 
+interface ActionBlock {
+  text?: string
+  imageUrl: string
+  gets: string
+  setHint: string
+  setStates: string[]
+  goto: string
+}
+
+interface ActionData {
+  math: string
+  reply?: string
+  goto?: string
+  setStates: string[]
+  needs: string
+  if?: string[] | string
+  then: ActionBlock
+  else: ActionBlock
+
+  pass?: ActionBlock
+  fail?: ActionBlock
+}
+
 class GameObject {
   doc: any
   room?: Room
@@ -23,9 +46,11 @@ class GameObject {
   // player: Player
   items: Item[]
   actors: Actor[]
+  actions: ActionData[]
 
   constructor(doc, room?: Room) {
     this.doc = doc
+    this.actions = doc.actions
     this.room = room
     this.items = []
     this.actors = []
@@ -133,6 +158,7 @@ class GameObject {
       const buttonsBlock = SlackBuilder.buttonsBlock(this.doc.buttons)
       blocks.push(buttonsBlock)
     }
+    // fixme - something is breaking on restart here
     await evt.pal.sendBlocks(blocks)
     return blocks
   }
@@ -157,12 +183,12 @@ class GameObject {
     return `a ${ this.formalName }`
   }
 
-  async examine(_parsed, context) {
-    const stateInfo = this.stateInfo
-    // Logger.logObj('stateInfo', { state: this.state, stateInfo })
-    // Logger.log('item.examine', this.cname)
-    await SlackBuilder.sendItemCard(stateInfo, this, context)
-  }
+  // async examine(_parsed, context) {
+  //   const stateInfo = this.stateInfo
+  //   // Logger.logObj('stateInfo', { state: this.state, stateInfo })
+  //   // Logger.log('item.examine', this.cname)
+  //   await SlackBuilder.itemCard(stateInfo, this, context)
+  // }
 
   /**
    * returns true|false if an action was found/matched
@@ -195,16 +221,16 @@ class GameObject {
     return false
   }
 
-  async tryMatchAction(input, context) {
-    input = WordUtils.fullNormalize(input)
+  async tryMatchAction(input: string, pal: Pal) {
     if (!this.doc.actions) {
       Logger.warn('no actions for item:', this.doc.name)
     }
+    input = WordUtils.fullNormalize(input)
     for (const actionData of this.doc.actions) {
       let rex = new RegExp(actionData.match)
       if (input.match(rex)) {
         Logger.log('action match', actionData)
-        const result = await this.runAction(actionData, context)
+        const result = await this.runAction(actionData, pal)
         return { result, actionData }
       }
     }
@@ -232,47 +258,52 @@ class GameObject {
   // game>story>room  room.story.game
   // FIXME - reaching UP through the hierarchy
   // a gameObject could be a room itself or we need thing.room
-  gotoRoom(roomName, context) {
+  gotoRoom(roomName: string, pal: Pal) {
     const thisRoom = this.room || this
     // @ts-ignore
-    thisRoom.story.gotoRoom(roomName, context)
+    thisRoom.story.gotoRoom(roomName, pal)
   }
 
   // FIXME - this applies to things and rooms
   // which are a different level of hierarchy
   // making polymorphism harder
-  async runAction(actionData, context) {
+  async runAction(actionData: ActionData, pal: Pal) {
     const player = this.player
 
     // quick reply
     if (actionData.reply) {
       const msg = this.formatReply(actionData.reply)
-      await context.sendText(msg)
+      await pal.sendText(msg)
     }
 
     if (actionData.goto) {
-      this.gotoRoom(actionData.goto, context)
+      this.gotoRoom(actionData.goto, pal)
     }
 
     const needs = actionData.needs
     if (!needs || player?.hasItem(needs)) {
       // success!
-      const passData = actionData.pass
+      const passData: ActionBlock | undefined = actionData.pass
       if (passData) {
         Logger.log('action passed', passData)
-        if (passData?.gets) player?.addItemByName(actionData.pass.gets)
-        if (passData.setStates) await this.updateStates(passData.setStates, context)
-        SlackBuilder.sendItemCard(actionData.pass, this, context)
+        if (passData?.gets) player?.addItemByName(actionData.pass?.gets)
+        if (passData.setStates) await this.updateStates(passData.setStates, pal)
+        const card = SlackBuilder.itemCard(passData, this)
+        // SlackBuilder.sendItemCard(actionData.pass, this, evt)
+        await pal.sendBlocks(card)
       }
     } else {
       // fail
-      Logger.log('action fail', actionData.name, actionData)
-      SlackBuilder.sendItemCard(actionData.fail, this, context)
+      Logger.log('action fail', actionData)
+      if (actionData.fail) {
+        const card = SlackBuilder.itemCard(actionData.fail, this)
+        await pal.sendBlocks(card)
+      }
     }
 
   }
 
-  updateStates(updates, _context) {
+  updateStates(updates, _pal: Pal) {
     updates.map(pair => {
       const [newState, itemName] = pair.split(' ')
       let targetItem
@@ -293,4 +324,4 @@ class GameObject {
 
 }
 
-export default GameObject
+export { GameObject, ActionData, ActionBlock }

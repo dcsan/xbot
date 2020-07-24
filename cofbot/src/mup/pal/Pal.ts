@@ -28,17 +28,7 @@ class Pal {
     await this.channel.say(text)
   }
 
-  /**
-   * post a structured message or blocks
-   * @param msg
-   */
   async postMessage(msg: any) {
-    await this.channel.say(msg)
-  }
-
-  async sendBlocks(blocks) {
-    const msg = SlackBuilder.wrapBlocks(blocks)
-    Logger.warn('sendBlocks', msg)
     await this.channel.say(msg)
   }
 
@@ -47,8 +37,22 @@ class Pal {
   }
 
   async sendButtons(buttons) {
-    Logger.log('sendButtons', buttons)
-    await this.channel.say('buttons')
+    const block = SlackBuilder.buttonsBlock(buttons)
+    await this.sendBlocks([block])
+  }
+
+  async sendBlocks(blocks) {
+    if (!blocks || !blocks.length) {
+      Logger.error('tried to sendBlocks with no blocks:', blocks)
+    }
+    const msg = SlackBuilder.wrapBlocks(blocks)
+    Logger.log('sendBlocks:', blocks.length)
+    try {
+      await this.channel.say(msg)
+    } catch (err) {
+      Logger.logJson('ERROR channel.say =>', msg)
+      Logger.error('ERROR', err.response.data)
+    }
   }
 
 }

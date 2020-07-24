@@ -1,6 +1,6 @@
 import Logger from '../../lib/Logger'
 import SlackBuilder from '../../lib/adapters/SlackBuilder'
-import GameObject from './GameObject'
+import { GameObject } from './GameObject'
 import Actor from './Actor'
 import Item from './Item'
 import Story from './Story'
@@ -123,7 +123,7 @@ class Room extends GameObject {
     return reply
   }
 
-  findItem(itemName) {
+  findItem(itemName): Item | undefined {
     const name = itemName.toLowerCase()
     const found = this.items.filter((item) => item.cname === name)
     if (found.length) {
@@ -132,7 +132,7 @@ class Room extends GameObject {
       return item
     } else {
       Logger.log('cannot find item:', itemName)
-      return false
+      return undefined
     }
   }
 

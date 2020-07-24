@@ -33,7 +33,8 @@ class Story {
   reset() {
     const startRoomName = this.doc.startRoom
     if (startRoomName) {
-      this.currentRoom = this.findRoom(startRoomName)
+      const room = this.findRoom(startRoomName)
+      if (room) this.currentRoom = room
     } else {
       this.currentRoom = this.rooms[0]
     }
@@ -60,20 +61,23 @@ class Story {
     this.room.loadActors(this.doc.name)
   }
 
-  findRoom(roomName): Room {
+  findRoom(roomName: string): Room | undefined {
     if (!roomName) {
       Logger.error('findRoom but no roomName given')
     }
     const found = this.rooms.find(room => room.name === roomName)
     if (!found) {
-      return Logger.fatal('cannot find room:', { roomName })
+      Logger.fatal('cannot find room:', { roomName })
     }
     return found
   }
 
   async gotoRoom(evt: SceneEvent, roomName: string) {
-    this.currentRoom = this.findRoom(roomName)
-    await this.room.enter(evt)
+    const room = this.findRoom(roomName)
+    if (room) {
+      this.currentRoom = room
+      await this.room.enter(evt)
+    }
   }
 
   buildStory(doc) {

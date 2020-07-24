@@ -1,4 +1,4 @@
-import GameObject from './GameObject'
+import { GameObject } from './GameObject'
 import Logger from '../../lib/Logger'
 import assert from 'assert';
 
@@ -15,7 +15,6 @@ class Actor extends GameObject {
     this.defaultCount = 0
     this.state = 'default'
   }
-
 
   /**
    * with default reply

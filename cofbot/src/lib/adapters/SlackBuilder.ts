@@ -2,6 +2,8 @@ import Logger from "../Logger"
 import Util from '../Util'
 import Item from '../../mup/models/Item'
 
+import { ActionBlock } from '../../mup/models/GameObject'
+
 const SlackBuilder = {
 
   logging: true,
@@ -36,11 +38,6 @@ const SlackBuilder = {
     const buttonElements = buttons.map(b => SlackBuilder.buttonItem(b))
     const block = SlackBuilder.wrapActionsInBlock(buttonElements)
     return block
-  },
-
-  sendButtons(buttons, context) {
-    const block = SlackBuilder.buttonsBlock(buttons)
-    SlackBuilder.sendBlocks([block], context)
   },
 
   textBlock(text) {
@@ -135,36 +132,20 @@ const SlackBuilder = {
     await context.sendText(text)
   },
 
-  async sendBlocks(blocks, context) {
-    if (!context || !context.chat) {
-      Logger.error('tried to sendBlocks with no context.chat:', context.chat)
-    }
-    if (!blocks || !blocks.length) {
-      Logger.error('tried to sendBlocks with no blocks:', blocks)
-    }
-    const msg = SlackBuilder.wrapBlocks(blocks)
-    Logger.log('sendBlocks:', blocks.length)
-    try {
-      await context.chat.postMessage(msg)
-    } catch (err) {
-      Logger.logJson('ERROR chat.postMessage error. msg=>', msg)
-      Logger.error('ERROR', err.response.data)
-    }
-  },
 
-  async sendItemCard(stateInfoDoc, item: Item, context) {
+  async itemCard(infoBlock: ActionBlock, item: Item) {
     let blocks: any[] = []
-    if (!stateInfoDoc) {
+    if (!infoBlock) {
       blocks.push(SlackBuilder.textBlock(item.short))
     } else {
-      if (stateInfoDoc.imageUrl) {
-        blocks.push(SlackBuilder.imageBlock(stateInfoDoc, item))
+      if (infoBlock.imageUrl) {
+        blocks.push(SlackBuilder.imageBlock(infoBlock, item))
       }
       // FIXME decide consistent naming or fallback
-      const text = stateInfoDoc.long || stateInfoDoc.short || stateInfoDoc.text
+      const text = infoBlock.text
       blocks.push(SlackBuilder.textBlock(text))
     }
-    await SlackBuilder.sendBlocks(blocks, context)
+    return blocks
   }
 
 }
