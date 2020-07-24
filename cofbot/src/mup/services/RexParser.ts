@@ -226,7 +226,7 @@ const RexParser = {
 
     {
       name: 'giveThingActor',
-      rex: /^(give) (?<thing>\w+) (the|to) (?<actor>\w+)$/i,
+      rex: /^(give) (?<thing>\w+) (to) (?<actor>\w+)$/i,
       verb: 'give',
       target: 'actor',
       event: 'giveThing',

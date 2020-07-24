@@ -19,7 +19,8 @@ test('capture sent postMessage', async () => {
 })
 
 test('set event on context', async () => {
-  expect(context.event).toBe(undefined)
-  context.event = { text: 'input message' }
-  expect(context.event.text).toBe('input message')
+  expect(context.received.text).toBe(undefined)
+  // context.setInput('testing input')
+  context.sendText('output message')
+  expect(context.received.text).toBe('output message')
 })
