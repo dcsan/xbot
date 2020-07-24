@@ -37,28 +37,28 @@ const StaticRules: OneRule[] = [
   },
 
   {
-    rex: /^(start|restart)$/i,
+    rex: /^(rs|start|restart)$/i,
     cname: 'restart',
     event: RouterService.startGame,
     type: 'command'
     // eventName: 'startGame'
   },
 
-  {
-    cname: 'restart',
-    rex: /^(x|examine|look)$/i,
-    event: RouterService.lookRoom,
-    type: 'command'
-    // eventName: 'startGame'
-  },
+  // {
+  //   cname: 'examine',
+  //   rex: /^(x|examine|look)$/i,
+  //   event: RouterService.lookRoom,
+  //   type: 'command'
+  //   // eventName: 'startGame'
+  // },
 
-  {
-    cname: 'examine',
-    rex: /^(x|examine|look|look at) (?<thing>\w+)$/i,
-    event: RouterService.lookThing,
-    type: 'command'
-    // eventName: 'startGame'
-  },
+  // {
+  //   cname: 'examine',
+  //   rex: /^(x|examine|look|look at) (?<thing>\w+)$/i,
+  //   event: RouterService.lookThing,
+  //   type: 'command'
+  //   // eventName: 'startGame'
+  // },
 
 ]
 

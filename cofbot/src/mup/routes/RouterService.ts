@@ -49,7 +49,7 @@ const RouterService = {
 
   startGame: async (evt: SceneEvent) => {
     const game = await RouterService.findGame(evt.pal)
-    await game.restart(evt.pal)
+    await game.restart(evt)
   },
 
   lookThing: async (evt: SceneEvent) => {

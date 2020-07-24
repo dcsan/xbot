@@ -3,7 +3,7 @@ story:
   cname: asylum # internal reference
   goto: start
   intro: This is the introduction
-  startRoom: cell # for debugging jump to this room on load
+  startRoom: start # for debugging jump to this room on load
 
 rooms:
   - name: start

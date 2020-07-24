@@ -110,8 +110,8 @@ class GameObject {
   }
 
   // may work for rooms and things
-  async lookThing(evt: SceneEvent) {
-    Logger.log('lookThing')
+  async describeThing(evt: SceneEvent) {
+    Logger.log('describeThing', this.name)
     let blocks: any[] = []
     if (this.doc.imageUrl) {
       blocks.push(SlackBuilder.imageBlock(this.doc, this))
@@ -136,12 +136,6 @@ class GameObject {
     await evt.pal.sendBlocks(blocks)
     return blocks
   }
-
-  // might need to patch as a room?
-  async lookRoom(evt: SceneEvent) {
-    return this.lookThing(evt)
-  }
-
 
   /**
    * when we don't have a named actor

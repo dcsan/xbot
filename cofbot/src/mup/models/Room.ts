@@ -5,7 +5,7 @@ import Actor from './Actor'
 import Item from './Item'
 import Story from './Story'
 import Util from '../../lib/Util'
-import WordUtils from '../../lib/WordUtils'
+// import WordUtils from '../../lib/WordUtils'
 // import { RexParser } from '../routes/RexParser'
 import { ParserResult } from '../routes/RexParser'
 import { Pal } from '../pal/Pal'
@@ -82,22 +82,21 @@ class Room extends GameObject {
     return names
   }
 
+  async lookRoom(evt: SceneEvent) {
+    this.describeThing(evt) // the room
+  }
 
-  // async lookRoom(evt: SceneEvent) {
-
-
-  // found.parsed
-  // look at thing
-  // async lookThing(evt: SceneEvent) {
-  //   const name = evt.parsed.groups.thing
-  //   const item = this.findThing(name)
-  //   if (!item) {
-  //     Logger.warn('cannot find item', name)
-  //     return false
-  //   }
-  //   await item.examine(found, context)
-  //   return true
-  // }
+  // might need to patch as a room?
+  async lookThing(evt: SceneEvent) {
+    const thingName: string = evt.result.parsed?.groups.thing
+    if (!thingName) return Logger.warn('no thingName to lookat', evt)
+    const thing = this.findThing(thingName)
+    if (!thing) {
+      Logger.warn('cannot find thing to lookAt', thingName)
+      return
+    }
+    thing.describeThing(evt)
+  }
 
   get allThings() {
     const things: GameObject[] = []

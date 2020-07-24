@@ -407,7 +407,10 @@ const RexParser = {
         parsed, rule
       }
       // console.log('parserResult', parserResult)
-      Logger.logObj('found match for input:', { input, parserResult })
+      Logger.logObj('parser found:', {
+        cname: rule.cname,
+        groups: parsed?.groups
+      })
       return parserResult
     } else {
       return undefined    // FIXME used before defined?

@@ -10,7 +10,7 @@ import SlackBuilder from '../../lib/adapters/SlackBuilder'
 import { Pal } from '../pal/Pal'
 import Story from './Story'
 import Player from './Player'
-
+import { SceneEvent } from '../routes/RouterService'
 import Menu from './Menu'
 const menu = new Menu()
 
@@ -29,20 +29,16 @@ class Game {
     this.menu = new Menu()
     this.story = new Story(this)
     this.player = new Player()
-
   }
 
   // not done in constructor as it is async
+  // FIXME
   async init(opts) {
     // create objects used below
-
     await this.story.load(opts)
     Logger.log('init game')
     this.loadHelp(opts?.storyName)
     this.reset()
-    if (opts?.pal) {
-      opts.pal.sendText("reset game! ")
-    }
   }
 
   reset() {
@@ -52,11 +48,12 @@ class Game {
   }
 
   // TODO can merge with init?
-  async restart(pal: Pal) {
-    this.init({ pal })
-    await this.story.restart(pal)
-    if (pal) {
-      await pal.sendText('restarted')
+  async restart(evt: SceneEvent) {
+    this.reset()
+    await this.story.restart(evt.pal)
+    if (evt.pal) {
+      await evt.pal.sendText('restarted')
+      await this.story.room.describeThing(evt)
     }
   }
 
