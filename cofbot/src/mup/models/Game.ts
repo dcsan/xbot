@@ -50,10 +50,9 @@ class Game {
   // TODO can merge with init?
   async restart(evt: SceneEvent) {
     this.reset()
-    await this.story.restart(evt.pal)
+    await this.story.currentRoom.enter(evt)
     if (evt.pal) {
       await evt.pal.sendText('restarted')
-      await this.story.room.describeThing(evt)
     }
   }
 

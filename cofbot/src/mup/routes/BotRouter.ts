@@ -9,11 +9,19 @@ import { RouterService, SceneEvent } from './RouterService'
 const BotRouter = {
 
   async textEvent(slackEvent) {
+    const input: string = slackEvent.message.text
+    await BotRouter.anyEvent(slackEvent, input)
+  },
 
+  async actionEvent(slackEvent) {
+    const input: string = slackEvent.event.text
+    await BotRouter.anyEvent(slackEvent, input)
+  },
+
+  async anyEvent(slackEvent, input: string) {
     Logger.logObj('slackEvent text', slackEvent.message.text)
     // const { message: MessageEvent, say: SayFn } = slackEvent
     const pal = new Pal(slackEvent)
-    const input = slackEvent.message.text
     const game: Game = await GameManager.findGame(pal)
     await pal.debugMessage(`input: ${ input }`)
     const result: ParserResult = RexParser.parseCommands(input)
@@ -32,7 +40,6 @@ const BotRouter = {
       await pal.debugMessage(msg)
       Logger.warn('no match', msg)
     }
-
   },
 
   async tryCommands(evt: SceneEvent): Promise<boolean> {

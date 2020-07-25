@@ -89,11 +89,6 @@ class Story {
     }
   }
 
-  async restart(context) {
-    this.currentRoom.enter(context)
-    // await this.help(context)
-  }
-
   runCommand(commandName, context) {
     switch (commandName) {
       case '/hint':

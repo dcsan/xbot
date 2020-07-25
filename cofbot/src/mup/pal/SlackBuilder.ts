@@ -46,10 +46,10 @@ const SlackBuilder = {
     }
     const block = {
       "type": "section",
-      // "block_id": "section567",
       "text": {
         "type": "mrkdwn",
         "text": text,
+        // cannot have emoji in mrkdown?
         // "emoji": true
       }
     }

@@ -60,7 +60,7 @@ const Logger = {
    * yaml log is stripping out Functions
    */
   logJson(msg, obj, _force = false) {
-    console.log(msg, JSON.stringify(obj))
+    console.log(msg, JSON.stringify(obj, null, 2))
   },
 
   logObj(msg, obj, force = false) {

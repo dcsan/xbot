@@ -3,7 +3,8 @@ import Logger from '../../lib/Logger'
 import Util from '../../lib/Util'
 import SlackBuilder from './SlackBuilder'
 
-const debugOutput = false
+const debugOutput = true
+// const debugOutput = false
 
 // parent of SlackAdapter etc
 interface IChannel {
@@ -73,7 +74,7 @@ class Pal {
       await this.channel.say(msg)
     } catch (err) {
       Logger.logJson('ERROR channel.say =>', msg)
-      Logger.error('ERROR', err.response.data)
+      Logger.error('ERROR', err)  // FIXME maybe not .data ?
     }
   }
 

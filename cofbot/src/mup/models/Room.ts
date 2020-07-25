@@ -24,6 +24,7 @@ class Room extends GameObject {
   }
 
   buildThings(story: Story) {
+    Logger.log('buildThings room:', this.name)
     this.items = []
     this.hintStep = this.doc.setHint || 'start'
     this.loadItems(story)

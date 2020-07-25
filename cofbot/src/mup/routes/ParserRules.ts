@@ -45,7 +45,7 @@ const StaticRules: OneRule[] = [
 
   {
     rex: /^(test)$/i,
-    cname: 'restart',
+    cname: 'test',
     event: RouterService.echoTest,
     type: 'command'
   },
