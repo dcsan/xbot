@@ -8,7 +8,7 @@ story:
 rooms:
   - name: start
     intro: Are you ready?
-    imageUrl: /asylum/rooms/title.jpg
+    imageUrl: asylum/shots/title.jpg
     long: "Welcome to 'Escape From Bell Hill (Asylum #6)'\
       Ready?"
     hints:
@@ -50,7 +50,7 @@ rooms:
         goto: lobby2
 
   - name: lobby2
-    imageUrl: /asylum/rooms/hallway.jpg
+    imageUrl: asylum/rooms/hallway.jpg
     long:
       "The host informs you that the game will last one hour and will be followed by a debrief.
       If you are ever stuck or want to leave, just say the safe word “macaroni”.
@@ -93,7 +93,7 @@ rooms:
 
   - name: cell
     short: You are in an inmate’s bedroom.
-    imageUrl: /asylum/rooms/cell.jpg
+    imageUrl: asylum/rooms/cell.jpg
     actions:
       - match: enter bed
         reply: You're not tired
