@@ -51,6 +51,15 @@ const Util = {
 
   quoteCode(s) {
     return ('```' + s + '```')
+  },
+
+  // strip out elements with undef values for cleaner YAML dumps
+  removeEmptyKeys(obj) {
+    Object.keys(obj).forEach(key => {
+      if (obj[key] && typeof obj[key] === 'object') Util.removeEmptyKeys(obj[key]);
+      else if (obj[key] === undefined) delete obj[key];
+    });
+    return obj;
   }
 
 }

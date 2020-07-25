@@ -1,4 +1,5 @@
 // Platform Abstraction Layer
+import yaml from 'js-yaml'
 import Logger from '../../lib/Logger'
 import Util from '../../lib/Util'
 import SlackBuilder from './SlackBuilder'
@@ -53,8 +54,14 @@ class Pal {
     await this.channel.say(msg)
   }
 
-  async debugMessage(text) {
-    if (debugOutput) await this.channel.say(Util.quoteCode(text))
+  async debugMessage(obj) {
+    if (!debugOutput) return
+    // const clean = { ...obj } // remove nulls?
+    const clean = Util.removeEmptyKeys(obj)
+    console.log('json', JSON.stringify(clean, null, 2))
+    const blob = yaml.dump(clean, { skipInvalid: true, lineWidth: 200 })
+    console.log('yaml', blob)
+    await this.channel.say(Util.quoteCode(blob))
   }
 
   async sendButtons(buttons) {

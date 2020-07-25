@@ -2,7 +2,7 @@ import dotEnv from 'dotenv-flow';
 dotEnv.config()
 
 console.log('NODE_ENV', process.env.NODE_ENV)
-console.log('CONFIG_ENV', process.env.CONFIG_ENV)
+console.log('CONFIG_APP', process.env.CONFIG_APP)
 
 const AppConfig = {
 
@@ -24,17 +24,15 @@ const AppConfig = {
 
   NODE_ENV: process.env.NODE_ENV,
   CONFIG_ENV: process.env.CONFIG_ENV,
+  CONFIG_APP: process.env.CONFIG_APP,
 
-  verificationToken: process.env.VERIFICATION_TOKEN,
-  clientSigningSecret: process.env.CLIENT_SIGNING_SECRET,
+  // verificationToken: process.env.VERIFICATION_TOKEN,
+  // clientSigningSecret: process.env.CLIENT_SIGNING_SECRET,
 
-  // auth token for a single-team app
-  botToken: process.env.BOT_TOKEN,
-
-  // credentials used to set up oauth for multi-team apps
-  clientId: process.env.CLIENT_ID,
-  clientSecret: process.env.CLIENT_SECRET,
-  redirectUri: process.env.REDIRECT_URI,
+  // // credentials used to set up oauth for multi-team apps
+  // clientId: process.env.CLIENT_ID,
+  // clientSecret: process.env.CLIENT_SECRET,
+  // redirectUri: process.env.REDIRECT_URI,
 
   // BOLT
   token: process.env.SLACK_BOT_TOKEN,

@@ -10,14 +10,16 @@ const receiver = new ExpressReceiver({ signingSecret: AppConfig.signingSecret })
 
 console.log('AppConfig', AppConfig)
 const app = new App({
-  token: AppConfig.botToken,
+  token: AppConfig.token,
   receiver
 });
 
 // app.use(morgan('tiny'));
-async function eventLogger(opts) {
-  console.log('=> event.text', opts.event)
-  await opts.next();
+async function eventLogger(req) {
+  console.log('logger req.body.type => ', req.body?.type)
+  if (req.event) console.log('req.event => ', req.event)
+  if (req.action) console.log('req.action => ', req.action)
+  await req.next();
 }
 app.use(eventLogger)
 
@@ -71,8 +73,6 @@ app.action(/.*/, async (slackEvent) => {
   await BotRouter.actionEvent(slackEvent)
   // say('you hit an action')
 });
-
-
 
 app.shortcut(/.*/, async ({ shortcut, ack, say }) => {
   await ack();

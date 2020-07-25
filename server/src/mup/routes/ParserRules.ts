@@ -5,6 +5,7 @@ interface OneRule {
   event: any
   type: string
   cname: string
+  extra?: string | undefined
 }
 
 const StaticRules: OneRule[] = [
@@ -12,7 +13,8 @@ const StaticRules: OneRule[] = [
     cname: 'cheat',
     rex: /^cheat$/i,
     event: RouterService.handleCheat,
-    type: 'command'
+    type: 'command',
+    extra: undefined
   },
 
   {
