@@ -12,8 +12,10 @@ interface RegExpResult {
 }
 
 interface ParserResult {
-  parsed: RegExpResult | null,
-  rule: OneRule
+  parsed?: RegExpResult | null,
+  rule?: OneRule    // matched rule
+  input: string
+  clean: string
 }
 
 const RexParser = {
@@ -378,18 +380,13 @@ const RexParser = {
   //   return result
   // }
 
-  parseCommands(input: string): ParserResult | undefined {
+  parseCommands(input: string): ParserResult {
     let clean = WordUtils.cheapNormalize(input)
     clean = WordUtils.removeStopWords(clean)
-    // breaks when first item found but we capture a different value
-    // for (const rule of StaticRules) {
-    //   // const rex = new RegExp(route.match)
-    //   const parsed: RegExpResult | null = rule.rex.exec(input)
-    //   if (parsed) {
-    //     found = { parsed, rule }
-    //     break
-    //   }
-    // }
+    let parserResult: ParserResult = {
+      input,
+      clean,
+    }
 
     let rule: OneRule | undefined = StaticRules.find((oneRule: OneRule) => {
       if (oneRule.rex.test(input)) return true
@@ -403,19 +400,15 @@ const RexParser = {
       // console.log('rule.rex', rule.rex)
       // console.log('parsed', parsed)
       if (parsed) parsed.groups = { ...parsed.groups } // null object
-      const parserResult: ParserResult = {
-        parsed, rule
-      }
+      parserResult.parsed = parsed
+      parserResult.rule = rule
       // console.log('parserResult', parserResult)
       Logger.logObj('parser found:', {
         cname: rule.cname,
         groups: parsed?.groups
       })
-      return parserResult
-    } else {
-      return undefined    // FIXME used before defined?
     }
-
+    return parserResult
   },
 
 }

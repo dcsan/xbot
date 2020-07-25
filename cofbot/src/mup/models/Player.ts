@@ -1,4 +1,4 @@
-import SlackBuilder from '../../lib/adapters/SlackBuilder'
+import SlackBuilder from '../pal/SlackBuilder'
 import Item from './Item'
 import Logger from '../../lib/Logger'
 

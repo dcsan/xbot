@@ -6,7 +6,7 @@ import yaml from 'js-yaml'
 import AppConfig from '../../lib/AppConfig'
 import Util from '../../lib/Util'
 import Logger from '../../lib/Logger'
-import SlackBuilder from '../../lib/adapters/SlackBuilder'
+import SlackBuilder from '../pal/SlackBuilder'
 import { Pal } from '../pal/Pal'
 import Story from './Story'
 import Player from './Player'
@@ -44,7 +44,7 @@ class Game {
   reset() {
     this.story.reset()
     this.player.reset()
-    this.story.room.reset()
+    this.story.room.initState()
   }
 
   // TODO can merge with init?

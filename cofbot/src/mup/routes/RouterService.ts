@@ -1,91 +1,71 @@
 import yaml from 'js-yaml'
 import Game from '../models/Game'
+import { GameManager } from '../models/GameManager'
+
 import Logger from '../../lib/Logger'
 import Util from '../../lib/Util'
 import { Pal } from '../pal/Pal'
 import { ParserResult } from './RexParser'
 
-let GameList: Game[] = []
+
 
 interface SceneEvent {
   pal: Pal,
   result: ParserResult  // parsed, rule
+  game: Game
 }
 
 const RouterService = {
 
-  // TODO store in mongo
-  async findGame(pal: Pal): Promise<Game> {
-    const sid = pal.sessionId
-    let game = GameList[sid]
-    if (!game) {
-      game = new Game(sid)
-      GameList[sid] = game
-      await game.init()
-      Logger.log('new game', sid)
-      Logger.log('init routes gameObj.story', game.story.room.name)
-    }
-    // Logger.log('returning game', gameSession.sid)
-    return game
-  },
-
-  handleCheat: async (evt: SceneEvent) => {
-    Logger.log('handleCheat', evt)
-    evt.pal.reply('found cheat')
-  },
 
   lookRoom: async (evt: SceneEvent) => {
-    const game = await RouterService.findGame(evt.pal)
-    return await game.story.room.lookRoom(evt)
+    return await evt.game?.story.room.lookRoom(evt)
   },
 
   // found: {route, parsed}
   goto: async (evt: SceneEvent) => {
     const roomName = evt.result.parsed?.groups.roomName
     Logger.logObj('goto', roomName)
-    const game = await RouterService.findGame(evt.pal)
-    await game.story.gotoRoom(evt, roomName)
+    await evt.game.story.gotoRoom(evt, roomName)
   },
 
   startGame: async (evt: SceneEvent) => {
-    const game = await RouterService.findGame(evt.pal)
-    await game.restart(evt)
+    await evt.game.restart(evt)
   },
 
   lookThing: async (evt: SceneEvent) => {
-    const game = await RouterService.findGame(evt.pal)
-    return await game.story.room.lookThing(evt)
-  }
+    return await evt.game.story.room.lookThing(evt)
+  },
 
-  // boo: async (context) => {
-  //   context.sendText('boo')
-  // },
+  echoTest: async (evt: SceneEvent) => {
+    evt.pal.reply('echo test back!')
+  },
 
-  // getActionMatchesList(actions) {
-  //   let lines = actions?.map(thing => {
-  //     return { [thing.cname]: this.getActionMatchesThing(thing) }
-  //   })
-  //   return lines
-  // },
+  getActionMatchesList(actions) {
+    let lines = actions?.map(thing => {
+      return { [thing.cname]: this.getActionMatchesThing(thing) }
+    })
+    return lines
+  },
 
-  // getActionMatchesThing(thing) {
-  //   const line = thing.doc?.actions?.map(action => action.match)
-  //   return line || ''
-  // },
+  getActionMatchesThing(thing) {
+    const line = thing.doc?.actions?.map(action => action.match)
+    return line || ''
+  },
 
-  // cheat: async (context) => {
-  //   const game = await RouterService.findGame(context.session.id)
+  handleCheat: async (evt: SceneEvent) => {
+    const game = await GameManager.findGame(evt.pal)
 
-  //   const info = {
-  //     roomEvents: RouterService.getActionMatchesThing(game.story.currentRoom),
-  //     itemEvents: RouterService.getActionMatchesList(game.story.currentRoom.items),
-  //     actors: RouterService.getActionMatchesList(game.story.currentRoom.actors)
-  //   }
-  //   Logger.logObj('cheatInfo', info)
-  //   const blob = yaml.dump(info)
-  //   context.sendText(Util.quoteCode(blob))
-  //   return info
-  // },
+    const info = {
+      roomEvents: RouterService.getActionMatchesThing(game.story.currentRoom),
+      itemEvents: RouterService.getActionMatchesList(game.story.currentRoom.items),
+      actors: RouterService.getActionMatchesList(game.story.currentRoom.actors)
+    }
+    Logger.logObj('cheatInfo', info)
+    const blob = yaml.dump(info)
+    evt.pal.sendText(Util.quoteCode(blob))
+    return info
+  },
 
 }
 

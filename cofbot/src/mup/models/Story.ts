@@ -1,6 +1,6 @@
 import Logger from '../../lib/Logger'
 import Util from '../../lib/Util'
-import SlackBuilder from '../../lib/adapters/SlackBuilder'
+import SlackBuilder from '../pal/SlackBuilder'
 import Room from './Room'
 import Game from './Game'
 // const assert = require('chai').assert
@@ -58,7 +58,16 @@ class Story {
     // @ts-ignore
     Logger.logObj('loaded story', { name: this.doc.name })
     // @ts-ignore
-    this.room.loadActors(this.doc.name)
+  }
+
+  buildStory(doc) {
+    this.rooms = []
+    doc.rooms.forEach((roomData) => {
+      const room = new Room(roomData, this)
+      room.story = this
+      this.rooms.push(room)
+    })
+    this.reset()
   }
 
   findRoom(roomName: string): Room | undefined {
@@ -67,7 +76,7 @@ class Story {
     }
     const found = this.rooms.find(room => room.name === roomName)
     if (!found) {
-      Logger.fatal('cannot find room:', { roomName })
+      Logger.logObj('cannot find room:', `name: ${ roomName }`)
     }
     return found
   }
@@ -78,15 +87,6 @@ class Story {
       this.currentRoom = room
       await this.room.enter(evt)
     }
-  }
-
-  buildStory(doc) {
-    this.rooms = []
-    doc.rooms.forEach((roomData) => {
-      const room = new Room(roomData, this)
-      this.rooms.push(room)
-    })
-    this.reset()
   }
 
   async restart(context) {

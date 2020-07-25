@@ -1,23 +1,43 @@
 // Platform Abstraction Layer
 import Logger from '../../lib/Logger'
 import Util from '../../lib/Util'
-import SlackBuilder from '../../lib/adapters/SlackBuilder'
+import SlackBuilder from './SlackBuilder'
+
+const debugOutput = false
+
 // parent of SlackAdapter etc
 interface IChannel {
   say: any
-  message: any
+  store: any[]
 }
 
-const debugFlag = true
+class MockChannel implements IChannel {
+  store: any[]
+
+  constructor() {
+    this.store = []
+  }
+
+  say(msg) {
+    this.store.push(msg)
+    Logger.log('mock.say', msg)
+  }
+}
+
+
 
 class Pal {
-  channel: IChannel
+  channel: IChannel | MockChannel
   sessionId: string
 
-  constructor(channel) {
+  constructor(channel: IChannel) {
     Logger.log('new pal')
     this.channel = channel
     this.sessionId = "12345"
+  }
+
+  channelStore() {
+    return this.channel.store
   }
 
   reply(message) {
@@ -33,7 +53,7 @@ class Pal {
   }
 
   async debugMessage(text) {
-    if (debugFlag) await this.channel.say(Util.quoteCode(text))
+    if (debugOutput) await this.channel.say(Util.quoteCode(text))
   }
 
   async sendButtons(buttons) {
@@ -46,7 +66,9 @@ class Pal {
       Logger.error('tried to sendBlocks with no blocks:', blocks)
     }
     const msg = SlackBuilder.wrapBlocks(blocks)
-    Logger.log('sendBlocks:', blocks.length)
+    if (debugOutput) {
+      Logger.log('sendBlocks:', blocks.length)
+    }
     try {
       await this.channel.say(msg)
     } catch (err) {
@@ -57,4 +79,4 @@ class Pal {
 
 }
 
-export { Pal }
+export { Pal, MockChannel }

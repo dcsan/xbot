@@ -35,22 +35,22 @@ slack-config:
 
 # single test
 testRoomItemActions:
-	npm run jest -- --watch -t 'room item actions'
+	npm run jest:watch -- --watch -t 'room item actions'
 
 testRoom:
-	npm run jest -- --watch Room
+	npm run jest:watch -- --watch Room
 
 testParser:
-	npm run jest -- --watch RexParser
+	npm run jest:watch -- --watch RexParser
 
 testGameObject:
-	npm run jest -- --watch GameObject
+	npm run jest:watch -- --watch GameObject
 
 testWordUtils:
-	npm run jest -- --watch WordUtils
+	npm run jest:watch -- --watch WordUtils
 
 testDispatch:
-	npm run jest -- --watch Dispatch
+	npm run jest:watch -- --watch Dispatch
 
 testRouter:
-	npm run jest -- --watch RexRouter
+	npm run jest:watch -- --watch RexRouter

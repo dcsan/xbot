@@ -1,5 +1,5 @@
 import Logger from '../../lib/Logger'
-import SlackBuilder from '../../lib/adapters/SlackBuilder'
+import SlackBuilder from '../pal/SlackBuilder'
 import { GameObject } from './GameObject'
 import Actor from './Actor'
 import Item from './Item'
@@ -14,42 +14,47 @@ import { SceneEvent } from '../routes/RouterService'
 
 class Room extends GameObject {
 
-  story: Story
   hintStep: string
 
-  constructor(doc, story) {
-    super(doc)
-    this.story = story  // handle to its parent
+  constructor(doc, story: Story) {
+    super(doc, story, 'room')
     this.hintStep = 'start'
-    this.reset()
+    this.klass = 'room'
+    this.buildThings(story)
   }
 
-  reset() {
+  buildThings(story: Story) {
     this.items = []
     this.hintStep = this.doc.setHint || 'start'
-    this.doc.items?.forEach((itemData) => {
-      const item = new Item(itemData, this)
-      this.items.push(item)
-      item.reset()
-    })
+    this.loadItems(story)
+    this.loadActors(story)
   }
 
   get name() {
     return this.doc.name
   }
 
-  get player() {
-    // not sure about this reaching back up the tree...
-    return this.story.game.player
+  // get player() {
+  //   // not sure about this reaching back up the tree...
+  //   return this.story?.game.player
+  // }
+
+  loadItems(story) {
+    this.doc.items?.forEach((itemData) => {
+      const item = new Item(itemData, story)
+      item.room = this
+      this.items.push(item)
+    })
   }
 
-  loadActors() {
+  loadActors(story) {
     const allActors = this.doc.actors
     Logger.log('loading actors:', allActors?.length)
     this.actors = []
     // @ts-ignore
     allActors?.map(actorDoc => {
-      const actor = new Actor(actorDoc, this)
+      const actor = new Actor(actorDoc, story)
+      actor.room = this
       this.actors.push(actor)
     })
   }
@@ -195,32 +200,12 @@ class Room extends GameObject {
     return pair
   }
 
-  async tryRoomActions(input, context) {
-    const action = await this.tryMatchAction(input, context)
-    if (action) {
-      return {
-        type: 'roomAction',
-        action
-      }
-    }
-    return false
-  }
-
-  /**
-   *
-   *
-   * @param {*} context
-   * @returns
-   * @memberof Room
-   */
-  // async tryAllActions(evt: SceneEvent) {
-  //   let action
-
-  //   if (evt.result.parsed) {
-  //     action = await evt.result.parsed.foundItem.tryAction(parsed, context)
+  // async tryRoomActions(input: string, pal: Pal) {
+  //   const result = await this.findAndRunAction(input, pal)
+  //   if (result) {
   //     return {
-  //       type: 'itemAction',
-  //       action
+  //       type: 'roomAction',
+  //       result
   //     }
   //   }
   //   return false

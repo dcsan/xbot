@@ -3,6 +3,17 @@ import yaml from 'js-yaml'
 // const forceLogging = true   // override even for testing
 const forceLogging = false   // override even for testing
 
+const LogLevels = {
+  SILLY: 4,
+  DEBUG: 3,
+  INFO: 2,
+  WARN: 1,
+  ERROR: 0
+}
+
+const logLevel = LogLevels.SILLY
+
+
 const Logger = {
 
   nodeEnv() {
@@ -62,6 +73,12 @@ const Logger = {
     } catch (err) {
       console.log('failed to stringify')
       console.log(msg)
+    }
+  },
+
+  silly(msg, ...rest) {
+    if (logLevel >= LogLevels.SILLY) {
+      Logger.logObj(msg, rest)
     }
   },
 

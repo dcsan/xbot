@@ -1,8 +1,9 @@
-import SlackBuilder from '../../lib/adapters/SlackBuilder'
+import SlackBuilder from '../pal/SlackBuilder'
 import Logger from '../../lib/Logger'
 import Util from '../../lib/Util'
 import WordUtils from '../../lib/WordUtils'
 import Room from './Room'
+import Story from './Story'
 import Actor from './Actor'
 import Item from './Item'
 import Player from './Player'
@@ -16,7 +17,8 @@ const DEFAULT_STATE = 'default'
 //  Actor < RoomObject < GameObject
 //  Room  < GameObject
 
-interface ActionBlock {
+// the fail/pass block branches of a full ActionData
+interface ActionBranch {
   text?: string
   imageUrl: string
   gets: string
@@ -32,41 +34,50 @@ interface ActionData {
   setStates: string[]
   needs: string
   if?: string[] | string
-  then: ActionBlock
-  else: ActionBlock
+  then: ActionBranch
+  else: ActionBranch
 
-  pass?: ActionBlock
-  fail?: ActionBlock
+  pass?: ActionBranch
+  fail?: ActionBranch
+}
+
+interface ActionResult {
+  handled: boolean
+  doc?: ActionData
+  history?: string[]
+  klass?: string
 }
 
 class GameObject {
   doc: any
+  story: Story
   room?: Room
   state: string
-  // player: Player
+
+
+  // allow recursing an item can have items
   items: Item[]
   actors: Actor[]
   actions: ActionData[]
+  klass: string
 
-  constructor(doc, room?: Room) {
+  constructor(doc, story: Story, klass: string,) {
     this.doc = doc
     this.actions = doc.actions
-    this.room = room
     this.items = []
     this.actors = []
     this.state = 'default'
-    this.reset()
+    this.klass = klass
+    this.story = story
+
+    this.initState()
   }
 
-  reset() {
-    try {
-      const state = this.doc.state ||
+  initState() {
+    const state =
+      this.doc.state ||
         this.doc.states ? this.doc.states[0].name : DEFAULT_STATE
-      this.state = state
-    } catch (err) {
-      log('failed to reset item')
-      log('reset this.doc', this.doc)
-    }
+    this.state = state
   }
 
   // FIXME - dont use both
@@ -91,10 +102,10 @@ class GameObject {
   }
 
   // FIXME always force player to exist?
-  get player(): Player | undefined {
-    // not sure about this reaching back up the tree...
-    return this.room?.story.game.player
-  }
+  // get player(): Player | undefined {
+  //   // not sure about this reaching back up the tree...
+  //   return this.room?.story.game.player
+  // }
 
   get stateInfo() {
     if (!this.doc.states) { return false }
@@ -199,56 +210,27 @@ class GameObject {
    * @returns
    * @memberof GameObject
    */
-  async tryAction(parsed, context) {
-    let { actionName, itemName, modifier } = parsed
-    if (!this.doc.actions) {
-      console.log('tryAction', { actionName, actions: this.doc.actions })
-      Logger.warn('no actions for doc:', this.doc.name)
-      return false
-      // throw new Error('failed')
-    }
-    for (const actionData of this.doc.actions) {
-      // this.doc.actions?.forEach(async (actionData) => {
-      const fullAction = `${ actionName } ${ modifier }`.trim()
-      let rex = new RegExp(actionData.match)
-      // Logger.log('check', actionName, actionData)
-      if (fullAction.match(rex)) {
-        Logger.log('action match', actionName)
-        const result = await this.runAction(actionData, context)
-        return { result, actionData }
-      }
-    }
-    return false
-  }
-
-  async tryMatchAction(input: string, pal: Pal) {
-    if (!this.doc.actions) {
-      Logger.warn('no actions for item:', this.doc.name)
-    }
-    input = WordUtils.fullNormalize(input)
-    for (const actionData of this.doc.actions) {
-      let rex = new RegExp(actionData.match)
-      if (input.match(rex)) {
-        Logger.log('action match', actionData)
-        const result = await this.runAction(actionData, pal)
-        return { result, actionData }
-      }
-    }
-    return false
-  }
-
-  // FIXME merge with tryAction - this came from actors before
-  // but it's the same for both
-  findAction(text) {
-    const found = this.doc.actions.find(action => {
-      const rex = new RegExp(action.match)
-      Logger.log('check', rex)
-      if (text.match(rex)) {
-        return action
-      }
-    })
-    return found
-  }
+  // async tryAction(parsed, context) {
+  //   let { actionName, itemName, modifier } = parsed
+  //   if (!this.doc.actions) {
+  //     console.log('tryAction', { actionName, actions: this.doc.actions })
+  //     Logger.warn('no actions for doc:', this.doc.name)
+  //     return false
+  //     // throw new Error('failed')
+  //   }
+  //   for (const actionData of this.doc.actions) {
+  //     // this.doc.actions?.forEach(async (actionData) => {
+  //     const fullAction = `${ actionName } ${ modifier }`.trim()
+  //     let rex = new RegExp(actionData.match)
+  //     // Logger.log('check', actionName, actionData)
+  //     if (fullAction.match(rex)) {
+  //       Logger.log('action match', actionName)
+  //       const result = await this.runAction(actionData, context)
+  //       return { result, actionData }
+  //     }
+  //   }
+  //   return false
+  // }
 
   // overridden by subclasses eg actor
   formatReply(text) {
@@ -258,49 +240,96 @@ class GameObject {
   // game>story>room  room.story.game
   // FIXME - reaching UP through the hierarchy
   // a gameObject could be a room itself or we need thing.room
-  gotoRoom(roomName: string, pal: Pal) {
-    const thisRoom = this.room || this
-    // @ts-ignore
-    thisRoom.story.gotoRoom(roomName, pal)
+  // gotoRoom(roomName: string, pal: Pal) {
+  //   const thisRoom: Room = this.room || this
+  //   // @ts-ignore
+  //   thisRoom.story.gotoRoom(roomName, pal)
+  // }
+
+  //
+  async findAndRunAction(evt: SceneEvent): Promise<ActionResult> {
+    const actionData: ActionData = this.findAction(evt.result.clean)
+    if (actionData) {
+      const actionResult: ActionResult = await this.runAction(evt, actionData)
+      return actionResult
+    }
+    // failure actionResult
+    return {
+      handled: false
+    }
+  }
+
+  // FIXME merge with tryAction - this came from actors before
+  // but it's the same for both
+  findAction(input: string): ActionData {
+    if (!this.doc.actions) {
+      Logger.warn('no actions for item:', this.doc.name)
+    }
+
+    input = WordUtils.fullNormalize(input)
+    const foundAction = this.doc.actions.find(action => {
+      const rex = new RegExp(action.match)
+      Logger.log('check', rex)
+      if (input.match(rex)) {
+        return action
+      }
+    })
+    return foundAction
   }
 
   // FIXME - this applies to things and rooms
   // which are a different level of hierarchy
   // making polymorphism harder
-  async runAction(actionData: ActionData, pal: Pal) {
-    const player = this.player
+  async runAction(evt: SceneEvent, actionData: ActionData): Promise<ActionResult> {
+    const player = this.story.game.player
+    let result: ActionResult = {
+      handled: false,
+      doc: actionData,
+      klass: this.klass,
+      history: []
+    }
 
     // quick reply
     if (actionData.reply) {
       const msg = this.formatReply(actionData.reply)
-      await pal.sendText(msg)
+      await evt.pal.sendText(msg)
+      result.handled = true
+      result.history?.push('reply')
     }
 
     if (actionData.goto) {
-      this.gotoRoom(actionData.goto, pal)
+      const roomName: string = actionData.goto
+      await this.story.gotoRoom(evt, roomName)
+      result.handled = true
+      result.history?.push('goto')
     }
 
     const needs = actionData.needs
+    // TODO check conditions isolate
     if (!needs || player?.hasItem(needs)) {
       // success!
-      const passData: ActionBlock | undefined = actionData.pass
+      const passData: ActionBranch | undefined = actionData.pass
       if (passData) {
         Logger.log('action passed', passData)
         if (passData?.gets) player?.addItemByName(actionData.pass?.gets)
-        if (passData.setStates) await this.updateStates(passData.setStates, pal)
+        if (passData.setStates) await this.updateStates(passData.setStates, evt.pal)
         const card = SlackBuilder.itemCard(passData, this)
         // SlackBuilder.sendItemCard(actionData.pass, this, evt)
-        await pal.sendBlocks(card)
+        await evt.pal.sendBlocks(card)
+        result.handled = true
+        result.history?.push('if.pass')
       }
     } else {
       // fail
       Logger.log('action fail', actionData)
+      result.handled = true
+      result.history?.push('if.fail')
       if (actionData.fail) {
         const card = SlackBuilder.itemCard(actionData.fail, this)
-        await pal.sendBlocks(card)
+        await evt.pal.sendBlocks(card)
       }
     }
-
+    return result
   }
 
   updateStates(updates, _pal: Pal) {
@@ -324,4 +353,4 @@ class GameObject {
 
 }
 
-export { GameObject, ActionData, ActionBlock }
+export { GameObject, ActionData, ActionBranch as ActionBlock, ActionResult }

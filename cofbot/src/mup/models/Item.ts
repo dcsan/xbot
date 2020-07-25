@@ -1,11 +1,11 @@
 import Logger from '../../lib/Logger'
 import { GameObject } from './GameObject'
-import SlackBuilder from '../../lib/adapters/SlackBuilder'
+import SlackBuilder from '../pal/SlackBuilder'
 
 class Item extends GameObject {
 
-  constructor(doc, room) {
-    super(doc, room)
+  constructor(doc, story) {
+    super(doc, story, 'item')
   }
 
 }
