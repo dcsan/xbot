@@ -20,6 +20,8 @@ const menu = new Menu()
 
 class Game {
 
+  helpDoc?: any
+
   constructor(sid, storyName = null) {
     this.sid = sid
   }
@@ -62,12 +64,14 @@ class Game {
    */
   reload (context) {
     // @ts-ignore
-    this.story.load({storyName: this.story.name, context})
+    this.story.load({ storyName: this.story.name, context })
   }
 
   loadHelp (storyName) {
-    const filepath = path.join(__dirname, '../../data/help.txt')
-    this.helpDoc = fs.readFileSync(filepath, 'utf8')
+    // const filepath = path.join(__dirname, '../../data/help.txt')
+    // this.helpDoc = fs.readFileSync(filepath, 'utf8')
+    this.helpDoc = Util.loadYaml(`stories/help.yaml`)
+
   }
 
   async echo (context) {

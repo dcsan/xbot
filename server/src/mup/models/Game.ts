@@ -67,8 +67,8 @@ class Game {
   }
 
   loadHelp(_storyName) {
-    const filepath = path.join(__dirname, '../../data/help.txt')
-    this.helpDoc = fs.readFileSync(filepath, 'utf8')
+    const yamlData = Util.loadYaml('stories/help.yaml')
+    this.helpDoc = yamlData.help
   }
 
   async echo(pal: Pal) {

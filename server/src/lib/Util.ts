@@ -1,6 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import yaml from 'js-yaml'
+import Logger from './Logger'
 
 const Util = {
 
@@ -24,16 +25,20 @@ const Util = {
     if (urlInfo.startsWith('http')) return urlInfo
     if (urlInfo.startsWith('text=')) return `https://via.placeholder.com/500x200/444488/CCC.png?${ urlInfo }`
 
-    return process.env.STATIC_SERVER + urlInfo + Util.cacheBust()
+    const imgUrl = process.env.STATIC_SERVER + '/cdn/assets/stories/' + urlInfo + Util.cacheBust()
+    Logger.log('imgUrl', imgUrl)
+    return imgUrl
+
   },
 
   loadYaml(pathFromData) {
-    const filepath = path.join(__dirname, '../data/', pathFromData)
+    const fullPath = path.join(__dirname, '../../cdn/assets/', pathFromData)
     try {
-      const doc = yaml.safeLoad(fs.readFileSync(filepath, 'utf8'))
+      const doc = yaml.safeLoad(fs.readFileSync(fullPath, 'utf8'))
       return doc
     } catch (err) {
       console.error('ERROR failed to load yaml:', pathFromData)
+      console.error('fullPath:', fullPath)
       throw (err)
     }
   },
