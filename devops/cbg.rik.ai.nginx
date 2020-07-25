@@ -23,7 +23,7 @@ server {
   }
 
   # proxy to node app @backend
-  location /api {
+  location /slack {
     proxy_pass http://localhost:33010;
 
     proxy_set_header X-Real-IP $remote_addr;
