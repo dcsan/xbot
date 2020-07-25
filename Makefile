@@ -19,7 +19,7 @@ firstDeploy:
 	ssh ${login} "mkdir -p ${deployDir}"
 
 pm2first:
-	ssh ${login} "cd ${deployDir} && NODE_ENV=production pm2 --name=cbg start server.js"
+	ssh ${login} "cd ${deployDir} && NODE_ENV=production pm2 --name=cbg start dist/index.js"
 
 pm2restart:
 	ssh ${login} "pm2 restart cbg"
@@ -30,6 +30,7 @@ pm2logs:
 clean:
 	rm -rf client/build
 	rm -rf server/build
+	rm -rf server/dist
 
 # image files can have wrong permissions when copied from internet
 fixPermissions:
@@ -38,16 +39,23 @@ fixPermissions:
 	# files 644
 	find server/cdn -type f -exec chmod 644 {} \;
 
-build: clean fixPermissions
+buildClient: clean fixPermissions
 	cd client && npm run build
 
-move:
-	mv client/build server
+buildServer:
+	cd server && npm run build
 
-prep: clean build move
+buildBoth: buildClient buildServer
+
+copyClient:
+	cp -r client/build server
+
+prep: clean buildBoth copyClient
 
 sync: fixPermissions
 	rsync -avi --delete \
+		--exclude .git \
+		--exclude src \
 		server/ ${login}:${deployDir}
 
 	echo "done"
@@ -55,7 +63,7 @@ sync: fixPermissions
 deploy: prep sync pm2restart
 
 # just server code
-quickDeploy: sync pm2restart
+quickDeploy: buildServer sync pm2restart
 
 renewCert:
 	certbot certonly -n -d cbg.rik.ai --nginx

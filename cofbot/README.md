@@ -1,3 +1,0 @@
-# cofbot
-
-cofbot fun
