@@ -1,8 +1,8 @@
 import dotEnv from 'dotenv-flow';
 dotEnv.config()
 
-console.log('NODE_ENV:\t', process.env.NODE_ENV)
-console.log('CONFIG_APP:\t', process.env.CONFIG_APP)
+// console.log('NODE_ENV:\t', process.env.NODE_ENV)
+// console.log('CONFIG_APP:\t', process.env.CONFIG_APP)
 
 const AppConfig = {
 

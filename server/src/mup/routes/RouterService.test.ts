@@ -1,12 +1,14 @@
 import _ from 'lodash'
-import { RexParser } from './RexParser.js';
+import { RexParser } from './RexParser';
 import { RouterService } from './RouterService'
-import Dispatcher from '../services/Dispatcher.js';
-import Game from '../models/Game.js';
 
-import Logger from '../../lib/Logger.js';
+// import Game from '../models/Game.js';
+import { createTestEnv } from '../../lib/TestUtils'
+import { ParserResult } from './RexParser'
+import { SceneEvent } from './RouterService'
 
-const log = console.log
+// import Logger from '../../lib/Logger.js';
+
 
 // xtest('routeParser', async () => {
 //   const found = await RexParser.fixedRouteParser('start')
@@ -14,16 +16,18 @@ const log = console.log
 //   expect(found.route.event).toBe(RouterService.startGame)
 // })
 
-// test('cheat command', async () => {
-//   context.reset()
-//   const game = await RouterService.findGame(1234)
-//   await game.init({ storyName: 'office' })
-//   const cheatInfo = await RouterService.cheat(context)
-//   // Logger.logObj('info', cheatInfo, true)
-//   expect(cheatInfo.itemEvents).toBeDefined()
-//   expect(cheatInfo.roomEvents).toBeDefined()
-//   expect(cheatInfo.actors).toBeDefined()
-//   // TODO - more detail for matcher?
-//   expect(context.received.text).toMatch(/room/gim)
-// })
+test('cheat command', async () => {
+  const { game, pal } = await createTestEnv()
+
+  await game.reset()
+  const result: ParserResult = RexParser.parseCommands('cheat')
+  const evt: SceneEvent = { pal, result, game }
+  const cheatInfo = await RouterService.handleCheat(evt)
+  // Logger.logObj('info', cheatInfo, true)
+  expect(cheatInfo.itemEvents).toBeDefined()
+  expect(cheatInfo.roomEvents).toBeDefined()
+  expect(cheatInfo.actors).toBeDefined()
+  // TODO - more detail for matcher?
+  expect(pal.getReceivedText()).toMatch(/room/gim)
+})
 

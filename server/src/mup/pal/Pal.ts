@@ -43,6 +43,10 @@ class Pal {
     this.sessionId = channel.sessionId || 'temp1234'
   }
 
+  getReceivedText() {
+    return this.channel.store.join(' ')
+  }
+
   channelStore() {
     return this.channel.store
   }
