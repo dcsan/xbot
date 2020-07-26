@@ -2,7 +2,7 @@ import { SceneEvent } from './routes/RouterService'
 import { Pal } from '../mup/pal/Pal'
 
 interface LoadOptions {
-  storyName: string
+  storyName?: string
   pal: Pal
 }
 

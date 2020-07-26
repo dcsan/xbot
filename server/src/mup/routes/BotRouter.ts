@@ -25,7 +25,8 @@ const BotRouter = {
     Logger.logObj('anyEvent.input:', input)
     // const { message: MessageEvent, say: SayFn } = slackEvent
     const pal = new Pal(slackEvent)
-    const game: Game = await GameManager.findGame(pal)
+    const storyName = 'asylum'
+    const game: Game = await GameManager.findGame({ pal, storyName })
     const result: ParserResult = RexParser.parseCommands(input)
 
     const evt: SceneEvent = { pal, result, game }

@@ -19,11 +19,11 @@ class Story {
   constructor(opts: LoadOptions, game: Game) {
     this.game = game
     this.rooms = []       // FIXME - just to shut up typescript
-    this.storyName = opts.storyName
-    this.load(opts)
+    this.storyName = this.load(opts)
     this.currentRoom = this.reset()
   }
-  reset() {
+
+  reset(): Room {
     Logger.log('story.reset')
     const startRoomName = this.doc.startRoom
     if (startRoomName) {
@@ -47,7 +47,7 @@ class Story {
    * @param {*} opts
    * @memberof Story
    */
-  load(opts: LoadOptions) {
+  load(opts: LoadOptions): string {
     // default to config if not passed
     const storyName = opts?.storyName ||
       this.storyName ||
@@ -60,6 +60,7 @@ class Story {
     this.buildStory(fullDoc)
     const msg = 'reloaded' + this.storyName
     Logger.log(msg)
+    return this.storyName
   }
 
   buildStory(doc) {

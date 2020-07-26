@@ -53,7 +53,7 @@ const RouterService = {
   },
 
   handleCheat: async (evt: SceneEvent) => {
-    const game = await GameManager.findGame(evt.pal)
+    const game = await GameManager.findGame({ pal: evt.pal })
 
     const info = {
       roomEvents: RouterService.getActionMatchesThing(game.story.currentRoom),
