@@ -3,10 +3,11 @@ import Util from '../../lib/Util'
 import Item from '../models/Item'
 
 import { ActionBlock } from '../models/GameObject'
+import AppConfig from '../../lib/AppConfig'
 
 const SlackBuilder = {
 
-  logging: true,
+  logging: AppConfig.debugMode,
 
   setLogging(flag) {
     SlackBuilder.logging = flag

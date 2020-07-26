@@ -1,8 +1,8 @@
 import dotEnv from 'dotenv-flow';
 dotEnv.config()
 
-console.log('NODE_ENV', process.env.NODE_ENV)
-console.log('CONFIG_APP', process.env.CONFIG_APP)
+console.log('NODE_ENV:\t', process.env.NODE_ENV)
+console.log('CONFIG_APP:\t', process.env.CONFIG_APP)
 
 const AppConfig = {
 
@@ -36,8 +36,8 @@ const AppConfig = {
 
   // BOLT
   token: process.env.SLACK_BOT_TOKEN,
-  signingSecret: process.env.SLACK_SIGNING_SECRET || 'x'
-
+  signingSecret: process.env.SLACK_SIGNING_SECRET || 'x',   // has to have a value for TSC
+  debugMode: process.env.DEBUG_MODE || false
 }
 
 AppConfig.init()

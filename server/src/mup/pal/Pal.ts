@@ -4,7 +4,9 @@ import Logger from '../../lib/Logger'
 import Util from '../../lib/Util'
 import SlackBuilder from './SlackBuilder'
 
-const debugOutput = true
+import AppConfig from '../../lib/AppConfig'
+
+const debugOutput = AppConfig.debugMode
 // const debugOutput = false
 
 // parent of SlackAdapter etc
