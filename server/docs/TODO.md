@@ -4,6 +4,8 @@
 
 - get XXX messages in parser / game level get passed to right object
 
+- initProps
+
 - player carry items
 - use X on Y
 
