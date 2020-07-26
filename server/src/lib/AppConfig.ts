@@ -25,6 +25,7 @@ const AppConfig = {
   NODE_ENV: process.env.NODE_ENV,
   CONFIG_ENV: process.env.CONFIG_ENV,
   CONFIG_APP: process.env.CONFIG_APP,
+  logLevel: process.env.LOG_LEVEL || 3,
 
   // verificationToken: process.env.VERIFICATION_TOKEN,
   // clientSigningSecret: process.env.CLIENT_SIGNING_SECRET,

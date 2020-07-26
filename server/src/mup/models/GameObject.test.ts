@@ -56,7 +56,7 @@ it('can change state by actions', async () => {
   expect(item?.description).toBe('The wardrobe is closed')
   const action: ActionData | undefined = item?.findAction('open')
   expect(action).toBeDefined()
-  log('action', action)
+  // log('action', action)
   if (action) {
     expect(action).toHaveProperty('then')
     await item?.runAction(action)

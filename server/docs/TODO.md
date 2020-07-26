@@ -1,6 +1,12 @@
 # TODO:
 
 ## TOP:
+
+- get XXX messages in parser / game level get passed to right object
+
+- player carry items
+- use X on Y
+
 - session info from slackEvent => PAL
 - store some session info (curent game?) in Pal ? so that imageUrl can use the current game
 

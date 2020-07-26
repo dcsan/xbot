@@ -145,7 +145,7 @@ const SlackBuilder = {
         blocks.push(SlackBuilder.imageBlock(infoBlock, item))
       }
       // FIXME decide consistent naming or fallback
-      const text = infoBlock.text
+      const text = infoBlock.reply || '...item'
       blocks.push(SlackBuilder.textBlock(text))
     }
     return blocks

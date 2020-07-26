@@ -108,12 +108,6 @@ class GameObject {
     this.state = newState
   }
 
-  // FIXME always force player to exist?
-  // get player(): Player | undefined {
-  //   // not sure about this reaching back up the tree...
-  //   return this.room?.story.game.player
-  // }
-
   get stateInfo() {
     if (!this.doc.states) { return false }
     const info =
@@ -203,59 +197,11 @@ class GameObject {
     return `a ${ this.formalName }`
   }
 
-  // async examine(_parsed, context) {
-  //   const stateInfo = this.stateInfo
-  //   // Logger.logObj('stateInfo', { state: this.state, stateInfo })
-  //   // Logger.log('item.examine', this.cname)
-  //   await SlackBuilder.itemCard(stateInfo, this, context)
-  // }
-
-  /**
-   * returns true|false if an action was found/matched
-   * NOT if it passed/failed (fail is still run/replied to)
-   *
-   * @param {*} parsed { actionName, itemName, modifier }
-   * @param {*} context
-   * @returns
-   * @memberof GameObject
-   */
-  // async tryAction(parsed, context) {
-  //   let { actionName, itemName, modifier } = parsed
-  //   if (!this.doc.actions) {
-  //     console.log('tryAction', { actionName, actions: this.doc.actions })
-  //     Logger.warn('no actions for doc:', this.doc.name)
-  //     return false
-  //     // throw new Error('failed')
-  //   }
-  //   for (const actionData of this.doc.actions) {
-  //     // this.doc.actions?.forEach(async (actionData) => {
-  //     const fullAction = `${ actionName } ${ modifier }`.trim()
-  //     let rex = new RegExp(actionData.match)
-  //     // Logger.log('check', actionName, actionData)
-  //     if (fullAction.match(rex)) {
-  //       Logger.log('action match', actionName)
-  //       const result = await this.runAction(actionData, context)
-  //       return { result, actionData }
-  //     }
-  //   }
-  //   return false
-  // }
-
   // overridden by subclasses eg actor
   formatReply(text) {
     return text
   }
 
-  // game>story>room  room.story.game
-  // FIXME - reaching UP through the hierarchy
-  // a gameObject could be a room itself or we need thing.room
-  // gotoRoom(roomName: string, pal: Pal) {
-  //   const thisRoom: Room = this.room || this
-  //   // @ts-ignore
-  //   thisRoom.story.gotoRoom(roomName, pal)
-  // }
-
-  //
   async findAndRunAction(evt: SceneEvent): Promise<ActionResult> {
     const actionData: ActionData = this.findAction(evt.result.clean)
     if (actionData) {
@@ -335,16 +281,21 @@ class GameObject {
     this.applySetProps(resultBlock, evt)
   }
 
-  checkConditionList(action: ActionData) {
+  checkConditionList(action: ActionData): ActionBranch {
     const allBlock: string[] = action.if.all
+    let returnBlock: ActionBranch
     let pass = true
     // find first *failing* condition
     const fail = allBlock.find(line => !(this.checkOneCondition(line)));
     if (fail) {
-      // log('failed')
-      return action.else
+      returnBlock = action.else
+    } else {
+      returnBlock = action.then
     }
-    return action.then
+    if (!returnBlock) {
+      Logger.warn('cannot find returnBlock', { fail })
+    }
+    return returnBlock
   }
 
   checkOneCondition(line): boolean {
@@ -358,18 +309,22 @@ class GameObject {
           return false
         }
         const actual = found.getProp(field)
-        log('checked', { thing, field, value, actual })
+        // log('checked', { thing, field, value, actual })
         if (actual === value) {
-          log('true')
+          // log('true')
           return false
         }
       }
     }
-    log('fail')
+    // log('fail')
     return false
   }
 
   applySetProps(block: ActionBranch, evt?: SceneEvent) {
+    if (!block) {
+      Logger.warn('tried to apply setProps on null block')
+      return
+    }
     const setPropList: string[] | undefined = block.setProps
     setPropList?.map((line) => this.applySetPropOne(line, evt))
   }
@@ -385,43 +340,12 @@ class GameObject {
           Logger.warn('cannot find thing to update', { thing, line })
           return
         }
-        log('updating', { thing, field, value })
         found.setProp(field, value)
-        log('set it', found.name, JSON.stringify(found.props, null, 2))
-        // found.props[field] = value
+        // log('updating', { thing, field, value })
+        // log('set it', found.name, JSON.stringify(found.props, null, 2))
       }
     }
   }
-
-
-  // async checkConditions() {
-  //   const ifBlock = actionData.if
-  //   // TODO check conditions isolate
-  //   if (!needs || player?.hasItem(needs)) {
-  //     // success!
-  //     const passData: ActionBranch | undefined = actionData.pass
-  //     if (passData) {
-  //       Logger.log('action passed', passData)
-  //       if (passData?.gets) player?.addItemByName(actionData.pass?.gets)
-  //       if (passData.setStates) await this.updateStates(passData.setStates, evt.pal)
-  //       const card = SlackBuilder.itemCard(passData, this)
-  //       // SlackBuilder.sendItemCard(actionData.pass, this, evt)
-  //       await evt.pal.sendBlocks(card)
-  //       result.handled = true
-  //       result.history?.push('if.pass')
-  //     }
-  //   } else {
-  //     // fail
-  //     Logger.log('action fail', actionData)
-  //     result.handled = true
-  //     result.history?.push('if.fail')
-  //     if (actionData.fail) {
-  //       const card = SlackBuilder.itemCard(actionData.fail, this)
-  //       await evt.pal.sendBlocks(card)
-  //     }
-  //   }
-
-  // }
 
   async getItem(pal: Pal) {
     const customGet = this.findAction('get')
@@ -450,25 +374,6 @@ class GameObject {
       await pal.sendText(msg)
     }
   }
-
-  // updateStates(updates, _pal: Pal) {
-  //   updates.map(pair => {
-  //     const [newState, itemName] = pair.split(' ')
-  //     let targetItem
-  //     if (itemName) {
-  //       targetItem = this.room?.findItem(itemName)
-  //     } else {
-  //       // defaults to this if no 2nd arg for itemName
-  //       targetItem = this
-  //     }
-  //     if (!targetItem) {
-  //       Logger.error('cannot find targetItem for updateStates', itemName)
-  //     }
-  //     // targetItem,
-  //     // log('updateStates', {newState })
-  //     targetItem.setState(newState)
-  //   })
-  // }
 
 }
 

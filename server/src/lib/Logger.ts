@@ -1,3 +1,4 @@
+import AppConfig from '../lib/AppConfig'
 import yaml from 'js-yaml'
 
 // const forceLogging = true   // override even for testing
@@ -11,8 +12,7 @@ const LogLevels = {
   ERROR: 0
 }
 
-const logLevel = LogLevels.SILLY
-
+const logLevel = AppConfig.logLevel
 
 const Logger = {
 
@@ -32,6 +32,7 @@ const Logger = {
   },
 
   warn(msg, ...rest) {
+    if (logLevel < LogLevels.WARN) return
     console.log(msg, ...rest)
   },
 
