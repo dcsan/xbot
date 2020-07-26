@@ -43,8 +43,9 @@ class Pal {
     this.sessionId = channel.sessionId || 'temp1234'
   }
 
-  getReceivedText() {
-    return this.channel.store.join(' ')
+  // for unit tests, get a line of stuff that was sent in
+  getReceivedText(idx): string {
+    return this.channel.store[idx]
   }
 
   channelStore() {

@@ -1,5 +1,5 @@
 import { GameObject } from './GameObject'
-import { SceneEvent } from '../routes/RouterService'
+import { SceneEvent } from '../MupTypes'
 
 import Logger from '../../lib/Logger'
 import assert from 'assert';

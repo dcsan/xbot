@@ -1,15 +1,16 @@
 import _ from 'lodash'
-import { RexParser } from './RexParser';
-import Game from '../models/Game';
-
-// import TestUtils from '../../lib/TestUtils';
+import { RexParser, ParserResult } from './RexParser';
 import Logger from '../../lib/Logger';
 
 const log = console.log
 
-import { createTestEnv } from '../../lib/TestUtils'
+it('should parse actionBlock setlines', async () => {
+  const res: ParserResult = RexParser.parseSetLine('door.locked = no')
+  expect(res.parsed?.groups).toBeDefined()
 
-it('should pass', async () => {
+  expect(res.parsed?.groups?.thing).toBe('door')
+  expect(res.parsed?.groups?.field).toBe('locked')
+  expect(res.parsed?.groups?.value).toBe('no')
 
 })
 

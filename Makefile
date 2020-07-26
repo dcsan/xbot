@@ -56,6 +56,7 @@ sync: fixPermissions
 	rsync -avi --delete \
 		--exclude .git \
 		--exclude src \
+		--exclude asylum-illustrations \
 		server/ ${login}:${deployDir}
 
 	echo "done"

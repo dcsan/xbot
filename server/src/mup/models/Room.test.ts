@@ -3,10 +3,10 @@ import Game from './Game.js'
 import { GameManager } from './GameManager'
 import { Pal, MockChannel } from '../pal/Pal'
 import { RexParser, ParserResult } from '../routes/RexParser'
-import { SceneEvent } from '../routes/RouterService'
+import { SceneEvent } from '../MupTypes'
 import { ActionResult } from '../models/GameObject'
 import Logger from '../../lib/Logger'
-import { createTestEnv } from '../../lib/TestUtils'
+import { TestEnv } from '../../lib/TestUtils'
 
 // const WordUtils = require('../lib/WordUtils')
 // import TestUtils from '../../lib/TestUtils';
@@ -18,13 +18,13 @@ import { createTestEnv } from '../../lib/TestUtils'
 
 
 it('should have a name', async () => {
-  const { game } = await createTestEnv()
+  const { game } = new TestEnv()
   expect(game).toBeDefined()
   expect(game.story.storyName).toBe('office')
 })
 
 xit('should respond to smell action', async () => {
-  const { game, pal } = await createTestEnv()
+  const { game, pal } = new TestEnv()
   expect(game.story.room.cname).toBe('office')
   expect(game.story.room.description).toMatch(/A boring looking/)
 
@@ -40,7 +40,8 @@ xit('should respond to smell action', async () => {
 })
 
 it('should handle a special action with a goto', async () => {
-  const { game, pal } = await createTestEnv()
+  const { game, pal } = new TestEnv()
+  await game.story.gotoRoom('office')
   expect(game.story.room.cname).toBe('office')
   expect(game.story.room.description).toMatch(/A boring looking/)
 

@@ -6,7 +6,7 @@ import Game from './Game'
 // const assert = require('chai').assert
 // const assert = require('assert').strict
 import AppConfig from '../../lib/AppConfig'
-import { SceneEvent } from '../routes/RouterService'
+import { SceneEvent } from '../MupTypes'
 import { LoadOptions } from '../MupTypes'
 
 class Story {
@@ -84,11 +84,14 @@ class Story {
     return found
   }
 
-  async gotoRoom(evt: SceneEvent, roomName: string) {
+  async gotoRoom(roomName: string, evt?: SceneEvent) {
     const room = this.findRoom(roomName)
     if (room) {
       this.currentRoom = room
-      await this.room.enter(evt)
+      if (evt) {
+        // else just go silently
+        await this.room.enter(evt)
+      }
     }
   }
 

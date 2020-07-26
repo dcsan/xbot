@@ -14,7 +14,7 @@ interface RegExpResult {
 interface ParserResult {
   parsed?: RegExpResult | null,
   rule?: OneRule    // matched rule
-  input: string
+  input?: string
   clean: string
 }
 
@@ -410,6 +410,20 @@ const RexParser = {
     }
     return parserResult
   },
+
+  // object.field = value
+  parseSetLine(input: string): ParserResult {
+    console.log('setItem', input)
+    const rex = /(?<thing>\w*)\.(?<field>\w*) = (?<value>\w*)/
+    const parsed = rex.exec(input)
+    let result = {
+      clean: input,
+      parsed: { ...parsed }
+    }
+    console.log('result', result)
+    return result
+  }
+
 
 }
 

@@ -13,3 +13,18 @@ test('basic regex', () => {
   match = rex.exec(text)
   expect(match.groups).toEqual({ item: 'chest' }) // PASS OK
 })
+
+
+
+test('how much stopwords', () => {
+  const checks = [
+    ['get the soap', 'get soap'],
+    ['soap take an egg', 'soap take egg'],
+    ['a bug is on the window', 'bug on window']
+  ]
+  checks.forEach(check => {
+    const [input, exp] = check
+    const clean = WordUtils.cheapNormalize(input)
+    expect(clean).toEqual(exp)
+  })
+})

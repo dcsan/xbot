@@ -10,7 +10,7 @@ import Util from '../../lib/Util'
 import { ParserResult } from '../routes/RexParser'
 import { Pal } from '../pal/Pal'
 
-import { SceneEvent } from '../routes/RouterService'
+import { SceneEvent } from '../MupTypes'
 
 class Room extends GameObject {
 
@@ -129,7 +129,7 @@ class Room extends GameObject {
     return reply
   }
 
-  findItem(itemName): Item | undefined {
+  findItem(itemName): GameObject | undefined {
     const name = itemName.toLowerCase()
     const found = this.items.filter((item) => item.cname === name)
     if (found.length) {
@@ -158,7 +158,6 @@ class Room extends GameObject {
     }
     return item
   }
-
 
   findActor(name) {
     if (!name) {

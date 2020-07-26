@@ -7,13 +7,8 @@ import Util from '../../lib/Util'
 import { Pal } from '../pal/Pal'
 import { ParserResult } from './RexParser'
 
+import { SceneEvent } from '../MupTypes'
 
-
-interface SceneEvent {
-  pal: Pal,
-  result: ParserResult  // parsed, rule
-  game: Game
-}
 
 const RouterService = {
 
@@ -25,7 +20,7 @@ const RouterService = {
   goto: async (evt: SceneEvent) => {
     const roomName = evt.result.parsed?.groups.roomName
     Logger.logObj('goto', roomName)
-    await evt.game.story.gotoRoom(evt, roomName)
+    await evt.game.story.gotoRoom(roomName, evt)
   },
 
   startGame: async (evt: SceneEvent) => {

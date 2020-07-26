@@ -44,7 +44,7 @@ testParser:
 	npm run jest:watch -- --watch RexParser
 
 testGameObject:
-	npm run jest:watch -- --watch GameObject
+	npm run jest:watch -- GameObject
 
 testWordUtils:
 	npm run jest:watch -- --watch WordUtils

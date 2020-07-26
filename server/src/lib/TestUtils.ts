@@ -4,6 +4,8 @@ import Game from '../mup/models/Game'
 import { GameManager } from '../mup/models/GameManager'
 import { Pal, MockChannel } from '../mup/pal/Pal'
 import { LoadOptions } from '../mup/MupTypes'
+import { RexParser } from '../mup/routes/RexParser'
+import { SceneEvent } from '../mup/MupTypes'
 const log = console.log
 
 interface TestEnv {
@@ -11,22 +13,43 @@ interface TestEnv {
   pal: Pal
 }
 
-function getMockPal(): Pal {
-  const mockChannel = new MockChannel('testMockSession1234')
-  const pal = new Pal(mockChannel)
-  return pal
+// interface SceneOptions {
+//   roomName?: string
+// }
+
+class TestEnv {
+  pal: Pal
+  game: Game
+
+  constructor() {
+    this.pal = this.getMockPal()
+    const opts: LoadOptions = {
+      pal: this.pal,
+      storyName: 'office'
+    }
+    const game: Game = GameManager.findGame(opts)
+    game.reset()
+    this.game = game
+  }
+
+  getMockPal(): Pal {
+    const mockChannel = new MockChannel('testMockSession1234')
+    const pal = new Pal(mockChannel)
+    return pal
+  }
+
+  makeSceneEvent(input: string): SceneEvent {
+    const result = RexParser.parseCommands(input)
+    const evt: SceneEvent = {
+      pal: this.pal,
+      game: this.game,
+      result
+    }
+    return evt
+  }
+
 }
 
-async function createTestEnv(): Promise<TestEnv> {
-  const pal = getMockPal()
-  const opts: LoadOptions = {
-    pal,
-    storyName: 'office'
-  }
-  const game: Game = await GameManager.findGame(opts)
-  game.reset()
-  return { game, pal }
-}
 
 // add to process when this is included
 process.on('unhandledRejection', reason => {
@@ -34,7 +57,7 @@ process.on('unhandledRejection', reason => {
   throw reason
 })
 
-export { createTestEnv, TestEnv, getMockPal }
+export { TestEnv }
 
 
 // class chatReceiver {

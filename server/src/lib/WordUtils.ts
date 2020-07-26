@@ -4,13 +4,25 @@ import stopword from 'stopword'
 
 const WordUtils = {
 
+  stripPunctuation(input) {
+    const output = input.replace(/\.,-/gim, '')
+    return output
+  },
+
   // remove predicates, lowercase etc.
+  // but dont remove all stopwords
   cheapNormalize(input) {
-    input = input.replace(/the |a |an |that /gim, '')  // these just get in the way
-    // input = input.replace(/\bto |\bto do /gim, '')  // tell sid to do X -> tell sid X
     input = input.toLowerCase()
-    input = input.replace(/  +/, '') // double spaces
-    return input
+    input = WordUtils.stripPunctuation(input)
+    const words = input.split(' ')
+    const stops = [
+      'the', 'a', 'an', 'that', 'is'
+    ]
+
+    const output = words.filter(w => {
+      return (!stops.includes(w))
+    })
+    return output.join(' ')
   },
 
   removeStopWords(words) {

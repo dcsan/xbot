@@ -3,21 +3,12 @@ import { RexParser } from './RexParser';
 import { RouterService } from './RouterService'
 
 // import Game from '../models/Game.js';
-import { createTestEnv } from '../../lib/TestUtils'
+import { TestEnv } from '../../lib/TestUtils'
 import { ParserResult } from './RexParser'
 import { SceneEvent } from './RouterService'
 
-// import Logger from '../../lib/Logger.js';
-
-
-// xtest('routeParser', async () => {
-//   const found = await RexParser.fixedRouteParser('start')
-//   expect(found.route.cname).toBe('restart')
-//   expect(found.route.event).toBe(RouterService.startGame)
-// })
-
 test('cheat command', async () => {
-  const { game, pal } = await createTestEnv()
+  const { game, pal } = new TestEnv()
 
   await game.reset()
   const result: ParserResult = RexParser.parseCommands('cheat')
@@ -28,6 +19,6 @@ test('cheat command', async () => {
   expect(cheatInfo.roomEvents).toBeDefined()
   expect(cheatInfo.actors).toBeDefined()
   // TODO - more detail for matcher?
-  expect(pal.getReceivedText()).toMatch(/room/gim)
+  expect(pal.getReceivedText(0)).toMatch(/room/gim)
 })
 

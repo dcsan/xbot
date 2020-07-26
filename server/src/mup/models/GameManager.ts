@@ -8,13 +8,13 @@ let GameList: Game[] = []
 const GameManager = {
 
   // TODO store in mongo
-  async findGame(opts: LoadOptions): Promise<Game> {
+  findGame(opts: LoadOptions): Game {
     const sid = opts.pal.sessionId
-    let game = GameList[sid]
+    let game: Game = GameList[sid]
     if (!game) {
       game = new Game(opts)
       GameList[sid] = game
-      await game.reset()
+      game.reset()
       Logger.log('new game', sid)
       Logger.log('init routes gameObj.story', game.story.room.name)
     }

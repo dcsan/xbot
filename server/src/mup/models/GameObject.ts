@@ -2,6 +2,7 @@ import SlackBuilder from '../pal/SlackBuilder'
 import Logger from '../../lib/Logger'
 import Util from '../../lib/Util'
 import WordUtils from '../../lib/WordUtils'
+import { RexParser, ParserResult } from '../routes/RexParser'
 import Room from './Room'
 import Story from './Story'
 import Actor from './Actor'
@@ -9,7 +10,16 @@ import Item from './Item'
 import Player from './Player'
 const log = console.log
 import { Pal } from '../pal/Pal'
-import { SceneEvent } from '../routes/RouterService'
+import { SceneEvent } from '../MupTypes'
+
+
+
+import {
+  ActionData,
+  ActionResult,
+  ActionBranch,
+  ActionIf
+} from '../MupTypes'
 
 const DEFAULT_STATE = 'default'
 
@@ -17,43 +27,12 @@ const DEFAULT_STATE = 'default'
 //  Actor < RoomObject < GameObject
 //  Room  < GameObject
 
-// the fail/pass block branches of a full ActionData
-interface ActionBranch {
-  text?: string
-  imageUrl: string
-  gets: string
-  setHint: string
-  setStates: string[]
-  goto: string
-}
-
-interface ActionData {
-  math: string
-  reply?: string
-  goto?: string
-  setStates: string[]
-  needs: string
-  if?: string[] | string
-  then: ActionBranch
-  else: ActionBranch
-
-  pass?: ActionBranch
-  fail?: ActionBranch
-}
-
-interface ActionResult {
-  handled: boolean
-  doc?: ActionData
-  history?: string[]
-  klass?: string
-}
 
 class GameObject {
   doc: any
   story: Story
   room?: Room
-  state: string
-
+  got: boolean  // carrying or note
 
   // allow recursing an item can have items
   items: Item[]
@@ -61,22 +40,32 @@ class GameObject {
   actions: ActionData[]
   klass: string
 
+  // key:string objects for property setting
+  props: any
+
   constructor(doc, story: Story, klass: string,) {
     this.doc = doc
     this.actions = doc.actions
     this.items = []
     this.actors = []
-    this.state = 'default'
+    // this.state = 'default'
     this.klass = klass
     this.story = story
-
-    this.initState()
+    this.got = false
+    this.props = {}
+    // initialize some common props
+    this.reset()
   }
 
-  initState() {
+  reset() {
+    this.props = {}
+    this.setProp('has', 'no')
+    this.setProp('wearing', 'no')
+    this.items?.map(item => item.reset())
+    this.actors?.map(actor => actor.reset())
     const state =
       this.doc.state ||
-        this.doc.states ? this.doc.states[0].name : DEFAULT_STATE
+      (this.doc.states ? this.doc.states[0].name : DEFAULT_STATE)
     this.state = state
   }
 
@@ -99,6 +88,24 @@ class GameObject {
   // a|an|the
   get article() {
     return this.doc.article || 'a'
+  }
+
+  getProp(key) {
+    return this.props[key]
+  }
+  setProp(key, val) {
+    this.props[key] = val
+  }
+
+  // keep state as a prop too
+  get state() {
+    return this.getProp('state')
+  }
+  set state(val) {
+    this.setProp('state', val)
+  }
+  setState(newState) {
+    this.state = newState
   }
 
   // FIXME always force player to exist?
@@ -127,14 +134,16 @@ class GameObject {
     return this.short
   }
 
+  // FIXME - cleanup the schema to use consistent field names
   get short() {
     const info = this.stateInfo
-    return info?.short || info?.long || this.doc.short || this.doc.long || this.doc.description || this.formalName
+    return info?.short || info?.long ||
+      info.reply ||
+      this.doc.short || this.doc.long ||
+      this.doc.description ||
+      this.formalName
   }
 
-  setState(newState) {
-    this.state = newState
-  }
 
   isNamed(text) {
     // todo - allow synonyms
@@ -250,7 +259,7 @@ class GameObject {
   async findAndRunAction(evt: SceneEvent): Promise<ActionResult> {
     const actionData: ActionData = this.findAction(evt.result.clean)
     if (actionData) {
-      const actionResult: ActionResult = await this.runAction(evt, actionData)
+      const actionResult: ActionResult = await this.runAction(actionData, evt)
       return actionResult
     }
     // failure actionResult
@@ -266,13 +275,16 @@ class GameObject {
       Logger.warn('no actions for item:', this.doc.name)
     }
 
-    input = WordUtils.fullNormalize(input)
+    input = WordUtils.cheapNormalize(input)
+
     const foundAction = this.doc.actions.find(action => {
       const rex = new RegExp(action.match)
-      Logger.log('check', rex)
-      if (input.match(rex)) {
-        return action
-      }
+      const check = rex.test(input)
+      return check
+      // Logger.log('check', rex)
+      // if (input.match(rex)) {
+      //   return action
+      // }
     })
     return foundAction
   }
@@ -280,7 +292,7 @@ class GameObject {
   // FIXME - this applies to things and rooms
   // which are a different level of hierarchy
   // making polymorphism harder
-  async runAction(evt: SceneEvent, actionData: ActionData): Promise<ActionResult> {
+  async runAction(actionData: ActionData, evt?: SceneEvent): Promise<ActionResult> {
     const player = this.story.game.player
     let result: ActionResult = {
       handled: false,
@@ -292,64 +304,171 @@ class GameObject {
     // quick reply
     if (actionData.reply) {
       const msg = this.formatReply(actionData.reply)
-      await evt.pal.sendText(msg)
+      if (evt) await evt.pal.sendText(msg)
       result.handled = true
       result.history?.push('reply')
     }
 
+    // goto at top level of the block
     if (actionData.goto) {
       const roomName: string = actionData.goto
-      await this.story.gotoRoom(evt, roomName)
+      await this.story.gotoRoom(roomName, evt)
       result.handled = true
       result.history?.push('goto')
     }
 
-    const needs = actionData.needs
-    // TODO check conditions isolate
-    if (!needs || player?.hasItem(needs)) {
-      // success!
-      const passData: ActionBranch | undefined = actionData.pass
-      if (passData) {
-        Logger.log('action passed', passData)
-        if (passData?.gets) player?.addItemByName(actionData.pass?.gets)
-        if (passData.setStates) await this.updateStates(passData.setStates, evt.pal)
-        const card = SlackBuilder.itemCard(passData, this)
-        // SlackBuilder.sendItemCard(actionData.pass, this, evt)
-        await evt.pal.sendBlocks(card)
-        result.handled = true
-        result.history?.push('if.pass')
-      }
+    if (actionData.if) {
+      await this.runConditional(actionData, evt)
     } else {
-      // fail
-      Logger.log('action fail', actionData)
-      result.handled = true
-      result.history?.push('if.fail')
-      if (actionData.fail) {
-        const card = SlackBuilder.itemCard(actionData.fail, this)
-        await evt.pal.sendBlocks(card)
-      }
+      // just apply it
+      await this.applySetProps(actionData.then, evt)
     }
+
     return result
   }
 
-  updateStates(updates, _pal: Pal) {
-    updates.map(pair => {
-      const [newState, itemName] = pair.split(' ')
-      let targetItem
-      if (itemName) {
-        targetItem = this.room?.findItem(itemName)
-      } else {
-        // defaults to this if no 2nd arg for itemName
-        targetItem = this
-      }
-      if (!targetItem) {
-        Logger.error('cannot find targetItem for updateStates', itemName)
-      }
-      // targetItem,
-      // log('updateStates', {newState })
-      targetItem.setState(newState)
-    })
+  async runConditional(action: ActionData, evt?: SceneEvent) {
+    const resultBlock: ActionBranch = this.checkConditionList(action)
+    if (resultBlock.reply && evt) {
+      evt.pal.sendText(resultBlock.reply)
+    }
+    this.applySetProps(resultBlock, evt)
   }
+
+  checkConditionList(action: ActionData) {
+    const allBlock: string[] = action.if.all
+    let pass = true
+    // find first *failing* condition
+    const fail = allBlock.find(line => !(this.checkOneCondition(line)));
+    if (fail) {
+      // log('failed')
+      return action.else
+    }
+    return action.then
+  }
+
+  checkOneCondition(line): boolean {
+    const result = RexParser.parseSetLine(line)
+    if (result.parsed?.groups) {
+      const { thing, field, value } = result.parsed.groups
+      if (thing && field && value) {
+        const found: GameObject | undefined = this.room?.findItem(thing)
+        if (!found) {
+          Logger.warn('cannot find thing to update', { thing, line })
+          return false
+        }
+        const actual = found.getProp(field)
+        log('checked', { thing, field, value, actual })
+        if (actual === value) {
+          log('true')
+          return false
+        }
+      }
+    }
+    log('fail')
+    return false
+  }
+
+  applySetProps(block: ActionBranch, evt?: SceneEvent) {
+    const setPropList: string[] | undefined = block.setProps
+    setPropList?.map((line) => this.applySetPropOne(line, evt))
+  }
+
+  // set props on this or other items
+  async applySetPropOne(line, _evt) {
+    const result: ParserResult = RexParser.parseSetLine(line)
+    if (result.parsed?.groups) {
+      const { thing, field, value } = result.parsed.groups
+      if (thing && field && value) {
+        const found: GameObject | undefined = this.room?.findItem(thing)
+        if (!found) {
+          Logger.warn('cannot find thing to update', { thing, line })
+          return
+        }
+        log('updating', { thing, field, value })
+        found.setProp(field, value)
+        log('set it', found.name, JSON.stringify(found.props, null, 2))
+        // found.props[field] = value
+      }
+    }
+  }
+
+
+  // async checkConditions() {
+  //   const ifBlock = actionData.if
+  //   // TODO check conditions isolate
+  //   if (!needs || player?.hasItem(needs)) {
+  //     // success!
+  //     const passData: ActionBranch | undefined = actionData.pass
+  //     if (passData) {
+  //       Logger.log('action passed', passData)
+  //       if (passData?.gets) player?.addItemByName(actionData.pass?.gets)
+  //       if (passData.setStates) await this.updateStates(passData.setStates, evt.pal)
+  //       const card = SlackBuilder.itemCard(passData, this)
+  //       // SlackBuilder.sendItemCard(actionData.pass, this, evt)
+  //       await evt.pal.sendBlocks(card)
+  //       result.handled = true
+  //       result.history?.push('if.pass')
+  //     }
+  //   } else {
+  //     // fail
+  //     Logger.log('action fail', actionData)
+  //     result.handled = true
+  //     result.history?.push('if.fail')
+  //     if (actionData.fail) {
+  //       const card = SlackBuilder.itemCard(actionData.fail, this)
+  //       await evt.pal.sendBlocks(card)
+  //     }
+  //   }
+
+  // }
+
+  async getItem(pal: Pal) {
+    const customGet = this.findAction('get')
+    if (!customGet) return this.basicGetItem(pal)
+  }
+
+  async basicGetItem(pal: Pal) {
+    if (this.doc.canGet) {
+      const msg = `you get the ${ this.name }`
+      await pal.sendText(msg)
+      this.got = true
+    } else {
+      const msg = `you can't get the ${ this.name }`
+      await pal.sendText(msg)
+      this.got = false  // or dont change state?
+    }
+  }
+
+  async dropItem(pal: Pal) {
+    if (this.got) {
+      const msg = `you drop the ${ this.name }`
+      await pal.sendText(msg)
+      this.got = false
+    } else {
+      const msg = `you don't have the ${ this.name }`
+      await pal.sendText(msg)
+    }
+  }
+
+  // updateStates(updates, _pal: Pal) {
+  //   updates.map(pair => {
+  //     const [newState, itemName] = pair.split(' ')
+  //     let targetItem
+  //     if (itemName) {
+  //       targetItem = this.room?.findItem(itemName)
+  //     } else {
+  //       // defaults to this if no 2nd arg for itemName
+  //       targetItem = this
+  //     }
+  //     if (!targetItem) {
+  //       Logger.error('cannot find targetItem for updateStates', itemName)
+  //     }
+  //     // targetItem,
+  //     // log('updateStates', {newState })
+  //     targetItem.setState(newState)
+  //   })
+  // }
 
 }
 

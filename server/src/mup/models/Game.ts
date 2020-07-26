@@ -10,7 +10,7 @@ import SlackBuilder from '../pal/SlackBuilder'
 import { Pal } from '../pal/Pal'
 import Story from './Story'
 import Player from './Player'
-import { SceneEvent } from '../routes/RouterService'
+import { SceneEvent } from '../MupTypes'
 import Menu from './Menu'
 
 import { LoadOptions } from '../MupTypes'
@@ -41,7 +41,7 @@ class Game {
     Logger.log('game.reset')
     this.story.reset()
     this.player.reset()
-    this.story.room.initState()
+    this.story.room.reset()
   }
 
   // reload and show message
