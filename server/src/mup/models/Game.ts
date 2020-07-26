@@ -1,5 +1,5 @@
-import fs from 'fs'
-import path from 'path'
+// import fs from 'fs'
+// import path from 'path'
 import yaml from 'js-yaml'
 
 // const posTagger = require('wink-pos-tagger');
@@ -12,9 +12,11 @@ import Story from './Story'
 import Player from './Player'
 import { SceneEvent } from '../routes/RouterService'
 import Menu from './Menu'
-const menu = new Menu()
 
+import { LoadOptions } from '../MupTypes'
 // const tagger = posTagger()
+
+const menu = new Menu()
 
 class Game {
 
@@ -23,31 +25,26 @@ class Game {
   story: Story
   player: Player
   helpDoc: any    // FIXME
+  pal: Pal
 
-  constructor(sid, _storyName = null) {
-    this.sid = sid
+  constructor(opts: LoadOptions) {
+    this.pal = opts.pal
+    this.sid = opts.pal.sessionId
     this.menu = new Menu()
-    this.story = new Story(this)
+    this.story = new Story(opts, this)
     this.player = new Player()
-  }
-
-  // not done in constructor as it is async
-  // FIXME
-  async init(opts) {
-    // create objects used below
-    await this.story.load(opts)
-    Logger.log('init game')
-    // this.loadHelp(opts?.storyName)
     this.reset()
   }
 
+  // reset all the vars without reloading
   reset() {
+    Logger.log('game.reset')
     this.story.reset()
     this.player.reset()
     this.story.room.initState()
   }
 
-  // TODO can merge with init?
+  // reload and show message
   async restart(evt: SceneEvent) {
     this.reset()
     await this.story.currentRoom.enter(evt)
@@ -61,9 +58,9 @@ class Game {
    * for when you change the YAML
    * @param {*} pal
    */
-  reload(pal: Pal) {
+  reload(evt: SceneEvent) {
     // @ts-ignore
-    this.story.load({ storyName: this.story.name, pal })
+    this.story.load({ evt }) // with null = reload
   }
 
   async echo(pal: Pal) {
@@ -72,7 +69,8 @@ class Game {
 
   // any items for testing
   async initState() {
-    this.player.addItem('combination')
+    // TODO scores etc.
+    // this.player.addItem('combination')
   }
 
   async help(pal: Pal) {

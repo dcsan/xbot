@@ -7,6 +7,7 @@ import Game from './Game'
 // const assert = require('assert').strict
 import AppConfig from '../../lib/AppConfig'
 import { SceneEvent } from '../routes/RouterService'
+import { LoadOptions } from '../MupTypes'
 
 class Story {
   game: Game
@@ -15,49 +16,50 @@ class Story {
   rooms: Room[]
   storyName: string
 
-  constructor(game) {
+  constructor(opts: LoadOptions, game: Game) {
     this.game = game
     this.rooms = []       // FIXME - just to shut up typescript
-    this.storyName = ''   // FIXME - just to shut up typescript
-    this.currentRoom = this.rooms[0]
+    this.storyName = opts.storyName
+    this.load(opts)
+    this.currentRoom = this.reset()
   }
-
-  get room(): Room {
-    if (!this.currentRoom) this.reset()
-    if (!this.currentRoom) {
-      Logger.fatal('no current room', this.rooms)
-    }
-    return this.currentRoom
-  }
-
   reset() {
+    Logger.log('story.reset')
     const startRoomName = this.doc.startRoom
     if (startRoomName) {
-      const room = this.findRoom(startRoomName)
+      const room: Room | undefined = this.findRoom(startRoomName)
       if (room) this.currentRoom = room
     } else {
       this.currentRoom = this.rooms[0]
     }
+    return this.currentRoom
+  }
+
+  get room(): Room {
+    if (!this.currentRoom) {
+      this.currentRoom = this.reset()
+    }
+    return this.currentRoom
   }
 
   /**
-   *
-   *
+   * called from Game
    * @param {*} opts
    * @memberof Story
    */
-  load(opts) {
-    const storyName = opts?.storyName || AppConfig.read('STORYNAME')
+  load(opts: LoadOptions) {
+    // default to config if not passed
+    const storyName = opts?.storyName ||
+      this.storyName ||
+      AppConfig.read('STORYNAME')
+
     this.storyName = storyName // save for reload
 
-    // Logger.log('loading storyName', storyName)
     const fullDoc = Util.loadStory(storyName)
-    // @ts-ignore
     this.doc = fullDoc.story
     this.buildStory(fullDoc)
-    // @ts-ignore
-    Logger.logObj('loaded story', { name: this.doc.name })
-    // @ts-ignore
+    const msg = 'reloaded' + this.storyName
+    Logger.log(msg)
   }
 
   buildStory(doc) {

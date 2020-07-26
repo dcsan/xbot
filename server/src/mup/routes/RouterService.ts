@@ -17,7 +17,6 @@ interface SceneEvent {
 
 const RouterService = {
 
-
   lookRoom: async (evt: SceneEvent) => {
     return await evt.game?.story.room.lookRoom(evt)
   },
@@ -66,6 +65,10 @@ const RouterService = {
     evt.pal.sendText(Util.quoteCode(blob))
     return info
   },
+
+  reload: async (evt: SceneEvent) => {
+    await evt.game.reload(evt)
+  }
 
 }
 

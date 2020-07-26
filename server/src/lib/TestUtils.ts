@@ -3,7 +3,7 @@ import Room from '../mup/models/Room'
 import Game from '../mup/models/Game'
 import { GameManager } from '../mup/models/GameManager'
 import { Pal, MockChannel } from '../mup/pal/Pal'
-
+import { LoadOptions } from '../mup/MupTypes'
 const log = console.log
 
 interface TestEnv {
@@ -11,11 +11,20 @@ interface TestEnv {
   pal: Pal
 }
 
-async function createTestEnv(): Promise<TestEnv> {
-  const mockChannel = new MockChannel()
+function getMockPal(): Pal {
+  const mockChannel = new MockChannel('testMockSession1234')
   const pal = new Pal(mockChannel)
-  const game: Game = await GameManager.findGame(pal)
-  game.story.load({ storyName: 'office' })
+  return pal
+}
+
+async function createTestEnv(): Promise<TestEnv> {
+  const pal = getMockPal()
+  const opts: LoadOptions = {
+    pal,
+    storyName: 'office'
+  }
+  const game: Game = await GameManager.findGame(opts)
+  game.reset()
   return { game, pal }
 }
 
@@ -25,7 +34,7 @@ process.on('unhandledRejection', reason => {
   throw reason
 })
 
-export { createTestEnv, TestEnv }
+export { createTestEnv, TestEnv, getMockPal }
 
 
 // class chatReceiver {

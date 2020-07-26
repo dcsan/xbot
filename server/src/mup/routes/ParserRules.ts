@@ -52,6 +52,13 @@ const StaticRules: OneRule[] = [
     type: 'command'
   },
 
+  {
+    rex: /^(rl|reload)$/i,
+    cname: 'reload',
+    event: RouterService.reload,
+    type: 'command'
+  },
+
   // {
   //   cname: 'examine',
   //   rex: /^(x|examine|look)$/i,

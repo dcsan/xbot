@@ -11,14 +11,17 @@ const debugOutput = true
 interface IChannel {
   say: any
   store: any[]
+  sessionId: string
 }
 
 class MockChannel implements IChannel {
   store: any[]
 
-  constructor() {
+  constructor(sid: string = 'mock1234') {
     this.store = []
+    this.sessionId = sid
   }
+  sessionId: string
 
   say(msg) {
     this.store.push(msg)
@@ -35,7 +38,7 @@ class Pal {
   constructor(channel: IChannel) {
     Logger.log('new pal')
     this.channel = channel
-    this.sessionId = "12345"
+    this.sessionId = channel.sessionId || 'temp1234'
   }
 
   channelStore() {
