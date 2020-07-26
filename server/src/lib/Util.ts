@@ -21,23 +21,23 @@ const Util = {
 
   // wrap relative image URLs
   // also allows `text=xxx` links
-  imageUrl(urlInfo) {
-    if (urlInfo.startsWith('http')) return urlInfo
-    if (urlInfo.startsWith('text=')) return `https://via.placeholder.com/500x200/444488/CCC.png?${ urlInfo }`
+  imageUrl(relPath) {
+    if (relPath.startsWith('http')) return relPath
+    if (relPath.startsWith('text=')) return `https://via.placeholder.com/500x200/444488/CCC.png?${ relPath }`
 
-    const imgUrl = process.env.STATIC_SERVER + '/cdn/assets/stories/' + urlInfo + Util.cacheBust()
-    Logger.log('imgUrl', imgUrl)
-    return imgUrl
-
+    // const imgUrl = process.env.STATIC_SERVER + '/cdn/assets/stories/' + urlInfo + Util.cacheBust()
+    Logger.log('relPath', relPath)
+    return relPath
   },
 
-  loadYaml(pathFromData) {
-    const fullPath = path.join(__dirname, '../../cdn/assets/', pathFromData)
+  loadStory(storyName) {
+    const storyPath = `../../cdn/story-${ storyName }.wiki/story.yaml`
+    const fullPath = path.join(__dirname, storyPath)
     try {
       const doc = yaml.safeLoad(fs.readFileSync(fullPath, 'utf8'))
       return doc
     } catch (err) {
-      console.error('ERROR failed to load yaml:', pathFromData)
+      console.error('ERROR failed to load story:', storyName, '=> ', storyPath)
       console.error('fullPath:', fullPath)
       throw (err)
     }

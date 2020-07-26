@@ -1,6 +1,9 @@
 # TODO:
 
 ## TOP:
+- session info from slackEvent => PAL
+- store some session info (curent game?) in Pal ? so that imageUrl can use the current game
+
 - finish goto?
 - deploy!
 - actions

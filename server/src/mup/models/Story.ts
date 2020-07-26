@@ -51,7 +51,7 @@ class Story {
     this.storyName = storyName // save for reload
 
     // Logger.log('loading storyName', storyName)
-    const fullDoc = Util.loadYaml(`stories/${ storyName }/story.yaml`)
+    const fullDoc = Util.loadStory(storyName)
     // @ts-ignore
     this.doc = fullDoc.story
     this.buildStory(fullDoc)

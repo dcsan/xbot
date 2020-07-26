@@ -12,8 +12,10 @@ const SlackBuilder = {
     SlackBuilder.logging = flag
   },
 
-  buttonItem(text, value = false) {
-    value = value || text
+  buttonItem(blob) {
+    let [text, value] = blob.split('|')
+    text = text.trim()
+    value = (value || text).trim()
     return {
       "type": "button",
       "text": {

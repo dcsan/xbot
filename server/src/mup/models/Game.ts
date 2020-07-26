@@ -37,7 +37,7 @@ class Game {
     // create objects used below
     await this.story.load(opts)
     Logger.log('init game')
-    this.loadHelp(opts?.storyName)
+    // this.loadHelp(opts?.storyName)
     this.reset()
   }
 
@@ -64,11 +64,6 @@ class Game {
   reload(pal: Pal) {
     // @ts-ignore
     this.story.load({ storyName: this.story.name, pal })
-  }
-
-  loadHelp(_storyName) {
-    const yamlData = Util.loadYaml('stories/help.yaml')
-    this.helpDoc = yamlData.help
   }
 
   async echo(pal: Pal) {
