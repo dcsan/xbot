@@ -61,6 +61,16 @@ class Pal {
     return this.channel.store[idx]
   }
 
+  // just the text items
+  get allText(): string {
+    return this.channel.store.join('\n')
+  }
+
+  // smash it to a blob for regex comparison
+  get blob(): string {
+    return JSON.stringify(this.channel.store)
+  }
+
   channelStore() {
     return this.channel.store
   }

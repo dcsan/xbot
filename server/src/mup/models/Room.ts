@@ -115,7 +115,6 @@ class Room extends GameObject {
     const thing = this.findThing(thingName)
     if (!thing) {
       ErrorHandler.sendError(ErrorCodes.thingNotFound, evt, { name: thingName })
-      Logger.warn('cannot find thing to lookAt', thingName)
       return
     }
     thing.describeThing(evt)
@@ -123,16 +122,16 @@ class Room extends GameObject {
 
   // find and get an object in the room
   async takeRoomThing(evt: SceneEvent): Promise<ActionResult> {
-    const thingName = evt.result.pos?.target
-    if (!thingName) {
-      ErrorHandler.sendError(ErrorCodes.thingNotFound, evt, thingName)
+    const target = evt.result.pos?.target
+    if (!target) {
       Logger.warn('no thingName to lookat', evt)
       return { handled: false }
     }
-    const thing = this.findThing(thingName) // in the room
+    const thing = this.findThing(target) // in the room
     if (!thing) {
-      Logger.warn('cannot find thing to lookAt', thingName)
-      return { handled: false }
+      // const name: string = evt.result.input || 'item'
+      ErrorHandler.sendError(ErrorCodes.thingNotFound, evt, { name: target })
+      return { handled: true } // not found but we did reply
     }
     await thing.takeAction(evt)
     return { handled: true } // even if you didn't get it

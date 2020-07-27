@@ -23,7 +23,7 @@ it('take item', async () => {
   const evt = env.makeSceneEvent('get lamp')
   await game.story.gotoRoom('office')
   const lamp = game.story.room.findThing('lamp')
-  await lamp?.getThing(evt)
+  await lamp?.takeAction(evt)
   expect(lamp?.got).toBe(true)
   expect(pal.getReceivedText(0)).toBe('you get the Lamp')
   await lamp?.dropItem(pal)

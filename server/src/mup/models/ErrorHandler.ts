@@ -1,21 +1,34 @@
 import { SceneEvent } from '../MupTypes'
+import Logger from '../../lib/Logger'
 
 const ErrorCodes = {
-  thingNotFound: 'thingNotFound'
+  thingNotFound: 'thingNotFound',
+  cannotTake: 'cannotTake'
+}
+
+interface ErrorOpts {
+  name: string
 }
 
 const ErrorHandler = {
 
-  async sendError(which: string, evt: SceneEvent, opts) {
+  async sendError(which: string, evt: SceneEvent, opts: ErrorOpts) {
+    let msg
     switch (which) {
       case ErrorCodes.thingNotFound:
-        evt.pal.sendText(`you cant see a ${ opts.name }`)
+        msg = `You can't see a ${ opts.name }`
         break
+      case ErrorCodes.cannotTake:
+        msg = `You can't take the ${ opts.name }`
+        break
+
       default:
-        evt.pal.sendText(`hmm, that didn't work out`)
+        msg = `hmm, that didn't work out`
     }
+    Logger.warn(msg)
+    evt.pal.sendText(msg)
   }
 
 }
 
-export { ErrorCodes, ErrorHandler }
+export { ErrorCodes, ErrorHandler, ErrorOpts }

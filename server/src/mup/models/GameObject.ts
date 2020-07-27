@@ -25,6 +25,8 @@ const DEFAULT_STATE = 'default'
 //  Actor < RoomObject < GameObject
 //  Room  < GameObject
 
+import { ErrorHandler, ErrorCodes } from './ErrorHandler'
+
 
 class GameObject {
   doc: any
@@ -37,7 +39,6 @@ class GameObject {
   actors: Actor[]
   actions: ActionData[]
   klass: string
-  errorCodes: any
   // key:string objects for property setting
   props: any
 
@@ -413,8 +414,7 @@ class GameObject {
       await evt.pal.sendText(msg)
       this.got = true
     } else {
-      const msg = `you can't get the ${ this.name }`
-      await evt.pal.sendText(msg)
+      await ErrorHandler.sendError(ErrorCodes.cannotTake, evt, { name: this.name })
       this.got = false  // or dont change state?
     }
   }
