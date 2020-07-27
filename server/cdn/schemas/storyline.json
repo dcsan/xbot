@@ -1,0 +1,18 @@
+{
+  "title": "storyline",
+  "definitions": {
+    "story": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "name of the story"
+        },
+        "cname": {
+          "type": "string",
+          "description": "canonical computer readable name"
+        }
+      }
+    }
+  }
+}
