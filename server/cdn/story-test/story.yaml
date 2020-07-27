@@ -1,3 +1,20 @@
 story:
-  name: 123
-  wrong: field
+  cname: asylum
+  name: story name
+
+rooms:
+  - name: blab
+    imageUrl: someUrl
+
+    actions:
+      - match: something
+        if:
+          all:
+            - some.thing
+        reply: stuff
+        then:
+
+    items:
+      - name: bob
+        canTake: true
+        adsfasd: adsfasd

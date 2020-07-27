@@ -1,6 +1,6 @@
 {
   "title": "storyline",
-  "definitions": {
+  "properties": {
     "story": {
       "type": "object",
       "properties": {
@@ -11,6 +11,83 @@
         "cname": {
           "type": "string",
           "description": "canonical computer readable name"
+        }
+      },
+      "required": [
+        "name",
+        "cname"
+      ]
+    },
+    "rooms": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "imageUrl": {
+            "type": "string"
+          },
+          "short": {
+            "type": "string"
+          },
+          "buttons": {
+            "type": "string"
+          },
+          "required": [
+            "name"
+          ],
+          "actions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "match": {
+                  "type": "string"
+                },
+                "reply": {
+                  "type": "string"
+                },
+                "if": {
+                  "type": "object",
+                  "properties": {
+                    "all": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              },
+              "then": {
+                "type": "object",
+                "properties": {
+                  "reply": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "canTake": {
+                "type": "boolean"
+              },
+              "unique": {
+                "type": "boolean"
+              }
+            }
+          }
         }
       }
     }
