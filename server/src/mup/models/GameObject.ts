@@ -12,13 +12,11 @@ const log = console.log
 import { Pal } from '../pal/Pal'
 import { SceneEvent } from '../MupTypes'
 
-
-
 import {
   ActionData,
   ActionResult,
   ActionBranch,
-  ActionIf
+  // ActionIf
 } from '../MupTypes'
 
 const DEFAULT_STATE = 'default'
@@ -39,7 +37,7 @@ class GameObject {
   actors: Actor[]
   actions: ActionData[]
   klass: string
-
+  errorCodes: any
   // key:string objects for property setting
   props: any
 
@@ -54,13 +52,14 @@ class GameObject {
     this.got = false
     this.props = {}
     // initialize some common props
+
     this.reset()
   }
 
   reset() {
     this.props = {}
-    this.setProp('has', 'no')
-    this.setProp('wearing', 'no')
+    // this.setProp('has', 'no')
+    // this.setProp('wearing', 'no')
     this.items?.map(item => item.reset())
     this.actors?.map(actor => actor.reset())
     const state =
@@ -94,6 +93,7 @@ class GameObject {
     return this.props[key]
   }
   setProp(key, val) {
+    Logger.logObj('setProp', { cname: this.cname, key, val })
     this.props[key] = val
   }
 
@@ -138,7 +138,6 @@ class GameObject {
       this.formalName
   }
 
-
   isNamed(text) {
     // todo - allow synonyms
     return this.cname.match(text)
@@ -146,6 +145,27 @@ class GameObject {
 
   itemNames() {
     return this.items.map(item => item.name).join(', ')
+  }
+
+  // list of objects in the room for other matching
+  getAllThingNames(): string[] {
+    let allNames: string[] = []
+    for (const thing of this.allThings) {
+      // this.allThings?.forEach((thing: Item) => {
+      allNames.push(thing.name)
+      if (thing.doc.called) {
+        allNames = allNames.concat(thing.doc.called)
+      }
+    }
+    return allNames
+  }
+
+  // should just be called on a Room
+  get allThings() {
+    const things: GameObject[] = []
+    if (this.actors) things.push(...this.actors)
+    if (this.items) things.push(...this.items)
+    return things
   }
 
   // may work for rooms and things
@@ -203,35 +223,48 @@ class GameObject {
   }
 
   async findAndRunAction(evt: SceneEvent): Promise<ActionResult> {
-    const actionData: ActionData = this.findAction(evt.result.clean)
-    if (actionData) {
-      const actionResult: ActionResult = await this.runAction(actionData, evt)
-      return actionResult
-    }
-    // failure actionResult
-    return {
+    // turn clean into a [list] of things to check if its the only checkable
+    const checks: string[] = evt.result.combos || [evt.result.clean]
+    let actionResult: ActionResult = {
       handled: false
     }
+    log('start loop')
+    // checks.forEach(async (check) => {
+    for (const check of checks) {
+      const actionData: ActionData = this.findAction(check)
+      if (actionData) {
+        actionResult = await this.runAction(actionData, evt)
+        console.log('found 1 actionResult', actionResult)
+        Logger.assertEqual(actionResult.handled, true, 'actionResult found but not handled?')
+      }
+    }
+    log('end loop')
+    console.log('findAndRun result', checks, actionResult)
+    return actionResult
   }
 
-  // FIXME merge with tryAction - this came from actors before
-  // but it's the same for both
+  // FIXME - this could be on room or thing
+  // but room should recurse afterward into all room.things ?
   findAction(input: string): ActionData {
     if (!this.doc.actions) {
       Logger.warn('no actions for item:', this.doc.name)
     }
 
-    input = WordUtils.cheapNormalize(input)
+    input = WordUtils.basicNormalize(input)
 
-    const foundAction = this.doc.actions.find(action => {
+    const foundAction: ActionData = this.doc.actions?.find((action: ActionData) => {
       const rex = new RegExp(action.match)
       const check = rex.test(input)
-      return check
+      if (check) {
+        return action // and exit loop
+      }
+      else return false
       // Logger.log('check', rex)
       // if (input.match(rex)) {
       //   return action
       // }
     })
+    Logger.log('foundAction for', input, '=>', foundAction)
     return foundAction
   }
 
@@ -239,8 +272,8 @@ class GameObject {
   // which are a different level of hierarchy
   // making polymorphism harder
   async runAction(actionData: ActionData, evt?: SceneEvent): Promise<ActionResult> {
-    const player = this.story.game.player
-    let result: ActionResult = {
+    const player = evt?.game.player
+    let trackResult: ActionResult = {
       handled: false,
       doc: actionData,
       klass: this.klass,
@@ -251,61 +284,70 @@ class GameObject {
     if (actionData.reply) {
       const msg = this.formatReply(actionData.reply)
       if (evt) await evt.pal.sendText(msg)
-      result.handled = true
-      result.history?.push('reply')
+      trackResult.handled = true
+      trackResult.history?.push('reply')
     }
 
     // goto at top level of the block
     if (actionData.goto) {
       const roomName: string = actionData.goto
       await this.story.gotoRoom(roomName, evt)
-      result.handled = true
-      result.history?.push('goto')
+      trackResult.handled = true
+      trackResult.history?.push('goto')
     }
 
     if (actionData.if) {
       await this.runConditional(actionData, evt)
     } else {
       // just apply it
-      await this.applySetProps(actionData.then, evt)
+      await this.applyThenBlock(actionData.then, evt)
     }
 
-    return result
+    return trackResult
   }
 
   async runConditional(action: ActionData, evt?: SceneEvent) {
     const resultBlock: ActionBranch = this.checkConditionList(action)
-    if (resultBlock.reply && evt) {
-      evt.pal.sendText(resultBlock.reply)
-    }
-    this.applySetProps(resultBlock, evt)
+    await this.applyThenBlock(resultBlock, evt)
   }
 
   checkConditionList(action: ActionData): ActionBranch {
     const allBlock: string[] = action.if.all
     let returnBlock: ActionBranch
-    let pass = true
+    let passed = true
     // find first *failing* condition
     const fail = allBlock.find(line => !(this.checkOneCondition(line)));
     if (fail) {
+      passed = false
       returnBlock = action.else
     } else {
+      passed = true
       returnBlock = action.then
     }
     if (!returnBlock) {
       Logger.warn('cannot find returnBlock', { fail })
     }
+    returnBlock.passed = passed
     return returnBlock
+  }
+
+  // FIXME odd hierarchy. would be better with mixins?
+  get findRoom(): Room {
+    // @ts-ignore
+    if (this.klass === 'room') return <Room>this
+    // @ts-ignore
+    return this.room
   }
 
   checkOneCondition(line): boolean {
     const result = RexParser.parseSetLine(line)
     if (result.parsed?.groups) {
-      const { thing, field, value } = result.parsed.groups
-      if (thing && field && value) {
-        const found: GameObject | undefined = this.room?.findItem(thing)
+      const { target, field, value } = result.parsed.groups
+      Logger.assertTrue((target && field && value), 'missing field', result.parsed?.groups)
+      if (target && field && value) {
+        const found: GameObject | undefined = this.findRoom.findThing(target)
         if (!found) {
-          Logger.warn('cannot find thing to update', { thing, line })
+          Logger.warn('cannot find thing to update', { target, line })
           return false
         }
         const actual = found.getProp(field)
@@ -320,46 +362,59 @@ class GameObject {
     return false
   }
 
-  applySetProps(block: ActionBranch, evt?: SceneEvent) {
+  async applyThenBlock(block: ActionBranch, evt?: SceneEvent) {
     if (!block) {
       Logger.warn('tried to apply setProps on null block')
       return
     }
-    const setPropList: string[] | undefined = block.setProps
-    setPropList?.map((line) => this.applySetPropOne(line, evt))
+    if (block.reply && evt) {
+      evt.pal.sendText(block.reply)
+    }
+    if (!block.setProps) return
+
+    for (const line of block.setProps) {
+      await this.applySetPropOne(line, evt)
+    }
   }
 
   // set props on this or other items
   async applySetPropOne(line, _evt) {
     const result: ParserResult = RexParser.parseSetLine(line)
     if (result.parsed?.groups) {
-      const { thing, field, value } = result.parsed.groups
-      if (thing && field && value) {
-        const found: GameObject | undefined = this.room?.findItem(thing)
-        if (!found) {
-          Logger.warn('cannot find thing to update', { thing, line })
-          return
-        }
-        found.setProp(field, value)
-        // log('updating', { thing, field, value })
-        // log('set it', found.name, JSON.stringify(found.props, null, 2))
+      const { target, field, value } = result.parsed.groups
+      Logger.assertTrue((target && field && value), 'missing field', result.parsed?.groups)
+      const found: GameObject | undefined = this.findRoom.findThing(target)
+      if (!found) {
+        Logger.warn('cannot find thing to update', { thing: target, line })
+        return
       }
+      found.setProp(field, value)
     }
   }
 
-  async getItem(pal: Pal) {
-    const customGet = this.findAction('get')
-    if (!customGet) return this.basicGetItem(pal)
+  // this runs before any actions on the object itself
+  async takeAction(evt: SceneEvent) {
+    const customTake: ActionData = this.findAction('take')
+    if (this.doc.unique) {
+      evt.game.player.addItem(this)
+      this.room?.removeItemByCname(this.cname)
+    }
+    if (customTake) {
+      return await this.runAction(customTake, evt)
+    }
+    return this.showBasicGetReply(evt)
+    // TODO run custom action
   }
 
-  async basicGetItem(pal: Pal) {
-    if (this.doc.canGet) {
+  async showBasicGetReply(evt: SceneEvent) {
+    // TODO player status
+    if (this.doc.canTake) {
       const msg = `you get the ${ this.name }`
-      await pal.sendText(msg)
+      await evt.pal.sendText(msg)
       this.got = true
     } else {
       const msg = `you can't get the ${ this.name }`
-      await pal.sendText(msg)
+      await evt.pal.sendText(msg)
       this.got = false  // or dont change state?
     }
   }
@@ -377,4 +432,4 @@ class GameObject {
 
 }
 
-export { GameObject, ActionData, ActionBranch as ActionBlock, ActionResult }
+export { GameObject }

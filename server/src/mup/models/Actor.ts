@@ -31,10 +31,10 @@ class Actor extends GameObject {
   // }
 
   // async askAboutThing(evt: SceneEvent) {
-  //   const actionName = `${ evt.result.parsed?.verb } ${ parsed.groups.thing }`  // about chest
+  //   const actionName = `${ evt.result.parsed?.verb } ${ parsed.groups.target }`  // about chest
   //   const reply = await this.tryAction({ actionName }, context)
   //   if (!reply) {
-  //     const msg = `I don't know about ${ parsed.groups.thing }`
+  //     const msg = `I don't know about ${ parsed.groups.target }`
   //     context.sendText(msg)
   //   }
   //   return reply

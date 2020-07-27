@@ -20,9 +20,10 @@ it('initial state', async () => {
 it('take item', async () => {
   const env = new TestEnv()
   const { game, pal } = env
+  const evt = env.makeSceneEvent('get lamp')
   await game.story.gotoRoom('office')
-  const lamp = game.story.room.findItem('lamp')
-  await lamp?.getItem(pal)
+  const lamp = game.story.room.findThing('lamp')
+  await lamp?.getThing(evt)
   expect(lamp?.got).toBe(true)
   expect(pal.getReceivedText(0)).toBe('you get the Lamp')
   await lamp?.dropItem(pal)
@@ -61,16 +62,13 @@ it('can change state by actions', async () => {
     expect(action).toHaveProperty('then')
     await item?.runAction(action)
   }
-  expect(item?.getProp('state')).toBe('open')
-  expect(item?.description).toBe('The wardrobe is open')
-
+  expect(item?.getProp('state')).toBe('openFull')
+  expect(item?.description).toMatch(/You see some clothes inside/)
 })
-
 
 it('can match optional values', async () => {
   const { game, pal } = new TestEnv()
   await game.story.gotoRoom('office')
-
   const action1: ActionData = game.story.room.findAction('use matches on lamp')
   expect(action1.if).toHaveLength(1)
   const action2: ActionData = game.story.room.findAction('use the matches with a lamp')

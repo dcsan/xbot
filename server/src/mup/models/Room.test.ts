@@ -8,15 +8,6 @@ import { ActionResult } from '../models/GameObject'
 import Logger from '../../lib/Logger'
 import { TestEnv } from '../../lib/TestUtils'
 
-// const WordUtils = require('../lib/WordUtils')
-// import TestUtils from '../../lib/TestUtils';
-// import RexParser from '../services/RexParser.js';
-// const RexParser = require('./parser/RexParser.js');
-// const { basicInputParser } = require('./parser/RexParser.js');
-
-
-
-
 it('should have a name', async () => {
   const { game } = new TestEnv()
   expect(game).toBeDefined()
@@ -52,14 +43,34 @@ it('should handle a special action with a goto', async () => {
   const evt: SceneEvent = { pal, result, game }
   const actualResult: ActionResult = await game.story.room.findAndRunAction(evt)
 
+  console.log('store', evt.pal.channel.store)
+  expect(evt.pal.getReceivedText(0)).toMatch(/you click your heels/i)
+
   expect(actualResult.handled).toBe(true)
   expect(game.story.room.name).toBe('cupboard')
   expect(actualResult.klass).toBe('room')
   expect(actualResult.history?.length).toBe(2)
   expect(actualResult.history ? actualResult.history[0] : false).toBe('reply')
-  expect(evt.pal.channel.store[0]).toMatch(/you click your heels/i)
+
 })
 
+
+it('should find all things in a room', () => {
+  const { game, pal } = new TestEnv()
+  game.story.gotoRoom('office')
+  const things = game.story.room.getAllThingNames()
+  expect(things).toHaveLength(12)
+  expect(things).toContain("Matches")
+
+  const rexStr = things.join('|')
+  const rex = new RegExp(rexStr, 'mi')
+  expect('box of matches').toMatch(rex)
+  expect('soap').toMatch(rex)
+  expect('bar of soap').toMatch(rex)
+
+  expect(things).toContain("Soap")
+  expect(things).toContain("bar of soap")  // synonyms
+})
 
 // const context = TestUtils.context
 // const game = new Game(1234)

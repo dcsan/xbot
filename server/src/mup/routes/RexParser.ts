@@ -4,19 +4,18 @@ import WordUtils from '../../lib/WordUtils'
 // import RouterService from './RouterService'
 
 import { StaticRules, OneRule } from './ParserRules'
+import {
+  PosResult,
+  ParserResult,
+  RegExpResult
+} from '../MupTypes'
 
 const log = console.log
 
-interface RegExpResult {
-  groups?: any
+const ParserConfig = {
+  verbs: 'take|move|get|open|wear|drink|rub|drop|lock|unlock'
 }
 
-interface ParserResult {
-  parsed?: RegExpResult | null,
-  rule?: OneRule    // matched rule
-  input?: string
-  clean: string
-}
 
 const RexParser = {
 
@@ -381,47 +380,88 @@ const RexParser = {
   // }
 
   parseCommands(input: string): ParserResult {
-    let clean = WordUtils.cheapNormalize(input)
-    clean = WordUtils.removeStopWords(clean)
-    let parserResult: ParserResult = {
-      input,
+    let clean = WordUtils.basicNormalize(input)
+
+    let pres: ParserResult = {
+      input: clean,
       clean,
     }
 
+    // find first match
     let rule: OneRule | undefined = StaticRules.find((oneRule: OneRule) => {
-      if (oneRule.rex.test(input)) return true
+      if (oneRule.rex.test(clean)) return true
       return false
     })
 
     if (rule) {
-      const parsed = rule.rex.exec(input)
-      // console.log('input', input)
-      // console.log('rule', rule)
-      // console.log('rule.rex', rule.rex)
-      // console.log('parsed', parsed)
-      if (parsed) parsed.groups = { ...parsed.groups } // null object
-      parserResult.parsed = parsed
-      parserResult.rule = rule
-      // console.log('parserResult', parserResult)
-      Logger.logObj('parser found:', {
-        cname: rule.cname,
-        groups: parsed?.groups
-      })
+      const parsed = rule.rex.exec(clean)
+      log('parsed', clean, parsed)
+      if (parsed) {
+        parsed.groups = { ...parsed.groups } // null object
+
+        // @ts-ignore   assuming the right fields are found in .groups
+        pres.pos = { ...parsed.groups }
+        pres.parsed = parsed
+        pres.rule = rule
+      }
+    } else {
+      // TODO - global counter for missed rules?
+      // so we can show a hint?
+      Logger.warn('no rule matched for input', clean)
     }
-    return parserResult
+    return pres
   },
 
   // object.field = value
   parseSetLine(input: string): ParserResult {
     // console.log('setItem', input)
-    const rex = /(?<thing>\w*)\.(?<field>\w*) = (?<value>\w*)/
+    const rex = /(?<target>\w*)\.(?<field>\w*) = (?<value>\w*)/
     const parsed = rex.exec(input)
-    let result = {
+    let result: ParserResult = {
       clean: input,
-      parsed: { ...parsed }
+      parsed: { ...parsed },
+      // @ts-ignore
+      pos: { ...parsed?.groups }
     }
     // console.log('result', result)
     return result
+  },
+
+  // give a nounList of objects in game to help with parsing
+  parseNounVerbs(input: string, nounList: string[], verbList?: string[]): ParserResult {
+    const clean = WordUtils.basicNormalize(input)
+    const nouns = nounList.join('|')
+    const verbs = verbList ? verbList.join('|') : ParserConfig.verbs
+    const strExp = `(?<verb>${ verbs }) (?<target>${ nouns })`
+    // verb noun1 on|with|at noun2 | use handle on sink
+    // put soap on bed | verb subject on object
+    // use soap on faucet | faucet: use soap
+    // wash face
+    // wash face with soap
+    // const strExp = `(?<verb>${ verbs }) (?<noun1>${ nouns })`
+    const rex = new RegExp(strExp, 'im')
+    // console.log(strExp, 'rex')
+    const parsed = rex.exec(clean)
+    let pres: ParserResult = {
+      clean, input, parsed
+    }
+
+    if (parsed?.groups) {
+      parsed.groups = { ...parsed.groups }
+
+      // @ts-ignore
+      pres.pos = { ...parsed.groups }
+
+      // try just the verb, eg removing the item
+      // so 'wear robe' becomes robe => `wear`
+      const verb = parsed.groups?.verb
+      pres.combos = [
+        clean,
+        verb
+        // `${ pos.verb } ${ subject }`
+      ]
+    }
+    return pres
   }
 
 

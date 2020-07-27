@@ -1,8 +1,12 @@
 import dotEnv from 'dotenv-flow';
 dotEnv.config()
 
+import { SceneEvent } from '../mup/MupTypes'
 // console.log('NODE_ENV:\t', process.env.NODE_ENV)
 // console.log('CONFIG_APP:\t', process.env.CONFIG_APP)
+
+// initial level
+const logLevel = parseInt(process.env.DEBUG_LEVEL || '3')
 
 const AppConfig = {
 
@@ -10,6 +14,12 @@ const AppConfig = {
     // this is run after module has been used elsewhere so not good
     // console.log('NODE_ENV:', process.env.NODE_ENV)
     // console.log('STORYNAME:', process.env.STORYNAME)
+  },
+
+  toggleDebug(evt: SceneEvent) {
+    const level = AppConfig.logLevel ? 0 : 5
+    AppConfig.logLevel = level
+    evt.pal.sendText(` \`debugLevel: ${ level } \` `)
   },
 
   // TODO - merge props below
@@ -25,7 +35,7 @@ const AppConfig = {
   NODE_ENV: process.env.NODE_ENV,
   CONFIG_ENV: process.env.CONFIG_ENV,
   CONFIG_APP: process.env.CONFIG_APP,
-  logLevel: process.env.LOG_LEVEL || 3,
+  logLevel: logLevel,
 
   // verificationToken: process.env.VERIFICATION_TOKEN,
   // clientSigningSecret: process.env.CLIENT_SIGNING_SECRET,
@@ -38,7 +48,7 @@ const AppConfig = {
   // BOLT
   token: process.env.SLACK_BOT_TOKEN,
   signingSecret: process.env.SLACK_SIGNING_SECRET || 'x',   // has to have a value for TSC
-  debugMode: process.env.DEBUG_MODE || false
+
 }
 
 AppConfig.init()

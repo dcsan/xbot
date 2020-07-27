@@ -6,53 +6,84 @@ import Game from 'mup/models/Game'
 import { GameManager } from '../models/GameManager'
 import {
   // RouterService,
-  SceneEvent
-} from './RouterService'
+  // PosResult,
+  SceneEvent,
+  ActionResult
+} from '../MupTypes'
 
 const BotRouter = {
 
-  async textEvent(slackEvent) {
-    const input: string = slackEvent.message.text
-    await BotRouter.anyEvent(slackEvent, input, 'text')
+  async textEvent(pal: Pal) {
+    const input: string = pal.channel.message.text
+    await BotRouter.anyEvent(pal, input, 'text')
   },
 
-  async actionEvent(slackEvent) {
-    const input: string = slackEvent.action.value
-    await BotRouter.anyEvent(slackEvent, input, 'action')
+  async actionEvent(pal: Pal) {
+    const input: string = pal.channel.action.value
+    await BotRouter.anyEvent(pal, input, 'action')
   },
 
-  async anyEvent(slackEvent, input: string, eventType: string) {
+  async anyEvent(pal: Pal, input: string, eventType: string) {
     Logger.logObj('anyEvent.input:', input)
     // const { message: MessageEvent, say: SayFn } = slackEvent
-    const pal = new Pal(slackEvent)
+
     const storyName = 'asylum'
     const game: Game = await GameManager.findGame({ pal, storyName })
     const result: ParserResult = RexParser.parseCommands(input)
 
     const evt: SceneEvent = { pal, result, game }
 
-    // commands
+    // chain of methods
     const handled =
+      // basic commands look|cheat|go
       await this.tryCommands(evt) ||
-      await game.story.room.findAndRunAction(evt)
-
-    // room actions
+      // room actions
+      await this.tryRoomActions(evt) ||
+      // object matched actions `open window` => window.open
+      await this.tryThingActions(evt)
 
     if (!handled) {
       const msg = `cannot find route for [${ input }]`
       await pal.debugMessage(msg)
       Logger.warn('no match', msg)
     } else {
-      await pal.debugMessage({ msg: 'router', input, eventType, parsed: result.parsed, handled })
+      await pal.debugMessage({
+        ruleCname: result.rule?.cname,
+        ruleType: result.rule?.type,
+        input,
+        parsed: result.parsed,
+        groups: result.parsed?.groups,
+        pos: result.pos,
+        eventType,
+        handled,
+        from: 'router',
+      })
     }
   },
 
   async tryCommands(evt: SceneEvent): Promise<boolean> {
     if (evt.result.rule?.type !== 'command') return false
-    await evt.pal.debugMessage(`rule: ${ evt.result.rule?.cname }`)
+    // await evt.pal.debugMessage(`rule: ${ evt.result.rule?.cname }`)
     // invoke method in RouterService
     await evt.result.rule?.event(evt)
     return true
+  },
+
+  async tryRoomActions(evt: SceneEvent): Promise<boolean> {
+    const res: ActionResult = await evt.game.story.room.findAndRunAction(evt)
+    return res.handled
+  },
+
+  async tryThingActions(evt: SceneEvent): Promise<ActionResult> {
+    const nounList: string[] = evt.game.story.room.getAllThingNames()
+    const result: ParserResult = RexParser.parseNounVerbs(evt.result.clean, nounList)
+    // const { subject, verb } = result.parsed?.groups
+    if (result.pos?.verb && result.pos?.target) {
+      return await evt.game.story.room.tryThingActions(result, evt)
+    }
+    return {
+      handled: false
+    }
   }
 
 }

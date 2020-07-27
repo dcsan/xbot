@@ -3,7 +3,7 @@
 import yaml from 'js-yaml'
 
 // const posTagger = require('wink-pos-tagger');
-import AppConfig from '../../lib/AppConfig'
+// import AppConfig from '../../lib/AppConfig'
 import Util from '../../lib/Util'
 import Logger from '../../lib/Logger'
 import SlackBuilder from '../pal/SlackBuilder'
@@ -103,10 +103,6 @@ class Game {
   //   await pal.sendText(msg)
   // }
 
-  async inventory(pal: Pal) {
-    await this.player.inventory(pal)
-  }
-
   async hint(pal: Pal) {
     // pal.postEphemeral({ text: 'Hint!' });
     this.story.runCommand('/hint', pal)
@@ -117,7 +113,7 @@ class Game {
   }
 
   // TODO add debug/admin on user check
-  async status(pal: Pal) {
+  async showStatus(pal: Pal) {
     const statusInfo = {
       story: await this.story.status(),
       room: await this.story.room.status(),

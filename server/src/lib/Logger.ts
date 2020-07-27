@@ -1,6 +1,6 @@
 import AppConfig from '../lib/AppConfig'
 import yaml from 'js-yaml'
-
+import Util from './Util'
 // const forceLogging = true   // override even for testing
 const forceLogging = false   // override even for testing
 
@@ -11,8 +11,6 @@ const LogLevels = {
   WARN: 1,
   ERROR: 0
 }
-
-const logLevel = AppConfig.logLevel
 
 const Logger = {
 
@@ -32,8 +30,8 @@ const Logger = {
   },
 
   warn(msg, ...rest) {
-    if (logLevel < LogLevels.WARN) return
-    console.log(msg, ...rest)
+    if (AppConfig.logLevel < LogLevels.WARN) return
+    console.log("-------- WARNING", msg, ...rest)
   },
 
   error(msg, obj = false) {
@@ -46,6 +44,30 @@ const Logger = {
     //   Logger.logObj('obj', obj)
     // }
     // throw new Error(msg)
+  },
+
+  assertEqual(actual, expected, msg): boolean {
+    if (actual != expected) {
+      const err = 'assert fail: ' + msg
+      Logger.warn(err)
+      throw new Error(err)
+    }
+    return true
+  },
+
+  assertDefined(elem, msg): boolean {
+    if (elem === undefined) {
+      Logger.warn('undefined', msg)
+    }
+    return true
+  },
+
+  assertTrue(check, msg, obj = {}): boolean {
+    if (check !== true) {
+      Logger.warn('not truthy', msg)
+      if (obj) console.log('obj', obj)
+    }
+    return true
   },
 
   // error and throw
@@ -67,7 +89,9 @@ const Logger = {
   logObj(msg, obj, force = false) {
     // dont noisy log for tests
     if (process.env.NODE_ENV == 'test' && !force) return
+    obj = Util.removeEmptyKeys(obj)
     try {
+      // this dumps better
       const json = JSON.stringify(obj, null, 2)
       const blob = yaml.dump(json)
       console.log(`--- ${ msg }\n`, blob)
@@ -78,7 +102,7 @@ const Logger = {
   },
 
   silly(msg, ...rest) {
-    if (logLevel >= LogLevels.SILLY) {
+    if (AppConfig.logLevel >= LogLevels.SILLY) {
       Logger.logObj(msg, rest)
     }
   },

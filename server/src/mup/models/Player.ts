@@ -1,6 +1,7 @@
-import SlackBuilder from '../pal/SlackBuilder'
 import Item from './Item'
 import Logger from '../../lib/Logger'
+import { SceneEvent } from '../MupTypes'
+// import { Pal } from '../pal/Pal'
 
 class Player {
 
@@ -25,36 +26,38 @@ class Player {
     return reply
   }
 
+  // add to inventory takeItem
+  // this creates an extra reference so careful about memory leaks
   addItem(item) {
     this.items.push(item)
   }
 
-  addItemByName(itemName) {
-    const item = {
-      name: itemName,
-    }
-    this.addItem(item)
-  }
+  // addItemByName(itemName) {
+  //   const item = {
+  //     name: itemName,
+  //   }
+  //   this.addItem(item)
+  // }
 
   dropItem(item) {
     this.items.push(item)
   }
 
-  hasItem(itemName) {
+  hasItem(cname: string) {
     let matchItems = this.items.filter((item) => {
-      return item.name === itemName
+      return item.cname === cname
     })
-    Logger.log('hasItem', itemName, matchItems)
+    Logger.log('hasItem', cname, matchItems)
     return (matchItems.length > 0)
   }
 
-  async inventory(context) {
-    await context.sendText('You are holding:')
+  async showInventory(evt: SceneEvent) {
+    await evt.pal.sendText('You are holding:')
     if (!this.items.length) {
-      return await SlackBuilder.sendText('nothing', context)
+      return await evt.pal.sendText('nothing')
     } // else
     const itemNames = this.items.map((item) => item.name)
-    await SlackBuilder.sendList(itemNames, context)
+    await evt.pal.sendList(itemNames)
   }
 
 }

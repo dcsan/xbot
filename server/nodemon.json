@@ -1,6 +1,7 @@
 {
   "watch": [
-    "src"
+    "src",
+    "cdn"
   ],
   "restartable": "rs",
   "ignore": [
@@ -12,5 +13,5 @@
   "execMap": {
     "ts": "node -r ts-node/register -r tsconfig-paths/register"
   },
-  "ext": "js,json,ts"
+  "ext": "js,json,ts,yaml"
 }

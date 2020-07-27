@@ -24,7 +24,7 @@ test('how much stopwords', () => {
   ]
   checks.forEach(check => {
     const [input, exp] = check
-    const clean = WordUtils.cheapNormalize(input)
+    const clean = WordUtils.basicNormalize(input)
     expect(clean).toEqual(exp)
   })
 })

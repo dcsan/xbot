@@ -10,7 +10,23 @@ import Util from '../../lib/Util'
 import { ParserResult } from '../routes/RexParser'
 import { Pal } from '../pal/Pal'
 
-import { SceneEvent } from '../MupTypes'
+import {
+  ErrorHandler,
+  ErrorCodes
+} from './ErrorHandler'
+
+import {
+  SceneEvent,
+  ActionResult
+} from '../MupTypes'
+
+const failedAction: ActionResult = {
+  handled: false
+}
+const passedAction: ActionResult = {
+  handled: true
+}
+
 
 class Room extends GameObject {
 
@@ -92,23 +108,34 @@ class Room extends GameObject {
     this.describeThing(evt) // the room
   }
 
-  // might need to patch as a room?
-  async lookThing(evt: SceneEvent) {
-    const thingName: string = evt.result.parsed?.groups.thing
+  // find and examine thing
+  async lookRoomThing(evt: SceneEvent) {
+    const thingName: string | undefined = evt.result.pos?.target
     if (!thingName) return Logger.warn('no thingName to lookat', evt)
     const thing = this.findThing(thingName)
     if (!thing) {
+      ErrorHandler.sendError(ErrorCodes.thingNotFound, evt, { name: thingName })
       Logger.warn('cannot find thing to lookAt', thingName)
       return
     }
     thing.describeThing(evt)
   }
 
-  get allThings() {
-    const things: GameObject[] = []
-    if (this.actors) things.push(...this.actors)
-    if (this.items) things.push(...this.items)
-    return things
+  // find and get an object in the room
+  async takeRoomThing(evt: SceneEvent): Promise<ActionResult> {
+    const thingName = evt.result.pos?.target
+    if (!thingName) {
+      ErrorHandler.sendError(ErrorCodes.thingNotFound, evt, thingName)
+      Logger.warn('no thingName to lookat', evt)
+      return { handled: false }
+    }
+    const thing = this.findThing(thingName) // in the room
+    if (!thing) {
+      Logger.warn('cannot find thing to lookAt', thingName)
+      return { handled: false }
+    }
+    await thing.takeAction(evt)
+    return { handled: true } // even if you didn't get it
   }
 
   async status() {
@@ -129,34 +156,42 @@ class Room extends GameObject {
     return reply
   }
 
-  findItem(itemName): GameObject | undefined {
-    const name = itemName.toLowerCase()
-    const found = this.items.filter((item) => item.cname === name)
-    if (found.length) {
+  findItem(name) {
+    return this.findThing(name)
+  }
+
+  // looks for actors
+  findThing(itemName): GameObject | undefined {
+    const cname = Util.safeName(itemName)
+    const found = this.allThings.filter((thing: GameObject) => {
+      if (thing.cname === cname) return true
+      if (thing.doc.called) {
+        const rex: RegExp = new RegExp(thing.doc.called)
+        if (rex.test(itemName)) {
+          return true
+          // found.push(thing)
+        }
+      } // else
+      return false  // not found
+    })
+    if (found.length > 1) {
+      // TODO - send warning message
+      // but needs a Pal to pipe to
       const item = found[0] // dont modify items
       Logger.logObj('found Item:', { cname: item.cname })
       return item
+    } else if (found.length === 1) {
+      return found.pop()
     } else {
-      Logger.log('cannot find item:', itemName)
+      Logger.warn('cannot find thing:', itemName)
       return undefined
     }
   }
 
-  /**
-   * search both actor or item for named match
-   * @param {*} cname
-   * @returns
-   * @memberof Room
-   */
-  findThing(cname) {
-    if (!cname) return false
-    cname = Util.safeName(cname)
-    const item = this.findItem(cname) || this.findActor(cname)
-    if (!item) {
-      Logger.log('room.findThing failed for', cname)
-      return false
-    }
-    return item
+  removeItemByCname(cname: string) {
+    const before = this.items?.length
+    this.items = this.items?.filter(item => item.cname !== cname)
+    Logger.log('before', before, 'after', this.items.length)
   }
 
   findActor(name) {
@@ -198,6 +233,38 @@ class Room extends GameObject {
     })
     console.log('pair', pair)
     return pair
+  }
+
+  /**
+   * actions on just one thing
+   * @param posResult
+   * @param evt
+   */
+  async tryThingActions(result: ParserResult, evt: SceneEvent): Promise<ActionResult> {
+    const target = result.pos?.target
+    Logger.assertDefined(target, 'no target for tryThingActions')
+    const thing = this.findThing(target)
+    if (!thing) {
+      Logger.warn('cannot find subject', result.parsed?.groups)
+      return { handled: false }
+    }
+    return await thing?.findAndRunAction(evt)  // assumes evt.parsed.clean
+  }
+
+  async useRoomThingAlone(evt: SceneEvent): Promise<ActionResult> {
+    const pos = evt.result.pos
+    if (!pos?.target || !pos?.verb) return failedAction
+    evt.pal.sendText(`you try to ${ pos.verb } the ${ pos.target }`)
+    return {
+      handled: true
+    }
+  }
+
+  async useRoomThingOn(evt: SceneEvent): Promise<ActionResult> {
+    const pos = evt.result.pos
+    if (!pos?.target || !pos?.subject) return failedAction
+    evt.pal.sendText(`you try to ${ pos.verb } the ${ pos.subject } on the ${ pos.target }`)
+    return passedAction
   }
 
   // async tryRoomActions(input: string, pal: Pal) {

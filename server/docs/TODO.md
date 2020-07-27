@@ -3,10 +3,21 @@
 ## TOP:
 
 - get XXX messages in parser / game level get passed to right object
-
+- on 'get' player carry items / inventory
 - initProps
 
-- player carry items
+- buttons to inspect items?
+- for doors?
+
+- Task List!
+- note book?
+
+- use handle on sink
+
+- exits with buttons?
+
+- add submodules for github actions / checkout
+
 - use X on Y
 
 - session info from slackEvent => PAL

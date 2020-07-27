@@ -1,12 +1,9 @@
 import { RouterService } from './RouterService'
+import AppConfig from '../../lib/AppConfig'
 
-interface OneRule {
-  rex: RegExp
-  event: any
-  type: string
-  cname: string
-  extra?: string | undefined
-}
+import Player from '../models/Player'
+
+import { OneRule } from '../MupTypes'
 
 const StaticRules: OneRule[] = [
   {
@@ -19,22 +16,54 @@ const StaticRules: OneRule[] = [
 
   {
     cname: 'goto',
-    rex: /^(goto|gt) (?<roomName>.*)/i,
+    rex: /^(goto|gt|g) (?<roomName>.*)/i,
     event: RouterService.goto,
     type: 'command'
   },
 
   {
+    cname: 'inventory',
+    rex: /^(inventory|items|inv|i)$/i,
+    event: RouterService.showInventory,
+    type: 'command'
+  },
+
+  {
     cname: 'lookRoom',
-    rex: /^(look|l)$/i,
+    rex: /^(look|l|x|look room|x room|look around)$/i,
     event: RouterService.lookRoom,
     type: 'command'
   },
 
   {
-    cname: 'lookThing',
-    rex: /^(look|look at|x|examine|x at) (?<thing>\w+)$/i,
-    event: RouterService.lookThing,
+    cname: 'lookRoomThing',
+    rex: /^(?<verb>look at|look|examine|x at|l|x) (?<target>\w+)$/i,
+    event: RouterService.lookRoomThing,
+    type: 'command'
+  },
+
+  // captures all wear related tasks
+  // have to fire from your inventory too...
+  {
+    cname: 'takeRoomThing',
+    rex: /^(?<verb>get|take|grab|try on|wear|put on|pick up|t) (?<target>\w+)$/i,
+    event: RouterService.takeRoomThing,
+    type: 'command'
+  },
+
+  // just on its own no 'with' or 'on'
+  {
+    cname: 'useRoomThingAlone',
+    rex: /^(?<verb>use) (?<target>\w+)$/i,
+    event: RouterService.useRoomThingAlone,
+    type: 'command'
+  },
+
+  // just on its own no 'with' or 'on'
+  {
+    cname: 'useThingOn',
+    rex: /^(?<verb>use|put|place) (?<subject>\w+) (on|onto|in|with|against) (?<target>\w+)$/i,
+    event: RouterService.useRoomThingOn,
     type: 'command'
   },
 
@@ -58,6 +87,20 @@ const StaticRules: OneRule[] = [
     event: RouterService.reload,
     type: 'command'
   },
+
+  {
+    rex: /^dbg$/,
+    cname: 'debug',
+    type: 'command',
+    event: AppConfig.toggleDebug
+  },
+
+  {
+    rex: /^(st|status)$/,
+    cname: 'status',
+    type: 'command',
+    event: RouterService.showStatus
+  }
 
   // {
   //   cname: 'examine',

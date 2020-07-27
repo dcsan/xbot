@@ -27,8 +27,20 @@ const RouterService = {
     await evt.game.restart(evt)
   },
 
-  lookThing: async (evt: SceneEvent) => {
-    return await evt.game.story.room.lookThing(evt)
+  lookRoomThing: async (evt: SceneEvent) => {
+    return await evt.game.story.room.lookRoomThing(evt)
+  },
+
+  takeRoomThing: async (evt: SceneEvent) => {
+    return await evt.game.story.room.takeRoomThing(evt)
+  },
+
+  useRoomThingAlone: async (evt: SceneEvent) => {
+    return await evt.game.story.room.useRoomThingAlone(evt)
+  },
+
+  useRoomThingOn: async (evt: SceneEvent) => {
+    return await evt.game.story.room.useRoomThingOn(evt)
   },
 
   echoTest: async (evt: SceneEvent) => {
@@ -63,7 +75,16 @@ const RouterService = {
 
   reload: async (evt: SceneEvent) => {
     await evt.game.reload(evt)
-  }
+  },
+
+  showStatus: async (evt: SceneEvent) => {
+    await evt.game.showStatus(evt.pal)
+  },
+
+  showInventory: async (evt: SceneEvent) => {
+    return await evt.game.player.showInventory(evt)
+  },
+
 
 }
 

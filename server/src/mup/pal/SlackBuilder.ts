@@ -2,12 +2,12 @@ import Logger from "../../lib/Logger"
 import Util from '../../lib/Util'
 import Item from '../models/Item'
 
-import { ActionBlock } from '../models/GameObject'
+import { ActionBranch } from '../MupTypes'
 import AppConfig from '../../lib/AppConfig'
 
 const SlackBuilder = {
 
-  logging: AppConfig.debugMode,
+  logging: AppConfig.logLevel,
 
   setLogging(flag) {
     SlackBuilder.logging = flag
@@ -136,7 +136,7 @@ const SlackBuilder = {
   },
 
 
-  async itemCard(infoBlock: ActionBlock, item: Item) {
+  async itemCard(infoBlock: ActionBranch, item: Item) {
     let blocks: any[] = []
     if (!infoBlock) {
       blocks.push(SlackBuilder.textBlock(item.short))

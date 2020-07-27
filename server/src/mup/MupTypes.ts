@@ -6,10 +6,6 @@ interface LoadOptions {
   pal: Pal
 }
 
-import {
-  ParserResult
-} from 'mup/routes/RexParser'
-
 // the fail/pass block branches of a full ActionData
 interface ActionBranch {
   reply?: string
@@ -18,6 +14,7 @@ interface ActionBranch {
   setHint?: string
   setProps?: string[]
   goto?: string
+  passed?: boolean   // runtime result
 }
 
 interface ActionIf {
@@ -29,6 +26,7 @@ interface ActionData {
   match: string
   reply?: string
   goto?: string
+  setProps?: string[]
 
   always?: ActionBranch
   if: ActionIf
@@ -57,6 +55,37 @@ interface SceneEvent {
   game: Game
 }
 
+export interface OneRule {
+  rex: RegExp
+  event: any
+  type: string
+  cname: string
+  extra?: string | undefined
+}
+
+// actually RegExpExecArray
+export interface RegExpResult {
+  groups?: any
+}
+
+export interface PosResult {
+  verb: string
+  target: string
+  subject?: string
+  adj?: string
+}
+
+export interface ParserResult {
+  parsed?: RegExpResult | null,
+  pos?: PosResult
+  rule?: OneRule    // matched rule
+  input?: string
+  clean: string
+  combos?: string[]   // combinations to try baesd on clean/rebuilt inputs
+}
+
+// minimum verb and target `open window`
+// open(verb) window(target) with hammer(subject)
 
 export {
   LoadOptions,

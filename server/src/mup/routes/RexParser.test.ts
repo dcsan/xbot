@@ -1,23 +1,52 @@
-import _ from 'lodash'
 import { RexParser, ParserResult } from './RexParser';
 import Logger from '../../lib/Logger';
 
 const log = console.log
 
+const nounList = ['key', 'chest', 'table lamp', 'door']
+const verbList = ['open', 'rub', 'wipe', 'wash']
+
+// base 'get' command
+it('parse get command', () => {
+  const result: ParserResult = RexParser.parseCommands('get the floofy')
+  expect(result.pos?.target).toBe('floofy')
+  expect(result.pos?.verb).toBe('get')
+})
+
+// noun phrase command
+it('should parse verb target into parsed.pos', () => {
+  const result: ParserResult = RexParser.parseNounVerbs('open the chest', nounList)
+  expect(result.pos?.target).toBe('chest')
+  expect(result.pos?.verb).toBe('open')
+})
+
+
+it('should parse verb target into parsed.pos', () => {
+  const result: ParserResult = RexParser.parseNounVerbs('open the chest', nounList)
+  expect(result.pos?.target).toBe('chest')
+  expect(result.pos?.verb).toBe('open')
+})
+
+
 it('should parse actionBlock setlines', async () => {
   const res: ParserResult = RexParser.parseSetLine('door.locked = no')
   expect(res.parsed?.groups).toBeDefined()
-
   expect(res.parsed?.groups?.thing).toBe('door')
   expect(res.parsed?.groups?.field).toBe('locked')
   expect(res.parsed?.groups?.value).toBe('no')
-
 })
 
-// beforeEach(async () => {
-//   context.reset()
-//   await game.init({ storyName: 'office' })
+
+
+// it('should parse verb target into parsed.pos', () => {
+
+//   const nounList = ['key', 'chest', 'table lamp', 'door']
+//   const result: ParserResult = RexParser.parseNounVerbs('open the chest', nounList)
+//   expect(result.pos?.target).toBe('chest')
+//   expect(result.pos?.verb).toBe('open')
+
 // })
+
 
 // function testRuleSet(rule) {
 

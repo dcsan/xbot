@@ -6,14 +6,22 @@ import SlackBuilder from './SlackBuilder'
 
 import AppConfig from '../../lib/AppConfig'
 
-const debugOutput = AppConfig.debugMode
+const debugOutput = AppConfig.logLevel
 // const debugOutput = false
+
+interface IMessage {
+  text: string
+}
 
 // parent of SlackAdapter etc
 interface IChannel {
   say: any
+  message: IMessage // input message from user
   store: any[]
   sessionId: string
+  action: {
+    value: string
+  }
 }
 
 class MockChannel implements IChannel {
@@ -22,7 +30,11 @@ class MockChannel implements IChannel {
   constructor(sid: string = 'mock1234') {
     this.store = []
     this.sessionId = sid
+    this.message = { text: '' }   // nothing coming in yet
+    this.action = { value: '' }
   }
+  action: { value: string }
+  message: IMessage
   sessionId: string
 
   say(msg) {
@@ -37,7 +49,8 @@ class Pal {
   channel: IChannel | MockChannel
   sessionId: string
 
-  constructor(channel: IChannel) {
+  // FIXME - for slack middleware
+  constructor(channel: any) {
     Logger.log('new pal')
     this.channel = channel
     this.sessionId = channel.sessionId || 'temp1234'
@@ -52,11 +65,20 @@ class Pal {
     return this.channel.store
   }
 
+  input(text) {
+    this.channel.message.text = text
+  }
+
   reply(message) {
     this.channel.say(message)
   }
 
-  async sendText(text) {
+  async sendText(text: string) {
+    await this.channel.say(text)
+  }
+
+  async sendList(list: string[]) {
+    const text = list.join('\n')
     await this.channel.say(text)
   }
 
@@ -65,10 +87,10 @@ class Pal {
   }
 
   async debugMessage(obj) {
-    if (!debugOutput) return
+    if (AppConfig.logLevel < 3) return
     // const clean = { ...obj } // remove nulls?
     const clean = Util.removeEmptyKeys(obj)
-    console.log('json', JSON.stringify(clean, null, 2))
+    // console.log('json', JSON.stringify(clean, null, 2))
     const blob = yaml.dump(clean, { skipInvalid: true, lineWidth: 200 })
     console.log('yaml', blob)
     await this.channel.say(Util.quoteCode(blob))

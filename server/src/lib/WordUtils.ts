@@ -9,9 +9,12 @@ const WordUtils = {
     return output
   },
 
-  // remove predicates, lowercase etc.
-  // but dont remove all stopwords
-  cheapNormalize(input) {
+  /**
+   * remove a few stopwords, punctuation and lowercase,
+   * but dont remove full list of stopwords like `get`
+   * @param input
+   */
+  basicNormalize(input) {
     input = input.toLowerCase()
     input = WordUtils.stripPunctuation(input)
     const words = input.split(' ')
@@ -25,7 +28,11 @@ const WordUtils = {
     return output.join(' ')
   },
 
-  removeStopWords(words) {
+  /**
+   * removes 'get' and other commands - too aggressive
+   * @param words
+   */
+  removeAllStopWords(words) {
     if (typeof (words) === 'string') {
       words = words.split(' ')  // passed a string
     }
@@ -34,8 +41,8 @@ const WordUtils = {
   },
 
   fullNormalize(input) {
-    input = WordUtils.cheapNormalize(input)
-    input = WordUtils.removeStopWords(input)
+    input = WordUtils.basicNormalize(input)
+    input = WordUtils.removeAllStopWords(input)
     return input
   }
 
