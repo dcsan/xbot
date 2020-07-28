@@ -1,5 +1,5 @@
 // const Dispatcher = require('../Dispatcher')
-import Logger from '../../lib/Logger'
+import { Logger } from '../../lib/Logger'
 import WordUtils from '../../lib/WordUtils'
 // import RouterService from './RouterService'
 
@@ -419,7 +419,9 @@ const RexParser = {
     const parsed = rex.exec(input)
     let pres: ParserResult = {
       clean: input,
-      parsed: { ...parsed },
+      parsed: {
+        groups: { ...parsed?.groups }
+      },
       // @ts-ignore
       pos: { ...parsed?.groups }
     }

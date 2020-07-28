@@ -1,4 +1,4 @@
-import Logger from "../../lib/Logger"
+import { Logger } from "../../lib/Logger"
 import Util from '../../lib/Util'
 import Item from '../models/Item'
 import { GameObject } from '../models/GameObject'
@@ -48,6 +48,24 @@ const SlackBuilder = {
     return block
   },
 
+  contextBlock(text) {
+    const block = {
+      "type": "context",
+      "elements": [
+        // {
+        //   "type": "image",
+        //   "image_url": "https://pbs.twimg.com/profile_images/625633822235693056/lNGUneLX_400x400.jpg",
+        //   "alt_text": "cute cat"
+        // },
+        {
+          "type": "mrkdwn",
+          "text": text
+        }
+      ]
+    }
+    return block
+  },
+
   textBlock(text: string) {
     const block = {
       "type": "section",
@@ -71,12 +89,12 @@ const SlackBuilder = {
     }
   },
 
-  imageBlock(doc: StateBlock) {
+  imageBlock(doc: StateBlock, thing: GameObject) {
     return {
       "type": "image",
       "title": {
         "type": "plain_text",   // no mrkdwn?
-        "text": doc.name || doc.short || "image", // name of the STATE not the room?
+        "text": thing.name || doc.short || "image", // name of the STATE not the room?
         "emoji": true
       },
       "image_url": Util.imageUrl(doc.imageUrl),
@@ -137,11 +155,10 @@ const SlackBuilder = {
     await context.sendText(text)
   },
 
-
-  async itemCard(stateInfo: StateBlock, _thing: GameObject) {
+  async itemCard(stateInfo: StateBlock, thing: GameObject) {
     let blocks: any[] = []
     if (stateInfo.imageUrl) {
-      blocks.push(SlackBuilder.imageBlock(stateInfo))
+      blocks.push(SlackBuilder.imageBlock(stateInfo, thing))
     }
     const text = stateInfo.long || stateInfo.short
     if (text) {

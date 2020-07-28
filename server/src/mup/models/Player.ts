@@ -1,7 +1,8 @@
 import Item from './Item'
-import Logger from '../../lib/Logger'
+import { Logger } from '../../lib/Logger'
 import { SceneEvent } from '../MupTypes'
-// import { Pal } from '../pal/Pal'
+import SlackBuilder from '../pal/SlackBuilder'
+import { Pal } from '../pal/Pal'
 
 class Player {
 
@@ -52,12 +53,19 @@ class Player {
   }
 
   async showInventory(evt: SceneEvent) {
-    await evt.pal.sendText('You are holding:')
+    // await evt.pal.sendText('Inventory:')
+    const blocks: any[] = []
+
     if (!this.items.length) {
-      return await evt.pal.sendText('nothing')
-    } // else
-    const itemNames = this.items.map((item) => item.name)
-    await evt.pal.sendList(itemNames)
+      blocks.push(SlackBuilder.textBlock("You aren't carrying anything"))
+    } else {
+      const buttonLinks = this.items.map(item => {
+        return `${ item.name }|x ${ item.name }`
+      })
+      blocks.push(SlackBuilder.buttonsBlock(buttonLinks))
+    }
+    blocks.push(SlackBuilder.contextBlock(':bulb: hint: _try to `use item with ...` other things in the room_'))
+    await evt.pal.sendBlocks(blocks)
   }
 
 }

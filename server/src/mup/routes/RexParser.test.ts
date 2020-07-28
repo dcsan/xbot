@@ -1,5 +1,5 @@
 import { RexParser, ParserResult } from './RexParser';
-import Logger from '../../lib/Logger';
+import { Logger } from '../../lib/Logger';
 
 const log = console.log
 

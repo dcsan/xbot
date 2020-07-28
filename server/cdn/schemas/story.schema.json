@@ -13,10 +13,12 @@
         ],
         "properties": {
           "name": {
-            "type": "string"
+            "type": "string",
+            "description": "the name of the state"
           },
           "imageUrl": {
-            "type": "string"
+            "type": "string",
+            "description": "full URL of an image"
           },
           "short": {
             "type": "string"
@@ -49,10 +51,26 @@
             "type": "string"
           }
         },
+        "imageUrl": {
+          "type": "string"
+        },
+        "buttons": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "take": {
           "type": "array",
           "items": {
             "type": "string"
+          }
+        },
+        "calls": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "description": "events to call back into the system on triggering this branch"
           }
         }
       }
@@ -118,10 +136,12 @@
         ],
         "properties": {
           "name": {
-            "type": "string"
+            "type": "string",
+            "description": "the name of the room"
           },
           "state": {
-            "type": "string"
+            "type": "string",
+            "description": "the current state of the room"
           },
           "states": {
             "$ref": "#/definitions/states"
@@ -177,6 +197,9 @@
                 },
                 "called": {
                   "type": "string"
+                },
+                "visible": {
+                  "type": "boolean"
                 },
                 "state": {
                   "type": "string"

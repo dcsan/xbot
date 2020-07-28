@@ -1,5 +1,6 @@
-import Logger from '../../lib/Logger'
+import { Logger } from '../../lib/Logger'
 import { SceneEvent } from '../MupTypes'
+import SlackBuilder from '../pal/SlackBuilder'
 
 enum HandleCodes {
   processing = 'processing',   // started looking
@@ -27,8 +28,17 @@ interface ErrorOpts {
 
 const ErrorHandler = {
 
+  hintBlock() {
+    // TODO add more and randomize/rotate
+    const lines = [
+      ':bulb: type `help` to see what you can do!'
+    ]
+    const hint = SlackBuilder.contextBlock(lines[0])
+    return hint
+  },
+
   async sendError(which: HandleCodes, evt: SceneEvent, opts: ErrorOpts) {
-    let msg
+    let msg: string
     switch (which) {
       case HandleCodes.errthingNotFound:
         msg = `You can't see a ${ opts.name }`
@@ -43,8 +53,11 @@ const ErrorHandler = {
       default:
         msg = `hmm, that didn't work out`
     }
+    const blocks: any = []
+    blocks.push(SlackBuilder.textBlock(msg))
+    blocks.push(ErrorHandler.hintBlock())
     Logger.warn(msg, evt.pres.clean)
-    evt.pal.sendText(msg)
+    evt.pal.sendBlocks(blocks)
   }
 
 }

@@ -1,6 +1,6 @@
 import _ from 'lodash'
 
-import Logger from './Logger.js';
+import { Logger } from './Logger.js';
 import WordUtils from './WordUtils'
 
 const log = console.log

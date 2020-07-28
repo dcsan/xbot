@@ -1,7 +1,7 @@
 import { GameObject } from './GameObject'
 import { SceneEvent } from '../MupTypes'
 
-import Logger from '../../lib/Logger'
+import { Logger } from '../../lib/Logger'
 import assert from 'assert';
 
 class Actor extends GameObject {

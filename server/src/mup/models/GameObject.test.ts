@@ -3,7 +3,7 @@ import Room from './Room.js';
 import { RexParser, ParserResult } from '../routes/RexParser'
 import { TestEnv } from '../../lib/TestUtils';
 import { ActionData, SceneEvent } from '../MupTypes'
-import Logger from '../../lib/Logger'
+import { Logger } from '../../lib/Logger'
 
 const log = console.log
 

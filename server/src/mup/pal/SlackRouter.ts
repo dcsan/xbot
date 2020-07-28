@@ -2,7 +2,7 @@ import AppConfig from '../../lib/AppConfig'
 
 import { App, MessageEvent, ExpressReceiver, Middleware } from '@slack/bolt';
 import BotRouter from '../../mup/routes/BotRouter'
-import Logger from '../../lib/Logger'
+import { Logger } from '../../lib/Logger'
 import { Pal } from './Pal'
 // This is the main file for the cbgbot bot
 // import morgan from 'morgan'
@@ -21,8 +21,8 @@ const SlackRouter = {
     // app.use(morgan('tiny'));
     async function eventLogger(req) {
       console.log('logger req.body.type => ', req.body?.type)
-      if (req.event) console.log('req.event => ', req.event)
-      if (req.action) console.log('req.action => ', req.action)
+      if (req.event) console.log('req.event => ', req.event.type)
+      if (req.action) console.log('req.action => ', req.action.type)
       await req.next();
     }
     app.use(eventLogger)

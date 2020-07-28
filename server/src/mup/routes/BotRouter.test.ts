@@ -2,7 +2,7 @@ import { TestEnv } from '../../lib/TestUtils';
 import BotRouter from './BotRouter';
 import { RouterService } from './RouterService';
 import { HandleCodes } from '../models/ErrorHandler';
-import Logger from '../../lib/Logger';
+import { Logger } from '../../lib/Logger';
 
 const log = console.log
 

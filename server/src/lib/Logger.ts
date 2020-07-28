@@ -4,12 +4,13 @@ import Util from './Util'
 // const forceLogging = true   // override even for testing
 const forceLogging = false   // override even for testing
 
-const LogLevels = {
-  SILLY: 4,
-  DEBUG: 3,
-  INFO: 2,
-  WARN: 1,
-  ERROR: 0
+enum LogLevels {
+  FATAL = 0,
+  ERROR = 1,
+  WARN = 2,
+  INFO = 3,
+  DEBUG = 4,
+  SILLY = 5,
 }
 
 const Logger = {
@@ -30,7 +31,7 @@ const Logger = {
   },
 
   warn(msg, obj, force = false) {
-    if (AppConfig.logLevel >= LogLevels.WARN || force) return
+    if (AppConfig.logLevel < LogLevels.WARN || force) return
     Logger.log("-------- WARNING " + msg, obj, force)
   },
 
@@ -123,4 +124,4 @@ const Logger = {
 
 }
 
-export default Logger
+export { Logger, LogLevels }

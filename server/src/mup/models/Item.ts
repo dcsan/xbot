@@ -1,4 +1,4 @@
-import Logger from '../../lib/Logger'
+import { Logger } from '../../lib/Logger'
 import { GameObject } from './GameObject'
 import SlackBuilder from '../pal/SlackBuilder'
 

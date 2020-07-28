@@ -20,12 +20,12 @@ export interface StateBlock {
 interface ActionBranch {
   reply?: string
   imageUrl?: string
-  gets?: string
   setHint?: string
   setProps?: string[]
   goto?: string
   take?: string[]   // item names
   drop?: string[]   // names
+  calls?: string[]
 }
 
 interface ActionIf {

@@ -1,6 +1,6 @@
 // Platform Abstraction Layer
 import yaml from 'js-yaml'
-import Logger from '../../lib/Logger'
+import { Logger } from '../../lib/Logger'
 import Util from '../../lib/Util'
 import SlackBuilder from './SlackBuilder'
 
@@ -51,9 +51,9 @@ class Pal {
 
   // FIXME - for slack middleware
   constructor(channel: any) {
-    Logger.log('new pal')
     this.channel = channel
-    this.sessionId = channel.sessionId || 'temp1234'
+    this.sessionId = channel.payload?.channel || 'temp1234'
+    Logger.log('new pal', { sessionId: this.sessionId })
   }
 
   // for unit tests, get a line of stuff that was sent in
@@ -97,7 +97,7 @@ class Pal {
   }
 
   async debugMessage(obj) {
-    if (AppConfig.logLevel < 3) return
+    if (AppConfig.logLevel <= 3) return
     // const clean = { ...obj } // remove nulls?
     const clean = Util.removeEmptyKeys(obj)
     // console.log('json', JSON.stringify(clean, null, 2))

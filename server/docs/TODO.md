@@ -2,8 +2,16 @@
 
 ## TOP:
 
-- get XXX messages in parser / game level get passed to right object
 - on 'get' player carry items / inventory
+- footer message block
+
+- get XXX messages in parser / game level get passed to right object
+
+- channel / GameManager -> based on slackEvent.payload.channel
+
+- synonym parser @wardrobe
+
+
 - initProps
 
 - TS just https://github.com/kulshekhar/ts-jest

@@ -1,5 +1,5 @@
 import SlackBuilder from '../pal/SlackBuilder'
-import Logger from '../../lib/Logger'
+import { Logger } from '../../lib/Logger'
 import Util from '../../lib/Util'
 import WordUtils from '../../lib/WordUtils'
 import { RexParser, ParserResult } from '../routes/RexParser'
@@ -175,11 +175,15 @@ class GameObject {
   }
 
   getStateBlock() {
-    let block: StateBlock = this.doc.states[this.state]
+    const state = this.state
+    let block: StateBlock = this.doc.states.find(one => one.name === state)
+    Logger.logObj(`get state [${ state }] block`, { state, block })
+
     if (!block) {
+      Logger.warn('cant find block for state', { name: this.name, state })
       block = this.doc.states[0]
       if (!block) {
-        // should never happen since state is required
+        // should never happen since states are required
         Logger.assertDefined(block, 'cannot find block for state', { state: this.state, states: this.doc.states })
       }
     }
@@ -188,12 +192,17 @@ class GameObject {
 
   // may work for rooms and things
   async describeThing(evt: SceneEvent) {
-    Logger.log('describeThing', this.name)
     const stateInfo: StateBlock = this.getStateBlock()
     const palBlocks: any[] = []
 
+    Logger.log('describeThing', {
+      name: this.name,
+      state: this.state,
+      props: this.props,
+      stateInfo,
+    })
     if (stateInfo.imageUrl) {
-      palBlocks.push(SlackBuilder.imageBlock(stateInfo))
+      palBlocks.push(SlackBuilder.imageBlock(stateInfo, this))
     }
     const text = stateInfo.long || stateInfo.short
     if (text) {
@@ -375,24 +384,30 @@ class GameObject {
 
   checkOneCondition(line): boolean {
     const pres = RexParser.parseSetLine(line)
-    if (pres.parsed?.groups) {
-      const { target, field, value } = pres.parsed.groups
-      Logger.assertTrue((target && field && value), 'missing parser field', { target, field, value })
-      if (target && field && value) {
-        const found: GameObject | undefined = this.findRoom.findThing(target)
-        if (!found) {
-          Logger.warn('cannot find thing to update', { target, line })
-          return false
-        }
-        const actual = found.getProp(field)
-        // log('checked', { thing, field, value, actual })
-        if (actual === value) {
-          // log('true')
-          return false
-        }
-      }
+    if (!pres.parsed?.groups) {
+      Logger.warn('ifBlock. missing groups', pres.parsed)
+      return false
     }
-    // log('fail')
+
+    const { target, field, value } = pres.parsed.groups
+    if (!(target && field && value)) {
+      Logger.warn('missing parser fields', { target, field, value })
+      Logger.log('if block failed', pres.parsed.groups)
+      return false
+    }
+
+    const found: GameObject | undefined = this.findRoom.findThing(target)
+    if (!found) {
+      Logger.warn('cannot find thing to update', { target, line })
+      return false
+    }
+    const actual = found.getProp(field)
+    // log('checked', { thing, field, value, actual })
+    if (actual === value) {
+      Logger.log('if block passed', pres.parsed.groups)
+      return true
+    }
+    Logger.log('if block failed')
     return false
   }
 
@@ -406,6 +421,7 @@ class GameObject {
     }
     await this.applySetProps(branch, evt)
     await this.doTakeActions(branch, evt)
+    await this.doCallActions(branch, evt)
   }
 
   // set props on this or other items
@@ -427,15 +443,18 @@ class GameObject {
     }
   }
 
+  // take any items
   doTakeActions(branch: ActionBranch, evt: SceneEvent) {
     const takeItemList = branch.take
     if (!takeItemList) return
 
-    for (const itemName of takeItemList) {
-      const item = this.findRoom.findThing(itemName)
-      if (item) {
-        evt.game.player.addItem(this)
+    for (const targetName of takeItemList) {
+      const thing = this.findRoom.findThing(targetName)
+      if (thing) {
+        evt.game.player.addItem(thing)
         this.findRoom.removeItemByCname(this.cname)
+      } else {
+        Logger.error('cannot find thing to take', { targetName })
       }
     }
   }
@@ -454,6 +473,27 @@ class GameObject {
     // TODO run custom action
   }
 
+  // trigger other events into the scene
+  // create a new synthetic event and call back into the room
+  async doCallActions(branch: ActionBranch, evt: SceneEvent) {
+    const callActions = branch.calls
+    if (!callActions) return
+
+    for (const oneCall of callActions) {
+      const newEvt: SceneEvent = {
+        pal: evt.pal,
+        game: evt.game,
+        pres: {
+          clean: oneCall
+        }
+      }
+      // wait for this so they're in order?
+      // TODO add a short delay?
+      await this.findRoom.findAndRunAction(newEvt)
+    }
+  }
+
+  // default for getting an item
   async showBasicGetReply(evt: SceneEvent) {
     // TODO player status
     if (this.doc.canTake) {

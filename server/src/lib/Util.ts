@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import yaml from 'js-yaml'
-import Logger from './Logger'
+import { Logger } from './Logger'
 
 const Util = {
 

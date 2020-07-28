@@ -1,4 +1,4 @@
-import Logger from '../../lib/Logger'
+import { Logger } from '../../lib/Logger'
 import SlackBuilder from '../pal/SlackBuilder'
 import { GameObject } from './GameObject'
 import Actor from './Actor'
@@ -79,7 +79,7 @@ class Room extends GameObject {
   }
 
   async lookRoom(evt: SceneEvent) {
-    this.describeThing(evt) // the room
+    this.findRoom.describeThing(evt) // the room
   }
 
   // async things(evt: SceneEvent) {

@@ -1,5 +1,5 @@
 import { RexParser, ParserResult } from './RexParser'
-import Logger from '../../lib/Logger'
+import { Logger } from '../../lib/Logger'
 
 test('parser rules', () => {
   const pres: ParserResult | undefined = RexParser.parseCommands('goto cell')

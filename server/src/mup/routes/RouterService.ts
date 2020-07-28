@@ -2,7 +2,7 @@ import yaml from 'js-yaml'
 import Game from '../models/Game'
 import { GameManager } from '../models/GameManager'
 
-import Logger from '../../lib/Logger'
+import { Logger } from '../../lib/Logger'
 import Util from '../../lib/Util'
 import { Pal } from '../pal/Pal'
 import { ParserResult } from './RexParser'

@@ -1,7 +1,7 @@
 import { App, MessageEvent, SayFn, SlackEventMiddlewareArgs } from '@slack/bolt';
 import { Pal } from '../pal/Pal'
 import { RexParser, ParserResult } from './RexParser'
-import Logger from '../../lib/Logger'
+import { Logger } from '../../lib/Logger'
 import Game from 'mup/models/Game'
 import { GameManager } from '../models/GameManager'
 import {
@@ -42,7 +42,7 @@ const BotRouter = {
 
   async anyEvent(pal: Pal, input: string, eventType: string): Promise<ActionResult> {
     Logger.logObj('anyEvent.input:', input)
-    if (/^(-'\.) /.test(input)) {
+    if (/^(-|'|\.|#| |,|>|\\) /.test(input)) {
       // ignore prefixed
       Logger.log('ignore prefixed: ', input)
       return { handled: HandleCodes.skippedPrefix }
@@ -58,9 +58,9 @@ const BotRouter = {
     // chain of methods
     const actionResult: ActionResult =
       await chainEvents([
-        this.tryCommands,
         this.tryRoomActions,
-        this.tryThingActions
+        // this.tryThingActions,
+        this.tryCommands,
       ], evt)
 
     if (actionResult.err) {
