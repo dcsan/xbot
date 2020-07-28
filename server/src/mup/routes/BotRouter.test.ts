@@ -6,10 +6,14 @@ import Logger from '../../lib/Logger';
 
 const log = console.log
 
-afterAll(() => {
+beforeAll(async () => {
+  process.stdout.write('start > BotRouterTest\n')
+})
+
+afterAll(async () => {
   // Logger.log('done')
-  log('done')
-  process.stdout.write('done > BotRouterTest')
+  // log('done')
+  process.stdout.write('done > BotRouterTest\n')
 })
 
 it('should handle verb target to get thing', async () => {
