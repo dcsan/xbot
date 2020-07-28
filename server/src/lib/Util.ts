@@ -61,7 +61,12 @@ const Util = {
       else if (obj[key] === undefined) delete obj[key];
     });
     return obj;
+  },
+
+  isEmptyObject(obj) {
+    return typeof obj === 'object' && Object.keys(obj).length === 0;
   }
+
 
 }
 

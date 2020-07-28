@@ -39,11 +39,11 @@ class TestEnv {
   }
 
   makeSceneEvent(input: string): SceneEvent {
-    const result = RexParser.parseCommands(input)
+    const pres = RexParser.parseCommands(input)
     const evt: SceneEvent = {
       pal: this.pal,
       game: this.game,
-      result
+      pres
     }
     return evt
   }

@@ -18,7 +18,7 @@ const RouterService = {
 
   // found: {route, parsed}
   goto: async (evt: SceneEvent) => {
-    const roomName = evt.result.parsed?.groups.roomName
+    const roomName = evt.pres.parsed?.groups.roomName
     Logger.logObj('goto', roomName)
     await evt.game.story.gotoRoom(roomName, evt)
   },

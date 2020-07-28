@@ -6,6 +6,12 @@
 - on 'get' player carry items / inventory
 - initProps
 
+- TS just https://github.com/kulshekhar/ts-jest
+
+
+√ better error handling with return an HandleCode
+
+
 - buttons to inspect items?
 - for doors?
 

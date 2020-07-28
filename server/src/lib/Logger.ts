@@ -29,16 +29,16 @@ const Logger = {
     console.log(msg, ...rest)
   },
 
-  warn(msg, ...rest) {
-    if (AppConfig.logLevel < LogLevels.WARN) return
-    console.log("-------- WARNING", msg, ...rest)
+  warn(msg, obj, force = false) {
+    if (AppConfig.logLevel >= LogLevels.WARN || force) return
+    Logger.log("-------- WARNING " + msg, obj, force)
   },
 
-  error(msg, obj = false) {
-    console.log("ERROR", msg)
-    if (obj) { console.log(obj) }
-    console.log('typeof', typeof (obj))
-    console.log('keys', Object.keys(obj))
+  error(msg, obj = {}) {
+    console.log("------- ERROR ---------", msg)
+    if (!Util.isEmptyObject(obj)) { console.log(obj) }
+    // console.log('typeof', typeof (obj))
+    // console.log('keys', Object.keys(obj))
 
     // if (obj) {
     //   Logger.logObj('obj', obj)
@@ -46,10 +46,11 @@ const Logger = {
     // throw new Error(msg)
   },
 
-  assertEqual(actual, expected, msg): boolean {
+  assertEqual(actual, expected, msg: string, obj: any = {}): boolean {
     if (actual != expected) {
-      const err = 'assert fail: ' + msg
-      Logger.warn(err)
+      const err = 'FAIL assertEqual: ' + msg
+      Logger.error(err, obj)
+      console.log('actual', actual)
       throw new Error(err)
     }
     return true
@@ -62,10 +63,15 @@ const Logger = {
     return true
   },
 
-  assertTrue(check, msg, obj = {}): boolean {
-    if (check !== true) {
-      Logger.warn('not truthy', msg)
-      if (obj) console.log('obj', obj)
+  trace(err) {
+    console.trace(err)
+  },
+
+  assertTrue(check, msg: string, obj: any = {}): boolean {
+    if (!check) {
+      const err = `FAIL ASSERT.true ` + msg
+      Logger.logObj(err, obj, true)
+      Logger.trace(err)
     }
     return true
   },
@@ -86,7 +92,8 @@ const Logger = {
     console.log(msg, JSON.stringify(obj, null, 2))
   },
 
-  logObj(msg, obj, force = false) {
+  // force to ALWAYS run even in test mode
+  logObj(msg: string, obj: any, force: boolean = false) {
     // dont noisy log for tests
     if (process.env.NODE_ENV == 'test' && !force) return
     obj = Util.removeEmptyKeys(obj)
@@ -110,8 +117,7 @@ const Logger = {
   checkItem(obj, field) {
     const res = obj[field]
     if (!res) {
-      console.warn('checkItem: missing field:', field)
-      console.log('in obj =>', obj)
+      Logger.warn(`checkItem: missing field: [ ${ field } ] in obj`, obj, true)
     }
   }
 

@@ -3,10 +3,16 @@ import Room from './Room.js';
 import { RexParser, ParserResult } from '../routes/RexParser'
 import { TestEnv } from '../../lib/TestUtils';
 import { ActionData, SceneEvent } from '../MupTypes'
-
-
+import Logger from '../../lib/Logger'
 
 const log = console.log
+
+afterAll(() => {
+  // Logger.log('done')
+  // log('done')
+  process.stdout.write('done')
+})
+
 
 it('initial state', async () => {
   const { game } = new TestEnv()
@@ -79,14 +85,14 @@ it('can check conditions before actions', async () => {
   const testEnv = new TestEnv()
   const { game } = testEnv
   const room: Room = game.story.room
-  game.story.gotoRoom('cell')
-  game.story.room.reset()
+  await game.story.gotoRoom('cell')
+  room.reset()
 
   const clothes = game.story.room.findItem('clothes')
   const wardrobe = game.story.room.findItem('wardrobe')
   expect(wardrobe?.state).toBe('closed')
   const evt: SceneEvent = testEnv.makeSceneEvent('wear')
-  clothes?.findAndRunAction(evt)
+  await clothes?.findAndRunAction(evt)
   // const evt = testEnv.makeSceneEvent('get clothes')
   expect(testEnv.pal.getReceivedText(0)).toBe("You'll have to open the wardrobe first.")
 })

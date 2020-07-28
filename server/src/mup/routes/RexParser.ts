@@ -395,7 +395,7 @@ const RexParser = {
 
     if (rule) {
       const parsed = rule.rex.exec(clean)
-      log('parsed', clean, parsed)
+      // log('parsed', clean, parsed)
       if (parsed) {
         parsed.groups = { ...parsed.groups } // null object
 
@@ -417,14 +417,13 @@ const RexParser = {
     // console.log('setItem', input)
     const rex = /(?<target>\w*)\.(?<field>\w*) = (?<value>\w*)/
     const parsed = rex.exec(input)
-    let result: ParserResult = {
+    let pres: ParserResult = {
       clean: input,
       parsed: { ...parsed },
       // @ts-ignore
       pos: { ...parsed?.groups }
     }
-    // console.log('result', result)
-    return result
+    return pres
   },
 
   // give a nounList of objects in game to help with parsing

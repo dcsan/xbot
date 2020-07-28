@@ -25,7 +25,11 @@ const DEFAULT_STATE = 'default'
 //  Actor < RoomObject < GameObject
 //  Room  < GameObject
 
-import { ErrorHandler, ErrorCodes } from './ErrorHandler'
+import { ErrorHandler, HandleCodes } from './ErrorHandler'
+
+let blankActionResult = {
+  handled: HandleCodes.processing
+}
 
 
 class GameObject {
@@ -225,23 +229,34 @@ class GameObject {
 
   async findAndRunAction(evt: SceneEvent): Promise<ActionResult> {
     // turn clean into a [list] of things to check if its the only checkable
-    const checks: string[] = evt.result.combos || [evt.result.clean]
-    let actionResult: ActionResult = {
-      handled: false
-    }
-    log('start loop')
-    // checks.forEach(async (check) => {
+    const checks: string[] = evt.pres.combos || [evt.pres.clean]
+
     for (const check of checks) {
       const actionData: ActionData = this.findAction(check)
+      if (!actionData) {
+        return {
+          handled: HandleCodes.errActionNotFound,
+          err: true
+        }
+        // break the loop
+      }
       if (actionData) {
-        actionResult = await this.runAction(actionData, evt)
-        console.log('found 1 actionResult', actionResult)
-        Logger.assertEqual(actionResult.handled, true, 'actionResult found but not handled?')
+        const actionResult = await this.runAction(actionData, evt)
+        if (actionResult.err) {
+          Logger.assertTrue(actionResult.handled, 'actionResult found but not handled?', evt.pres)
+        }
+        return actionResult
+        // break
       }
     }
-    log('end loop')
-    console.log('findAndRun result', checks, actionResult)
-    return actionResult
+    // TODO
+    // found but not replied ?
+    // should probably be handled inside 'runAction' 
+    // eg if verb / noun just missing
+    return {
+      handled: HandleCodes.errNoResponse,
+      err: true
+    }
   }
 
   // FIXME - this could be on room or thing
@@ -275,7 +290,7 @@ class GameObject {
   async runAction(actionData: ActionData, evt?: SceneEvent): Promise<ActionResult> {
     const player = evt?.game.player
     let trackResult: ActionResult = {
-      handled: false,
+      handled: HandleCodes.processing,
       doc: actionData,
       klass: this.klass,
       history: []
@@ -285,7 +300,7 @@ class GameObject {
     if (actionData.reply) {
       const msg = this.formatReply(actionData.reply)
       if (evt) await evt.pal.sendText(msg)
-      trackResult.handled = true
+      trackResult.handled = HandleCodes.okReplied
       trackResult.history?.push('reply')
     }
 
@@ -293,7 +308,7 @@ class GameObject {
     if (actionData.goto) {
       const roomName: string = actionData.goto
       await this.story.gotoRoom(roomName, evt)
-      trackResult.handled = true
+      trackResult.handled = HandleCodes.foundGoto
       trackResult.history?.push('goto')
     }
 
@@ -341,10 +356,10 @@ class GameObject {
   }
 
   checkOneCondition(line): boolean {
-    const result = RexParser.parseSetLine(line)
-    if (result.parsed?.groups) {
-      const { target, field, value } = result.parsed.groups
-      Logger.assertTrue((target && field && value), 'missing field', result.parsed?.groups)
+    const pres = RexParser.parseSetLine(line)
+    if (pres.parsed?.groups) {
+      const { target, field, value } = pres.parsed.groups
+      Logger.assertTrue((target && field && value), 'missing parser field', { target, field, value })
       if (target && field && value) {
         const found: GameObject | undefined = this.findRoom.findThing(target)
         if (!found) {
@@ -365,7 +380,7 @@ class GameObject {
 
   async applyThenBlock(block: ActionBranch, evt?: SceneEvent) {
     if (!block) {
-      Logger.warn('tried to apply setProps on null block')
+      Logger.warn('tried to apply setProps on null block. evt.pres =', evt?.pres)
       return
     }
     if (block.reply && evt) {
@@ -380,10 +395,10 @@ class GameObject {
 
   // set props on this or other items
   async applySetPropOne(line, _evt) {
-    const result: ParserResult = RexParser.parseSetLine(line)
-    if (result.parsed?.groups) {
-      const { target, field, value } = result.parsed.groups
-      Logger.assertTrue((target && field && value), 'missing field', result.parsed?.groups)
+    const pres: ParserResult = RexParser.parseSetLine(line)
+    if (pres.parsed?.groups) {
+      const { target, field, value } = pres.parsed.groups
+      Logger.assertTrue((target && field && value), 'missing field', pres.parsed?.groups)
       const found: GameObject | undefined = this.findRoom.findThing(target)
       if (!found) {
         Logger.warn('cannot find thing to update', { thing: target, line })
@@ -414,7 +429,7 @@ class GameObject {
       await evt.pal.sendText(msg)
       this.got = true
     } else {
-      await ErrorHandler.sendError(ErrorCodes.cannotTake, evt, { name: this.name })
+      await ErrorHandler.sendError(HandleCodes.ignoredCannotTake, evt, { name: this.name })
       this.got = false  // or dont change state?
     }
   }

@@ -11,8 +11,8 @@ test('cheat command', async () => {
   const { game, pal } = new TestEnv()
 
   await game.reset()
-  const result: ParserResult = RexParser.parseCommands('cheat')
-  const evt: SceneEvent = { pal, result, game }
+  const pres: ParserResult = RexParser.parseCommands('cheat')
+  const evt: SceneEvent = { pal, pres, game }
   const cheatInfo = await RouterService.handleCheat(evt)
   // Logger.logObj('info', cheatInfo, true)
   expect(cheatInfo.itemEvents).toBeDefined()

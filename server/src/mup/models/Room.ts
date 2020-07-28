@@ -12,20 +12,13 @@ import { Pal } from '../pal/Pal'
 
 import {
   ErrorHandler,
-  ErrorCodes
+  HandleCodes
 } from './ErrorHandler'
 
 import {
   SceneEvent,
   ActionResult
 } from '../MupTypes'
-
-const failedAction: ActionResult = {
-  handled: false
-}
-const passedAction: ActionResult = {
-  handled: true
-}
 
 
 class Room extends GameObject {
@@ -110,11 +103,11 @@ class Room extends GameObject {
 
   // find and examine thing
   async lookRoomThing(evt: SceneEvent) {
-    const thingName: string | undefined = evt.result.pos?.target
+    const thingName: string | undefined = evt.pres.pos?.target
     if (!thingName) return Logger.warn('no thingName to lookat', evt)
     const thing = this.findThing(thingName)
     if (!thing) {
-      ErrorHandler.sendError(ErrorCodes.thingNotFound, evt, { name: thingName })
+      ErrorHandler.sendError(HandleCodes.errthingNotFound, evt, { name: thingName })
       return
     }
     thing.describeThing(evt)
@@ -122,19 +115,19 @@ class Room extends GameObject {
 
   // find and get an object in the room
   async takeRoomThing(evt: SceneEvent): Promise<ActionResult> {
-    const target = evt.result.pos?.target
+    const target = evt.pres.pos?.target
     if (!target) {
       Logger.warn('no thingName to lookat', evt)
-      return { handled: false }
+      return { handled: HandleCodes.errThingName, err: true }
     }
     const thing = this.findThing(target) // in the room
     if (!thing) {
-      // const name: string = evt.result.input || 'item'
-      ErrorHandler.sendError(ErrorCodes.thingNotFound, evt, { name: target })
-      return { handled: true } // not found but we did reply
+      // const name: string = evt.pres.input || 'item'
+      ErrorHandler.sendError(HandleCodes.errthingNotFound, evt, { name: target })
+      return { handled: HandleCodes.errthingNotFound, err: true } // not found but we did reply
     }
     await thing.takeAction(evt)
-    return { handled: true } // even if you didn't get it
+    return { handled: HandleCodes.foundAction, err: false } // even if you didn't get it
   }
 
   async status() {
@@ -245,25 +238,30 @@ class Room extends GameObject {
     const thing = this.findThing(target)
     if (!thing) {
       Logger.warn('cannot find subject', result.parsed?.groups)
-      return { handled: false }
+      return { handled: HandleCodes.errthingNotFound, err: true }
     }
     return await thing?.findAndRunAction(evt)  // assumes evt.parsed.clean
   }
 
   async useRoomThingAlone(evt: SceneEvent): Promise<ActionResult> {
-    const pos = evt.result.pos
-    if (!pos?.target || !pos?.verb) return failedAction
+    const pos = evt.pres.pos
+    if (!pos?.target || !pos?.verb) return {
+      handled: HandleCodes.errMissingPos,
+      err: true
+    }
     evt.pal.sendText(`you try to ${ pos.verb } the ${ pos.target }`)
     return {
-      handled: true
+      handled: HandleCodes.foundUse,
     }
   }
 
   async useRoomThingOn(evt: SceneEvent): Promise<ActionResult> {
-    const pos = evt.result.pos
-    if (!pos?.target || !pos?.subject) return failedAction
+    const pos = evt.pres.pos
+    if (!pos?.target || !pos?.subject) {
+      return { handled: HandleCodes.errMissingPos, err: true }
+    }
     evt.pal.sendText(`you try to ${ pos.verb } the ${ pos.subject } on the ${ pos.target }`)
-    return passedAction
+    return { handled: HandleCodes.foundUse }
   }
 
   // async tryRoomActions(input: string, pal: Pal) {

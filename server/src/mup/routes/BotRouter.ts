@@ -11,79 +11,110 @@ import {
   ActionResult
 } from '../MupTypes'
 
+import { ErrorHandler, HandleCodes } from '../models/ErrorHandler'
+
+async function chainEvents(chain: any, evt: SceneEvent): Promise<ActionResult> {
+  for (const fn of chain) {
+    const res: ActionResult = await fn(evt)
+    if (!res.err) {
+      return res
+      // break
+    }
+  }
+  return {
+    handled: HandleCodes.unknown,
+    err: true
+  }
+}
+
+
 const BotRouter = {
 
-  async textEvent(pal: Pal) {
+  async textEvent(pal: Pal): Promise<ActionResult> {
     const input: string = pal.channel.message.text
-    await BotRouter.anyEvent(pal, input, 'text')
+    return await BotRouter.anyEvent(pal, input, 'text')
   },
 
-  async actionEvent(pal: Pal) {
+  async actionEvent(pal: Pal): Promise<ActionResult> {
     const input: string = pal.channel.action.value
-    await BotRouter.anyEvent(pal, input, 'action')
+    return await BotRouter.anyEvent(pal, input, 'action')
   },
 
-  async anyEvent(pal: Pal, input: string, eventType: string) {
+  async anyEvent(pal: Pal, input: string, eventType: string): Promise<ActionResult> {
     Logger.logObj('anyEvent.input:', input)
+    if (/^(-'\.) /.test(input)) {
+      // ignore prefixed
+      Logger.log('ignore prefixed: ', input)
+      return { handled: HandleCodes.skippedPrefix }
+    }
     // const { message: MessageEvent, say: SayFn } = slackEvent
 
     const storyName = 'asylum'
     const game: Game = await GameManager.findGame({ pal, storyName })
-    const result: ParserResult = RexParser.parseCommands(input)
+    const pres: ParserResult = RexParser.parseCommands(input)
 
-    const evt: SceneEvent = { pal, result, game }
+    const evt: SceneEvent = { pal, pres, game }
 
     // chain of methods
-    const handled =
-      // basic commands look|cheat|go
-      await this.tryCommands(evt) ||
-      // room actions
-      await this.tryRoomActions(evt) ||
-      // object matched actions `open window` => window.open
-      await this.tryThingActions(evt)
+    const actionResult: ActionResult =
+      await chainEvents([
+        this.tryCommands,
+        this.tryRoomActions,
+        this.tryThingActions
+      ], evt)
 
-    if (!handled) {
-      const msg = `cannot find route for [${ input }]`
-      await pal.debugMessage(msg)
-      Logger.warn('no match', msg)
+    if (actionResult.err) {
+      const err = {
+        msg: `cannot find route for [${ input }]`,
+        code: actionResult.handled
+      }
+      await pal.debugMessage(err)
+      Logger.warn('no match', err)
+      ErrorHandler.sendError(actionResult.handled, evt, { input })
     } else {
       await pal.debugMessage({
-        ruleCname: result.rule?.cname,
-        ruleType: result.rule?.type,
+        ruleCname: pres.rule?.cname,
+        ruleType: pres.rule?.type,
         input,
-        parsed: result.parsed,
-        groups: result.parsed?.groups,
-        pos: result.pos,
+        parsed: pres.parsed,
+        groups: pres.parsed?.groups,
+        pos: pres.pos,
         eventType,
-        handled,
+        handled: actionResult.handled,
         from: 'router',
       })
     }
+    return actionResult
   },
 
-  async tryCommands(evt: SceneEvent): Promise<boolean> {
-    if (evt.result.rule?.type !== 'command') return false
-    // await evt.pal.debugMessage(`rule: ${ evt.result.rule?.cname }`)
+  async tryCommands(evt: SceneEvent): Promise<ActionResult> {
+    if (evt.pres.rule?.type !== 'command') return { handled: HandleCodes.unknown, err: true }
+    // await evt.pal.debugMessage(`rule: ${ evt.pres.rule?.cname }`)
     // invoke method in RouterService
-    await evt.result.rule?.event(evt)
-    return true
+    await evt.pres.rule?.event(evt)
+    return {
+      err: false,
+      handled: HandleCodes.foundCommand
+    }
   },
 
-  async tryRoomActions(evt: SceneEvent): Promise<boolean> {
+  async tryRoomActions(evt: SceneEvent): Promise<ActionResult> {
     const res: ActionResult = await evt.game.story.room.findAndRunAction(evt)
-    return res.handled
+    return res
   },
 
   async tryThingActions(evt: SceneEvent): Promise<ActionResult> {
     const nounList: string[] = evt.game.story.room.getAllThingNames()
-    const result: ParserResult = RexParser.parseNounVerbs(evt.result.clean, nounList)
+    const pres: ParserResult = RexParser.parseNounVerbs(evt.pres.clean, nounList)
     // const { subject, verb } = result.parsed?.groups
-    if (result.pos?.verb && result.pos?.target) {
-      return await evt.game.story.room.tryThingActions(result, evt)
+    if (pres.pos?.verb && pres.pos?.target) {
+      return await evt.game.story.room.tryThingActions(pres, evt)
     }
-    return {
-      handled: false
+    const res: ActionResult = {
+      handled: HandleCodes.errMissingPos,
+      err: true
     }
+    return res
   }
 
 }

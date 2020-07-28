@@ -1,6 +1,8 @@
 import Game from 'mup/models/Game'
 import { Pal } from '../mup/pal/Pal'
 
+import { HandleCodes } from './models/ErrorHandler'
+
 interface LoadOptions {
   storyName?: string
   pal: Pal
@@ -43,15 +45,25 @@ interface ActionData {
 }
 
 interface ActionResult {
-  handled: boolean
+  handled: HandleCodes
+  err?: boolean
   doc?: ActionData
   history?: string[]
   klass?: string
 }
 
+export interface ParserResult {
+  parsed?: RegExpResult | null,
+  pos?: PosResult
+  rule?: OneRule    // matched rule
+  input?: string
+  clean: string
+  combos?: string[]   // combinations to try baesd on clean/rebuilt inputs
+}
+
 interface SceneEvent {
   pal: Pal,
-  result: ParserResult  // parsed, rule
+  pres: ParserResult  // parsed, rule
   game: Game
 }
 
@@ -75,14 +87,6 @@ export interface PosResult {
   adj?: string
 }
 
-export interface ParserResult {
-  parsed?: RegExpResult | null,
-  pos?: PosResult
-  rule?: OneRule    // matched rule
-  input?: string
-  clean: string
-  combos?: string[]   // combinations to try baesd on clean/rebuilt inputs
-}
 
 // minimum verb and target `open window`
 // open(verb) window(target) with hammer(subject)

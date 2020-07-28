@@ -31,7 +31,7 @@ class Actor extends GameObject {
   // }
 
   // async askAboutThing(evt: SceneEvent) {
-  //   const actionName = `${ evt.result.parsed?.verb } ${ parsed.groups.target }`  // about chest
+  //   const actionName = `${ evt.pres.parsed?.verb } ${ parsed.groups.target }`  // about chest
   //   const reply = await this.tryAction({ actionName }, context)
   //   if (!reply) {
   //     const msg = `I don't know about ${ parsed.groups.target }`
