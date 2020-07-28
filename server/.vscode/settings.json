@@ -1,7 +1,9 @@
 {
   "yaml.schemas": {
-    "cdn/schemas/storyline.json": [
-      "cdn/story-test/story.yaml"
+    "cdn/schemas/story.schema.json": [
+      "cdn/story-test/story.yaml",
+      "cdn/story-asylum.wiki/story.yaml",
+      "cdn/story-office.wiki/story.yaml"
     ]
   }
 }

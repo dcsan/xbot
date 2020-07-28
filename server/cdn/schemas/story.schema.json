@@ -33,11 +33,14 @@
             "type": "string"
           },
           "buttons": {
-            "type": "string"
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           },
-          "required": [
-            "name"
-          ],
+          "required": {
+            "name": true
+          },
           "actions": {
             "type": "array",
             "items": {
