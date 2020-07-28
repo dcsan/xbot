@@ -1,8 +1,15 @@
 {
+  "$id": "https://cbg.rik.ai/story.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "storyline",
   "properties": {
     "story": {
       "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "cname"
+      ],
       "properties": {
         "name": {
           "type": "string",
@@ -11,19 +18,41 @@
         "cname": {
           "type": "string",
           "description": "canonical computer readable name"
+        },
+        "intro": {
+          "type": "string",
+          "description": "canonical computer readable name"
+        },
+        "startRoom": {
+          "type": "string",
+          "description": "canonical computer readable name"
+        },
+        "tasks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "hint": {
+                "type": "string"
+              }
+            }
+          }
         }
-      },
-      "required": [
-        "name",
-        "cname"
-      ]
+      }
     },
     "rooms": {
       "type": "array",
       "items": {
         "type": "object",
+        "additionalProperties": false,
         "properties": {
           "name": {
+            "type": "string"
+          },
+          "long": {
             "type": "string"
           },
           "imageUrl": {
@@ -45,8 +74,21 @@
             "type": "array",
             "items": {
               "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "match"
+              ],
               "properties": {
                 "match": {
+                  "type": "string"
+                },
+                "setProps": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "goto": {
                   "type": "string"
                 },
                 "reply": {
@@ -54,6 +96,7 @@
                 },
                 "if": {
                   "type": "object",
+                  "additionalProperties": false,
                   "properties": {
                     "all": {
                       "type": "array",
@@ -62,32 +105,193 @@
                       }
                     }
                   }
-                }
-              },
-              "then": {
-                "type": "object",
-                "properties": {
-                  "reply": {
-                    "type": "string"
+                },
+                "then": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "reply": {
+                      "type": "string"
+                    },
+                    "setProps": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "goto": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "else": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "reply": {
+                      "type": "string"
+                    },
+                    "setProps": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "goto": {
+                      "type": "string"
+                    }
                   }
                 }
               }
             }
-          }
-        },
-        "items": {
-          "type": "array",
+          },
           "items": {
-            "type": "object",
-            "properties": {
-              "name": {
-                "type": "string"
-              },
-              "canTake": {
-                "type": "boolean"
-              },
-              "unique": {
-                "type": "boolean"
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "imageUrl": {
+                  "type": "string"
+                },
+                "called": {
+                  "type": "string"
+                },
+                "short": {
+                  "type": "string"
+                },
+                "long": {
+                  "type": "string"
+                },
+                "canTake": {
+                  "type": "boolean"
+                },
+                "unique": {
+                  "type": "boolean"
+                },
+                "state": {
+                  "type": "string"
+                },
+                "states": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "name"
+                    ],
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "imageUrl": {
+                        "type": "string"
+                      },
+                      "short": {
+                        "type": "string"
+                      },
+                      "long": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "xactions": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "match"
+                    ],
+                    "properties": {
+                      "match": {
+                        "type": "string"
+                      },
+                      "setProps": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "goto": {
+                        "type": "string"
+                      },
+                      "reply": {
+                        "type": "string"
+                      },
+                      "if": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "all": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      },
+                      "always": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "reply": {
+                            "type": "string"
+                          },
+                          "setProps": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "goto": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "then": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "reply": {
+                            "type": "string"
+                          },
+                          "setProps": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "goto": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "else": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "reply": {
+                            "type": "string"
+                          },
+                          "setProps": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "goto": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
               }
             }
           }

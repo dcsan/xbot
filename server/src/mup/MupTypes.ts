@@ -28,7 +28,7 @@ interface ActionData {
   match: string
   reply?: string
   goto?: string
-  setProps?: string[]
+  // setProps?: string[]  // at the top level as well?
 
   always?: ActionBranch
   if: ActionIf
