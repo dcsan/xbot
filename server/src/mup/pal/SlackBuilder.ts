@@ -1,9 +1,13 @@
 import Logger from "../../lib/Logger"
 import Util from '../../lib/Util'
 import Item from '../models/Item'
+import { GameObject } from '../models/GameObject'
 
 import { ActionBranch } from '../MupTypes'
 import AppConfig from '../../lib/AppConfig'
+
+
+import { StateBlock } from '../MupTypes'
 
 const SlackBuilder = {
 
@@ -13,8 +17,9 @@ const SlackBuilder = {
     SlackBuilder.logging = flag
   },
 
-  buttonItem(blob) {
-    let [text, value] = blob.split('|')
+  // a single button: text|value
+  buttonItem(buttonLine: string) {
+    let [text, value] = buttonLine.split('|')
     text = text.trim()
     value = (value || text).trim()
     return {
@@ -37,16 +42,13 @@ const SlackBuilder = {
     )
   },
 
-  buttonsBlock(buttons) {
+  buttonsBlock(buttons: string[]) {
     const buttonElements = buttons.map(b => SlackBuilder.buttonItem(b))
     const block = SlackBuilder.wrapActionsInBlock(buttonElements)
     return block
   },
 
-  textBlock(text) {
-    if (!text) {
-      Logger.fatal('textBlock with no text!:', text)
-    }
+  textBlock(text: string) {
     const block = {
       "type": "section",
       "text": {
@@ -59,43 +61,43 @@ const SlackBuilder = {
     return block
   },
 
-  imageSection(opts) {
+  // we pass the whole doc as it needs text for the alt/caption
+  imageSection(doc: StateBlock) {
     return {
       type: "image",
       title: "some image",
-      image_url: Util.imageUrl(opts.imageUrl),
-      alt_text: opts.examine || opts.description || 'image',
+      image_url: Util.imageUrl(doc.imageUrl),
+      alt_text: doc.short || doc.name || 'image',
     }
   },
 
-  imageBlock(doc, item) {
-    item = item || { name: 'item' } // default
+  imageBlock(doc: StateBlock) {
     return {
       "type": "image",
       "title": {
         "type": "plain_text",   // no mrkdwn?
-        "text": item.name,
+        "text": doc.name || doc.short || "image", // name of the STATE not the room?
         "emoji": true
       },
       "image_url": Util.imageUrl(doc.imageUrl),
-      "alt_text": "item",    // should be item.name
+      "alt_text": doc.name || doc.short || "image"
     }
   },
 
-  imageBox(opts) {
-    return {
-      "type": "section",
-      "text": {
-        "type": "mrkdwn",
-        "text": opts.text || "item"
-      },
-      "accessory": {
-        "type": "image",
-        "image_url": Util.imageUrl(opts.imageUrl),
-        "alt_text": opts.name || "item"
-      },
-    }
-  },
+  // imageBox(opts) {
+  //   return {
+  //     "type": "section",
+  //     "text": {
+  //       "type": "mrkdwn",
+  //       "text": opts.text || "item"
+  //     },
+  //     "accessory": {
+  //       "type": "image",
+  //       "image_url": Util.imageUrl(opts.imageUrl),
+  //       "alt_text": opts.name || "item"
+  //     },
+  //   }
+  // },
 
   wrapBlocks(blocks) {
     const blob = {
@@ -136,17 +138,18 @@ const SlackBuilder = {
   },
 
 
-  async itemCard(infoBlock: ActionBranch, item: Item) {
+  async itemCard(stateInfo: StateBlock, _thing: GameObject) {
     let blocks: any[] = []
-    if (!infoBlock) {
-      blocks.push(SlackBuilder.textBlock(item.short))
-    } else {
-      if (infoBlock.imageUrl) {
-        blocks.push(SlackBuilder.imageBlock(infoBlock, item))
-      }
-      // FIXME decide consistent naming or fallback
-      const text = infoBlock.reply || '...item'
+    if (stateInfo.imageUrl) {
+      blocks.push(SlackBuilder.imageBlock(stateInfo))
+    }
+    const text = stateInfo.long || stateInfo.short
+    if (text) {
       blocks.push(SlackBuilder.textBlock(text))
+    }
+    if (stateInfo.buttons) {
+      const buttonsBlock = SlackBuilder.buttonsBlock(stateInfo.buttons)
+      blocks.push(buttonsBlock)
     }
     return blocks
   }

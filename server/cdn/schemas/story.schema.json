@@ -2,16 +2,72 @@
   "$id": "https://cbg.rik.ai/story.schema.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "storyline",
+  "definitions": {
+    "states": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "imageUrl": {
+            "type": "string"
+          },
+          "short": {
+            "type": "string"
+          },
+          "long": {
+            "type": "string"
+          },
+          "buttons": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "branch": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "reply": {
+          "type": "string"
+        },
+        "goto": {
+          "type": "string"
+        },
+        "setProps": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "take": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
   "properties": {
     "story": {
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "name",
-        "cname"
+        "cname",
+        "title"
       ],
       "properties": {
-        "name": {
+        "title": {
           "type": "string",
           "description": "name of the story"
         },
@@ -40,6 +96,14 @@
               }
             }
           }
+        },
+        "help": {
+          "type": "object",
+          "properties": {
+            "basic": {
+              "type": "string"
+            }
+          }
         }
       }
     },
@@ -48,27 +112,19 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
+        "required": [
+          "name",
+          "states"
+        ],
         "properties": {
           "name": {
             "type": "string"
           },
-          "long": {
+          "state": {
             "type": "string"
           },
-          "imageUrl": {
-            "type": "string"
-          },
-          "short": {
-            "type": "string"
-          },
-          "buttons": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "required": {
-            "name": true
+          "states": {
+            "$ref": "#/definitions/states"
           },
           "actions": {
             "type": "array",
@@ -82,17 +138,8 @@
                 "match": {
                   "type": "string"
                 },
-                "setProps": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                },
-                "goto": {
-                  "type": "string"
-                },
-                "reply": {
-                  "type": "string"
+                "always": {
+                  "$ref": "#/definitions/branch"
                 },
                 "if": {
                   "type": "object",
@@ -107,40 +154,10 @@
                   }
                 },
                 "then": {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "properties": {
-                    "reply": {
-                      "type": "string"
-                    },
-                    "setProps": {
-                      "type": "array",
-                      "items": {
-                        "type": "string"
-                      }
-                    },
-                    "goto": {
-                      "type": "string"
-                    }
-                  }
+                  "$ref": "#/definitions/branch"
                 },
                 "else": {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "properties": {
-                    "reply": {
-                      "type": "string"
-                    },
-                    "setProps": {
-                      "type": "array",
-                      "items": {
-                        "type": "string"
-                      }
-                    },
-                    "goto": {
-                      "type": "string"
-                    }
-                  }
+                  "$ref": "#/definitions/branch"
                 }
               }
             }
@@ -150,147 +167,28 @@
             "items": {
               "type": "object",
               "additionalProperties": false,
+              "required": [
+                "name",
+                "states"
+              ],
               "properties": {
                 "name": {
-                  "type": "string"
-                },
-                "imageUrl": {
                   "type": "string"
                 },
                 "called": {
                   "type": "string"
                 },
-                "short": {
+                "state": {
                   "type": "string"
                 },
-                "long": {
-                  "type": "string"
+                "states": {
+                  "$ref": "#/definitions/states"
                 },
                 "canTake": {
                   "type": "boolean"
                 },
                 "unique": {
                   "type": "boolean"
-                },
-                "state": {
-                  "type": "string"
-                },
-                "states": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "additionalProperties": false,
-                    "required": [
-                      "name"
-                    ],
-                    "properties": {
-                      "name": {
-                        "type": "string"
-                      },
-                      "imageUrl": {
-                        "type": "string"
-                      },
-                      "short": {
-                        "type": "string"
-                      },
-                      "long": {
-                        "type": "string"
-                      }
-                    }
-                  }
-                },
-                "xactions": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "additionalProperties": false,
-                    "required": [
-                      "match"
-                    ],
-                    "properties": {
-                      "match": {
-                        "type": "string"
-                      },
-                      "setProps": {
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        }
-                      },
-                      "goto": {
-                        "type": "string"
-                      },
-                      "reply": {
-                        "type": "string"
-                      },
-                      "if": {
-                        "type": "object",
-                        "additionalProperties": false,
-                        "properties": {
-                          "all": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
-                          }
-                        }
-                      },
-                      "always": {
-                        "type": "object",
-                        "additionalProperties": false,
-                        "properties": {
-                          "reply": {
-                            "type": "string"
-                          },
-                          "setProps": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
-                          },
-                          "goto": {
-                            "type": "string"
-                          }
-                        }
-                      },
-                      "then": {
-                        "type": "object",
-                        "additionalProperties": false,
-                        "properties": {
-                          "reply": {
-                            "type": "string"
-                          },
-                          "setProps": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
-                          },
-                          "goto": {
-                            "type": "string"
-                          }
-                        }
-                      },
-                      "else": {
-                        "type": "object",
-                        "additionalProperties": false,
-                        "properties": {
-                          "reply": {
-                            "type": "string"
-                          },
-                          "setProps": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
-                          },
-                          "goto": {
-                            "type": "string"
-                          }
-                        }
-                      }
-                    }
-                  }
                 }
               }
             }

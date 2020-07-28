@@ -16,6 +16,7 @@ import {
   ActionData,
   ActionResult,
   ActionBranch,
+  StateBlock
   // ActionIf
 } from '../MupTypes'
 
@@ -173,33 +174,46 @@ class GameObject {
     return things
   }
 
+  getStateBlock() {
+    let block: StateBlock = this.doc.states[this.state]
+    if (!block) {
+      block = this.doc.states[0]
+      if (!block) {
+        // should never happen since state is required
+        Logger.assertDefined(block, 'cannot find block for state', { state: this.state, states: this.doc.states })
+      }
+    }
+    return block
+  }
+
   // may work for rooms and things
   async describeThing(evt: SceneEvent) {
     Logger.log('describeThing', this.name)
-    let blocks: any[] = []
-    if (this.doc.imageUrl) {
-      blocks.push(SlackBuilder.imageBlock(this.doc, this))
+    const stateInfo: StateBlock = this.getStateBlock()
+    const palBlocks: any[] = []
+
+    if (stateInfo.imageUrl) {
+      palBlocks.push(SlackBuilder.imageBlock(stateInfo))
     }
-    blocks.push(
-      SlackBuilder.textBlock(this.description)
-    )
-    const firstActor = this.firstActor()
-    if (firstActor) {
-      const actorIntro = `${ firstActor.formalName } is here.`
-      blocks.push(SlackBuilder.textBlock(actorIntro))
+    const text = stateInfo.long || stateInfo.short
+    if (text) {
+      palBlocks.push(
+        SlackBuilder.textBlock(text)
+      )
     }
     const itemsInfo = this.itemNames()
+    Logger.log('itemsInfo:', itemsInfo)
     if (itemsInfo) {
-      blocks.push(SlackBuilder.textBlock(`You see: ` + itemsInfo))
+      palBlocks.push(SlackBuilder.textBlock(`You see: ` + itemsInfo))
     }
-    if (this.doc.buttons) {
-      Logger.logObj('enter.buttons', this.doc.buttons)
-      const buttonsBlock = SlackBuilder.buttonsBlock(this.doc.buttons)
-      blocks.push(buttonsBlock)
+
+    if (stateInfo.buttons) {
+      const buttonsBlock = SlackBuilder.buttonsBlock(stateInfo.buttons)
+      palBlocks.push(buttonsBlock)
     }
-    // fixme - something is breaking on restart here
-    await evt.pal.sendBlocks(blocks)
-    return blocks
+
+    await evt.pal.sendBlocks(palBlocks)
+    return palBlocks
   }
 
   /**
@@ -251,7 +265,7 @@ class GameObject {
     }
     // TODO
     // found but not replied ?
-    // should probably be handled inside 'runAction' 
+    // should probably be handled inside 'runAction'
     // eg if verb / noun just missing
     return {
       handled: HandleCodes.errNoResponse,
@@ -287,7 +301,7 @@ class GameObject {
   // FIXME - this applies to things and rooms
   // which are a different level of hierarchy
   // making polymorphism harder
-  async runAction(actionData: ActionData, evt?: SceneEvent): Promise<ActionResult> {
+  async runAction(actionData: ActionData, evt: SceneEvent): Promise<ActionResult> {
     const player = evt?.game.player
     let trackResult: ActionResult = {
       handled: HandleCodes.processing,
@@ -312,22 +326,26 @@ class GameObject {
       trackResult.history?.push('goto')
     }
 
+    if (actionData.always) {
+      await this.runBranch(actionData.always, evt)
+    }
+
     if (actionData.if) {
-      await this.runConditional(actionData, evt)
+      await this.runConditionalBranch(actionData, evt)
     } else {
-      // just apply it
-      await this.applyThenBlock(actionData.then, evt)
+      // can have an always and a 'then' with no 'if' ... maybe while in dev
+      await this.runBranch(actionData.then, evt)
     }
 
     return trackResult
   }
 
-  async runConditional(action: ActionData, evt?: SceneEvent) {
-    const resultBlock: ActionBranch = this.checkConditionList(action)
-    await this.applyThenBlock(resultBlock, evt)
+  async runConditionalBranch(action: ActionData, evt: SceneEvent) {
+    const condBranch: ActionBranch = this.getConditionalBranch(action)
+    await this.runBranch(condBranch, evt)
   }
 
-  checkConditionList(action: ActionData): ActionBranch {
+  getConditionalBranch(action: ActionData): ActionBranch {
     const allBlock: string[] = action.if.all
     let returnBlock: ActionBranch
     let passed = true
@@ -342,8 +360,8 @@ class GameObject {
     }
     if (!returnBlock) {
       Logger.warn('cannot find returnBlock', { fail })
+      // TODO - should handle this better? no 'else' or 'then'
     }
-    returnBlock.passed = passed
     return returnBlock
   }
 
@@ -378,33 +396,47 @@ class GameObject {
     return false
   }
 
-  async applyThenBlock(block: ActionBranch, evt?: SceneEvent) {
-    if (!block) {
-      Logger.warn('tried to apply setProps on null block. evt.pres =', evt?.pres)
+  async runBranch(branch: ActionBranch, evt: SceneEvent) {
+    if (!branch) {
+      Logger.error('tried to run a null branch', evt?.pres)
       return
     }
-    if (block.reply && evt) {
-      evt.pal.sendText(block.reply)
+    if (branch.reply && evt) {
+      evt.pal.sendText(branch.reply)
     }
-    if (!block.setProps) return
-
-    for (const line of block.setProps) {
-      await this.applySetPropOne(line, evt)
-    }
+    await this.applySetProps(branch, evt)
+    await this.doTakeActions(branch, evt)
   }
 
   // set props on this or other items
-  async applySetPropOne(line, _evt) {
-    const pres: ParserResult = RexParser.parseSetLine(line)
-    if (pres.parsed?.groups) {
-      const { target, field, value } = pres.parsed.groups
-      Logger.assertTrue((target && field && value), 'missing field', pres.parsed?.groups)
-      const found: GameObject | undefined = this.findRoom.findThing(target)
-      if (!found) {
-        Logger.warn('cannot find thing to update', { thing: target, line })
-        return
+  async applySetProps(branch: ActionBranch, _evt) {
+    if (!branch.setProps) return
+
+    for (const line of branch.setProps) {
+      const pres: ParserResult = RexParser.parseSetLine(line)
+      if (pres.parsed?.groups) {
+        const { target, field, value } = pres.parsed.groups
+        Logger.assertTrue((target && field && value), 'missing field', pres.parsed?.groups)
+        const found: GameObject | undefined = this.findRoom.findThing(target)
+        if (!found) {
+          Logger.warn('cannot find thing to update', { thing: target, line })
+          return
+        }
+        found.setProp(field, value)
       }
-      found.setProp(field, value)
+    }
+  }
+
+  doTakeActions(branch: ActionBranch, evt: SceneEvent) {
+    const takeItemList = branch.take
+    if (!takeItemList) return
+
+    for (const itemName of takeItemList) {
+      const item = this.findRoom.findThing(itemName)
+      if (item) {
+        evt.game.player.addItem(this)
+        this.findRoom.removeItemByCname(this.cname)
+      }
     }
   }
 

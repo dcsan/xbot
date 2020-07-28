@@ -56,9 +56,9 @@ const Logger = {
     return true
   },
 
-  assertDefined(elem, msg): boolean {
+  assertDefined(elem, msg, obj?): boolean {
     if (elem === undefined) {
-      Logger.warn('undefined', msg)
+      Logger.warn('undefined', msg, obj)
     }
     return true
   },
@@ -93,7 +93,7 @@ const Logger = {
   },
 
   // force to ALWAYS run even in test mode
-  logObj(msg: string, obj: any, force: boolean = false) {
+  logObj(msg: string, obj?: any, force: boolean = false) {
     // dont noisy log for tests
     if (process.env.NODE_ENV == 'test' && !force) return
     obj = Util.removeEmptyKeys(obj)

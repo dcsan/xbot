@@ -78,6 +78,10 @@ class Room extends GameObject {
     await this.lookRoom(evt)
   }
 
+  async lookRoom(evt: SceneEvent) {
+    this.describeThing(evt) // the room
+  }
+
   // async things(evt: SceneEvent) {
   //   const msg = this.items.map(thing => thing.name)
   //   evt.pal.sendText(msg.join(','))
@@ -95,10 +99,6 @@ class Room extends GameObject {
       return item.cname
     })
     return names
-  }
-
-  async lookRoom(evt: SceneEvent) {
-    this.describeThing(evt) // the room
   }
 
   // find and examine thing
@@ -153,7 +153,7 @@ class Room extends GameObject {
   }
 
   // looks for actors
-  findThing(itemName): GameObject | undefined {
+  findThing(itemName: string): GameObject | undefined {
     const cname = Util.safeName(itemName)
     const found = this.allThings.filter((thing: GameObject) => {
       if (thing.cname === cname) return true
@@ -234,7 +234,10 @@ class Room extends GameObject {
    */
   async tryThingActions(result: ParserResult, evt: SceneEvent): Promise<ActionResult> {
     const target = result.pos?.target
-    Logger.assertDefined(target, 'no target for tryThingActions')
+    if (!target) {
+      Logger.assertDefined(target, 'no target for tryThingActions')
+      return { handled: HandleCodes.errThingName, err: true }
+    }
     const thing = this.findThing(target)
     if (!thing) {
       Logger.warn('cannot find subject', result.parsed?.groups)

@@ -8,6 +8,14 @@ interface LoadOptions {
   pal: Pal
 }
 
+export interface StateBlock {
+  name: string
+  imageUrl: string
+  short: string
+  long: string
+  buttons: string[]
+}
+
 // the fail/pass block branches of a full ActionData
 interface ActionBranch {
   reply?: string
@@ -16,7 +24,8 @@ interface ActionBranch {
   setHint?: string
   setProps?: string[]
   goto?: string
-  passed?: boolean   // runtime result
+  take?: string[]   // item names
+  drop?: string[]   // names
 }
 
 interface ActionIf {
