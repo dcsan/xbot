@@ -130,7 +130,7 @@ class Room extends GameObject {
     return { handled: HandleCodes.foundAction, err: false } // even if you didn't get it
   }
 
-  async status() {
+  status() {
     let reply = {
       name: this.name,
       items: [],
@@ -170,7 +170,7 @@ class Room extends GameObject {
       // TODO - send warning message
       // but needs a Pal to pipe to
       const item = found[0] // dont modify items
-      Logger.logObj('found Item:', { cname: item.cname })
+      Logger.log('found Item:', item.cname)
       return item
     } else if (found.length === 1) {
       return found.pop()
@@ -212,7 +212,7 @@ class Room extends GameObject {
     const cnames = this.itemCnames()
 
     const pair = cnames.find(cname => {
-      const rst = `${ cname }\b|$`
+      const rst = `${cname}\b|$`
       const rex = new RegExp(rst)
       const found = rex.test(input)
       if (found) {
@@ -252,7 +252,7 @@ class Room extends GameObject {
       handled: HandleCodes.errMissingPos,
       err: true
     }
-    evt.pal.sendText(`you try to ${ pos.verb } the ${ pos.target }`)
+    evt.pal.sendText(`you try to ${pos.verb} the ${pos.target}`)
     return {
       handled: HandleCodes.foundUse,
     }
@@ -263,7 +263,7 @@ class Room extends GameObject {
     if (!pos?.target || !pos?.subject) {
       return { handled: HandleCodes.errMissingPos, err: true }
     }
-    evt.pal.sendText(`you try to ${ pos.verb } the ${ pos.subject } on the ${ pos.target }`)
+    evt.pal.sendText(`you try to ${pos.verb} the ${pos.subject} on the ${pos.target}`)
     return { handled: HandleCodes.foundUse }
   }
 

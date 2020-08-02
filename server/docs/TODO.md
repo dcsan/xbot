@@ -2,9 +2,15 @@
 
 ## TOP:
 
-- on 'get' player carry items / inventory
-- footer message block
+- merge files for actions?
 
+- on 'get' player carry items / inventory
+- hidden property on objects
+- synonym replacements
+
+- implement 'drop' event
+
+X footer message block
 - get XXX messages in parser / game level get passed to right object
 
 - channel / GameManager -> based on slackEvent.payload.channel

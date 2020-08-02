@@ -9,7 +9,7 @@ import AppConfig from '../../lib/AppConfig'
 const debugOutput = AppConfig.logLevel
 // const debugOutput = false
 
-const logMode = true
+const logMode = false
 
 interface IMessage {
   text: string
@@ -90,7 +90,7 @@ class ChatLogger {
     opts.count = this.lines.length
     const line = new ChatLine(opts)
     this.lines.push(line)
-    console.log('logged:', line.output())
+    // console.log('logged:', line.output())
   }
 }
 
@@ -236,6 +236,14 @@ class Pal {
     }
     const msg = SlackBuilder.wrapBlocks(blocks)
     this.wrapSay(msg, 'blocks')
+  }
+
+  getLogs() {
+    return this.logger.lines
+  }
+
+  getLogLineText(num) {
+    return this.logger.lines[num].opts.text
   }
 
   async showLog() {

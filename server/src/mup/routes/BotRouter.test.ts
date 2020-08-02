@@ -49,15 +49,16 @@ it('should have fallback if thing cannot be found', async () => {
   expect(evt.pres.rule?.event).toBe(RouterService.takeRoomThing)
   const done = await BotRouter.tryCommands(evt)
   // expect(done).toBe(true)
-  expect(evt.pal.allText).toMatch(/You can't see/i)
+  Logger.logObj('txt', evt.pal.allText, true)
+  expect(evt.pal.getLogLineText(0)).toMatch(/You can't see/i)
 })
 
 it('should allow to examine something', async () => {
   const env = new TestEnv()
-  env.pal.input('x soap')
+  const evt = env.makeSceneEvent('x soap')
   await BotRouter.textEvent(env.pal)
   // console.log('store', JSON.stringify(env.pal.channel.store))
-  expect(env.pal.blob).toMatch(/time for a good scrub/)
+  expect(evt.pal.getLogLineText(0)).toMatch(/time for a good scrub/)
   // expect(env.pal.allText).toMatch(/time for a good scrubbing/)
 })
 

@@ -23,15 +23,15 @@ const Util = {
   // also allows `text=xxx` links
   imageUrl(relPath) {
     if (relPath.startsWith('http')) return relPath
-    if (relPath.startsWith('text=')) return `https://via.placeholder.com/500x200/444488/CCC.png?${ relPath }`
+    if (relPath.startsWith('text=')) return `https://via.placeholder.com/500x200/444488/CCC.png?${relPath}`
 
-    // const imgUrl = process.env.STATIC_SERVER + '/cdn/assets/stories/' + urlInfo + Util.cacheBust()
-    Logger.log('relPath', relPath)
-    return relPath
+    const absPath = process.env.STATIC_SERVER + '/cdn/' + relPath + Util.cacheBust()
+    Logger.log('relPath', relPath, absPath)
+    return absPath
   },
 
   loadStory(storyName) {
-    const storyPath = `../../cdn/story-${ storyName }.wiki/story.yaml`
+    const storyPath = `../../cdn/story-${storyName}.wiki/story.yaml`
     const fullPath = path.join(__dirname, storyPath)
     try {
       const doc = yaml.safeLoad(fs.readFileSync(fullPath, 'utf8'))

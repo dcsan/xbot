@@ -5,6 +5,47 @@ import Player from '../models/Player'
 
 import { OneRule } from '../MupTypes'
 
+interface ReplaceItem {
+  rex: RegExp
+  base: string
+}
+
+const ReplaceItems = [
+  {
+    base: 'take',
+    rex: /\b(t|take|get|wear|grab)\b/
+  },
+  {
+    base: 'goto',
+    rex: /\b(gt|g)\b/
+  },
+  {
+    base: 'examine',
+    rex: /\b(x|look at|examine|look at the)\b/
+  },
+  {
+    base: 'open',
+    rex: /\b(o|open)\b/
+  },
+  {
+    base: 'robe',
+    rex: /\b(robe|clothes|gown)\b/
+  },
+  {
+    base: 'shoes',
+    rex: /\b(shoes|sandals)\b/
+  },
+  {
+    base: 'wardrobe',
+    rex: /\b(closet|cupboard|wardrobe|wr)\b/
+  },
+  // {
+  //   base: 'use',
+  //   rex: /\b(open|use)\b/
+  // }
+
+]
+
 const StaticRules: OneRule[] = [
   {
     cname: 'cheat',
@@ -127,4 +168,4 @@ const StaticRules: OneRule[] = [
 
 ]
 
-export { StaticRules, OneRule }
+export { StaticRules, OneRule, ReplaceItems, ReplaceItem }

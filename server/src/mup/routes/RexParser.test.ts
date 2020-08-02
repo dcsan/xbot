@@ -10,7 +10,7 @@ const verbList = ['open', 'rub', 'wipe', 'wash']
 it('parse get command', () => {
   const pres: ParserResult = RexParser.parseCommands('get the floofy')
   expect(pres.pos?.target).toBe('floofy')
-  expect(pres.pos?.verb).toBe('get')
+  expect(pres.pos?.verb).toBe('take')
 })
 
 // noun phrase command
@@ -36,6 +36,15 @@ it('should parse actionBlock setlines', async () => {
   expect(pres.parsed?.groups?.value).toBe('no')
 })
 
+it('should reduce vocab', async () => {
+  const clean = RexParser.reduceVocab('t gown')
+  expect(clean).toBe('take robe')
+})
+
+it('should not mess up embedded words', async () => {
+  const clean = RexParser.reduceVocab('take wardrobe')
+  expect(clean).toBe('take closet')
+})
 
 
 // it('should parse verb target into parsed.pos', () => {

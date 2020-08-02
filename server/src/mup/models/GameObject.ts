@@ -12,6 +12,8 @@ const log = console.log
 import { Pal } from '../pal/Pal'
 import { SceneEvent } from '../MupTypes'
 
+import BotRouter from '../routes/BotRouter'
+
 import {
   ActionData,
   ActionResult,
@@ -37,7 +39,6 @@ class GameObject {
   doc: any
   story: Story
   room?: Room
-  got: boolean  // carrying or note
 
   // allow recursing an item can have items
   items: Item[]
@@ -55,17 +56,12 @@ class GameObject {
     // this.state = 'default'
     this.klass = klass
     this.story = story
-    this.got = false
-    this.props = {}
-    // initialize some common props
-
     this.reset()
   }
 
   reset() {
     this.props = {}
-    // this.setProp('has', 'no')
-    // this.setProp('wearing', 'no')
+    this.setProp('has', false)
     this.items?.map(item => item.reset())
     this.actors?.map(actor => actor.reset())
     const state =
@@ -112,6 +108,13 @@ class GameObject {
   }
   setState(newState) {
     this.state = newState
+  }
+
+  get has() {
+    return this.getProp('has')
+  }
+  set has(val) {
+    this.setProp('has', val)
   }
 
   get stateInfo() {
@@ -255,7 +258,7 @@ class GameObject {
     const checks: string[] = evt.pres.combos || [evt.pres.clean]
 
     for (const check of checks) {
-      const actionData: ActionData = this.findAction(check)
+      const actionData: ActionData = this.findRoom.findAction(check)
       if (!actionData) {
         return {
           handled: HandleCodes.errActionNotFound,
@@ -284,26 +287,28 @@ class GameObject {
 
   // FIXME - this could be on room or thing
   // but room should recurse afterward into all room.things ?
+  // just going to look for actions on the ROOM
   findAction(input: string): ActionData {
-    if (!this.doc.actions) {
+    const room = this.findRoom
+    if (!room.doc.actions) {
       Logger.warn('no actions for item:', this.doc.name)
     }
 
     input = WordUtils.basicNormalize(input)
 
-    const foundAction: ActionData = this.doc.actions?.find((action: ActionData) => {
+    const foundAction: ActionData = room.doc.actions?.find((action: ActionData) => {
       const rex = new RegExp(action.match)
       const check = rex.test(input)
       if (check) {
         return action // and exit loop
       }
       else return false
-      // Logger.log('check', rex)
-      // if (input.match(rex)) {
-      //   return action
-      // }
     })
-    Logger.log('foundAction for', input, '=>', foundAction)
+    if (foundAction) {
+      Logger.logObj('foundAction for', { input, foundAction })
+    } else {
+      Logger.logObj('FAIL foundAction', { input, 'room.actions': room.actions })
+    }
     return foundAction
   }
 
@@ -411,7 +416,9 @@ class GameObject {
     return false
   }
 
-  async runBranch(branch: ActionBranch, evt: SceneEvent) {
+  async runBranch(branch: ActionBranch | undefined, evt: SceneEvent) {
+    if (!branch) return
+    await this.doCallActions(branch.before, evt)
     if (!branch) {
       Logger.error('tried to run a null branch', evt?.pres)
       return
@@ -421,7 +428,7 @@ class GameObject {
     }
     await this.applySetProps(branch, evt)
     await this.doTakeActions(branch, evt)
-    await this.doCallActions(branch, evt)
+    await this.doCallActions(branch.after, evt)
   }
 
   // set props on this or other items
@@ -461,25 +468,55 @@ class GameObject {
 
   // this runs before any actions on the object itself
   async takeAction(evt: SceneEvent) {
+    await this.baseTakeAction(evt)
+    // if (this.doc.unique) {
+    //   evt.game.player.addItem(this)
+    //   this.room?.removeItemByCname(this.cname)
+    // }
+    // run a custom event after in case we need to modify anything
     const customTake: ActionData = this.findAction('take')
-    if (this.doc.unique) {
-      evt.game.player.addItem(this)
-      this.room?.removeItemByCname(this.cname)
-    }
     if (customTake) {
-      return await this.runAction(customTake, evt)
+      await this.runAction(customTake, evt)
     }
-    return this.showBasicGetReply(evt)
     // TODO run custom action
+  }
+
+  // default for getting an item
+  async baseTakeAction(evt: SceneEvent) {
+    // TODO player status
+    if (this.getProp('has')) {
+      const msg = `you already have the ${this.name}`
+      const blocks = [
+        SlackBuilder.textBlock(msg),
+        SlackBuilder.contextBlock("type `inv` to see what you're carrying"),
+      ]
+      return await evt.pal.sendBlocks(blocks)
+    }
+    if (this.doc.canTake) {
+      const msg = `you get the ${this.name}`
+      const blocks = [
+        SlackBuilder.textBlock(msg),
+        SlackBuilder.contextBlock("type `inv` to see what you're carrying"),
+      ]
+      this.story.game.player.takeItem(this) // removes from the room
+      this.setProp('has', true)
+      await evt.pal.sendBlocks(blocks)
+    } else {
+      // cannot take
+      await ErrorHandler.sendError(HandleCodes.ignoredCannotTake, evt, { name: this.name })
+      await evt.pal.sendBlocks(
+        [SlackBuilder.contextBlock("type `inv` to see what you're carrying")]
+      )
+      this.setProp('has', false)  // or dont change state?
+    }
   }
 
   // trigger other events into the scene
   // create a new synthetic event and call back into the room
-  async doCallActions(branch: ActionBranch, evt: SceneEvent) {
-    const callActions = branch.calls
-    if (!callActions) return
+  async doCallActions(calls: string[] | undefined, evt: SceneEvent) {
+    if (!calls) return
 
-    for (const oneCall of callActions) {
+    for (const oneCall of calls) {
       const newEvt: SceneEvent = {
         pal: evt.pal,
         game: evt.game,
@@ -487,30 +524,22 @@ class GameObject {
           clean: oneCall
         }
       }
-      // wait for this so they're in order?
-      // TODO add a short delay?
-      await this.findRoom.findAndRunAction(newEvt)
-    }
-  }
 
-  // default for getting an item
-  async showBasicGetReply(evt: SceneEvent) {
-    // TODO player status
-    if (this.doc.canTake) {
-      const msg = `you get the ${this.name}`
-      await evt.pal.sendText(msg)
-      this.got = true
-    } else {
-      await ErrorHandler.sendError(HandleCodes.ignoredCannotTake, evt, { name: this.name })
-      this.got = false  // or dont change state?
+      // TODO add a short delay / so they're in order?
+      // FIXME - this is calling into BotRouter which may introduce a circular deps
+      // but we need this for commands and other non-room actions
+      Logger.log('doCall', oneCall)
+      evt.pal.input(oneCall)
+      await BotRouter.anyEvent(evt.pal, oneCall, 'text')
+      // await this.findRoom.findAndRunAction(newEvt)
     }
   }
 
   async dropItem(pal: Pal) {
-    if (this.got) {
+    if (this.has) {
       const msg = `you drop the ${this.name}`
       await pal.sendText(msg)
-      this.got = false
+      this.has = false
     } else {
       const msg = `you don't have the ${this.name}`
       await pal.sendText(msg)

@@ -30,7 +30,7 @@ it('should respond to smell action', async () => {
   expect(actualResult.handled).toBe(HandleCodes.okReplied)
   expect(actualResult.klass).toBe('room')
   expect(actualResult?.history ? actualResult?.history[0] : false).toBe('reply')
-  expect(evt.pal.channel.store[0]).toMatch(/A musty smell/)
+  expect(evt.pal.channelEvent.store[0]).toMatch(/A musty smell/)
 })
 
 it('should respond to random sesame action', async () => {
@@ -47,7 +47,7 @@ it('should respond to random sesame action', async () => {
   expect(actualResult.handled).toBe(HandleCodes.okReplied)
   expect(actualResult.klass).toBe('room')
   expect(actualResult?.history ? actualResult?.history[0] : false).toBe('reply')
-  expect(evt.pal.channel.store[0]).toMatch(/You shout \"sesame\" to the room/)
+  expect(evt.pal.channelEvent.store[0]).toMatch(/You shout \"sesame\" to the room/)
 })
 
 

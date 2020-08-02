@@ -3,7 +3,7 @@ import { Logger } from '../../lib/Logger'
 import WordUtils from '../../lib/WordUtils'
 // import RouterService from './RouterService'
 
-import { StaticRules, OneRule } from './ParserRules'
+import { StaticRules, OneRule, ReplaceItems } from './ParserRules'
 import {
   PosResult,
   ParserResult,
@@ -379,9 +379,17 @@ const RexParser = {
   //   return result
   // }
 
+  reduceVocab(input: string) {
+    for (const rep of ReplaceItems) {
+      input = input.replace(rep.rex, rep.base)
+    }
+    return input
+  },
+
   parseCommands(input: string): ParserResult {
     let clean = WordUtils.basicNormalize(input)
-
+    clean = RexParser.reduceVocab(clean)
+    Logger.log('clean', clean)
     let pres: ParserResult = {
       input: clean,
       clean,
@@ -409,7 +417,7 @@ const RexParser = {
       // so we can show a hint?
       Logger.warn('no rule matched for input', clean)
     }
-    Logger.log('pres', pres)
+    // Logger.log('pres', pres)
     return pres
   },
 
@@ -431,7 +439,8 @@ const RexParser = {
 
   // give a nounList of objects in game to help with parsing
   parseNounVerbs(input: string, nounList: string[], verbList?: string[]): ParserResult {
-    const clean = WordUtils.basicNormalize(input)
+    let clean = WordUtils.basicNormalize(input)
+    clean = RexParser.reduceVocab(clean)
     const nouns = nounList.join('|')
     const verbs = verbList ? verbList.join('|') : ParserConfig.verbs
     const strExp = `(?<verb>${verbs}) (?<target>${nouns})`

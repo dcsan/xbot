@@ -106,7 +106,7 @@ const Logger = {
       // this dumps better
       const json = JSON.stringify(obj, null, 2)
       const blob = yaml.dump(json)
-      console.log(`--- ${msg}\n`, blob)
+      console.log(`--- ${msg}`, blob)
     } catch (err) {
       console.log('failed to stringify')
       console.log(msg)

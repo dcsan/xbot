@@ -64,7 +64,7 @@ class Game {
   }
 
   async echo(pal: Pal) {
-    await pal.sendText(`game [${ this.sid }] echo!`)
+    await pal.sendText(`game [${this.sid}] echo!`)
   }
 
   // any items for testing
@@ -115,9 +115,9 @@ class Game {
   // TODO add debug/admin on user check
   async showStatus(pal: Pal) {
     const statusInfo = {
-      story: await this.story.status(),
-      room: await this.story.room.status(),
-      inventory: await this.player.status(),
+      story: this.story.status(),
+      room: this.story.room.status(),
+      player: this.player.status(),
     }
     // await pal.sendText('state ```\n' + JSON.stringify(pal.state, null, 2) + '```')
     const blob = yaml.dump(statusInfo)

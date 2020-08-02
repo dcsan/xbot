@@ -79,7 +79,7 @@ class Story {
     }
     const found = this.rooms.find(room => room.name === roomName)
     if (!found) {
-      Logger.logObj('cannot find room:', `name: ${ roomName }`)
+      Logger.logObj('cannot find room:', `name: ${roomName}`)
     }
     return found
   }
@@ -106,7 +106,7 @@ class Story {
     }
   }
 
-  async status() {
+  status() {
     // let msg = `\`${this.doc.cname}\``
     return {
       // @ts-ignore

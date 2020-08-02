@@ -2,7 +2,8 @@ import Item from './Item'
 import { Logger } from '../../lib/Logger'
 import { SceneEvent } from '../MupTypes'
 import SlackBuilder from '../pal/SlackBuilder'
-import { Pal } from '../pal/Pal'
+import { GameObject } from './GameObject'
+// import { Pal } from '../pal/Pal'
 
 class Player {
 
@@ -17,13 +18,23 @@ class Player {
     this.items = []
   }
 
-  async status() {
+  status() {
+    const status = {
+      inventory: this.invStatus()
+    }
+    return status
+  }
+
+  invStatus() {
     let reply: string[] = []
+    // Logger.log('player.status.items:', this.items)
     if (!this.items.length) {
       reply.push('nothing')
     } else this.items.map(item => {
-      reply.push[`- ${ item.name }`]
+      // Logger.log('item', item)
+      reply.push(item.name)
     })
+    // Logger.log('player.status.reply:', reply)
     return reply
   }
 
@@ -31,6 +42,12 @@ class Player {
   // this creates an extra reference so careful about memory leaks
   addItem(item) {
     this.items.push(item)
+    this.status()
+  }
+
+  takeItem(item: GameObject) {
+    this.addItem(item)
+    item.room?.removeItemByCname(item.cname)
   }
 
   // addItemByName(itemName) {
@@ -60,7 +77,7 @@ class Player {
       blocks.push(SlackBuilder.textBlock("You aren't carrying anything"))
     } else {
       const buttonLinks = this.items.map(item => {
-        return `${ item.name }|x ${ item.name }`
+        return `${item.name}|x ${item.name}`
       })
       blocks.push(SlackBuilder.buttonsBlock(buttonLinks))
     }

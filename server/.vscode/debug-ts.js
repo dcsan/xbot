@@ -8,15 +8,15 @@ const jsFile = TS2JS(tsFile);
 replaceCLIArg(tsFile, jsFile);
 
 // Ava debugger
-require('ava/profile');
+// require('ava/profile');
 
 /**
  * get ts file path from CLI args
  *
  * @return string path
  */
-function getTSFile() {
-  const cli = meow();
+function getTSFile () {
+  const cli = meow('help message');
   return cli.input[0];
 }
 
@@ -26,7 +26,7 @@ function getTSFile() {
  * @param tsFile  path
  * @return string path
  */
-function TS2JS(tsFile) {
+function TS2JS (tsFile) {
   const srcFolder = path.join(__dirname, '..', 'src');
   const distFolder = path.join(__dirname, '..', 'build', 'main');
 
@@ -47,6 +47,6 @@ function TS2JS(tsFile) {
  * @param replace  value to replace
  * @return void
  */
-function replaceCLIArg(search, replace) {
+function replaceCLIArg (search, replace) {
   process.argv[process.argv.indexOf(search)] = replace;
 }

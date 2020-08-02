@@ -25,7 +25,8 @@ interface ActionBranch {
   goto?: string
   take?: string[]   // item names
   drop?: string[]   // names
-  calls?: string[]
+  before?: string[] // actions to call
+  after?: string[]
 }
 
 interface ActionIf {
