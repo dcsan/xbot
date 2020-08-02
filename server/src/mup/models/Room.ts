@@ -133,13 +133,19 @@ class Room extends GameObject {
   status() {
     let reply = {
       name: this.name,
+      state: this.state,
       items: [],
       actors: []
     }
     // FIXME!
     // @ts-ignore
     reply.items = this.items?.map((thing: Item) => {
-      return { [thing.name]: thing.state }
+      return {
+        [thing.name]: {
+          state: thing.state,
+          props: Util.removeEmptyKeys(this.props) || {}
+        }
+      }
     }) || []
     // @ts-ignore
     reply.actors = this.actors?.map((thing: Actor) => {
