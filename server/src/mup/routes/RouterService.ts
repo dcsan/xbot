@@ -44,7 +44,7 @@ const RouterService = {
   },
 
   echoTest: async (evt: SceneEvent) => {
-    evt.pal.reply('echo test back!')
+    evt.pal.sendText('echo test back!')
   },
 
   getActionMatchesList(actions) {
@@ -79,6 +79,11 @@ const RouterService = {
 
   showStatus: async (evt: SceneEvent) => {
     await evt.game.showStatus(evt.pal)
+  },
+
+  showLog: async (evt: SceneEvent) => {
+    await evt.pal.sendText('-- sent log')
+    await evt.pal.showLog()
   },
 
   showInventory: async (evt: SceneEvent) => {

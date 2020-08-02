@@ -31,17 +31,18 @@ async function chainEvents(chain: any, evt: SceneEvent): Promise<ActionResult> {
 const BotRouter = {
 
   async textEvent(pal: Pal): Promise<ActionResult> {
-    const input: string = pal.channel.message.text
+    const input: string = pal.channelEvent.message.text
+    pal.logEvent({ who: 'user', text: input, type: 'text' })
     return await BotRouter.anyEvent(pal, input, 'text')
   },
 
   async actionEvent(pal: Pal): Promise<ActionResult> {
-    const input: string = pal.channel.action.value
+    const input: string = pal.channelEvent.action.value
     return await BotRouter.anyEvent(pal, input, 'action')
   },
 
   async anyEvent(pal: Pal, input: string, eventType: string): Promise<ActionResult> {
-    Logger.logObj('anyEvent.input:', input)
+    Logger.log('anyEvent.input:', input)
     if (/^(-|'|\.|#| |,|>|\\) /.test(input)) {
       // ignore prefixed
       Logger.log('ignore prefixed: ', input)
@@ -65,7 +66,7 @@ const BotRouter = {
 
     if (actionResult.err) {
       const err = {
-        msg: `cannot find route for [${ input }]`,
+        msg: `cannot find route for [${input}]`,
         code: actionResult.handled
       }
       await pal.debugMessage(err)

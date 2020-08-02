@@ -3,9 +3,8 @@ import AppConfig from '../../lib/AppConfig'
 import { App, MessageEvent, ExpressReceiver, Middleware } from '@slack/bolt';
 import BotRouter from '../../mup/routes/BotRouter'
 import { Logger } from '../../lib/Logger'
+import { PalManager } from './PalManager'
 import { Pal } from './Pal'
-// This is the main file for the cbgbot bot
-// import morgan from 'morgan'
 
 const SlackRouter = {
 
@@ -27,16 +26,26 @@ const SlackRouter = {
     }
     app.use(eventLogger)
 
+    app.message(/.*/, async (slackEvent) => {
+      Logger.startLoop()
+      const pal: Pal = PalManager.findPal(slackEvent)
+      Logger.log('app.message')
+      await BotRouter.textEvent(pal)
+    });
+
+    app.action(/.*/, async (slackEvent) => {
+      Logger.startLoop()
+      slackEvent.ack();
+      const pal: Pal = PalManager.findPal(slackEvent)
+      Logger.logObj('action', slackEvent.action)
+      await BotRouter.actionEvent(pal)
+      // say('you hit an action')
+    });
+
     // testing
     app.message(/helloSlack/i, async ({ message, say }) => {
       console.log('incoming message', message)
-      await say(`hola there <@${ message.user }!`);
-    });
-
-    app.message(/.*/, async (slackEvent) => {
-      const pal: Pal = new Pal(slackEvent)
-      Logger.log('app.message')
-      await BotRouter.textEvent(pal)
+      await say(`hola there <@${message.user}!`);
     });
 
     // const welcomeChannelId = 'C12345';
@@ -59,23 +68,15 @@ const SlackRouter = {
 
     app.action('continue', async (slackEvent) => {
       slackEvent.ack()
-      const pal: Pal = new Pal(slackEvent)
+      const pal: Pal = PalManager.findPal(slackEvent)
       Logger.log('action.continue')
       await BotRouter.actionEvent(pal)
-    });
-
-    app.action(/.*/, async (slackEvent) => {
-      slackEvent.ack();
-      const pal: Pal = new Pal(slackEvent)
-      Logger.logObj('action', slackEvent.action)
-      await BotRouter.actionEvent(pal)
-      // say('you hit an action')
     });
 
     app.shortcut(/.*/, async (slackEvent) => {
       // { shortcut, ack, say }
       await slackEvent.ack();
-      const pal: Pal = new Pal(slackEvent)
+      const pal: Pal = PalManager.findPal(slackEvent)
       Logger.logObj('shortcut', slackEvent.shortcut)
       slackEvent.say('shortcut not done yet!')
     });

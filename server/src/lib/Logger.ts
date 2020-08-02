@@ -19,6 +19,10 @@ const Logger = {
     console.log('env', process.env.NODE_ENV)
   },
 
+  startLoop() {
+    console.log('\n_____________________________________________________________\n')
+  },
+
   log(msg, ...rest) {
     if (forceLogging || process.env.NODE_ENV !== 'test') {
       console.log(msg, ...rest)
@@ -102,7 +106,7 @@ const Logger = {
       // this dumps better
       const json = JSON.stringify(obj, null, 2)
       const blob = yaml.dump(json)
-      console.log(`--- ${ msg }\n`, blob)
+      console.log(`--- ${msg}\n`, blob)
     } catch (err) {
       console.log('failed to stringify')
       console.log(msg)
@@ -118,7 +122,7 @@ const Logger = {
   checkItem(obj, field) {
     const res = obj[field]
     if (!res) {
-      Logger.warn(`checkItem: missing field: [ ${ field } ] in obj`, obj, true)
+      Logger.warn(`checkItem: missing field: [ ${field} ] in obj`, obj, true)
     }
   }
 

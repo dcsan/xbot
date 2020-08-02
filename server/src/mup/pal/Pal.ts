@@ -9,6 +9,8 @@ import AppConfig from '../../lib/AppConfig'
 const debugOutput = AppConfig.logLevel
 // const debugOutput = false
 
+const logMode = true
+
 interface IMessage {
   text: string
 }
@@ -20,80 +22,153 @@ interface IChannel {
   store: any[]
   sessionId: string
   action: {
-    value: string
+    value: string,
+  },
+  payload: {
+    channel: string // sessionId
   }
 }
 
+// actually based on a single Event, we create a channel
+// TODO refactor
 class MockChannel implements IChannel {
   store: any[]
+  payload: {
+    channel: string // sessionId
+  }
+
+  action: { value: string }
+  message: IMessage
+  sessionId: string
 
   constructor(sid: string = 'mock1234') {
     this.store = []
     this.sessionId = sid
     this.message = { text: '' }   // nothing coming in yet
     this.action = { value: '' }
+    this.payload = {
+      channel: sid
+    }
   }
-  action: { value: string }
-  message: IMessage
-  sessionId: string
 
   say(msg) {
     this.store.push(msg)
     Logger.log('mock.say', msg)
   }
+
 }
 
+class ChatLine {
+  opts: {
+    who: string
+    text: string
+    type: string    // text|buttons|
+    blob: any
+    count: number
+  }
 
+  constructor(opts) {
+    this.opts = opts
+  }
+
+  output() {
+    const padCount = `${this.opts.count}`.padStart(4, '0')
+    const padWho = `${this.opts.who}`.padEnd(6, ' ')
+    const showType = this.opts.type === 'text' ? '' : `[${this.opts.type}]`
+    return (`${padCount} ${padWho} > ${this.opts.text} ${showType}`)
+  }
+}
+
+class ChatLogger {
+  lines: ChatLine[]
+
+  constructor() {
+    this.lines = []
+  }
+
+  log(opts) {
+    opts.count = this.lines.length
+    const line = new ChatLine(opts)
+    this.lines.push(line)
+    console.log('logged:', line.output())
+  }
+}
 
 class Pal {
-  channel: IChannel | MockChannel
+  channelEvent: IChannel | MockChannel
   sessionId: string
+  logger: ChatLogger
 
   // FIXME - for slack middleware
-  constructor(channel: any) {
-    this.channel = channel
-    this.sessionId = channel.payload?.channel || 'temp1234'
+  constructor(channelEvent: any) {
+    this.channelEvent = channelEvent
+    this.sessionId = channelEvent.payload?.channel || 'temp1234'
+    this.logger = new ChatLogger()
     Logger.log('new pal', { sessionId: this.sessionId })
+  }
+
+  event(channelEvent: any) {
+    // TODO keep a list of events?
+    this.channelEvent = channelEvent
   }
 
   // for unit tests, get a line of stuff that was sent in
   getReceivedText(idx): string {
-    return this.channel.store[idx]
+    return this.channelEvent.store[idx]
   }
 
   // just the text items
   get allText(): string {
-    return this.channel.store.join('\n')
+    return this.channelEvent.store.join('\n')
   }
 
   // smash it to a blob for regex comparison
   get blob(): string {
-    return JSON.stringify(this.channel.store)
+    return JSON.stringify(this.channelEvent.store)
   }
 
   channelStore() {
-    return this.channel.store
+    return this.channelEvent.store
   }
 
+  // for testing
   input(text) {
-    this.channel.message.text = text
+    this.channelEvent.message.text = text
   }
 
-  reply(message) {
-    this.channel.say(message)
+  // reply(message) {
+  //   this.channelEvent.say(message)
+  // }
+
+  // called for incoming events
+  logEvent(opts) {
+    this.logger.log(opts)
+  }
+
+  async wrapSay(msg, type = 'text') {
+    if (logMode) {
+      Logger.logObj('msg', msg)
+    }
+    this.logOutput(msg, type)
+    try {
+      await this.channelEvent.say(msg)
+    } catch (err) {
+      Logger.logJson('ERROR channel.say =>', msg)
+      Logger.error('ERROR', err)  // FIXME maybe not .data ?
+    }
   }
 
   async sendText(text: string) {
-    await this.channel.say(text)
+    this.wrapSay(text, 'text')
   }
 
   async sendList(list: string[]) {
     const text = list.join('\n')
-    await this.channel.say(text)
+    this.wrapSay(text, 'text')
   }
 
   async postMessage(msg: any) {
-    await this.channel.say(msg)
+    this.wrapSay(msg, 'post')
   }
 
   async debugMessage(obj) {
@@ -103,12 +178,56 @@ class Pal {
     // console.log('json', JSON.stringify(clean, null, 2))
     const blob = yaml.dump(clean, { skipInvalid: true, lineWidth: 200 })
     console.log('yaml', blob)
-    await this.channel.say(Util.quoteCode(blob))
+    await this.wrapSay(Util.quoteCode(blob), 'debug')
   }
 
-  async sendButtons(buttons) {
+  async sendButtons(buttons: string[]) {
     const block = SlackBuilder.buttonsBlock(buttons)
     await this.sendBlocks([block])
+    this.logger.log({ who: 'bot', text: buttons.join(' | '), type: 'buttons' })
+  }
+
+  logBlocks(blob) {
+    try {
+
+      blob.attachments.forEach(att => {
+        att.blocks.forEach(block => {
+          let text = block.type // initialize
+          switch (block.type) {
+            case 'image':
+              text = block.title.text
+              break
+            case 'section':
+              text = block.text.text
+              break
+            case 'actions':
+              text = block.elements[0].text.text
+              break
+          }
+          this.logger.log({ who: 'bot', text, type: block.type })
+        })
+      })
+    } catch (err) {
+      Logger.warn('logging err', err)
+      this.logger.log({ who: 'bot', text: JSON.stringify(blob), type: 'blob' })
+    }
+  }
+
+  logOutput(msg, type: string) {
+    if (debugOutput) {
+      Logger.log('send:', msg)
+    }
+    switch (type) {
+      case 'blocks':
+        this.logBlocks(msg)
+        break
+      case 'text':
+        this.logger.log({ type: 'text', who: 'bot', text: msg })
+        break
+      default:
+        Logger.log('unknown type to log', type)
+        this.logger.log({ who: 'bot', text: msg, type })
+    }
   }
 
   async sendBlocks(blocks) {
@@ -116,17 +235,19 @@ class Pal {
       Logger.error('tried to sendBlocks with no blocks:', blocks)
     }
     const msg = SlackBuilder.wrapBlocks(blocks)
-    if (debugOutput) {
-      Logger.log('sendBlocks:', blocks.length)
-    }
-    try {
-      await this.channel.say(msg)
-    } catch (err) {
-      Logger.logJson('ERROR channel.say =>', msg)
-      Logger.error('ERROR', err)  // FIXME maybe not .data ?
-    }
+    this.wrapSay(msg, 'blocks')
+  }
+
+  async showLog() {
+    const lines: string[] = []
+    this.logger.lines.forEach(line => {
+      lines.push(line.output())
+    })
+    const text = lines.join('\n')
+    Logger.log('log', text)
+    this.channelEvent.say(Util.quoteCode(text))
   }
 
 }
 
-export { Pal, MockChannel }
+export { Pal, MockChannel, IChannel }

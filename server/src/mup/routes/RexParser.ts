@@ -409,6 +409,7 @@ const RexParser = {
       // so we can show a hint?
       Logger.warn('no rule matched for input', clean)
     }
+    Logger.log('pres', pres)
     return pres
   },
 
@@ -433,7 +434,7 @@ const RexParser = {
     const clean = WordUtils.basicNormalize(input)
     const nouns = nounList.join('|')
     const verbs = verbList ? verbList.join('|') : ParserConfig.verbs
-    const strExp = `(?<verb>${ verbs }) (?<target>${ nouns })`
+    const strExp = `(?<verb>${verbs}) (?<target>${nouns})`
     // verb noun1 on|with|at noun2 | use handle on sink
     // put soap on bed | verb subject on object
     // use soap on faucet | faucet: use soap

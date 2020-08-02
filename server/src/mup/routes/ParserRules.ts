@@ -100,6 +100,13 @@ const StaticRules: OneRule[] = [
     cname: 'status',
     type: 'command',
     event: RouterService.showStatus
+  },
+
+  {
+    rex: /^(log)$/,
+    cname: 'log',
+    type: 'command',
+    event: RouterService.showLog
   }
 
   // {

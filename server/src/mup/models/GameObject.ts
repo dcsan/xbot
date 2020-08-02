@@ -99,7 +99,7 @@ class GameObject {
     return this.props[key]
   }
   setProp(key, val) {
-    Logger.logObj('setProp', { cname: this.cname, key, val })
+    // Logger.logObj('setProp', { cname: this.cname, key, val })
     this.props[key] = val
   }
 
@@ -177,7 +177,7 @@ class GameObject {
   getStateBlock() {
     const state = this.state
     let block: StateBlock = this.doc.states.find(one => one.name === state)
-    Logger.logObj(`get state [${ state }] block`, { state, block })
+    Logger.logObj(`get state [${state}] block`, { state, block })
 
     if (!block) {
       Logger.warn('cant find block for state', { name: this.name, state })
@@ -242,7 +242,7 @@ class GameObject {
 
   // add 'the' or 'an' based on item article
   get articleName() {
-    return `a ${ this.formalName }`
+    return `a ${this.formalName}`
   }
 
   // overridden by subclasses eg actor
@@ -497,7 +497,7 @@ class GameObject {
   async showBasicGetReply(evt: SceneEvent) {
     // TODO player status
     if (this.doc.canTake) {
-      const msg = `you get the ${ this.name }`
+      const msg = `you get the ${this.name}`
       await evt.pal.sendText(msg)
       this.got = true
     } else {
@@ -508,11 +508,11 @@ class GameObject {
 
   async dropItem(pal: Pal) {
     if (this.got) {
-      const msg = `you drop the ${ this.name }`
+      const msg = `you drop the ${this.name}`
       await pal.sendText(msg)
       this.got = false
     } else {
-      const msg = `you don't have the ${ this.name }`
+      const msg = `you don't have the ${this.name}`
       await pal.sendText(msg)
     }
   }
