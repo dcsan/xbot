@@ -3,6 +3,7 @@ import yaml from 'js-yaml'
 import { Logger } from '../../lib/Logger'
 import Util from '../../lib/Util'
 import SlackBuilder from './SlackBuilder'
+import chalk from 'chalk'
 
 import AppConfig from '../../lib/AppConfig'
 
@@ -73,9 +74,11 @@ class ChatLine {
 
   output() {
     const padCount = `${this.opts.count}`.padStart(4, '0')
-    const padWho = `${this.opts.who}`.padEnd(6, ' ')
+    // const padWho = `${this.opts.who}`.padEnd(6, ' ')
+    const padWho = `${this.opts.who}`
+    const cursor = this.opts.who === 'user' ? '<=' : ' =>'
     const showType = this.opts.type === 'text' ? '' : `[${this.opts.type}]`
-    return (`${padCount} ${padWho} > ${this.opts.text} ${showType}`)
+    return (`${padCount} ${padWho} ${cursor} ${this.opts.text} ${showType}`)
   }
 }
 
@@ -98,6 +101,7 @@ class Pal {
   channelEvent: IChannel | MockChannel
   sessionId: string
   logger: ChatLogger
+  lastInput?: string
 
   // FIXME - for slack middleware
   constructor(channelEvent: any) {
@@ -133,6 +137,7 @@ class Pal {
 
   // for testing
   input(text) {
+    this.lastInput = text
     this.channelEvent.message.text = text
   }
 

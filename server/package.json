@@ -61,7 +61,9 @@
   },
   "dependencies": {
     "@slack/bolt": "^2.1.1",
+    "chalk": "^4.1.0",
     "dotenv-flow": "^3.2.0",
+    "glob": "^7.1.6",
     "morgan": "^1.10.0",
     "stopword": "^1.0.1"
   },

@@ -5,11 +5,15 @@ import SlackBuilder from '../pal/SlackBuilder'
 import { GameObject } from './GameObject'
 // import { Pal } from '../pal/Pal'
 
-class Player {
+class Player extends GameObject {
 
   items: Item[]
 
-  constructor() {
+  constructor(doc, story) {
+    doc = {
+      name: 'player'
+    }
+    super(doc, story, 'player')
     this.items = []
     this.reset()
   }
@@ -57,9 +61,9 @@ class Player {
   //   this.addItem(item)
   // }
 
-  dropItem(item) {
-    this.items.push(item)
-  }
+  // dropItem(item) {
+  //   this.items.push(item)
+  // }
 
   hasItem(cname: string) {
     let matchItems = this.items.filter((item) => {

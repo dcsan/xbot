@@ -1,7 +1,9 @@
+import * as glob from 'glob'
 import fs from 'fs'
 import path from 'path'
 import yaml from 'js-yaml'
 import { Logger } from './Logger'
+import * as _ from 'lodash'
 
 const Util = {
 
@@ -30,17 +32,41 @@ const Util = {
     return absPath
   },
 
-  loadStory(storyName) {
-    const storyPath = `../../cdn/story-${storyName}.wiki/story.yaml`
+  loadStoryDir(storyName) {
+    // Logger.testLog('storyName', storyName)
+
+    const storyPath = `../../cdn/story-${storyName}.wiki/story`
     const fullPath = path.join(__dirname, storyPath)
-    try {
-      const doc = yaml.safeLoad(fs.readFileSync(fullPath, 'utf8'))
-      return doc
-    } catch (err) {
-      console.error('ERROR failed to load story:', storyName, '=> ', storyPath)
-      console.error('fullPath:', fullPath)
-      throw (err)
+    const pattern = `${fullPath}/*.yaml`
+    const files = glob.sync(pattern)
+    // Logger.testLog('files', files)
+    // Logger.testLog('pattern', pattern)
+
+    const docs: any[] = []
+    let storyDoc = {
+      story: {},
+      rooms: []
     }
+
+    for (const onePath of files) {
+      try {
+        // Logger.testLog('loadOne', onePath)
+        const doc = yaml.safeLoad(fs.readFileSync(onePath, 'utf8'))
+        docs.push(doc)
+        storyDoc.story = _.merge(storyDoc.story, doc.story)
+        if (doc.rooms) {
+          storyDoc.rooms = storyDoc.rooms.concat(doc.rooms)
+        }
+
+      } catch (err) {
+        console.error('ERROR failed to load story:', storyName, '=> ', storyPath)
+        console.error('fullPath:', onePath)
+        throw (err)
+      }
+    }
+
+    // Logger.testLog('storyDoc', storyDoc)
+    return storyDoc
   },
 
   // FIXME add full regex non WS support

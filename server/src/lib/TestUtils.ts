@@ -21,11 +21,11 @@ class TestEnv {
   pal: Pal
   game: Game
 
-  constructor() {
+  constructor(storyName = 'office') {
     this.pal = this.getMockPal()
     const opts: LoadOptions = {
       pal: this.pal,
-      storyName: 'office'
+      storyName
     }
     const game: Game = GameManager.findGame(opts)
     game.reset()

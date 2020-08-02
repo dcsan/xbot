@@ -40,6 +40,8 @@ interface ActionData {
   goto?: string
   // setProps?: string[]  // at the top level as well?
 
+  invoke?: string // javascript function
+
   always?: ActionBranch
   if: ActionIf
   then: ActionBranch

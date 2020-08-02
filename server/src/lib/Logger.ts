@@ -1,6 +1,7 @@
 import AppConfig from '../lib/AppConfig'
 import yaml from 'js-yaml'
 import Util from './Util'
+import chalk from 'chalk'
 // const forceLogging = true   // override even for testing
 const forceLogging = false   // override even for testing
 
@@ -25,18 +26,21 @@ const Logger = {
 
   log(msg, ...rest) {
     if (forceLogging || process.env.NODE_ENV !== 'test') {
-      console.log(msg, ...rest)
+      console.log('---> ', msg, ...rest)
     }
   },
 
   // this will log even when testing
   testLog(msg, ...rest) {
-    console.log(msg, ...rest)
+    // process.stdout.write('---> ', msg, ...rest, '\n')
+    console.log('---> ', msg, ...rest, '\n')
   },
 
   warn(msg, obj, force = false) {
     if (AppConfig.logLevel < LogLevels.WARN || force) return
-    Logger.log("-------- WARNING " + msg, obj, force)
+    Logger.log(
+      chalk.black.bgYellow.bold(' WARNING ' + msg),
+      obj, force)
   },
 
   error(msg, obj = {}) {

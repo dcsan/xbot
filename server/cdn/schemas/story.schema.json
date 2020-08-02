@@ -165,6 +165,9 @@
                 "match": {
                   "type": "string"
                 },
+                "invoke": {
+                  "type": "string"
+                },
                 "always": {
                   "$ref": "#/definitions/branch"
                 },

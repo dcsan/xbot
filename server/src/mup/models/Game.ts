@@ -32,7 +32,7 @@ class Game {
     this.sid = opts.pal.sessionId
     this.menu = new Menu()
     this.story = new Story(opts, this)
-    this.player = new Player()
+    this.player = new Player({}, this.story)
     this.reset()
   }
 

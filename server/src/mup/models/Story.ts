@@ -54,8 +54,7 @@ class Story {
       AppConfig.read('STORYNAME')
 
     this.storyName = storyName // save for reload
-
-    const fullDoc = Util.loadStory(storyName)
+    const fullDoc = Util.loadStoryDir(storyName)
     this.doc = fullDoc.story
     this.buildStory(fullDoc)
     const msg = 'reloaded' + this.storyName

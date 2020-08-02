@@ -23,10 +23,16 @@ const ReplaceItems = [
     base: 'examine',
     rex: /\b(x|look at|examine|look at the)\b/
   },
+
   {
     base: 'open',
-    rex: /\b(o|open)\b/
+    rex: /\b(open)\b/
   },
+  {
+    base: 'shut',
+    rex: /\b(shut|close)\b/
+  },
+
   {
     base: 'robe',
     rex: /\b(robe|clothes|gown)\b/
@@ -39,6 +45,11 @@ const ReplaceItems = [
     base: 'wardrobe',
     rex: /\b(closet|cupboard|wardrobe|wr)\b/
   },
+  {
+    base: 'say',
+    rex: /\b(say|tell|scream|speak|shout|ask)\b/
+  },
+
   // {
   //   base: 'use',
   //   rex: /\b(open|use)\b/

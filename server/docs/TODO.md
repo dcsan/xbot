@@ -2,7 +2,9 @@
 
 ## TOP:
 
-- merge files for actions?
+- already have item
+
+X merge files for actions?
 
 - on 'get' player carry items / inventory
 - hidden property on objects

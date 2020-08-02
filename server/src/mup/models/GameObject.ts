@@ -11,7 +11,7 @@ import Player from './Player'
 const log = console.log
 import { Pal } from '../pal/Pal'
 import { SceneEvent } from '../MupTypes'
-
+import { GameFuncs } from '../scripts/GameFuncs'
 import BotRouter from '../routes/BotRouter'
 
 import {
@@ -39,7 +39,7 @@ class GameObject {
   doc: any
   story: Story
   room?: Room
-
+  cname: string
   // allow recursing an item can have items
   items: Item[]
   actors: Actor[]
@@ -49,11 +49,12 @@ class GameObject {
   props: any
 
   constructor(doc, story: Story, klass: string,) {
+    Logger.log('create', doc)
     this.doc = doc
     this.actions = doc.actions
     this.items = []
     this.actors = []
-    // this.state = 'default'
+    this.cname = Util.safeName(this.doc.name)
     this.klass = klass
     this.story = story
     this.reset()
@@ -73,11 +74,6 @@ class GameObject {
   // FIXME - dont use both
   get name() {
     return this.formalName
-  }
-
-  // for searching and comparison DB keys
-  get cname() {
-    return this.doc.cname || Util.safeName(this.doc.name)
   }
 
   // not lowercase
@@ -145,6 +141,32 @@ class GameObject {
       this.doc.short || this.doc.long ||
       this.doc.description ||
       this.formalName
+  }
+
+  // looks for actors
+  findThing(itemName: string): GameObject | undefined {
+    Logger.log('findThing', itemName, 'in', this.klass, this.allThings)
+    const cname = Util.safeName(itemName)
+    const found = this.allThings.filter((thing: GameObject) => {
+      if (thing.cname === cname) return true
+      if (thing.doc.called) {
+        const rex: RegExp = new RegExp(thing.doc.called)
+        if (rex.test(itemName)) {
+          return true
+          // found.push(thing)
+        }
+      } // else
+      return false  // not found
+    })
+    if (found.length > 0) {
+      Logger.log('found thing::', found[0])
+      return found[0]
+    } else {
+      Logger.warn('cannot find thing:', itemName)
+      Logger.log('this:', this.cname, this.klass)
+      Logger.warn('in list', this.allThings.map(t => t.cname))
+      return undefined
+    }
   }
 
   isNamed(text) {
@@ -307,7 +329,8 @@ class GameObject {
     if (foundAction) {
       Logger.logObj('foundAction for', { input, foundAction })
     } else {
-      Logger.logObj('FAIL foundAction', { input, 'room.actions': room.actions })
+      // Logger.logObj('FAIL foundAction', { input, 'room.actions': room.actions })
+      Logger.log('FAIL foundAction for input:', input)
     }
     return foundAction
   }
@@ -322,6 +345,17 @@ class GameObject {
       doc: actionData,
       klass: this.klass,
       history: []
+    }
+
+    // custom JS func?
+    if (actionData.invoke) {
+      // call a JS script with evt
+      const funcName = actionData.invoke
+      if (GameFuncs[funcName]) {
+        GameFuncs[funcName](actionData, evt)
+      } else {
+        Logger.warn('tried to call non-exist JSfunc:', funcName)
+      }
     }
 
     // quick reply
@@ -401,7 +435,11 @@ class GameObject {
       return false
     }
 
-    const found: GameObject | undefined = this.findRoom.findThing(target)
+    let found: GameObject | undefined = this.findRoom.findThing(target)
+    if (!found) {
+      Logger.log('look in player for:', target)
+      found = this.findRoom.story.game.player.findThing(target)
+    }
     if (!found) {
       Logger.warn('cannot find thing to update', { target, line })
       return false
@@ -411,9 +449,10 @@ class GameObject {
     if (actual === value) {
       Logger.log('if block passed', pres.parsed.groups)
       return true
+    } else {
+      Logger.warn('if block failed', pres.parsed.groups)
+      return false
     }
-    Logger.log('if block failed')
-    return false
   }
 
   async runBranch(branch: ActionBranch | undefined, evt: SceneEvent) {
@@ -439,13 +478,19 @@ class GameObject {
       const pres: ParserResult = RexParser.parseSetLine(line)
       if (pres.parsed?.groups) {
         const { target, field, value } = pres.parsed.groups
+        Logger.logObj('apply setProp', { target, field, value })
         Logger.assertTrue((target && field && value), 'missing field', pres.parsed?.groups)
-        const found: GameObject | undefined = this.findRoom.findThing(target)
-        if (!found) {
-          Logger.warn('cannot find thing to update', { thing: target, line })
+        let targetThing
+        if (target === 'room') {
+          targetThing = this.findRoom
+        } else {
+          targetThing = this.findRoom.findThing(target)
+        }
+        if (!targetThing) {
+          Logger.warn('cannot find targetThing to update', { target, line })
           return
         }
-        found.setProp(field, value)
+        targetThing.setProp(field, value)
       }
     }
   }
@@ -499,7 +544,7 @@ class GameObject {
         SlackBuilder.contextBlock("type `inv` to see what you're carrying"),
       ]
       this.story.game.player.takeItem(this) // removes from the room
-      this.setProp('has', true)
+      this.setProp('has', 'yes')
       await evt.pal.sendBlocks(blocks)
     } else {
       // cannot take
@@ -507,7 +552,7 @@ class GameObject {
       await evt.pal.sendBlocks(
         [SlackBuilder.contextBlock("type `inv` to see what you're carrying")]
       )
-      this.setProp('has', false)  // or dont change state?
+      this.setProp('has', 'no')  // or dont change state?
     }
   }
 

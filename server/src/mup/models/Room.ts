@@ -152,34 +152,6 @@ class Room extends GameObject {
     return this.findThing(name)
   }
 
-  // looks for actors
-  findThing(itemName: string): GameObject | undefined {
-    const cname = Util.safeName(itemName)
-    const found = this.allThings.filter((thing: GameObject) => {
-      if (thing.cname === cname) return true
-      if (thing.doc.called) {
-        const rex: RegExp = new RegExp(thing.doc.called)
-        if (rex.test(itemName)) {
-          return true
-          // found.push(thing)
-        }
-      } // else
-      return false  // not found
-    })
-    if (found.length > 1) {
-      // TODO - send warning message
-      // but needs a Pal to pipe to
-      const item = found[0] // dont modify items
-      Logger.log('found Item:', item.cname)
-      return item
-    } else if (found.length === 1) {
-      return found.pop()
-    } else {
-      Logger.warn('cannot find thing:', itemName)
-      return undefined
-    }
-  }
-
   removeItemByCname(cname: string) {
     const before = this.items?.length
     this.items = this.items?.filter(item => item.cname !== cname)
