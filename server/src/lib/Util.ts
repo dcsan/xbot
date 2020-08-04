@@ -33,7 +33,7 @@ const Util = {
   },
 
   loadStoryDir(storyName) {
-    // Logger.testLog('storyName', storyName)
+    Logger.log('loadStoryDir', storyName)
 
     const storyPath = `../../cdn/story-${storyName}.wiki/story`
     const fullPath = path.join(__dirname, storyPath)

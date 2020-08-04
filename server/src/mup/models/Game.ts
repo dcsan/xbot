@@ -37,11 +37,12 @@ class Game {
   }
 
   // reset all the vars without reloading
-  reset() {
+  async reset() {
     Logger.log('game.reset')
     this.story.reset()
     this.player.reset()
     this.story.room.reset()
+    await this.pal.sendText('reset game. now in room:' + this.story.room.name)
   }
 
   // reload and show message

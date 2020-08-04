@@ -15,6 +15,7 @@ test('office game loading', async () => {
 
 test('asylum game loading', async () => {
   const { pal, game } = new TestEnv('asylum')
+  game.story.load({ storyName: 'asylum', pal })
   expect(game.story.doc.title).toBe('Escape From Bell Hill (Asylum #6)')
   expect(game.story.doc.cname).toBe('asylum')
   expect(game.story.rooms.length).toBe(6)

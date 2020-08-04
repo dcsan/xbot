@@ -19,7 +19,7 @@ const AppConfig = {
   toggleDebug(evt: SceneEvent) {
     const level = AppConfig.logLevel ? 0 : 5
     AppConfig.logLevel = level
-    evt.pal.sendText(` \`debugLevel: ${ level } \` `)
+    evt.pal.sendText(` \`debugLevel: ${level} \` `)
   },
 
   // TODO - merge props below
@@ -50,6 +50,9 @@ const AppConfig = {
   signingSecret: process.env.SLACK_SIGNING_SECRET || 'x',   // has to have a value for TSC
 
 }
+
+console.log('env', AppConfig.NODE_ENV)
+console.log('STORYNAME', process.env.STORYNAME)
 
 AppConfig.init()
 

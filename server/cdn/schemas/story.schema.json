@@ -38,11 +38,15 @@
     "branch": {
       "type": "object",
       "additionalProperties": false,
+      "description": "always / then branch",
       "properties": {
         "reply": {
           "type": "string"
         },
         "goto": {
+          "type": "string"
+        },
+        "invoke": {
           "type": "string"
         },
         "setProps": {
@@ -163,9 +167,6 @@
               ],
               "properties": {
                 "match": {
-                  "type": "string"
-                },
-                "invoke": {
                   "type": "string"
                 },
                 "always": {

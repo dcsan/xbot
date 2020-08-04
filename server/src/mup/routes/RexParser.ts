@@ -3,7 +3,7 @@ import { Logger } from '../../lib/Logger'
 import WordUtils from '../../lib/WordUtils'
 // import RouterService from './RouterService'
 
-import { StaticRules, OneRule, ReplaceItems } from './ParserRules'
+import { StaticRules, RuleSpec, OneRule, ReplaceItems } from './ParserRules'
 import {
   PosResult,
   ParserResult,

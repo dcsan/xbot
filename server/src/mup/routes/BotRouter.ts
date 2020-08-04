@@ -1,4 +1,4 @@
-import { App, MessageEvent, SayFn, SlackEventMiddlewareArgs } from '@slack/bolt';
+// import { App, MessageEvent, SayFn, SlackEventMiddlewareArgs } from '@slack/bolt';
 import { Pal } from '../pal/Pal'
 import { RexParser, ParserResult } from './RexParser'
 import { Logger } from '../../lib/Logger'
@@ -27,7 +27,6 @@ async function chainEvents(chain: any, evt: SceneEvent): Promise<ActionResult> {
   }
 }
 
-
 const BotRouter = {
 
   async textEvent(pal: Pal): Promise<ActionResult> {
@@ -44,11 +43,12 @@ const BotRouter = {
   async anyEvent(pal: Pal, input: string, eventType: string): Promise<ActionResult> {
     pal.input(input)  // store it for other events to read
     Logger.log('anyEvent.input:', input)
-    if (/^(-|'|\.|#| |,|>|\\) /.test(input)) {
-      // ignore prefixed
-      Logger.log('ignore prefixed: ', input)
-      return { handled: HandleCodes.skippedPrefix }
-    }
+    if (input[0])
+      if (/^(-|'|\.|#| |,|>|\\) /.test(input)) {
+        // ignore prefixed
+        Logger.log('ignore prefixed: ', input)
+        return { handled: HandleCodes.skippedPrefix }
+      }
     // const { message: MessageEvent, say: SayFn } = slackEvent
 
     const storyName = 'asylum'
@@ -93,6 +93,7 @@ const BotRouter = {
     if (evt.pres.rule?.type !== 'command') return { handled: HandleCodes.unknown, err: true }
     // await evt.pal.debugMessage(`rule: ${ evt.pres.rule?.cname }`)
     // invoke method in RouterService
+    // call the function
     await evt.pres.rule?.event(evt)
     return {
       err: false,

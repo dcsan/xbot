@@ -2,6 +2,11 @@
 
 ## TOP:
 
+- hidden item
+
+- cleanup pal.input so it works for tests same as the app
+  - add parser inside there
+
 - already have item
 
 X merge files for actions?

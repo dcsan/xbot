@@ -347,17 +347,6 @@ class GameObject {
       history: []
     }
 
-    // custom JS func?
-    if (actionData.invoke) {
-      // call a JS script with evt
-      const funcName = actionData.invoke
-      if (GameFuncs[funcName]) {
-        GameFuncs[funcName](actionData, evt)
-      } else {
-        Logger.warn('tried to call non-exist JSfunc:', funcName)
-      }
-    }
-
     // quick reply
     if (actionData.reply) {
       const msg = this.formatReply(actionData.reply)
@@ -366,31 +355,25 @@ class GameObject {
       trackResult.history?.push('reply')
     }
 
-    // goto at top level of the block
-    if (actionData.goto) {
-      const roomName: string = actionData.goto
-      await this.story.gotoRoom(roomName, evt)
-      trackResult.handled = HandleCodes.foundGoto
-      trackResult.history?.push('goto')
-    }
-
     if (actionData.always) {
-      await this.runBranch(actionData.always, evt)
+      await this.runBranch(actionData.always, evt, trackResult)
     }
 
     if (actionData.if) {
-      await this.runConditionalBranch(actionData, evt)
+      await this.runConditionalBranch(actionData, evt, trackResult)
     } else {
-      // can have an always and a 'then' with no 'if' ... maybe while in dev
-      await this.runBranch(actionData.then, evt)
+      // just a 'then' without an 'if'
+      await this.runBranch(actionData.then, evt, trackResult)
     }
+
+    Logger.logObj('DONE ranAction', { actionData, history: trackResult.history })
 
     return trackResult
   }
 
-  async runConditionalBranch(action: ActionData, evt: SceneEvent) {
+  async runConditionalBranch(action: ActionData, evt: SceneEvent, trackResult: ActionResult) {
     const condBranch: ActionBranch = this.getConditionalBranch(action)
-    await this.runBranch(condBranch, evt)
+    await this.runBranch(condBranch, evt, trackResult)
   }
 
   getConditionalBranch(action: ActionData): ActionBranch {
@@ -455,19 +438,40 @@ class GameObject {
     }
   }
 
-  async runBranch(branch: ActionBranch | undefined, evt: SceneEvent) {
-    if (!branch) return
-    await this.doCallActions(branch.before, evt)
+  async runBranch(branch: ActionBranch | undefined, evt: SceneEvent, trackResult: ActionResult) {
     if (!branch) {
       Logger.error('tried to run a null branch', evt?.pres)
       return
     }
-    if (branch.reply && evt) {
-      evt.pal.sendText(branch.reply)
+
+    await this.doCallActions(branch.before, evt)
+
+    // custom JS func?
+    if (branch.invoke) {
+      // call a JS script with evt
+      const funcName = branch.invoke
+      if (GameFuncs[funcName]) {
+        GameFuncs[funcName](branch, evt)
+      } else {
+        Logger.warn('tried to call non-exist JSfunc:', funcName)
+      }
     }
+
+    if (branch.reply) await evt.pal.sendText(branch.reply)
+    if (branch.buttons) await evt.pal.sendButtons(branch.buttons)
+
     await this.applySetProps(branch, evt)
     await this.doTakeActions(branch, evt)
     await this.doCallActions(branch.after, evt)
+
+    // goto at top level of the block
+    if (branch.goto) {
+      const roomName: string = branch.goto
+      await this.story.gotoRoom(roomName, evt)
+      trackResult.handled = HandleCodes.foundGoto
+      trackResult.history?.push('goto')
+    }
+
   }
 
   // set props on this or other items

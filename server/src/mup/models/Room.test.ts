@@ -2,6 +2,7 @@ import { TestEnv } from '../../lib/TestUtils'
 import { ActionResult, SceneEvent } from '../MupTypes'
 import { ParserResult, RexParser } from '../routes/RexParser'
 import { HandleCodes } from './ErrorHandler'
+import { Logger } from '../../lib/Logger'
 
 afterAll(() => {
   // Logger.log('done')
@@ -29,8 +30,8 @@ it('should respond to smell action', async () => {
   expect(actualResult.err).not.toBe(true)
   expect(actualResult.handled).toBe(HandleCodes.processing)
   expect(actualResult.klass).toBe('room')
-  expect(actualResult?.history ? actualResult?.history[0] : false).toBe('reply')
-  expect(evt.pal.channelEvent.store[0]).toMatch(/A musty smell/)
+  // expect(actualResult?.history ? actualResult?.history[0] : false).toBe('reply')
+  expect(evt.pal.getLogLineText(0)).toMatch(/A musty smell/)
 })
 
 it('should respond to random sesame action', async () => {
@@ -42,11 +43,12 @@ it('should respond to random sesame action', async () => {
   const pres: ParserResult = RexParser.parseCommands(input)
   expect(pres.parsed).not.toBeDefined()
   const evt: SceneEvent = { pal, pres, game }
-  const actualResult: ActionResult = await game.story.room.findAndRunAction(evt)
-  expect(actualResult.err).not.toBe(true)
-  expect(actualResult.handled).toBe(HandleCodes.processing)
-  expect(actualResult.klass).toBe('room')
-  expect(actualResult?.history ? actualResult?.history[0] : false).toBe('reply')
+  const trackResult: ActionResult = await game.story.room.findAndRunAction(evt)
+  expect(trackResult.err).not.toBe(true)
+  expect(trackResult.handled).toBe(HandleCodes.processing)
+  expect(trackResult.klass).toBe('room')
+  Logger.logObj('trackResult', trackResult)
+  expect(trackResult?.history ? trackResult?.history[0] : false).toBe('reply')
   expect(evt.pal.channelEvent.store[0]).toMatch(/You shout \"sesame\" to the room/)
 })
 

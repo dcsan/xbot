@@ -61,16 +61,21 @@ const RouterService = {
 
   handleCheat: async (evt: SceneEvent) => {
     const game = await GameManager.findGame({ pal: evt.pal })
-
     const info = {
-      roomEvents: RouterService.getActionMatchesThing(game.story.currentRoom),
-      itemEvents: RouterService.getActionMatchesList(game.story.currentRoom.items),
+      room: game.story.room.name,
+      roomActions: RouterService.getActionMatchesThing(game.story.currentRoom),
+      // itemEvents: RouterService.getActionMatchesList(game.story.currentRoom.items),
       actors: RouterService.getActionMatchesList(game.story.currentRoom.actors)
     }
     Logger.logObj('cheatInfo', info)
     const blob = yaml.dump(info)
     evt.pal.sendText(Util.quoteCode(blob))
     return info
+  },
+
+  handleHelp: async (evt: SceneEvent) => {
+    const help = evt.game.story.doc.help.basic
+    await evt.pal.sendText(help)
   },
 
   reload: async (evt: SceneEvent) => {

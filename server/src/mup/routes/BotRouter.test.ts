@@ -4,6 +4,8 @@ import { RouterService } from './RouterService';
 import { HandleCodes } from '../models/ErrorHandler';
 import { Logger } from '../../lib/Logger';
 
+import { ActionResult } from '../MupTypes'
+
 const log = console.log
 
 beforeAll(async () => {
@@ -54,9 +56,11 @@ it('should have fallback if thing cannot be found', async () => {
 })
 
 it('should allow to examine something', async () => {
-  const env = new TestEnv()
+  const env = new TestEnv('office')
+  env.game.story.gotoRoom('cell')
   const evt = env.makeSceneEvent('x soap')
   await BotRouter.textEvent(env.pal)
+  console.log(await env.pal.showLog())
   // console.log('store', JSON.stringify(env.pal.channel.store))
   expect(evt.pal.getLogLineText(0)).toMatch(/time for a good scrub/)
   // expect(env.pal.allText).toMatch(/time for a good scrubbing/)
@@ -69,7 +73,7 @@ it('should allow top level room command with actions', async () => {
   const door = env.game.story.room.findThing('door')
   expect(door?.state).toBe('locked')  // initial
   env.pal.input('sesame')
-  const res = await BotRouter.textEvent(env.pal)
+  const res: ActionResult = await BotRouter.textEvent(env.pal)
   expect(res.handled).toBe(HandleCodes.okReplied)
   expect(res.err).not.toBe(true)
   expect(env.pal.getReceivedText(0)).toMatch(/You shout/i)

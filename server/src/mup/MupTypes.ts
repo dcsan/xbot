@@ -16,9 +16,20 @@ export interface StateBlock {
   buttons: string[]
 }
 
+interface ActionData {
+  match: string
+  reply?: string
+  goto?: string
+  always?: ActionBranch
+  if: ActionIf
+  then: ActionBranch
+  else: ActionBranch
+}
+
 // the fail/pass block branches of a full ActionData
 interface ActionBranch {
   reply?: string
+  buttons?: string[]
   imageUrl?: string
   setHint?: string
   setProps?: string[]
@@ -27,33 +38,12 @@ interface ActionBranch {
   drop?: string[]   // names
   before?: string[] // actions to call
   after?: string[]
+  invoke?: string // javascript function
 }
 
 interface ActionIf {
   all: string[]
   any: string[]
-}
-
-interface ActionData {
-  match: string
-  reply?: string
-  goto?: string
-  // setProps?: string[]  // at the top level as well?
-
-  invoke?: string // javascript function
-
-  always?: ActionBranch
-  if: ActionIf
-  then: ActionBranch
-  else: ActionBranch
-  // sets: string[]
-  // needs: string
-  // if?: string[] | string
-  // then: ActionBranch
-  // else: ActionBranch
-
-  // pass?: ActionBranch
-  // fail?: ActionBranch
 }
 
 interface ActionResult {

@@ -42,8 +42,8 @@ it('should reduce vocab', async () => {
 })
 
 it('should not mess up embedded words', async () => {
-  const clean = RexParser.reduceVocab('take wardrobe')
-  expect(clean).toBe('take closet')
+  const clean = RexParser.reduceVocab('take closet')
+  expect(clean).toBe('take wardrobe')
 })
 
 

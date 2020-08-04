@@ -59,19 +59,23 @@ class MockChannel implements IChannel {
 
 }
 
-class ChatLine {
-  opts: {
-    who: string
-    text: string
-    type: string    // text|buttons|
-    blob: any
-    count: number
-  }
+interface ChatLogItem {
+  who: string
+  text: string
+  type: string    // text|buttons|
+  blob?: any
+  count?: number
+}
 
-  constructor(opts) {
+// FIXME - do we need both class and interface?
+class ChatLine {
+  opts: ChatLogItem
+
+  constructor(opts: ChatLogItem) {
     this.opts = opts
   }
 
+  // wrapper for presentation
   output() {
     const padCount = `${this.opts.count}`.padStart(4, '0')
     // const padWho = `${this.opts.who}`.padEnd(6, ' ')
@@ -89,7 +93,8 @@ class ChatLogger {
     this.lines = []
   }
 
-  log(opts) {
+  log(opts: ChatLogItem) {
+    // just keep count in here
     opts.count = this.lines.length
     const line = new ChatLine(opts)
     this.lines.push(line)
@@ -146,7 +151,7 @@ class Pal {
   // }
 
   // called for incoming events
-  logEvent(opts) {
+  logEvent(opts: ChatLogItem) {
     this.logger.log(opts)
   }
 
@@ -214,7 +219,7 @@ class Pal {
       })
     } catch (err) {
       Logger.warn('logging err', err)
-      this.logger.log({ who: 'bot', text: JSON.stringify(blob), type: 'blob' })
+      this.logger.log({ who: 'bot', text: JSON.stringify(blob), blob, type: 'blob' })
     }
   }
 
@@ -259,6 +264,7 @@ class Pal {
     const text = lines.join('\n')
     Logger.log('log', text)
     this.channelEvent.say(Util.quoteCode(text))
+    return text
   }
 
 }

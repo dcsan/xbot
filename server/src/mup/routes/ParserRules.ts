@@ -57,11 +57,27 @@ const ReplaceItems = [
 
 ]
 
-const StaticRules: OneRule[] = [
+interface RuleSpec {
+  cname: string
+  rex: RegExp
+  event: any,
+  type: string
+  extra?: any
+}
+
+const StaticRules: RuleSpec[] = [
   {
     cname: 'cheat',
     rex: /^cheat$/i,
     event: RouterService.handleCheat,
+    type: 'command',
+    extra: undefined
+  },
+
+  {
+    cname: 'help',
+    rex: /^(help|halp)$/i,
+    event: RouterService.handleHelp,
     type: 'command',
     extra: undefined
   },
@@ -179,4 +195,4 @@ const StaticRules: OneRule[] = [
 
 ]
 
-export { StaticRules, OneRule, ReplaceItems, ReplaceItem }
+export { StaticRules, OneRule, ReplaceItems, ReplaceItem, RuleSpec }
