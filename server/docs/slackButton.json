@@ -1,0 +1,224 @@
+{
+  "type": "block_actions",
+  "user": {
+    "id": "U017AACTBC1",
+    "username": "dc",
+    "name": "dc",
+    "team_id": "T016GV0914P"
+  },
+  "api_app_id": "A017A7RJJHM",
+  "token": "J8K401QFyJ1U2eMuCwe2YW7l",
+  "container": {
+    "type": "message_attachment",
+    "message_ts": "1596540924.133900",
+    "attachment_id": 1,
+    "channel_id": "C016WDRFZN1",
+    "is_ephemeral": false,
+    "is_app_unfurl": false
+  },
+  "trigger_id": "1273583203222.1220986307159.ebe9861392f449baade417e131101f05",
+  "team": {
+    "id": "T016GV0914P",
+    "domain": "coffeebreakgames"
+  },
+  "channel": {
+    "id": "C016WDRFZN1",
+    "name": "games"
+  },
+  "message": {
+    "bot_id": "B017R690J03",
+    "type": "message",
+    "text": "",
+    "user": "U017R06KED8",
+    "ts": "1596540924.133900",
+    "team": "T016GV0914P",
+    "attachments": [
+      {
+        "id": 1,
+        "blocks": [
+          {
+            "type": "image",
+            "block_id": "tW=",
+            "image_url": "https://cbg.rik.ai/cdn/story-asylum.wiki/shots/fb-ad.jpg?x=26609015",
+            "alt_text": "default",
+            "title": {
+              "type": "plain_text",
+              "text": "home",
+              "emoji": true
+            },
+            "fallback": "1070x1070px image",
+            "image_width": 1070,
+            "image_height": 1070,
+            "image_bytes": 66521
+          },
+          {
+            "type": "section",
+            "block_id": "okaW2",
+            "text": {
+              "type": "mrkdwn",
+              "text": "You accept an invitation to playtest a new physical escape room. The setting of the game is a mental asylum called 'Bell Hill'. Having signed the game’s standard NDA, you climb into bed early Friday night, full of anticipation.\n After all, you _*love*_ escape rooms",
+              "verbatim": false
+            }
+          },
+          {
+            "type": "actions",
+            "block_id": "OZ8Y",
+            "elements": [
+              {
+                "type": "button",
+                "action_id": "p98",
+                "text": {
+                  "type": "plain_text",
+                  "text": "Get some Sleep",
+                  "emoji": true
+                },
+                "value": "sleep"
+              }
+            ]
+          }
+        ],
+        "fallback": "[no preview available]"
+      }
+    ]
+  },
+  "response_url": "https://hooks.slack.com/actions/T016GV0914P/1292939121329/xzmSVR87LXsiJDeXCJk4Nb5O",
+  "actions": [
+    {
+      "action_id": "p98",
+      "block_id": "OZ8Y",
+      "text": {
+        "type": "plain_text",
+        "text": "Get some Sleep",
+        "emoji": true
+      },
+      "value": "sleep",
+      "type": "button",
+      "action_ts": "1596540930.195952"
+    }
+  ]
+},
+"payload": {
+  "action_id": "p98",
+  "block_id": "OZ8Y",
+  "text": {
+    "type": "plain_text",
+    "text": "Get some Sleep",
+    "emoji": true
+  },
+  "value": "sleep",
+  "type": "button",
+  "action_ts": "1596540930.195952"
+},
+"action": {
+  "action_id": "p98",
+  "block_id": "OZ8Y",
+  "text": {
+    "type": "plain_text",
+    "text": "Get some Sleep",
+    "emoji": true
+  },
+  "value": "sleep",
+  "type": "button",
+  "action_ts": "1596540930.195952"
+},
+"context": {
+  "botToken": "xoxb-1220986307159-1263006660450-7fPHosMf8Srjv21TDoH6X5VY",
+  "botUserId": "U017R06KED8",
+  "botId": "B017R690J03",
+  "actionIdMatches": [
+    "p98"
+  ]
+},
+"client": {
+  "_events": {},
+  "_eventsCount": 0,
+  "admin": {
+    "apps": {
+      "approved": {},
+      "requests": {},
+      "restricted": {}
+    },
+    "conversations": {
+      "restrictAccess": {}
+    },
+    "inviteRequests": {
+      "approved": {},
+      "denied": {}
+    },
+    "teams": {
+      "admins": {},
+      "owners": {},
+      "settings": {}
+    },
+    "usergroups": {},
+    "users": {
+      "session": {}
+    }
+  },
+  "api": {},
+  "auth": {},
+  "bots": {},
+  "calls": {
+    "participants": {}
+  },
+  "channels": {},
+  "chat": {
+    "scheduledMessages": {}
+  },
+  "conversations": {},
+  "views": {},
+  "dialog": {},
+  "dnd": {},
+  "emoji": {},
+  "files": {
+    "comments": {},
+    "remote": {}
+  },
+  "groups": {},
+  "im": {},
+  "migration": {},
+  "mpim": {},
+  "oauth": {
+    "v2": {}
+  },
+  "pins": {},
+  "reactions": {},
+  "reminders": {},
+  "rtm": {},
+  "search": {},
+  "stars": {},
+  "team": {
+    "profile": {}
+  },
+  "usergroups": {
+    "users": {}
+  },
+  "users": {
+    "profile": {}
+  },
+  "token": "xoxb-1220986307159-1263006660450-7fPHosMf8Srjv21TDoH6X5VY",
+  "slackApiUrl": "https://slack.com/api/",
+  "retryConfig": {
+    "retries": 10,
+    "factor": 1.96821,
+    "randomize": true
+  },
+  "requestQueue": {
+    "queue": {
+      "_queue": []
+    },
+    "_pendingCount": 0,
+    "_concurrency": 3,
+    "_isPaused": false
+  },
+  "tlsConfig": {},
+  "rejectRateLimitedCalls": false,
+  "logger": {
+    "level": "info",
+    "name": "web-api:WebClient:1"
+  }
+},
+"logger": {
+  "level": "info",
+  "name": "bolt-app"
+}

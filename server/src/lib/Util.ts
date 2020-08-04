@@ -71,7 +71,10 @@ const Util = {
 
   // FIXME add full regex non WS support
   safeName(name) {
-    if (!name) Logger.error('no name passed to safeName method')
+    if (!name) {
+      Logger.warn('no name passed to safeName method')
+      return
+    }
     name = name.toLowerCase()
     return name.replace(/ /gim, '-')
   },

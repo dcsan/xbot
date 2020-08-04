@@ -36,7 +36,7 @@ const Logger = {
     console.log('---> ', msg, ...rest, '\n')
   },
 
-  warn(msg, obj, force = false) {
+  warn(msg, obj = {}, force = false) {
     if (AppConfig.logLevel < LogLevels.WARN || force) return
     Logger.log(
       chalk.black.bgYellow.bold(' WARNING ' + msg),

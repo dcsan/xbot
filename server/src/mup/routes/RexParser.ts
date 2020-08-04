@@ -437,7 +437,7 @@ const RexParser = {
     } else {
       // TODO - global counter for missed rules?
       // so we can show a hint?
-      Logger.log('no rule matched for input', clean)  // could be a room action instead
+      Logger.log('no command matched for input', clean)  // could be a room action instead
     }
     // Logger.log('pres', pres)
     return pres

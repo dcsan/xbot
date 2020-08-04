@@ -7,7 +7,14 @@ const PalManager = {
 
   // TODO store in mongo
   findPal(channelEvent: IChannel | any): Pal {
-    const sid = channelEvent.payload.channel  // for slack
+    const sid =
+      channelEvent.event?.channel ||
+      channelEvent.body?.channel?.id ||
+      channelEvent.body?.container?.channel_id
+
+    if (!sid) {
+      Logger.warn('cannot get channelId', JSON.stringify(channelEvent, null, 2))
+    }
 
     let pal: Pal = palCache[sid]
     if (pal) {

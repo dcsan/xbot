@@ -276,6 +276,8 @@ class GameObject {
     // turn clean into a [list] of things to check if its the only checkable
     const checks: string[] = evt.pres.combos || [evt.pres.clean]
 
+    Logger.log('checks', checks)
+
     for (const check of checks) {
       const actionData: ActionData = this.findRoom.findAction(check)
       if (!actionData) {
@@ -316,12 +318,15 @@ class GameObject {
     input = WordUtils.basicNormalize(input)
 
     const foundAction: ActionData = room.doc.actions?.find((action: ActionData) => {
-      const rex = new RegExp(action.match)
+      const rex = new RegExp(action.match, 'i')
       const check = rex.test(input)
       if (check) {
         return action // and exit loop
+      } else {
+        console.log('no match', input, rex, check)
+        return false
       }
-      else return false
+
     })
     if (foundAction) {
       Logger.logObj('foundAction for', { input, foundAction })
@@ -404,7 +409,7 @@ class GameObject {
   checkOneCondition(line): boolean {
     const pres = RexParser.parseSetLine(line)
     if (!pres.parsed?.groups) {
-      Logger.warn('ifBlock. missing groups', pres.parsed)
+      Logger.warn('ifBlock. missing groups', { parsed: pres.parsed })
       return false
     }
 
