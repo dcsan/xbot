@@ -43,12 +43,12 @@ const BotRouter = {
   async anyEvent(pal: Pal, input: string, eventType: string): Promise<ActionResult> {
     pal.input(input)  // store it for other events to read
     Logger.log('anyEvent.input:', input)
-    if (input[0])
-      if (/^(-|'|\.|#| |,|>|\\) /.test(input)) {
-        // ignore prefixed
-        Logger.log('ignore prefixed: ', input)
-        return { handled: HandleCodes.skippedPrefix }
-      }
+    // if (input[0])
+    if (/^[-'"\.# ,>\\]/.test(input)) {
+      // ignore prefixed
+      Logger.log('ignore prefixed: ', input)
+      return { handled: HandleCodes.skippedPrefix }
+    }
     // const { message: MessageEvent, say: SayFn } = slackEvent
 
     const storyName = 'asylum'
