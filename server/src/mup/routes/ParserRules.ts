@@ -5,7 +5,7 @@ import Player from '../models/Player'
 
 import { OneRule } from '../MupTypes'
 
-interface ReplaceItem {
+interface ReplacePair {
   rex: RegExp
   base: string
 }
@@ -24,21 +24,20 @@ const ReplaceItems = [
     rex: /\b(x|look at|examine|look at the)\b/
   },
 
-  {
-    base: 'open',
-    rex: /\b(open)\b/
-  },
+  // {
+  //   base: 'open',
+  //   rex: /\b(open)\b/
+  // },
   {
     base: 'shut',
     rex: /\b(shut|close)\b/
   },
-
   {
     base: 'robe',
     rex: /\b(robe|clothes|gown)\b/
   },
   {
-    base: 'shoes',
+    base: 'sandals',
     rex: /\b(shoes|sandals)\b/
   },
   {
@@ -195,4 +194,7 @@ const StaticRules: RuleSpec[] = [
 
 ]
 
-export { StaticRules, OneRule, ReplaceItems, ReplaceItem, RuleSpec }
+export {
+  StaticRules, OneRule, ReplaceItems,
+  ReplacePair, RuleSpec
+}

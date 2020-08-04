@@ -6,9 +6,8 @@ import Item from './Item'
 import Story from './Story'
 import Util from '../../lib/Util'
 // import WordUtils from '../../lib/WordUtils'
-// import { RexParser } from '../routes/RexParser'
-import { ParserResult } from '../routes/RexParser'
-import { Pal } from '../pal/Pal'
+// import { Pal } from '../pal/Pal'
+import { ParserResult, RexParser } from '../routes/RexParser'
 
 import {
   ErrorHandler,
@@ -69,23 +68,15 @@ class Room extends GameObject {
     })
   }
 
-  /**
-   * on entering a new room we look around
-   * @param {*} context
-   * @memberof Room
-   */
-  async enter(evt: SceneEvent) {
+  async enterRoom(evt: SceneEvent) {
+    RexParser.cacheSynPairs(this.items)
     await this.lookRoom(evt)
+    // await this.showItemsInRoom(evt)
   }
 
   async lookRoom(evt: SceneEvent) {
-    this.findRoom.describeThing(evt) // the room
+    await this.findRoom.describeThing(evt) // the room
   }
-
-  // async things(evt: SceneEvent) {
-  //   const msg = this.items.map(thing => thing.name)
-  //   evt.pal.sendText(msg.join(','))
-  // }
 
   itemFormalNamesOneLine() {
     const names = this.items.map(item => {
@@ -111,6 +102,14 @@ class Room extends GameObject {
       return
     }
     thing.describeThing(evt)
+  }
+
+  async showItemsInRoom(evt: SceneEvent) {
+    const itemsInfo = this.visibleItems()
+    Logger.log('itemsInfo:', itemsInfo)
+    if (itemsInfo) {
+      await evt.pal.sendBlocks([SlackBuilder.textBlock(`You see: ` + itemsInfo)])
+    }
   }
 
   // find and get an object in the room
@@ -230,7 +229,7 @@ class Room extends GameObject {
       handled: HandleCodes.errMissingPos,
       err: true
     }
-    evt.pal.sendText(`you try to ${pos.verb} the ${pos.target}`)
+    evt.pal.sendText(`You ${pos.verb} the ${pos.target} but nothing happens.`)
     return {
       handled: HandleCodes.foundUse,
     }
@@ -241,7 +240,7 @@ class Room extends GameObject {
     if (!pos?.target || !pos?.subject) {
       return { handled: HandleCodes.errMissingPos, err: true }
     }
-    evt.pal.sendText(`you try to ${pos.verb} the ${pos.subject} on the ${pos.target}`)
+    evt.pal.sendText(`You ${pos.verb} the ${pos.subject} on the ${pos.target} but nothing happens.`)
     return { handled: HandleCodes.foundUse }
   }
 

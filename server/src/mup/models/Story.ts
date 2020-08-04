@@ -89,7 +89,7 @@ class Story {
       this.currentRoom = room
       if (evt) {
         // else just go silently
-        await this.room.enter(evt)
+        await this.room.enterRoom(evt)
       }
     }
   }

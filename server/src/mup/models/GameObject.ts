@@ -47,9 +47,10 @@ class GameObject {
   klass: string
   // key:string objects for property setting
   props: any
+  hidden?: boolean
 
   constructor(doc, story: Story, klass: string,) {
-    Logger.log('create', doc)
+    // Logger.log('create', doc)
     this.doc = doc
     this.actions = doc.actions
     this.items = []
@@ -145,7 +146,7 @@ class GameObject {
 
   // looks for actors
   findThing(itemName: string): GameObject | undefined {
-    Logger.log('findThing', itemName, 'in', this.klass, this.allThings)
+    Logger.log('findThing', itemName, 'in', this.klass)
     const cname = Util.safeName(itemName)
     const found = this.allThings.filter((thing: GameObject) => {
       if (thing.cname === cname) return true
@@ -174,8 +175,9 @@ class GameObject {
     return this.cname.match(text)
   }
 
-  itemNames() {
-    return this.items.map(item => item.name).join(', ')
+  visibleItems(): string {
+    const vis = this.items.filter(item => !item.doc.hidden)
+    return vis.map(item => item.name).join(', ')
   }
 
   // list of objects in the room for other matching
@@ -234,11 +236,6 @@ class GameObject {
       palBlocks.push(
         SlackBuilder.textBlock(text)
       )
-    }
-    const itemsInfo = this.itemNames()
-    Logger.log('itemsInfo:', itemsInfo)
-    if (itemsInfo) {
-      palBlocks.push(SlackBuilder.textBlock(`You see: ` + itemsInfo))
     }
 
     if (stateInfo.buttons) {

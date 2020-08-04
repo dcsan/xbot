@@ -5,7 +5,8 @@ import stopword from 'stopword'
 const WordUtils = {
 
   stripPunctuation(input) {
-    const output = input.replace(/\.,-/gim, '')
+    // const output = input.replace(/\.,-/gim, '')
+    const output = input.replace(/[^\w ]/gim, '')
     return output
   },
 

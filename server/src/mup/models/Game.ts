@@ -13,6 +13,7 @@ import Player from './Player'
 import { SceneEvent } from '../MupTypes'
 import Menu from './Menu'
 
+
 import { LoadOptions } from '../MupTypes'
 // const tagger = posTagger()
 
@@ -48,7 +49,7 @@ class Game {
   // reload and show message
   async restart(evt: SceneEvent) {
     this.reset()
-    await this.story.currentRoom.enter(evt)
+    await this.story.currentRoom.enterRoom(evt)
     if (evt.pal) {
       await evt.pal.sendText('restarted')
     }

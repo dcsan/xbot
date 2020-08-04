@@ -3,6 +3,8 @@
 ## TOP:
 
 - hidden item
+- rotating hint footer system
+- hints to the speaking user only?
 
 - cleanup pal.input so it works for tests same as the app
   - add parser inside there

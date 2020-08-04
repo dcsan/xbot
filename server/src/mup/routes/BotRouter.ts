@@ -11,6 +11,8 @@ import {
   ActionResult
 } from '../MupTypes'
 
+import WordUtils from '../../lib/WordUtils'
+
 import { ErrorHandler, HandleCodes } from '../models/ErrorHandler'
 
 async function chainEvents(chain: any, evt: SceneEvent): Promise<ActionResult> {
@@ -50,10 +52,10 @@ const BotRouter = {
       return { handled: HandleCodes.skippedPrefix }
     }
     // const { message: MessageEvent, say: SayFn } = slackEvent
-
+    const clean = WordUtils.basicNormalize(input)
     const storyName = 'asylum'
     const game: Game = await GameManager.findGame({ pal, storyName })
-    const pres: ParserResult = RexParser.parseCommands(input)
+    const pres: ParserResult = RexParser.parseCommands(clean)
 
     const evt: SceneEvent = { pal, pres, game }
 
@@ -67,17 +69,17 @@ const BotRouter = {
 
     if (actionResult.err) {
       const err = {
-        msg: `cannot find route for [${input}]`,
+        msg: `cannot find route for [${clean}]`,
         code: actionResult.handled
       }
       await pal.debugMessage(err)
       Logger.warn('no match', err)
-      ErrorHandler.sendError(actionResult.handled, evt, { input })
+      ErrorHandler.sendError(actionResult.handled, evt, { input: clean })
     } else {
       await pal.debugMessage({
         ruleCname: pres.rule?.cname,
         ruleType: pres.rule?.type,
-        input,
+        input: clean,
         parsed: pres.parsed,
         groups: pres.parsed?.groups,
         pos: pres.pos,
@@ -121,6 +123,5 @@ const BotRouter = {
   }
 
 }
-
 
 export default BotRouter

@@ -3,7 +3,9 @@ import { Logger } from '../../lib/Logger'
 import WordUtils from '../../lib/WordUtils'
 // import RouterService from './RouterService'
 
-import { StaticRules, RuleSpec, OneRule, ReplaceItems } from './ParserRules'
+import { StaticRules, RuleSpec, OneRule, ReplaceItems, ReplacePair } from './ParserRules'
+import { GameObject } from '../models/GameObject'
+
 import {
   PosResult,
   ParserResult,
@@ -16,6 +18,7 @@ const ParserConfig = {
   verbs: 'take|move|get|open|wear|drink|rub|drop|lock|unlock'
 }
 
+let synPairsCache: ReplacePair[] = []
 
 const RexParser = {
 
@@ -379,8 +382,27 @@ const RexParser = {
   //   return result
   // }
 
+  // build a list of items when you enter a new room
+  cacheSynPairs(itemList: GameObject[]) {
+    itemList.forEach(item => {
+      if (item.doc.called) {
+        const pair: ReplacePair = {
+          base: item.name,
+          rex: new RegExp(item.doc.called)
+        }
+        synPairsCache.push(pair)
+      }
+    })
+    Logger.log('synPairsCache', synPairsCache)
+  },
+
   reduceVocab(input: string) {
+    // fixed command syns eg wear -> take
     for (const rep of ReplaceItems) {
+      input = input.replace(rep.rex, rep.base)
+    }
+    // names of items in game
+    for (const rep of synPairsCache) {
       input = input.replace(rep.rex, rep.base)
     }
     return input
@@ -424,10 +446,11 @@ const RexParser = {
   // object.field = value
   parseSetLine(input: string): ParserResult {
     // console.log('setItem', input)
+    const clean = WordUtils.stripPunctuation(input)
     const rex = /(?<target>\w*)\.(?<field>\w*) = (?<value>\w*)/
-    const parsed = rex.exec(input)
+    const parsed = rex.exec(clean)
     let pres: ParserResult = {
-      clean: input,
+      clean,
       parsed: {
         groups: { ...parsed?.groups }
       },
