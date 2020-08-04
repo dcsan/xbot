@@ -143,7 +143,9 @@ class Pal {
   // for testing
   input(text) {
     this.lastInput = text
-    this.channelEvent.message.text = text
+    if (this.channelEvent.message) {
+      this.channelEvent.message.text = text
+    }
   }
 
   // reply(message) {

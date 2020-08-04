@@ -1,4 +1,5 @@
 // import { App, MessageEvent, SayFn, SlackEventMiddlewareArgs } from '@slack/bolt';
+import AppConfig from '../../lib/AppConfig'
 import { Pal } from '../pal/Pal'
 import { RexParser, ParserResult } from './RexParser'
 import { Logger } from '../../lib/Logger'
@@ -43,17 +44,17 @@ const BotRouter = {
   },
 
   async anyEvent(pal: Pal, input: string, eventType: string): Promise<ActionResult> {
-    pal.input(input)  // store it for other events to read
     Logger.log('anyEvent.input:', input)
     // if (input[0])
-    if (/^[-'"\.# ,>\\]/.test(input)) {
+    if (/^[-'"\./# ,>\\]/.test(input)) {
       // ignore prefixed
       Logger.log('ignore prefixed: ', input)
       return { handled: HandleCodes.skippedPrefix }
     }
     // const { message: MessageEvent, say: SayFn } = slackEvent
     const clean = WordUtils.basicNormalize(input)
-    const storyName = 'asylum'
+    pal.input(clean)  // store it for GameFuncs
+    const storyName = AppConfig.read('storyName')
     const game: Game = await GameManager.findGame({ pal, storyName })
     const pres: ParserResult = RexParser.parseCommands(clean)
 
