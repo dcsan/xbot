@@ -27,7 +27,7 @@ const Util = {
     if (relPath.startsWith('http')) return relPath
     if (relPath.startsWith('text=')) return `https://via.placeholder.com/500x200/444488/CCC.png?${relPath}`
 
-    const absPath = process.env.STATIC_SERVER + '/cdn/cbg-stories/' + relPath + Util.cacheBust()
+    const absPath = process.env.STATIC_SERVER + '/cdn/storydata/' + relPath + Util.cacheBust()
     Logger.log('relPath', relPath, absPath)
     return absPath
   },
@@ -35,7 +35,7 @@ const Util = {
   loadStoryDir(storyName) {
     Logger.log('loadStoryDir', storyName)
 
-    const storyPath = `../../cdn/cbg-stories/${storyName}/story`
+    const storyPath = `../../cdn/storydata/${storyName}/story`
     const fullPath = path.join(__dirname, storyPath)
     const pattern = `${fullPath}/*.yaml`
     const files = glob.sync(pattern)

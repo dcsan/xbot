@@ -1,0 +1,6 @@
+[submodule "server/cdn/server/cdn/storydata"]
+	path = server/cdn/server/cdn/storydata
+	url = git@github.com:dcsan/storydata.git
+[submodule "server/cdn/storydata"]
+	path = server/cdn/storydata
+	url = git@github.com:dcsan/storydata.git
