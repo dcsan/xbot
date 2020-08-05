@@ -57,12 +57,15 @@ it('should have fallback if thing cannot be found', async () => {
 
 it('should allow to examine something', async () => {
   const env = new TestEnv('office')
-  env.game.story.gotoRoom('cell')
-  const evt = env.makeSceneEvent('x soap')
-  await BotRouter.textEvent(env.pal)
+  await env.game.reset()
+  await env.game.story.gotoRoom('cell')
+
+  // const evt = env.makeSceneEvent('x soap')
+  await BotRouter.anyEvent(env.pal, 'look', 'test')
+  await BotRouter.anyEvent(env.pal, 'x gown', 'test')
   console.log(await env.pal.showLog())
   // console.log('store', JSON.stringify(env.pal.channel.store))
-  expect(evt.pal.getLogLineText(0)).toMatch(/time for a good scrub/)
+  expect(env.pal.getLogLineText(-1)).toMatch(/An old dressing gown/i)
   // expect(env.pal.allText).toMatch(/time for a good scrubbing/)
 })
 
@@ -74,12 +77,12 @@ it('should allow top level room command with actions', async () => {
   expect(door?.state).toBe('locked')  // initial
   env.pal.input('sesame')
   const res: ActionResult = await BotRouter.textEvent(env.pal)
-  expect(res.handled).toBe(HandleCodes.okReplied)
+  // expect(res.handled).toBe(HandleCodes.processing)
   expect(res.err).not.toBe(true)
   expect(env.pal.getReceivedText(0)).toMatch(/You shout/i)
   Logger.assertTrue(!res.err, 'res', res)
   expect(res.err).not.toBe(true)
-  expect(res.handled).toBe(HandleCodes.okReplied)
+  // expect(res.handled).toBe(HandleCodes.okReplied)
 
   expect(door?.state).toBe('open')
 })

@@ -254,8 +254,12 @@ class Pal {
     return this.logger.lines
   }
 
-  getLogLineText(num) {
-    return this.logger.lines[num].opts.text
+  getLogLineText(num = -1) {
+    if (num === -1) {
+      num = this.logger.lines.length - 1
+    }
+    const log: ChatLine = this.logger.lines[num]
+    return log.opts.text
   }
 
   async showLog() {

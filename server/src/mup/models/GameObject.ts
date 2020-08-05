@@ -435,14 +435,14 @@ class GameObject {
       Logger.log('if block passed', pres.parsed.groups)
       return true
     } else {
-      Logger.warn('if block failed', pres.parsed.groups)
+      Logger.log('if block failed', pres.parsed.groups)
       return false
     }
   }
 
   async runBranch(branch: ActionBranch | undefined, evt: SceneEvent, trackResult: ActionResult) {
     if (!branch) {
-      Logger.error('tried to run a null branch', evt?.pres)
+      Logger.log('tried to run a null branch for pres', evt?.pres)
       return
     }
 

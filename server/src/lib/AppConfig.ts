@@ -12,8 +12,6 @@ const AppConfig = {
 
   init() {
     // this is run after module has been used elsewhere so not good
-    // console.log('NODE_ENV:', process.env.NODE_ENV)
-    // console.log('STORYNAME:', process.env.STORYNAME)
   },
 
   toggleDebug(evt: SceneEvent) {
@@ -24,18 +22,31 @@ const AppConfig = {
 
   // TODO - merge props below
   read(key) {
-    const check = process.env[key]
-    if (check) { return check }
+    const check = AppConfig[key] || process.env[key]
+    if (check !== undefined) { return check } // allow 'false'
     // else
     const msg = "cannot find env var:" + key
-    console.log('env', process.env)
+    console.warn('process.env = ', process.env, msg)
     throw (msg)
+  },
+
+  checkCoreKeys() {
+    const checks = [
+      'storyName',
+      'NODE_ENV'
+    ]
+    checks.forEach(key => {
+      if (AppConfig.read(key) === undefined) {
+        throw new Error('undefined config key' + key)
+      }
+    })
   },
 
   NODE_ENV: process.env.NODE_ENV,
   CONFIG_ENV: process.env.CONFIG_ENV,
   CONFIG_APP: process.env.CONFIG_APP,
   logLevel: logLevel,
+  storyName: process.env.storyName,
 
   // verificationToken: process.env.VERIFICATION_TOKEN,
   // clientSigningSecret: process.env.CLIENT_SIGNING_SECRET,
@@ -51,9 +62,10 @@ const AppConfig = {
 
 }
 
-console.log('env', AppConfig.NODE_ENV)
-console.log('STORYNAME', process.env.STORYNAME)
-
 AppConfig.init()
+AppConfig.checkCoreKeys()
+
+// console.log('env', AppConfig.NODE_ENV)
+// console.log('storyName', AppConfig.storyName)
 
 export default AppConfig

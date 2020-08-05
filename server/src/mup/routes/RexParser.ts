@@ -445,12 +445,11 @@ const RexParser = {
 
   // object.field = value
   parseSetLine(input: string): ParserResult {
-    // console.log('setItem', input)
-    const clean = WordUtils.stripPunctuation(input)
+    // do NOT remove punctuation from this as we need it for parse/splitting
     const rex = /(?<target>\w*)\.(?<field>\w*) = (?<value>\w*)/
-    const parsed = rex.exec(clean)
+    const parsed = rex.exec(input)
     let pres: ParserResult = {
-      clean,
+      input,
       parsed: {
         groups: { ...parsed?.groups }
       },

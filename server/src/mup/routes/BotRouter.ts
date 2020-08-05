@@ -43,7 +43,7 @@ const BotRouter = {
     return await BotRouter.anyEvent(pal, input, 'action')
   },
 
-  async anyEvent(pal: Pal, input: string, eventType: string): Promise<ActionResult> {
+  async anyEvent(pal: Pal, input: string, eventType: string = 'text'): Promise<ActionResult> {
     Logger.log('anyEvent.input:', input)
     // if (input[0])
     if (/^[-'"\./# ,>\\]/.test(input)) {

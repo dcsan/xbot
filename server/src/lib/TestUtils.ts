@@ -28,6 +28,7 @@ class TestEnv {
       storyName
     }
     const game: Game = GameManager.findGame(opts)
+    // FIXME - not needed for a new game, but no way to tell if its new....
     game.reset()
     this.game = game
   }

@@ -49,9 +49,10 @@ class Story {
    */
   load(opts: LoadOptions): string {
     // default to config if not passed
-    const storyName = opts?.storyName ||
+    const storyName =
+      opts?.storyName ||
       this.storyName ||
-      AppConfig.read('STORYNAME')
+      AppConfig.read('storyName')
 
     this.storyName = storyName // save for reload
     const fullDoc = Util.loadStoryDir(storyName)

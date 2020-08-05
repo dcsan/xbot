@@ -14,7 +14,6 @@ const GameManager = {
     if (!game) {
       game = new Game(opts)
       GameList[sid] = game
-      game.reset()
       Logger.log('new game', sid)
       Logger.log('init routes gameObj.story', game.story.room.name)
     }

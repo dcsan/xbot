@@ -32,18 +32,18 @@ const ReplaceItems = [
     base: 'shut',
     rex: /\b(shut|close)\b/
   },
-  {
-    base: 'robe',
-    rex: /\b(robe|clothes|gown)\b/
-  },
-  {
-    base: 'sandals',
-    rex: /\b(shoes|sandals)\b/
-  },
-  {
-    base: 'wardrobe',
-    rex: /\b(closet|cupboard|wardrobe|wr)\b/
-  },
+  // {
+  //   base: 'robe',
+  //   rex: /\b(robe|clothes|gown)\b/
+  // },
+  // {
+  //   base: 'sandals',
+  //   rex: /\b(shoes|sandals)\b/
+  // },
+  // {
+  //   base: 'wardrobe',
+  //   rex: /\b(closet|cupboard|wardrobe|wr)\b/
+  // },
   {
     base: 'say',
     rex: /\b(say|tell|scream|speak|shout|ask)\b/

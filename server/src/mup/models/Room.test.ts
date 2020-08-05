@@ -47,9 +47,12 @@ it('should respond to random sesame action', async () => {
   expect(trackResult.err).not.toBe(true)
   expect(trackResult.handled).toBe(HandleCodes.processing)
   expect(trackResult.klass).toBe('room')
-  Logger.logObj('trackResult', trackResult)
-  expect(trackResult?.history ? trackResult?.history[0] : false).toBe('reply')
-  expect(evt.pal.channelEvent.store[0]).toMatch(/You shout \"sesame\" to the room/)
+  Logger.logObj('pal.logger', evt.pal.logger, true)
+  expect(evt.pal.getLogLineText()).toMatch(/The door opens/)
+  // const history: string[] | undefined = trackResult?.history
+  // Logger.logObj('history', history)
+  // expect(history ? history[0] : '').toBe('reply')
+  // expect(evt.pal.channelEvent.store[0]).toMatch(/You shout \"sesame\" to the room/)
 })
 
 
@@ -60,23 +63,22 @@ it('should handle a special action with a goto', async () => {
   expect(game.story.room.cname).toBe('office')
   expect(game.story.room.description).toMatch(/A large empty room/)
 
-  const input = "teleport cupboard"
+  const input = "teleport attic"
   const pres: ParserResult = RexParser.parseCommands(input)
   expect(pres.parsed).not.toBeDefined()
 
   const evt: SceneEvent = { pal, pres, game }
   const actualResult: ActionResult = await game.story.room.findAndRunAction(evt)
 
-  // console.log('store', evt.pal.channel.store)
-  expect(evt.pal.getReceivedText(0)).toMatch(/you click your heels/i)
+  console.log('store', evt.pal.logger)
+  expect(evt.pal.getLogLineText()).toMatch(/The attic is upstairs/i)
 
   expect(actualResult.err).not.toBe(true)
   expect(actualResult.handled).toBe(HandleCodes.foundGoto)
-  expect(game.story.room.name).toBe('cupboard')
+  expect(game.story.room.name).toBe('attic')
   expect(actualResult.klass).toBe('room')
-  expect(actualResult.history?.length).toBe(2)
-  expect(actualResult.history ? actualResult.history[0] : false).toBe('reply')
-
+  expect(actualResult.history?.length).toBe(1)
+  expect(actualResult.history ? actualResult.history[0] : false).toBe('goto')
 })
 
 
