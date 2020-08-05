@@ -69,7 +69,7 @@ class Room extends GameObject {
   }
 
   async enterRoom(evt: SceneEvent) {
-    RexParser.cacheSynPairs(this.items)
+    RexParser.cacheNames(this.items)
     await this.lookRoom(evt)
     // await this.showItemsInRoom(evt)
   }

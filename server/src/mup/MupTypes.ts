@@ -8,22 +8,14 @@ interface LoadOptions {
   pal: Pal
 }
 
+// FIXME merge with branch
 export interface StateBlock {
   name: string
   imageUrl: string
   short: string
   long: string
-  buttons: string[]
-}
-
-interface ActionData {
-  match: string
   reply?: string
-  goto?: string
-  always?: ActionBranch
-  if: ActionIf
-  then: ActionBranch
-  else: ActionBranch
+  buttons: string[]
 }
 
 // the fail/pass block branches of a full ActionData
@@ -40,6 +32,17 @@ interface ActionBranch {
   after?: string[]
   invoke?: string // javascript function
 }
+
+interface ActionData {
+  match: string
+  reply?: string
+  goto?: string
+  always?: ActionBranch
+  if: ActionIf
+  then: ActionBranch
+  else: ActionBranch
+}
+
 
 interface ActionIf {
   all: string[]

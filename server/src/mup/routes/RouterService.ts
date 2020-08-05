@@ -5,7 +5,7 @@ import { GameManager } from '../models/GameManager'
 import { Logger } from '../../lib/Logger'
 import Util from '../../lib/Util'
 import { Pal } from '../pal/Pal'
-import { ParserResult } from './RexParser'
+import { RexParser, ParserResult } from './RexParser'
 
 import { SceneEvent } from '../MupTypes'
 
@@ -89,6 +89,13 @@ const RouterService = {
   showLog: async (evt: SceneEvent) => {
     await evt.pal.sendText('-- sent log')
     await evt.pal.showLog()
+  },
+
+  // for quicker parsing
+  cacheNames: async (evt: SceneEvent) => {
+    const itemList = evt.game.story.room.items
+    await RexParser.cacheNames(itemList)
+    await evt.pal.sendText('rebuilt cache')
   },
 
   showInventory: async (evt: SceneEvent) => {

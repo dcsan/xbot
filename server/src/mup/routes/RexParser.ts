@@ -354,7 +354,6 @@ const RexParser = {
   //   return parsed
   // },
 
-
   // /**
   //  * simple parser like this:
   //  * `action` `item` `modifier`
@@ -382,13 +381,20 @@ const RexParser = {
   //   return result
   // }
 
+  makeRexFromLine(line) {
+    let rexstr = line.split('|').join('\\b|\\b')
+    rexstr = `\\b${rexstr}\\b`
+    console.log('rexstr', rexstr)
+    return new RegExp(rexstr)
+  },
+
   // build a list of items when you enter a new room
-  cacheSynPairs(itemList: GameObject[]) {
+  cacheNames(itemList: GameObject[]) {
     itemList.forEach(item => {
       if (item.doc.called) {
         const pair: ReplacePair = {
           base: item.name,
-          rex: new RegExp(item.doc.called)
+          rex: RexParser.makeRexFromLine(item.doc.called)
         }
         synPairsCache.push(pair)
       }
@@ -413,8 +419,16 @@ const RexParser = {
     clean = RexParser.reduceVocab(clean)
     Logger.log('clean', clean)
     let pres: ParserResult = {
-      input: clean,
+      input,
       clean,
+      // this is what we use to search in roomActions
+      combos: [
+        input
+      ],
+    }
+
+    if (input !== clean) {
+      pres.combos?.push(clean)
     }
 
     // find first match
@@ -489,14 +503,14 @@ const RexParser = {
       // so 'wear robe' becomes robe => `wear`
       const verb = parsed.groups?.verb
       pres.combos = [
-        clean,
-        verb
+        input,  // search without any keyword replacement first
+        clean,  // ask->say etc.
+        verb    // look commands
         // `${ pos.verb } ${ subject }`
       ]
     }
     return pres
   }
-
 
 }
 

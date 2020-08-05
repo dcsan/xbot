@@ -174,7 +174,15 @@ const StaticRules: RuleSpec[] = [
     cname: 'log',
     type: 'command',
     event: RouterService.showLog
-  }
+  },
+
+  {
+    rex: /^(cacheNames|cn)$/i,
+    cname: 'recache',
+    type: 'command',
+    event: RouterService.cacheNames
+  },
+
 
   // {
   //   cname: 'examine',

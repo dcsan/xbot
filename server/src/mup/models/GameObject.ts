@@ -160,12 +160,13 @@ class GameObject {
       return false  // not found
     })
     if (found.length > 0) {
-      Logger.log('found thing::', found[0])
-      return found[0]
+      const item = found[0]
+      Logger.log('found thing::', item.name)
+      return item
     } else {
       Logger.warn('cannot find thing:', itemName)
+      Logger.warn('in list', this.findRoom.itemCnames())
       Logger.log('this:', this.cname, this.klass)
-      Logger.warn('in list', this.allThings.map(t => t.cname))
       return undefined
     }
   }
@@ -220,18 +221,26 @@ class GameObject {
   // may work for rooms and things
   async describeThing(evt: SceneEvent) {
     const stateInfo: StateBlock = this.getStateBlock()
+    const palBlocks = this.renderItem(stateInfo)
+    await evt.pal.sendBlocks(palBlocks)
+    return palBlocks
+  }
+
+  renderItem(stateInfo: StateBlock): any[] {
     const palBlocks: any[] = []
 
-    Logger.log('describeThing', {
-      name: this.name,
-      state: this.state,
-      props: this.props,
-      stateInfo,
-    })
+    // Logger.log('describeThing', {
+    //   name: this.name,
+    //   state: this.state,
+    //   props: this.props,
+    //   stateInfo,
+    // })
+
     if (stateInfo.imageUrl) {
       palBlocks.push(SlackBuilder.imageBlock(stateInfo, this))
     }
-    const text = stateInfo.long || stateInfo.short
+
+    const text = stateInfo.long || stateInfo.short || stateInfo.reply
     if (text) {
       palBlocks.push(
         SlackBuilder.textBlock(text)
@@ -242,8 +251,6 @@ class GameObject {
       const buttonsBlock = SlackBuilder.buttonsBlock(stateInfo.buttons)
       palBlocks.push(buttonsBlock)
     }
-
-    await evt.pal.sendBlocks(palBlocks)
     return palBlocks
   }
 
@@ -280,13 +287,13 @@ class GameObject {
 
     for (const check of checks) {
       const actionData: ActionData = this.findRoom.findAction(check)
-      if (!actionData) {
-        return {
-          handled: HandleCodes.errActionNotFound,
-          err: true
-        }
-        // break the loop
-      }
+      // if (!actionData) {
+      //   return {
+      //     handled: HandleCodes.errActionNotFound,
+      //     err: true
+      //   }
+      //   // break the loop
+      // }
       if (actionData) {
         const actionResult = await this.runAction(actionData, evt)
         if (actionResult.err) {
@@ -329,10 +336,10 @@ class GameObject {
 
     })
     if (foundAction) {
-      Logger.logObj('foundAction for', { input, foundAction })
+      Logger.logObj('OK foundAction for', { input, foundAction })
     } else {
       // Logger.logObj('FAIL foundAction', { input, 'room.actions': room.actions })
-      Logger.log('FAIL foundAction for input:', input)
+      Logger.log('FAIL no foundAction for input:', input)
     }
     return foundAction
   }
@@ -447,6 +454,8 @@ class GameObject {
     }
 
     await this.doCallActions(branch.before, evt)
+    await this.applySetProps(branch, evt)
+    await this.doTakeActions(branch, evt)
 
     // custom JS func?
     if (branch.invoke) {
@@ -459,11 +468,11 @@ class GameObject {
       }
     }
 
-    if (branch.reply) await evt.pal.sendText(branch.reply)
-    if (branch.buttons) await evt.pal.sendButtons(branch.buttons)
+    // FIXME merge types for branch and stateBlock
+    const palBlocks = this.renderItem(branch as StateBlock)
+    console.log('palBlocks', palBlocks)
+    await evt.pal.sendBlocks(palBlocks)
 
-    await this.applySetProps(branch, evt)
-    await this.doTakeActions(branch, evt)
     await this.doCallActions(branch.after, evt)
 
     // goto at top level of the block
@@ -568,19 +577,19 @@ class GameObject {
     if (!calls) return
 
     for (const oneCall of calls) {
-      const newEvt: SceneEvent = {
-        pal: evt.pal,
-        game: evt.game,
-        pres: {
-          clean: oneCall
-        }
-      }
+      // const newEvt: SceneEvent = {
+      //   pal: evt.pal,
+      //   game: evt.game,
+      //   pres: {
+      //     clean: oneCall
+      //   }
+      // }
 
       // TODO add a short delay / so they're in order?
       // FIXME - this is calling into BotRouter which may introduce a circular deps
       // but we need this for commands and other non-room actions
       Logger.log('doCall', oneCall)
-      evt.pal.input(oneCall)
+      // evt.pal.input(oneCall)
       await BotRouter.anyEvent(evt.pal, oneCall, 'text')
       // await this.findRoom.findAndRunAction(newEvt)
     }

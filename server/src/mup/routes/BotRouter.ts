@@ -109,19 +109,19 @@ const BotRouter = {
     return res
   },
 
-  async tryThingActions(evt: SceneEvent): Promise<ActionResult> {
-    const nounList: string[] = evt.game.story.room.getAllThingNames()
-    const pres: ParserResult = RexParser.parseNounVerbs(evt.pres.clean, nounList)
-    // const { subject, verb } = result.parsed?.groups
-    if (pres.pos?.verb && pres.pos?.target) {
-      return await evt.game.story.room.tryThingActions(pres, evt)
-    }
-    const res: ActionResult = {
-      handled: HandleCodes.errMissingPos,
-      err: true
-    }
-    return res
-  }
+  // async tryThingActions(evt: SceneEvent): Promise<ActionResult> {
+  //   const nounList: string[] = evt.game.story.room.getAllThingNames()
+  //   const pres: ParserResult = RexParser.parseNounVerbs(evt.pres.clean, nounList)
+  //   // const { subject, verb } = result.parsed?.groups
+  //   if (pres.pos?.verb && pres.pos?.target) {
+  //     return await evt.game.story.room.tryThingActions(pres, evt)
+  //   }
+  //   const res: ActionResult = {
+  //     handled: HandleCodes.errMissingPos,
+  //     err: true
+  //   }
+  //   return res
+  // }
 
 }
 

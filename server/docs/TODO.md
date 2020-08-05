@@ -2,8 +2,14 @@
 
 ## TOP:
 
-- hidden item
+√ hidden item
+- hint system
+- footer element on blocks
+- merge branch and stateInfo types
+
 - rotating hint footer system
+
+- prevent taking fixed items
 - hints to the speaking user only?
 
 - cleanup pal.input so it works for tests same as the app

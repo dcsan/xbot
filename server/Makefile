@@ -54,3 +54,14 @@ testDispatch:
 
 testRouter:
 	npm run jest:watch -- --watch RexRouter
+
+commitStories:
+	cd cdn/story-asylum.wiki
+	git add .
+	git commit -m "auto"
+	git push
+
+	cd ../story-office.wiki
+	git add .
+	git commit -m "auto"
+	git push

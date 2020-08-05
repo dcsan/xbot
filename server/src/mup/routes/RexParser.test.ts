@@ -47,3 +47,35 @@ it('should not mess up embedded words', async () => {
   expect(clean).toBe('take closet')
 })
 
+it('should expand parser phrases', async () => {
+  const called = 'red|blue|other color'
+  let rexstr = called.split('|').join('\\b|\\b')
+  rexstr = `\\b${rexstr}\\b`
+  const rex = new RegExp(rexstr)
+
+  const pass = [
+    'red', 'blue', 'other color'
+  ]
+
+  pass.forEach(word => {
+    // console.log('word:', word, 'rexstr:', rexstr, ' rex:', rex)
+    expect(rex.test(word)).toBe(true)
+  })
+
+  const fails = [
+    're', 'other', 'color'
+  ]
+
+  fails.forEach(word => {
+    // console.log('word:', word, 'rexstr:', rexstr, ' rex:', rex)
+    expect(rex.test(word)).toBe(false)
+  })
+
+})
+
+it('should pass some basic regex stuff', () => {
+  const line = "termsandconds|ask about terms|and"
+  const rex = RexParser.makeRexFromLine(line)
+  expect(rex.test('ask about terms')).toBe(true)
+})
+
