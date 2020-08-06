@@ -104,8 +104,8 @@ const BotRouter = {
     }
   },
 
-  async tryRoomActions(evt: SceneEvent): Promise<ActionResult> {
-    const res: ActionResult = await evt.game.story.room.findAndRunAction(evt)
+  async tryRoomActions(evt: SceneEvent): Promise<ActionResult | undefined> {
+    const res: ActionResult | undefined = await evt.game?.story.room.findAndRunAction(evt)
     return res
   },
 

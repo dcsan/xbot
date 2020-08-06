@@ -1,7 +1,7 @@
 import { RexParser, ParserResult } from './RexParser';
 // import { Logger } from '../../lib/Logger';
 
-const log = console.log
+// const log = console.log
 
 const nounList = ['key', 'chest', 'table lamp', 'door']
 const verbList = ['open', 'rub', 'wipe', 'wash']
@@ -31,7 +31,7 @@ it('should parse verb target into parsed.pos', () => {
 it('should parse actionBlock setlines', async () => {
   const pres: ParserResult = RexParser.parseSetLine('door.locked = no')
   expect(pres.parsed?.groups).toBeDefined()
-  console.log('parsed.groups', pres.parsed?.groups)
+  // console.log('parsed.groups', pres.parsed?.groups)
   expect(pres.parsed?.groups?.target).toBe('door')
   expect(pres.parsed?.groups?.field).toBe('locked')
   expect(pres.parsed?.groups?.value).toBe('no')

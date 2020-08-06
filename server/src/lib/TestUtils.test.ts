@@ -3,7 +3,8 @@ import * as _ from 'lodash'
 
 
 it('should create a test env', async () => {
-  const { game, pal } = new TestEnv()
+  const testEnv = new TestEnv()
+  const game = await testEnv.loadGame('office')
   expect(game.story.storyName).toBe('office')
 })
 
@@ -28,7 +29,7 @@ it('should merge objects', () => {
     rooms: []
   }
 
-  console.log('one.rooms', one)
+  // console.log('one.rooms', one)
   const three = {
     // @ts-ignore
     rooms: doc.rooms.concat(one.rooms, two.rooms)
@@ -39,10 +40,10 @@ it('should merge objects', () => {
     rooms: [...one.rooms, ...two.rooms]
   }
 
-  console.log('one', one)
-  console.log('two', two)
-  console.log('merged', merged)
-  console.log('all', all)
+  // console.log('one', one)
+  // console.log('two', two)
+  // console.log('merged', merged)
+  // console.log('all', all)
   expect(all.rooms.length).toBe(2)
   expect(three.rooms.length).toBe(2)
 

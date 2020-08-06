@@ -3,10 +3,13 @@ import Game from './Game'
 import { LoadOptions } from '../MupTypes'
 
 test('office game loading', async () => {
-  const { pal, game } = new TestEnv('office')
+  // const { pal, game } = new TestEnv('office')
+  const testEnv = new TestEnv()
+  const game = await testEnv.loadGame('office')
+
   expect(game.story.doc.title).toBe('The Office')
-  expect(game.story.doc.cname).toBe('office')
-  expect(game.story.rooms.length).toBe(4)
+  expect(game.story.room.name).toBe('lobby')
+  expect(game.story.rooms.length).toBe(3)
 
   game.story.gotoRoom('office')
   expect(game.story.room.name).toBe('office')
@@ -14,8 +17,9 @@ test('office game loading', async () => {
 })
 
 test('asylum game loading', async () => {
-  const { pal, game } = new TestEnv('asylum')
-  game.story.load({ storyName: 'asylum', pal })
+  const testEnv = new TestEnv()
+  const game = await testEnv.loadGame('asylum')
+  game.story.load({ storyName: 'asylum', pal: testEnv.pal })
   expect(game.story.doc.title).toBe('Escape From Bell Hill (Asylum #6)')
   expect(game.story.doc.cname).toBe('asylum')
   expect(game.story.rooms.length).toBe(6)

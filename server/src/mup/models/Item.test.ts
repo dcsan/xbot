@@ -1,7 +1,8 @@
 import { TestEnv } from '../../lib/TestUtils'
 
 test('item states', async () => {
-  const { game } = new TestEnv()
+  const testEnv = new TestEnv()
+  const game = await testEnv.loadGame('office')
   await game.story.gotoRoom('office')
   const room = game.story.currentRoom
   const chest = room.findItem('chest')
@@ -11,7 +12,9 @@ test('item states', async () => {
 
 
 test('get item', async () => {
-  const { game } = new TestEnv()
+  const testEnv = new TestEnv()
+  const game = await testEnv.loadGame('office')
+
   await game.story.gotoRoom('office')
   const room = game.story.currentRoom
 

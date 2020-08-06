@@ -28,7 +28,10 @@ class Story {
     const startRoomName = this.doc.startRoom
     if (startRoomName) {
       const room: Room | undefined = this.findRoom(startRoomName)
-      if (room) this.currentRoom = room
+      if (!room) {
+        return Logger.fatal('cannot find start room:' + startRoomName, {})
+      }
+      this.currentRoom = room
     } else {
       this.currentRoom = this.rooms[0]
     }

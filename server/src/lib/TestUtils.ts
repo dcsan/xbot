@@ -6,12 +6,15 @@ import { Pal, MockChannel } from '../mup/pal/Pal'
 import { LoadOptions } from '../mup/MupTypes'
 import { RexParser } from '../mup/routes/RexParser'
 import { SceneEvent } from '../mup/MupTypes'
+import { Logger } from '../lib/Logger'
+
 const log = console.log
 
-interface TestEnv {
-  game: Game
-  pal: Pal
-}
+
+// interface TestEnv {
+//   game?: Game | Undefined
+//   pal: Pal
+// }
 
 // interface SceneOptions {
 //   roomName?: string
@@ -19,18 +22,22 @@ interface TestEnv {
 
 class TestEnv {
   pal: Pal
-  game: Game
+  game?: Game
 
-  constructor(storyName = 'office') {
+  constructor() {
     this.pal = this.getMockPal()
+  }
+
+  async loadGame(storyName = 'office'): Promise<Game> {
     const opts: LoadOptions = {
       pal: this.pal,
       storyName
     }
-    const game: Game = GameManager.findGame(opts)
+    const game: Game = await GameManager.findGame(opts)
     // FIXME - not needed for a new game, but no way to tell if its new....
-    game.reset()
+    await game.reset()
     this.game = game
+    return game
   }
 
   getMockPal(): Pal {
@@ -41,6 +48,9 @@ class TestEnv {
 
   makeSceneEvent(input: string): SceneEvent {
     const pres = RexParser.parseCommands(input)
+    if (!this.game) {
+      Logger.warn('try to create sceneEvent without a .game')
+    }
     const evt: SceneEvent = {
       pal: this.pal,
       game: this.game,
@@ -52,11 +62,6 @@ class TestEnv {
 }
 
 
-// add to process when this is included
-process.on('unhandledRejection', reason => {
-  console.log('stopped', reason)
-  throw reason
-})
 
 export { TestEnv }
 

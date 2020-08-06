@@ -384,7 +384,7 @@ const RexParser = {
   makeRexFromLine(line) {
     let rexstr = line.split('|').join('\\b|\\b')
     rexstr = `\\b${rexstr}\\b`
-    console.log('rexstr', rexstr)
+    // console.log('rexstr', rexstr)
     return new RegExp(rexstr)
   },
 

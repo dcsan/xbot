@@ -9,19 +9,21 @@ import { ActionResult } from '../MupTypes'
 const log = console.log
 
 beforeAll(async () => {
-  process.stdout.write('start > BotRouterTest\n')
+  // process.stdout.write('start > BotRouterTest\n')
 })
 
 afterAll(async () => {
   // Logger.log('done')
   // log('done')
-  process.stdout.write('done > BotRouterTest\n')
+  // process.stdout.write('done > BotRouterTest\n')
 })
 
 it('should handle verb target to get thing', async () => {
-  const env = new TestEnv()
-  env.game.story.gotoRoom('cell')
-  const evt = env.makeSceneEvent('get soap')
+  const testEnv = new TestEnv()
+  const game = await testEnv.loadGame('office')
+
+  testEnv.game?.story.gotoRoom('cell')
+  const evt = testEnv.makeSceneEvent('get soap')
   expect(evt.pres.pos?.target).toBe('soap')
   const res = await BotRouter.tryCommands(evt)
   expect(res.err).not.toBe(true)
@@ -30,11 +32,11 @@ it('should handle verb target to get thing', async () => {
 })
 
 it('handle canTake: false items', async () => {
+  const testEnv = new TestEnv()
+  const game = await testEnv.loadGame('office')
+  testEnv.game?.story.gotoRoom('cell')
 
-  const env = new TestEnv()
-  env.game.story.gotoRoom('cell')
-
-  const evt = env.makeSceneEvent('get table')
+  const evt = testEnv.makeSceneEvent('get table')
   expect(evt.pres.pos?.target).toBe('table')
   const res = await BotRouter.tryCommands(evt)
   expect(res.err).not.toBe(true)
@@ -44,42 +46,45 @@ it('handle canTake: false items', async () => {
 })
 
 it('should have fallback if thing cannot be found', async () => {
-  const env = new TestEnv()
-  env.game.story.gotoRoom('cell')
-  const evt = env.makeSceneEvent('get XYZ')
+  const testEnv = new TestEnv()
+  const game = await testEnv.loadGame('office')
+  game.story.gotoRoom('cell')
+  const evt = testEnv.makeSceneEvent('get XYZ')
   expect(evt.pres.pos?.target).toBe('xyz')
   expect(evt.pres.rule?.event).toBe(RouterService.takeRoomThing)
   const done = await BotRouter.tryCommands(evt)
   // expect(done).toBe(true)
-  Logger.logObj('txt', evt.pal.allText, true)
+  // Logger.logObj('txt', evt.pal.allText, true)
   expect(evt.pal.getLogLineText(0)).toMatch(/You can't see/i)
 })
 
 it('should allow to examine something', async () => {
-  const env = new TestEnv('office')
-  await env.game.reset()
-  await env.game.story.gotoRoom('cell')
+  const testEnv = new TestEnv()
+  const game = await testEnv.loadGame('office')
+  await game.story.gotoRoom('cell')
 
   // const evt = env.makeSceneEvent('x soap')
-  await BotRouter.anyEvent(env.pal, 'look', 'test')
-  await BotRouter.anyEvent(env.pal, 'x gown', 'test')
-  console.log(await env.pal.showLog())
-  // console.log('store', JSON.stringify(env.pal.channel.store))
-  expect(env.pal.getLogLineText(-1)).toMatch(/An old dressing gown/i)
-  // expect(env.pal.allText).toMatch(/time for a good scrubbing/)
+  await BotRouter.anyEvent(testEnv.pal, 'look', 'test')
+  await BotRouter.anyEvent(testEnv.pal, 'x gown', 'test')
+  // console.log(await testEnv.pal.showLog())
+
+  expect(testEnv.pal.getLogLineText(-1)).toMatch(/An old dressing gown/i)
+
 })
 
 
 it('should allow top level room command with actions', async () => {
-  const env = new TestEnv()
-  env.game.story.gotoRoom('cell')
-  const door = env.game.story.room.findThing('door')
+  const testEnv = new TestEnv()
+  const game = await testEnv.loadGame('office')
+
+  testEnv.game?.story.gotoRoom('cell')
+  const door = testEnv.game?.story.room.findThing('door')
   expect(door?.state).toBe('locked')  // initial
-  env.pal.input('sesame')
-  const res: ActionResult = await BotRouter.textEvent(env.pal)
+  testEnv.pal.input('sesame')
+  const res: ActionResult = await BotRouter.textEvent(testEnv.pal)
   // expect(res.handled).toBe(HandleCodes.processing)
   expect(res.err).not.toBe(true)
-  expect(env.pal.getLogLineText(-1)).toMatch(/The door opens/i)
+  expect(testEnv.pal.getLogLineText(-1)).toMatch(/The door opens/i)
   Logger.assertTrue(!res.err, 'res', res)
   expect(res.err).not.toBe(true)
   // expect(res.handled).toBe(HandleCodes.okReplied)

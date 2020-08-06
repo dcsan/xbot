@@ -107,10 +107,10 @@ class GameObject {
     this.state = newState
   }
 
-  get has() {
+  get has(): string {
     return this.getProp('has')
   }
-  set has(val) {
+  set has(val: string) {
     this.setProp('has', val)
   }
 
@@ -330,7 +330,7 @@ class GameObject {
       if (check) {
         return action // and exit loop
       } else {
-        console.log('no match', input, rex, check)
+        // console.log(`no match for input: [${input}]`, rex, check)
         return false
       }
 
@@ -348,7 +348,7 @@ class GameObject {
   // which are a different level of hierarchy
   // making polymorphism harder
   async runAction(actionData: ActionData, evt: SceneEvent): Promise<ActionResult> {
-    const player = evt?.game.player
+    const player = evt?.game?.player
     let trackResult: ActionResult = {
       handled: HandleCodes.processing,
       doc: actionData,
@@ -470,7 +470,7 @@ class GameObject {
 
     // FIXME merge types for branch and stateBlock
     const palBlocks = this.renderItem(branch as StateBlock)
-    console.log('palBlocks', palBlocks)
+    // console.log('palBlocks', palBlocks)
     await evt.pal.sendBlocks(palBlocks)
 
     await this.doCallActions(branch.after, evt)
@@ -518,7 +518,7 @@ class GameObject {
     for (const targetName of takeItemList) {
       const thing = this.findRoom.findThing(targetName)
       if (thing) {
-        evt.game.player.addItem(thing)
+        evt.game?.player.addItem(thing)
         this.findRoom.removeItemByCname(this.cname)
       } else {
         Logger.error('cannot find thing to take', { targetName })
@@ -599,7 +599,7 @@ class GameObject {
     if (this.has) {
       const msg = `you drop the ${this.name}`
       await pal.sendText(msg)
-      this.has = false
+      this.has = 'no'
     } else {
       const msg = `you don't have the ${this.name}`
       await pal.sendText(msg)

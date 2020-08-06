@@ -69,7 +69,7 @@ export interface ParserResult {
 interface SceneEvent {
   pal: Pal,
   pres: ParserResult  // parsed, rule
-  game: Game
+  game?: Game
 }
 
 export interface OneRule {

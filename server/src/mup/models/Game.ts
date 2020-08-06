@@ -34,7 +34,7 @@ class Game {
     this.menu = new Menu()
     this.story = new Story(opts, this)
     this.player = new Player({}, this.story)
-    this.reset()
+    // this.reset() // async cannot be called here
   }
 
   // reset all the vars without reloading

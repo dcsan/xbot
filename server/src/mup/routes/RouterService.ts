@@ -20,27 +20,27 @@ const RouterService = {
   goto: async (evt: SceneEvent) => {
     const roomName = evt.pres.parsed?.groups.roomName
     Logger.logObj('goto', roomName)
-    await evt.game.story.gotoRoom(roomName, evt)
+    await evt.game?.story.gotoRoom(roomName, evt)
   },
 
   startGame: async (evt: SceneEvent) => {
-    await evt.game.restart(evt)
+    await evt.game?.restart(evt)
   },
 
   lookRoomThing: async (evt: SceneEvent) => {
-    return await evt.game.story.room.lookRoomThing(evt)
+    return await evt.game?.story.room.lookRoomThing(evt)
   },
 
   takeRoomThing: async (evt: SceneEvent) => {
-    return await evt.game.story.room.takeRoomThing(evt)
+    return await evt.game?.story.room.takeRoomThing(evt)
   },
 
   useRoomThingAlone: async (evt: SceneEvent) => {
-    return await evt.game.story.room.useRoomThingAlone(evt)
+    return await evt.game?.story.room.useRoomThingAlone(evt)
   },
 
   useRoomThingOn: async (evt: SceneEvent) => {
-    return await evt.game.story.room.useRoomThingOn(evt)
+    return await evt.game?.story.room.useRoomThingOn(evt)
   },
 
   echoTest: async (evt: SceneEvent) => {
@@ -74,16 +74,16 @@ const RouterService = {
   },
 
   handleHelp: async (evt: SceneEvent) => {
-    const help = evt.game.story.doc.help.basic
+    const help = evt.game?.story.doc.help.basic
     await evt.pal.sendText(help)
   },
 
   reload: async (evt: SceneEvent) => {
-    await evt.game.reload(evt)
+    await evt.game?.reload(evt)
   },
 
   showStatus: async (evt: SceneEvent) => {
-    await evt.game.showStatus(evt.pal)
+    await evt.game?.showStatus(evt.pal)
   },
 
   showLog: async (evt: SceneEvent) => {
@@ -93,13 +93,13 @@ const RouterService = {
 
   // for quicker parsing
   cacheNames: async (evt: SceneEvent) => {
-    const itemList = evt.game.story.room.items
+    const itemList = evt.game?.story.room.items!
     await RexParser.cacheNames(itemList)
     await evt.pal.sendText('rebuilt cache')
   },
 
   showInventory: async (evt: SceneEvent) => {
-    return await evt.game.player.showInventory(evt)
+    return await evt.game?.player.showInventory(evt)
   },
 
 
