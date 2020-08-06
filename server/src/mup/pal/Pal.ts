@@ -122,9 +122,9 @@ class Pal {
   }
 
   // for unit tests, get a line of stuff that was sent in
-  getReceivedText(idx): string {
-    return this.channelEvent.store[idx]
-  }
+  // getReceivedText(idx): string {
+  //   return this.channelEvent.store[idx]
+  // }
 
   // just the text items
   get allText(): string {

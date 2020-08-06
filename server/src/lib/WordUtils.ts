@@ -6,7 +6,7 @@ const WordUtils = {
 
   stripPunctuation(input) {
     // const output = input.replace(/\.,-/gim, '')
-    const output = input.replace(/[^\w ]/gim, '')
+    const output = input.replace(/[^\w\s-]/gim, '')
     return output
   },
 

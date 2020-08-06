@@ -79,7 +79,7 @@ it('should allow top level room command with actions', async () => {
   const res: ActionResult = await BotRouter.textEvent(env.pal)
   // expect(res.handled).toBe(HandleCodes.processing)
   expect(res.err).not.toBe(true)
-  expect(env.pal.getReceivedText(0)).toMatch(/You shout/i)
+  expect(env.pal.getLogLineText(-1)).toMatch(/The door opens/i)
   Logger.assertTrue(!res.err, 'res', res)
   expect(res.err).not.toBe(true)
   // expect(res.handled).toBe(HandleCodes.okReplied)

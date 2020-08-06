@@ -18,6 +18,6 @@ test('cheat command', async () => {
   expect(cheatInfo.roomActions).toBeDefined()
   expect(cheatInfo.actors).toBeDefined()
   // TODO - more detail for matcher?
-  expect(pal.getReceivedText(0)).toMatch(/room/gim)
+  expect(pal.getLogLineText(-1)).toMatch(/room/gim)
 })
 
