@@ -56,7 +56,7 @@ testRouter:
 	npm run jest:watch -- --watch RexRouter
 
 commitStories:
-	cd cdn/storydata
-	git add .
-	git commit -m "auto"
-	git push
+	cd cdn/storydata; \
+	git add . ; \
+	git commit -m "auto" ; \
+	git push ; \
