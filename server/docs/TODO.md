@@ -2,11 +2,12 @@
 
 ## Content
 
+
 √ remove extra branch at start / continue - would skip 'macaroni'
 - room description goes missing?
 √ 'look room' global command
 - wardrobe handles / states
-- aren't fully dressed yet check - change message?
+- "aren't fully dressed yet" check - change message?
 - show desk state on open. maybe not on close?
 - get poster: "You take Michael Jackson off the wall"
 √ image url for drawing
@@ -18,8 +19,22 @@
 - add image on 'look' at end
 - skip longer sentences > 5 words
 
-- figure out tasks and lights / images out of sync?
+this is a giveaway:
 
+Jamin  6:33 PM
+Use faucet
+
+cbg2APP  6:33 PM
+the handle is broken
+
+Jamin  6:33 PM
+X handle
+
+cbg2APP  6:33 PM
+That's an odd looking handle attached to the closet
+
+
+- figure out tasks and lights / images out of sync?
 currently:
 
       - name: task1
@@ -36,6 +51,10 @@ currently:
 
 
 ## TOP:
+
+itemCnames of undefined
+13|cbg     |       at /mnt/ext250/web-apps/cbg.rik.ai/dist/mup/models/GameObject.js:8:71
+
 
 - hint system
 - merge branch and stateInfo types
