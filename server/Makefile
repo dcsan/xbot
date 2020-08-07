@@ -60,8 +60,3 @@ commitStories:
 	git add .
 	git commit -m "auto"
 	git push
-
-	cd ../story-office.wiki
-	git add .
-	git commit -m "auto"
-	git push
