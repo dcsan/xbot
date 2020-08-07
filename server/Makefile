@@ -56,7 +56,7 @@ testRouter:
 	npm run jest:watch -- --watch RexRouter
 
 commitStories:
-	cd cdn/story-asylum.wiki
+	cd cdn/storydata
 	git add .
 	git commit -m "auto"
 	git push
