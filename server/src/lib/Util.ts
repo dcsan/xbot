@@ -94,8 +94,13 @@ const Util = {
 
   isEmptyObject(obj) {
     return typeof obj === 'object' && Object.keys(obj).length === 0;
-  }
+  },
 
+  shouldIgnore(input): boolean {
+    if (/^[-'"\./# ,>\\]/.test(input)) return true
+    if (input.split(' ').length > 5) return true
+    return false
+  }
 
 }
 

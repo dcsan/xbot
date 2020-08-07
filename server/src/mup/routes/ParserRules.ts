@@ -45,7 +45,7 @@ const ReplaceItems = [
   //   rex: /\b(closet|cupboard|wardrobe|wr)\b/
   // },
   {
-    base: 'say',
+    base: 'ask',
     rex: /\b(say|tell|scream|speak|shout|ask)\b/
   },
 
@@ -75,7 +75,7 @@ const StaticRules: RuleSpec[] = [
 
   {
     cname: 'help',
-    rex: /^(help|halp)$/i,
+    rex: /(help|halp)/i,
     event: RouterService.handleHelp,
     type: 'command',
     extra: undefined
@@ -97,11 +97,12 @@ const StaticRules: RuleSpec[] = [
 
   {
     cname: 'lookRoom',
-    rex: /^(look|l|x|look room|x room|look around)$/i,
+    rex: /^(look|l|x|look room|x room|look around|look at room)$/i,
     event: RouterService.lookRoom,
     type: 'command'
   },
 
+  // has to come after `look room`
   {
     cname: 'lookRoomThing',
     rex: /^(?<verb>look at|look|examine|x at|l|x) (?<target>\w+)$/i,

@@ -1,6 +1,6 @@
 import { TestEnv } from './TestUtils'
 import * as _ from 'lodash'
-
+import Util from './Util'
 
 it('should create a test env', async () => {
   const testEnv = new TestEnv()
@@ -46,5 +46,30 @@ it('should merge objects', () => {
   // console.log('all', all)
   expect(all.rooms.length).toBe(2)
   expect(three.rooms.length).toBe(2)
+
+})
+
+it('should ingore commands start with punctuation', async () => {
+  const tests = [
+    '.something',
+    '-start',
+    ' huh',
+    '"stuff',
+    'one sentence with over five words',
+    "'apostro",
+    '"look',
+    `\\look`
+  ]
+  tests.forEach(test => {
+    expect(Util.shouldIgnore(test)).toBe(true)
+  })
+
+  const checks = [
+    'something else',
+    'look'
+  ]
+  checks.forEach(test => {
+    expect(Util.shouldIgnore(test)).toBe(false)
+  })
 
 })

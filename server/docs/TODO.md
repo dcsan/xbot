@@ -1,45 +1,77 @@
 # TODO:
 
+## Content
+
+√ remove extra branch at start / continue - would skip 'macaroni'
+- room description goes missing?
+√ 'look room' global command
+- wardrobe handles / states
+- aren't fully dressed yet check - change message?
+- show desk state on open. maybe not on close?
+- get poster: "You take Michael Jackson off the wall"
+√ image url for drawing
+√ remove boldface in poem
+- prevent multiple robes / getrobe
+√ askaboutgame button broken
+- deafening cracks
+- multiple macaroni
+- add image on 'look' at end
+- skip longer sentences > 5 words
+
+- figure out tasks and lights / images out of sync?
+
+currently:
+
+      - name: task1
+        imageUrl: asylum/rooms/cell.jpg
+      - name: task2
+        imageUrl: asylum/rooms/cell-1.jpg
+      - name: task3
+        imageUrl: asylum/rooms/cell-2.jpg
+      - name: task4
+        imageUrl: asylum/rooms/cell-3.jpg
+      - name: task5
+        imageUrl: asylum/rooms/cell-dark.jpg
+
+
+
 ## TOP:
 
-√ hidden item
 - hint system
-- footer element on blocks
 - merge branch and stateInfo types
-
+- case statement? to allow multiple IFs
 - rotating hint footer system
-
-- prevent taking fixed items
-- hints to the speaking user only?
+- ignore too long sentences
+- hints show to the speaking user only?
 
 - cleanup pal.input so it works for tests same as the app
-  - add parser inside there
+- end to end test system / script
 
-- already have item
+- check if already have item / dont get it twice
+- test logic of 'drop' item
+- items shouldn't appear in room if you 'get' them
 
-X merge files for actions?
+√ prevent taking fixed items
+√ hidden item
+√ footer element on blocks
+√ merge files for actions?
+√ on 'get' player carry items / inventory
+√ hidden property on objects
+√ synonym replacements
+√ implement basic 'drop' event
 
-- on 'get' player carry items / inventory
-- hidden property on objects
-- synonym replacements
-
-- implement 'drop' event
-
-X footer message block
+√ footer message block
 - get XXX messages in parser / game level get passed to right object
 
 - channel / GameManager -> based on slackEvent.payload.channel
+√ synonym parser @wardrobe
+√ initProps
 
-- synonym parser @wardrobe
 
-
-- initProps
 
 - TS just https://github.com/kulshekhar/ts-jest
 
-
 √ better error handling with return an HandleCode
-
 
 - buttons to inspect items?
 - for doors?
