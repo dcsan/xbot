@@ -3,6 +3,7 @@ import AppConfig from '../../lib/AppConfig'
 import { Pal } from '../pal/Pal'
 import { RexParser, ParserResult } from './RexParser'
 import { Logger } from '../../lib/Logger'
+import Util from '../../lib/Util'
 import Game from 'mup/models/Game'
 import { GameManager } from '../models/GameManager'
 import {
@@ -46,11 +47,11 @@ const BotRouter = {
   async anyEvent(pal: Pal, input: string, eventType: string = 'text'): Promise<ActionResult> {
     Logger.log('anyEvent.input:', input)
     // if (input[0])
-    if (/^[-'"\./# ,>\\]/.test(input)) {
-      // ignore prefixed
-      Logger.log('ignore prefixed: ', input)
+
+    if (Util.shouldIgnore(input)) {
       return { handled: HandleCodes.skippedPrefix }
     }
+
     // const { message: MessageEvent, say: SayFn } = slackEvent
     const clean = WordUtils.basicNormalize(input)
     pal.input(clean)  // store it for GameFuncs

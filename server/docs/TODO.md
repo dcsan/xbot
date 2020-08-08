@@ -2,37 +2,21 @@
 
 ## Content
 
-
-√ remove extra branch at start / continue - would skip 'macaroni'
-- room description goes missing?
-√ 'look room' global command
-- wardrobe handles / states
 - "aren't fully dressed yet" check - change message?
-- show desk state on open. maybe not on close?
+- add image on 'look' at end
+- deafening cracks
 - get poster: "You take Michael Jackson off the wall"
+- multiple macaroni
+- prevent multiple robes / getrobe
+- room description goes missing?
+- show desk state on open. maybe not on close?
+- skip longer sentences > 5 words
+- wardrobe handles / states
+√ 'look room' global command
+√ askaboutgame button broken
 √ image url for drawing
 √ remove boldface in poem
-- prevent multiple robes / getrobe
-√ askaboutgame button broken
-- deafening cracks
-- multiple macaroni
-- add image on 'look' at end
-- skip longer sentences > 5 words
-
-this is a giveaway:
-
-Jamin  6:33 PM
-Use faucet
-
-cbg2APP  6:33 PM
-the handle is broken
-
-Jamin  6:33 PM
-X handle
-
-cbg2APP  6:33 PM
-That's an odd looking handle attached to the closet
-
+√ remove extra branch at start / continue - would skip 'macaroni'
 
 - figure out tasks and lights / images out of sync?
 currently:
@@ -48,75 +32,71 @@ currently:
       - name: task5
         imageUrl: asylum/rooms/cell-dark.jpg
 
+- look robe when wearing. should say 'you're wearing the robe'
+I removed the image call for the robe when you "look robe" because you may actually ave it in INV (as I did) at the time looking
 
 
 ## TOP:
-
 itemCnames of undefined
 13|cbg     |       at /mnt/ext250/web-apps/cbg.rik.ai/dist/mup/models/GameObject.js:8:71
 
+- handled/not just return boolean
 
-- hint system
-- merge branch and stateInfo types
+- TS jest https://github.com/kulshekhar/ts-jest
+- add submodules for github actions / checkout
 - case statement? to allow multiple IFs
-- rotating hint footer system
-- ignore too long sentences
-- hints show to the speaking user only?
-
+- channel / GameManager -> based on slackEvent.payload.channel
+- check if already have item / dont get it twice
 - cleanup pal.input so it works for tests same as the app
 - end to end test system / script
-
-- check if already have item / dont get it twice
-- test logic of 'drop' item
-- items shouldn't appear in room if you 'get' them
-
-√ prevent taking fixed items
-√ hidden item
-√ footer element on blocks
-√ merge files for actions?
-√ on 'get' player carry items / inventory
-√ hidden property on objects
-√ synonym replacements
-√ implement basic 'drop' event
-
-√ footer message block
-- get XXX messages in parser / game level get passed to right object
-
-- channel / GameManager -> based on slackEvent.payload.channel
-√ synonym parser @wardrobe
-√ initProps
-
-
-
-- TS just https://github.com/kulshekhar/ts-jest
-
-√ better error handling with return an HandleCode
-
-- buttons to inspect items?
-- for doors?
-
-- Task List!
-- note book?
-
-- use handle on sink
-
 - exits with buttons?
+- get XXX messages in parser / game level get passed to right object
+- hint system
+- hints show to the speaking user only?
+- ignore too long sentences
+- items shouldn't appear in room if you 'get' them
+- merge branch and stateInfo types
+- rotating hint footer system
+- test logic of 'drop' item
+? buttons for doors?
+? buttons to inspect items?
+X store some session info (curent game?) in Pal ? so that imageUrl can use the current game
+√ actions
+√ better error handling with return an HandleCode
+√ deploy!
+√ display item cards etc.
+√ finish goto?
+√ footer element on blocks
+√ footer message block
+√ hidden item
+√ hidden property on objects
+√ implement basic 'drop' event
+√ initProps
+√ item IF / THEN / ELSE blocks
+√ merge files for actions?
+√ move assets to CDN as separate repo
+√ note book / task list
+√ on 'get' player carry items / inventory
+√ prevent taking fixed items
+√ session info from slackEvent => PAL
+√ synonym parser @wardrobe
+√ synonym replacements
+√ use X on Y
+√ use handle on sink
 
-- add submodules for github actions / checkout
 
-- use X on Y
+# Tester feedback / comments
 
-- session info from slackEvent => PAL
-- store some session info (curent game?) in Pal ? so that imageUrl can use the current game
+this is a giveaway:
 
-- finish goto?
-- deploy!
-- actions
-- update script
-- room and item actions / parser / trapping
-- display item cards etc.
-- fix tests
+Jamin  6:33 PM
+Use faucet
 
-- item IF / THEN / ELSE blocks
-- move assets to CDN as separate repo
+cbg2APP  6:33 PM
+the handle is broken
 
+Jamin  6:33 PM
+X handle
+
+cbg2APP  6:33 PM
+That's an odd looking handle attached to the closet
