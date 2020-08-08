@@ -1,6 +1,6 @@
 {
   "yaml.schemas": {
-    "cdn/schemas/story.schema.json": [
+    "cdn/storydata/schema/story.schema.json": [
       "cdn/storydata/*/story/*.yaml",
     ]
   }
