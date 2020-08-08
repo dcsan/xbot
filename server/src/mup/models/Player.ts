@@ -65,12 +65,16 @@ class Player extends GameObject {
   //   this.items.push(item)
   // }
 
-  hasItem(cname: string) {
+  findItem(cname: string): Item | undefined {
     let matchItems = this.items.filter((item) => {
       return item.cname === cname
     })
-    Logger.log('hasItem', cname, matchItems)
-    return (matchItems.length > 0)
+    return matchItems.pop()
+  }
+
+  hasItem(cname: string): boolean {
+    const item = this.findItem(cname)
+    return !!item
   }
 
   async showInventory(evt: SceneEvent) {

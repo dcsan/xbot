@@ -96,7 +96,8 @@ class Room extends GameObject {
   async lookRoomThing(evt: SceneEvent) {
     const thingName: string | undefined = evt.pres.pos?.target
     if (!thingName) return Logger.warn('no thingName to lookat', evt)
-    const thing = this.findThing(thingName)
+    const thing = this.findRoom.findThing(thingName) ||
+      this.findRoom.story.game.player.findItem(thingName) // in the room
     if (!thing) {
       ErrorHandler.sendError(HandleCodes.errthingNotFound, evt, { name: thingName })
       return
@@ -116,17 +117,30 @@ class Room extends GameObject {
   async takeRoomThing(evt: SceneEvent): Promise<ActionResult> {
     const target = evt.pres.pos?.target
     if (!target) {
-      Logger.warn('no thingName to lookat', evt)
+      Logger.warn('no thingName to take', evt)
       return { handled: HandleCodes.errThingName, err: true }
     }
-    const thing = this.findThing(target) // in the room
-    if (!thing) {
-      // const name: string = evt.pres.input || 'item'
-      ErrorHandler.sendError(HandleCodes.errthingNotFound, evt, { name: target })
-      return { handled: HandleCodes.errthingNotFound, err: true } // not found but we did reply
+    let thing = this.findRoom.findThing(target) // in the room
+    if (thing) {
+      await thing.takeAction(evt)
+      return { handled: HandleCodes.foundAction, err: false } // even if you didn't get it
     }
-    await thing.takeAction(evt)
-    return { handled: HandleCodes.foundAction, err: false } // even if you didn't get it
+    thing = this.findRoom.story.game.player.findItem(target) // in the room
+    if (thing) {
+      const msg = `You already have the ${target}`
+      const blocks = [
+        SlackBuilder.textBlock(msg),
+        SlackBuilder.contextBlock("type `inv` to see what you're carrying"),
+      ]
+      await evt.pal.sendBlocks(blocks)
+      return { handled: HandleCodes.foundAction, err: false } // even if you didn't get it
+    }
+
+    // else not found
+
+    ErrorHandler.sendError(HandleCodes.errthingNotFound, evt, { name: target })
+    return { handled: HandleCodes.errthingNotFound, err: true } // not found but we did reply
+
   }
 
   status() {

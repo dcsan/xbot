@@ -97,7 +97,7 @@ const Util = {
   },
 
   shouldIgnore(input): boolean {
-    if (/^[-'"\./# ,>\\]/.test(input)) return true
+    if (/^[-'"\./# `,>\\]/.test(input)) return true
     if (input.split(' ').length > 5) return true
     return false
   }

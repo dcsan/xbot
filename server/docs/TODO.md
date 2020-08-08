@@ -2,6 +2,8 @@
 
 ## Content
 
+- look item - message even if in inv
+
 - "aren't fully dressed yet" check - change message?
 - add image on 'look' at end
 - deafening cracks

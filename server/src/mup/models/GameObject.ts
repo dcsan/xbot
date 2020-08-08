@@ -63,7 +63,7 @@ class GameObject {
 
   reset() {
     this.props = {}
-    this.setProp('has', false)
+    this.setProp('has', 'no') // cannot do booleans from script
     this.items?.map(item => item.reset())
     this.actors?.map(actor => actor.reset())
     const state =
@@ -333,13 +333,13 @@ class GameObject {
         // console.log(`no match for input: [${input}]`, rex, check)
         return false
       }
-
     })
+
     if (foundAction) {
       Logger.logObj('OK foundAction for', { input, foundAction })
     } else {
       // Logger.logObj('FAIL foundAction', { input, 'room.actions': room.actions })
-      Logger.log('FAIL no foundAction for input:', input)
+      Logger.log('NO roomAction for input:', input)
     }
     return foundAction
   }
@@ -511,19 +511,33 @@ class GameObject {
   }
 
   // take any items
-  doTakeActions(branch: ActionBranch, evt: SceneEvent) {
+  async doTakeActions(branch: ActionBranch, evt: SceneEvent): Promise<boolean> {
     const takeItemList = branch.take
-    if (!takeItemList) return
+    if (!takeItemList) return false
 
     for (const targetName of takeItemList) {
       const thing = this.findRoom.findThing(targetName)
       if (thing) {
         evt.game?.player.addItem(thing)
         this.findRoom.removeItemByCname(this.cname)
+        return true
       } else {
         Logger.error('cannot find thing to take', { targetName })
       }
+
+      // if already carrying then it won't show up in the room
+      if (this.story.game.player.hasItem(targetName)) {
+        // you're already carrying it
+        const msg = `you already have the ${this.name}`
+        const blocks = [
+          SlackBuilder.textBlock(msg),
+          SlackBuilder.contextBlock("type `inv` to see what you're carrying"),
+        ]
+        await evt.pal.sendBlocks(blocks)
+        return true
+      }
     }
+    return false
   }
 
   // this runs before any actions on the object itself
@@ -544,7 +558,7 @@ class GameObject {
   // default for getting an item
   async baseTakeAction(evt: SceneEvent) {
     // TODO player status
-    if (this.getProp('has')) {
+    if (this.getProp('has') === 'yes') {
       const msg = `you already have the ${this.name}`
       const blocks = [
         SlackBuilder.textBlock(msg),
@@ -567,7 +581,7 @@ class GameObject {
       await evt.pal.sendBlocks(
         [SlackBuilder.contextBlock("type `inv` to see what you're carrying")]
       )
-      this.setProp('has', 'no')  // or dont change state?
+      // this.setProp('has', 'no')  // or dont change state?
     }
   }
 
