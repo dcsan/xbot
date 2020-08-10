@@ -56,6 +56,8 @@ sync: fixPermissions
 	rsync -avi --delete \
 		--exclude .git \
 		--exclude src \
+		--exclude coverage \
+		--exclude .vscode \
 		--exclude asylum-illustrations \
 		server/ ${login}:${deployDir}
 
@@ -78,3 +80,10 @@ testDeploy:
 testLocalImages:
 	curl http://localhost:33010/cdn/assets/items/key.png
 
+storyPull:
+	cd server/cdn/storydata && git pull
+
+storyPush:
+	server/cdn/storydata ; \
+	git pull; \
+	git add . && git commit -m "auto" && git push
