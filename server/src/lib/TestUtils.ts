@@ -99,7 +99,7 @@ class TestEnv {
     }
     if (!ok) {
       const msg = (
-        chalk.black.bgYellow.bold('\n\n---- FAILED response:') +
+        chalk.white.bgRed.bold('\n\n---- FAILED response:') +
         `\n   room:\t` + roomName +
         `\n  input:\t` + input +
         '\n expect:\t' + rex +
