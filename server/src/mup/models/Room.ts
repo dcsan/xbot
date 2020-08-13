@@ -75,7 +75,7 @@ class Room extends GameObject {
   }
 
   async lookRoom(evt: SceneEvent) {
-    await this.findRoom.describeThing(evt) // the room
+    await this.roomObj.describeThing(evt) // the room
   }
 
   itemFormalNamesOneLine() {
@@ -96,8 +96,8 @@ class Room extends GameObject {
   async lookRoomThing(evt: SceneEvent) {
     const thingName: string | undefined = evt.pres.pos?.target
     if (!thingName) return Logger.warn('no thingName to lookat', evt)
-    const thing = this.findRoom.findThing(thingName) ||
-      this.findRoom.story.game.player.findItem(thingName) // in the room
+    const thing = this.roomObj.findThing(thingName) ||
+      this.roomObj.story.game.player.findItem(thingName) // in the room
     if (!thing) {
       ErrorHandler.sendError(HandleCodes.errthingNotFound, evt, { name: thingName })
       return
@@ -120,12 +120,12 @@ class Room extends GameObject {
       Logger.warn('no thingName to take', evt)
       return { handled: HandleCodes.errThingName, err: true }
     }
-    let thing = this.findRoom.findThing(target) // in the room
+    let thing = this.roomObj.findThing(target) // in the room
     if (thing) {
       await thing.takeAction(evt)
       return { handled: HandleCodes.foundAction, err: false } // even if you didn't get it
     }
-    thing = this.findRoom.story.game.player.findItem(target) // in the room
+    thing = this.roomObj.story.game.player.findItem(target) // in the room
     if (thing) {
       const msg = `You already have the ${target}`
       const blocks = [

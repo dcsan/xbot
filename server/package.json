@@ -17,6 +17,7 @@
     "tndev": "ts-node src/index.ts",
     "xdev": "NODE_ENV=development LOG_LEVEL=debug run-s build:main mon",
     "test:watch": "run-s clean build:main && run-p \"build:main -- -w\" \"test:unit -- --watch\"",
+    "jest:watch": "run-s clean build:main jest -- --watch",
     "xtest:watch": "jest --watch",
     "start": "NODE_ENV=development node dist/index.js",
     "comment": "below pending",
@@ -102,6 +103,22 @@
     "extends": "@istanbuljs/nyc-config-typescript",
     "exclude": [
       "**/*.spec.js"
+    ]
+  },
+  "jest": {
+    "verbose": true,
+    "notify": true,
+    "modulePaths": [
+      "cdn",
+      "src"
+    ],
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "jsx",
+      "ts",
+      "tsx",
+      "yaml"
     ]
   }
 }

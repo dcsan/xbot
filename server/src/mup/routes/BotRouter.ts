@@ -54,7 +54,7 @@ const BotRouter = {
 
     // const { message: MessageEvent, say: SayFn } = slackEvent
     const clean = WordUtils.basicNormalize(input)
-    pal.input(clean)  // store it for GameFuncs
+    pal.sendInput(clean)  // store it for GameFuncs
     const storyName = AppConfig.read('storyName')
     const game: Game = await GameManager.findGame({ pal, storyName })
     const pres: ParserResult = RexParser.parseCommands(clean)

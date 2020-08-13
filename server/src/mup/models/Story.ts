@@ -27,7 +27,7 @@ class Story {
     Logger.log('story.reset')
     const startRoomName = this.doc.startRoom
     if (startRoomName) {
-      const room: Room | undefined = this.findRoom(startRoomName)
+      const room: Room | undefined = this.findRoomByName(startRoomName)
       if (!room) {
         return Logger.fatal('cannot find start room:' + startRoomName, {})
       }
@@ -76,7 +76,7 @@ class Story {
     this.reset()
   }
 
-  findRoom(roomName: string): Room | undefined {
+  findRoomByName(roomName: string): Room | undefined {
     if (!roomName) {
       Logger.error('findRoom but no roomName given')
     }
@@ -88,7 +88,7 @@ class Story {
   }
 
   async gotoRoom(roomName: string, evt?: SceneEvent) {
-    const room = this.findRoom(roomName)
+    const room = this.findRoomByName(roomName)
     if (room) {
       this.currentRoom = room
       if (evt) {

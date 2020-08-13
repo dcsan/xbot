@@ -117,6 +117,15 @@ const Logger = {
     }
   },
 
+  // use to avoid jest noisy logging on console.log
+  writeLine(msg, obj = {}) {
+    if (obj) {
+      process.stdout.write(msg + JSON.stringify(obj, null, 2) + '\n')
+    } else {
+      process.stdout.write(msg + '\n')
+    }
+  },
+
   silly(msg, ...rest) {
     if (AppConfig.logLevel >= LogLevels.SILLY) {
       Logger.logObj(msg, rest)

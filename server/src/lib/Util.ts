@@ -69,6 +69,11 @@ const Util = {
     return storyDoc
   },
 
+  loadYamlFile(relPath) {
+    const doc = yaml.safeLoad(fs.readFileSync(relPath, 'utf8'))
+    return doc
+  },
+
   // FIXME add full regex non WS support
   safeName(name) {
     if (!name) {

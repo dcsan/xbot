@@ -1,24 +1,28 @@
+import chalk from 'chalk'
+
 import AppConfig from './AppConfig'
-import Room from '../mup/models/Room'
+// import Room from '../mup/models/Room'
 import Game from '../mup/models/Game'
 import { GameManager } from '../mup/models/GameManager'
 import { Pal, MockChannel } from '../mup/pal/Pal'
 import { LoadOptions } from '../mup/MupTypes'
 import { RexParser } from '../mup/routes/RexParser'
-import { SceneEvent } from '../mup/MupTypes'
+import { SceneEvent, StoryTest } from '../mup/MupTypes'
+import { GameObject } from '../mup/models/GameObject'
 import { Logger } from '../lib/Logger'
+import BotRouter from '../mup/routes/BotRouter'
 
 const log = console.log
-
 
 // interface TestEnv {
 //   game?: Game | Undefined
 //   pal: Pal
 // }
-
 // interface SceneOptions {
 //   roomName?: string
 // }
+
+
 
 class TestEnv {
   pal: Pal
@@ -59,95 +63,56 @@ class TestEnv {
     return evt
   }
 
+  // check tail of logs in text format
+  // tailCount to just check the last response
+  // but usually we check last 2 or 3 to include images, buttons etc, in same reply
+  async checkResponse(oneTest: StoryTest, roomName = 'room') {
+    const { input, output, lines = 2 } = oneTest
+    await BotRouter.anyEvent(this.pal, input, 'text')
+    // const actual = this.pal.lastOutput()
+    const rex = new RegExp(output, 'im')
+    const logTail: string[] = this.pal.tailLogs(lines)
+
+    let ok = false
+
+    // @ts-ignore
+    if (oneTest.checks) {
+      const room = this.game?.story.currentRoom.roomObj
+      // test conditionals
+      oneTest.checks.map(line => {
+        const testOk = room?.checkOneCondition(line)
+        if (!testOk) {
+          Logger.writeLine(
+            chalk.white.bgRed.bold('FAILED '), line
+          )
+        } else {
+          Logger.writeLine(chalk.grey('passed item.check ' + line))
+        }
+      })
+    }
+
+    for (const line of logTail) {
+      if (rex.test(line.trim())) {
+        ok = true
+        break
+      }
+    }
+    if (!ok) {
+      const msg = (
+        chalk.black.bgYellow.bold('\n\n---- FAILED response:') +
+        `\n   room:\t` + roomName +
+        `\n  input:\t` + input +
+        '\n expect:\t' + rex +
+        '\nactuals:\t' + logTail.join(' / ') +
+        // '\n actual:\t' + JSON.stringify(logTail, null, 2) +
+        '\n\n'
+      )
+      process.stdout.write(msg)
+      return false
+    }
+    return true
+  }
+
 }
 
-
-
 export { TestEnv }
-
-
-// class chatReceiver {
-//   msg: any
-
-//   postMessage(msg) {
-//     // log('spy=>chat.postMessage', JSON.stringify(msg, null, 2))
-//     this.msg = msg
-//   }
-// }
-
-// interface SessionId {
-//   id?: string
-// }
-
-// class DummyContext {
-//   event: any
-//   sent: any
-//   chat: any
-//   session: SessionId
-
-//   constructor() {
-//     this.reset()
-//     this.session = {}
-//     this.event = {}
-//   }
-
-//   get received() {
-//     return {
-//       text: this.sent.text,
-//       list: this.sent.list,
-//       posted: this.chat.msg
-//     }
-//   }
-
-//   // check full list
-//   hasText(text) {
-//     return (this.allText.includes(text))
-//   }
-
-//   get allText() {
-//     return this.sent.list.join('\n')
-//   }
-
-//   flatBlocks() {
-//     const allBlocks = this.chat.msg.attachments.map(att => {
-//       return att.blocks
-//     })
-//     return allBlocks.flat(3)
-//   }
-
-//   reset() {
-//     this.sent = {
-//       list: [],
-//       text: undefined,
-//       msg: undefined
-//     }
-//     this.session = {
-//       id: '1234'
-//     }
-//     this.event = {}
-//     this.chat = new chatReceiver()
-//   }
-
-//   sendText(text) {
-//     this.sent.text = text
-//     this.sent.list.push(text)
-//   }
-
-//   setInput(text) {
-//     this.event = { text }
-//   }
-
-// }
-
-// const context = new DummyContext()
-
-// const TestUtils = {
-//   context,
-
-//   getBlock(context, idx) {
-//     log('context', context)
-//     const atts = context.attachments
-//     const block = atts[0].blocks[idx]
-//     return block
-//   }
-// }

@@ -165,7 +165,7 @@ class GameObject {
       return item
     } else {
       Logger.warn('cannot find thing:', itemName)
-      Logger.warn('in list', this.findRoom.itemCnames())
+      Logger.warn('in list', this.roomObj.itemCnames())
       Logger.log('this:', this.cname, this.klass)
       return undefined
     }
@@ -286,7 +286,7 @@ class GameObject {
     Logger.log('checks', checks)
 
     for (const check of checks) {
-      const actionData: ActionData = this.findRoom.findAction(check)
+      const actionData: ActionData = this.roomObj.findAction(check)
       // if (!actionData) {
       //   return {
       //     handled: HandleCodes.errActionNotFound,
@@ -317,7 +317,7 @@ class GameObject {
   // but room should recurse afterward into all room.things ?
   // just going to look for actions on the ROOM
   findAction(input: string): ActionData {
-    const room = this.findRoom
+    const room = this.roomObj
     if (!room.doc.actions) {
       Logger.warn('no actions for item:', this.doc.name)
     }
@@ -406,14 +406,15 @@ class GameObject {
   }
 
   // FIXME odd hierarchy. would be better with mixins?
-  get findRoom(): Room {
+  // this method gets room of an item or just itself if running on the room
+  get roomObj(): Room {
     // @ts-ignore
     if (this.klass === 'room') return <Room>this
     // @ts-ignore
     return this.room
   }
 
-  checkOneCondition(line): boolean {
+  checkOneCondition(line: string): boolean {
     const pres = RexParser.parseSetLine(line)
     if (!pres.parsed?.groups) {
       Logger.warn('ifBlock. missing groups', { parsed: pres.parsed })
@@ -427,10 +428,10 @@ class GameObject {
       return false
     }
 
-    let found: GameObject | undefined = this.findRoom.findThing(target)
+    let found: GameObject | undefined = this.roomObj.findThing(target)
     if (!found) {
       Logger.log('look in player for:', target)
-      found = this.findRoom.story.game.player.findThing(target)
+      found = this.roomObj.story.game.player.findThing(target)
     }
     if (!found) {
       Logger.warn('cannot find thing to update', { target, line })
@@ -470,8 +471,10 @@ class GameObject {
 
     // FIXME merge types for branch and stateBlock
     const palBlocks = this.renderItem(branch as StateBlock)
-    // console.log('palBlocks', palBlocks)
-    await evt.pal.sendBlocks(palBlocks)
+    if (palBlocks && palBlocks.length) {
+      // console.log('palBlocks', palBlocks)
+      await evt.pal.sendBlocks(palBlocks)
+    }
 
     await this.doCallActions(branch.after, evt)
 
@@ -497,9 +500,9 @@ class GameObject {
         Logger.assertTrue((target && field && value), 'missing field', pres.parsed?.groups)
         let targetThing
         if (target === 'room') {
-          targetThing = this.findRoom
+          targetThing = this.roomObj
         } else {
-          targetThing = this.findRoom.findThing(target)
+          targetThing = this.roomObj.findThing(target)
         }
         if (!targetThing) {
           Logger.warn('cannot find targetThing to update', { target, line })
@@ -516,10 +519,10 @@ class GameObject {
     if (!takeItemList) return false
 
     for (const targetName of takeItemList) {
-      const thing = this.findRoom.findThing(targetName)
+      const thing = this.roomObj.findThing(targetName)
       if (thing) {
         evt.game?.player.addItem(thing)
-        this.findRoom.removeItemByCname(this.cname)
+        this.roomObj.removeItemByCname(this.cname)
         return true
       } else {
         Logger.error('cannot find thing to take', { targetName })

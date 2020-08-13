@@ -92,6 +92,12 @@ export interface PosResult {
   adj?: string
 }
 
+export interface StoryTest {
+  input: string
+  output: string
+  lines: number
+  checks: string[]
+}
 
 // minimum verb and target `open window`
 // open(verb) window(target) with hammer(subject)
@@ -105,3 +111,5 @@ export {
   SceneEvent,
   Game
 }
+
+

@@ -51,6 +51,7 @@ class Player extends GameObject {
 
   takeItem(item: GameObject) {
     this.addItem(item)
+    item.doc.hidden = false   // can always see things you're holding
     item.room?.removeItemByCname(item.cname)
   }
 

@@ -1,4 +1,9 @@
 // Platform Abstraction Layer
+
+
+// TODO - cleanup different log methods
+// get to just one common log method
+
 import yaml from 'js-yaml'
 import { Logger } from '../../lib/Logger'
 import Util from '../../lib/Util'
@@ -141,11 +146,16 @@ class Pal {
   }
 
   // for testing
-  input(text) {
+  sendInput(text) {
     this.lastInput = text
     if (this.channelEvent.message) {
       this.channelEvent.message.text = text
     }
+  }
+
+  lastOutput() {
+    Logger.logObj('pal.logger', this.logger, true)
+    return this.logger.lines[this.logger.lines.length - 1]
   }
 
   // reply(message) {
@@ -244,7 +254,7 @@ class Pal {
 
   async sendBlocks(blocks) {
     if (!blocks || !blocks.length) {
-      Logger.error('tried to sendBlocks with no blocks:', blocks)
+      console.trace('tried to sendBlocks with no blocks:', blocks)
     }
     const msg = SlackBuilder.wrapBlocks(blocks)
     this.wrapSay(msg, 'blocks')
@@ -254,12 +264,18 @@ class Pal {
     return this.logger.lines
   }
 
-  getLogLineText(num = -1) {
-    if (num === -1) {
-      num = this.logger.lines.length - 1
+  getLogLineText(index = -1) {
+    if (index === -1) {
+      index = this.logger.lines.length - 1
     }
-    const log: ChatLine = this.logger.lines[num]
+    const log: ChatLine = this.logger.lines[index]
     return log.opts.text
+  }
+
+  tailLogs(count: number = 1): string[] {
+    const logs = this.logger.lines.map(line => line.opts.text)
+    const len = logs.length
+    return logs.slice(len - count, len)
   }
 
   async showLog() {

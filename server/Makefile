@@ -55,6 +55,9 @@ testDispatch:
 testRouter:
 	npm run jest:watch -- --watch RexRouter
 
+testAsylum:
+	npx jest --watch asylum
+
 commitStories:
 	cd cdn/storydata; \
 	git add . ; \
