@@ -9,8 +9,10 @@ import { LoadOptions } from '../mup/MupTypes'
 import { RexParser } from '../mup/routes/RexParser'
 import { SceneEvent, StoryTest } from '../mup/MupTypes'
 import { GameObject } from '../mup/models/GameObject'
-import { Logger } from '../lib/Logger'
+import { MakeLogger } from './LogLib'
 import BotRouter from '../mup/routes/BotRouter'
+
+const logger = new MakeLogger('testUtils')
 
 const log = console.log
 
@@ -54,7 +56,7 @@ class TestEnv {
   makeSceneEvent(input: string): SceneEvent {
     const pres = RexParser.parseCommands(input)
     if (!this.game) {
-      Logger.warn('try to create sceneEvent without a .game')
+      logger.warn('try to create sceneEvent without a .game')
     }
     const evt: SceneEvent = {
       pal: this.pal,
@@ -91,11 +93,11 @@ class TestEnv {
       oneTest.checks.map(line => {
         const testOk = room?.checkOneCondition(line)
         if (!testOk) {
-          Logger.writeLine(
+          logger.writeLine(
             chalk.white.bgRed.bold('FAILED '), line
           )
         } else {
-          Logger.writeLine(chalk.grey('passed item.check ' + line))
+          logger.writeLine(chalk.grey('passed item.check ' + line))
         }
       })
     }

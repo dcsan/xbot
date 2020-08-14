@@ -10,6 +10,12 @@ const WordUtils = {
     return output
   },
 
+  makeCname(input: string): string {
+    let clean = WordUtils.stripPunctuation(input)
+    clean = clean.toLowerCase()
+    return clean
+  },
+
   /**
    * remove a few stopwords, punctuation and lowercase,
    * but dont remove full list of stopwords like `get`

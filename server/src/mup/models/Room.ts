@@ -1,4 +1,4 @@
-import { MakeLogger } from '../../lib/logger'
+import { MakeLogger } from '../../lib/LogLib'
 import SlackBuilder from '../pal/SlackBuilder'
 import { GameObject } from './GameObject'
 import WordUtils from '../../lib/WordUtils'
@@ -108,16 +108,22 @@ class Room extends GameObject {
   }
 
   // find and examine thing
-  async lookRoomThing(evt: SceneEvent) {
-    const thingName: string | undefined = evt.pres.pos?.target
-    if (!thingName) return logger.warn('no thingName to lookat', evt)
-    const thing = this.roomObj.findThing(thingName) ||
-      this.roomObj.story.game.player.findItem(thingName) // in the room
-    if (!thing) {
-      ErrorHandler.sendError(HandleCodes.errthingNotFound, evt, { name: thingName })
-      return
+  async lookRoomThing(evt: SceneEvent): Promise<boolean> {
+    let thingName: string | undefined = evt.pres.pos?.target
+    if (!thingName) {
+      // shouldn't get here
+      logger.warn('no thingName to lookat', evt)
+      return false
     }
-    thing.describeThing(evt)
+    thingName = WordUtils.makeCname(thingName) // lowercase etc.
+    const thing = this.searchThing(thingName)
+    if (!thing) {
+      evt.pal.sendText(`You can't see a ${thingName}`)
+      return false
+    }
+    // found it
+    await thing.describeThing(evt)
+    return true
   }
 
   async showItemsInRoom(evt: SceneEvent) {
@@ -153,9 +159,9 @@ class Room extends GameObject {
     return reply
   }
 
-  findItem(name) {
-    return this.findThing(name)
-  }
+  // findThing(name) {
+  //   return this.findThing(name)
+  // }
 
   async findAndRunAction(evt: SceneEvent): Promise<boolean> {
     // turn clean into a [list] of things to check if its the only checkable
@@ -319,13 +325,20 @@ class Room extends GameObject {
     }
   }
 
+  searchThing(itemName: string): GameObject | undefined {
+    const thing =
+      this.findThing(itemName) ||
+      this.story.game.player.findThing(itemName)
+    return thing
+  }
+
   visibleItems(): string {
     const vis = this.roomItems.filter(item => !item.doc.hidden)
     return vis.map(item => item.name).join(', ')
   }
 
   async showNotes(evt: SceneEvent) {
-    const notes = this.findThing('notebook')
+    const notes = this.searchThing('notebook')
     await notes?.describeThing(evt)
   }
 

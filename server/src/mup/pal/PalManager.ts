@@ -1,5 +1,5 @@
 import { Pal, IChannel } from '../pal/Pal'
-import { Logger } from '../../lib/Logger'
+import { Logger } from '../../lib/LogLib'
 
 let palCache = {}
 

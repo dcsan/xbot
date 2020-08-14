@@ -1,5 +1,5 @@
 // const Dispatcher = require('../Dispatcher')
-import { MakeLogger } from '../../lib/logger'
+import { MakeLogger } from '../../lib/LogLib'
 import WordUtils from '../../lib/WordUtils'
 // import RouterService from './RouterService'
 
@@ -394,16 +394,16 @@ const RexParser = {
     logger.logObj(`build sync cache for room [${roomName}]`, { itemList })
     itemList.forEach(item => {
       if (item.doc.called) {
+        const rex = RexParser.makeRexFromLine(item.doc.called)
         const pair: ReplacePair = {
           base: item.name,
           called: item.doc.called,
-          rex: RexParser.makeRexFromLine(item.doc.called)
+          rex
         }
         synPairsCache.push(pair)
       }
     })
-    logger.logObj('created synPairsCache', { len: synPairsCache?.length })
-    logger.logObj('created synPairsCache', { synPairsCache })
+    // console.log('created synPairsCache', synPairsCache)
   },
 
   // fixed command syns eg wear -> take

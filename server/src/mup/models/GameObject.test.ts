@@ -3,7 +3,7 @@ import Room from './Room.js';
 import { RexParser, ParserResult } from '../routes/RexParser'
 import { TestEnv } from '../../lib/TestUtils';
 import { ActionData, SceneEvent } from '../MupTypes'
-import { Logger } from '../../lib/Logger'
+import { Logger } from '../../lib/LogLib'
 
 const log = console.log
 
@@ -18,7 +18,7 @@ it('initial state', async () => {
   const testEnv = new TestEnv()
   const game = await testEnv.loadGame('office')
   game.story.gotoRoom('office')
-  const lamp = game.story.room.findItem('lamp')
+  const lamp = game.story.room.findThing('lamp')
   expect(lamp?.state).toBe('default')
 })
 
@@ -54,7 +54,7 @@ xit('can find item action', async () => {
   const game = await testEnv.loadGame('office')
   await game.story.gotoRoom('office')
 
-  const item = game.story.room.findItem('soap')
+  const item = game.story.room.findThing('soap')
 
   // log(item?.actions)
   // const action = item?.findAction('take')
@@ -70,7 +70,7 @@ it('can change state by actions', async () => {
 
   await game.story.gotoRoom('reception')
 
-  const item = game.story.room.findItem('wardrobe')
+  const item = game.story.room.findThing('wardrobe')
   expect(item?.doc.name).toBe('wardrobe')
 
   expect(item?.state).toBe('closed')
@@ -98,8 +98,8 @@ it('can check conditions before actions', async () => {
   await game.story.gotoRoom('lobby')
   room.reset()
 
-  const clothes = game.story.room.findItem('clothes')
-  const wardrobe = game.story.room.findItem('wardrobe')
+  const clothes = game.story.room.findThing('clothes')
+  const wardrobe = game.story.room.findThing('wardrobe')
   expect(wardrobe?.state).toBe('closed')
   // const evt: SceneEvent = testEnv.makeSceneEvent('wear')
   // await clothes?.findAndRunAction(evt)

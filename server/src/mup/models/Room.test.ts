@@ -2,7 +2,7 @@ import { TestEnv } from '../../lib/TestUtils'
 import { ActionResult, SceneEvent } from '../MupTypes'
 import { ParserResult, RexParser } from '../routes/RexParser'
 import { HandleCodes } from './ErrorHandler'
-import { Logger } from '../../lib/Logger'
+import { Logger } from '../../lib/LogLib'
 
 afterAll(() => {
   // Logger.log('done')

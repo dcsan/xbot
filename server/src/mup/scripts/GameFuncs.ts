@@ -1,5 +1,5 @@
 import { SceneEvent, ActionData } from '../MupTypes'
-import { Logger } from '../../lib/Logger'
+import { Logger } from '../../lib/LogLib'
 import BotRouter from '../routes/BotRouter'
 // JS functions invoked from script
 
@@ -11,7 +11,7 @@ const GameFuncs = {
       return false
     }
 
-    const sink = evt.game?.story.room.findItem('sink')
+    const sink = evt.game?.story.room.findThing('sink')
     if (sink?.getProp('handle') !== 'yes') {
       evt.pal.sendText("You can't turn that faucet handle like that!")
       return false

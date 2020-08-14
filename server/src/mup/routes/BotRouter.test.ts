@@ -2,7 +2,7 @@ import { TestEnv } from '../../lib/TestUtils';
 import BotRouter from './BotRouter';
 import { RouterService } from './RouterService';
 import { HandleCodes } from '../models/ErrorHandler';
-import { Logger } from '../../lib/Logger';
+import { Logger } from '../../lib/LogLib';
 
 import { ActionResult } from '../MupTypes'
 
@@ -103,10 +103,10 @@ describe('inventory', () => {
     expect(await testEnv.getReply('get shirt')).toMatch(/You take the shirt/i)
     expect(await testEnv.getReply('inv')).toMatch(/shirt/i)
 
-    expect(await testEnv.getReply('get shirt')).toMatch(/You already have the shirt/i)
-
-    // expect(await testEnv.getReply('take letter')).toMatch(/You've read the letter'/i)
+    // you can look at items you have in inventory
     expect(await testEnv.getReply('x shirt')).toMatch(/a spare office shirt/i)
+
+    expect(await testEnv.getReply('get shirt')).toMatch(/You already have the shirt/i)
 
     expect(testEnv.game.player.hasItem('shirt')).toBe(true)
 

@@ -1,7 +1,7 @@
 import { GameObject } from './GameObject'
 import { SceneEvent } from '../MupTypes'
 
-import { Logger } from '../../lib/Logger'
+import { Logger } from '../../lib/LogLib'
 import assert from 'assert';
 
 class Actor extends GameObject {
@@ -45,7 +45,7 @@ class Actor extends GameObject {
    * @param {} text
    */
   formatReply(text) {
-    return `${ this.formalName }: ${ text }`
+    return `${this.formalName}: ${text}`
   }
 
   /**

@@ -1,5 +1,5 @@
 import debug from 'debug'
-import { Logger } from '../../lib/Logger'
+import { Logger } from '../../lib/LogLib'
 
 class Help {
 

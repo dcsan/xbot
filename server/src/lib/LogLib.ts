@@ -1,4 +1,4 @@
-import AppConfig from '../lib/AppConfig'
+import AppConfig from './AppConfig'
 import yaml from 'js-yaml'
 import Util from './Util'
 import chalk from 'chalk'
@@ -119,10 +119,10 @@ class MakeLogger {
       // this dumps better
       const json = JSON.stringify(obj, null, 2)
       const blob = yaml.dump(json)
-      console.log(`--- ${msg}`, blob)
+      console.log(this.where, msg, blob)
     } catch (err) {
-      console.log('failed to stringify')
-      console.log(msg)
+      console.log('failed to stringify obj')
+      console.log(this.where, msg)
     }
   }
 

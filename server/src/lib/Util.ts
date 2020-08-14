@@ -2,7 +2,7 @@ import * as glob from 'glob'
 import fs from 'fs'
 import path from 'path'
 import yaml from 'js-yaml'
-import { Logger } from './Logger'
+import { Logger } from './LogLib'
 import * as _ from 'lodash'
 
 const Util = {

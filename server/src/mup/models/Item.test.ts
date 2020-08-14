@@ -5,7 +5,7 @@ test('item states', async () => {
   const game = await testEnv.loadGame('office')
   await game.story.gotoRoom('office')
   const room = game.story.room
-  const chest = room.findItem('chest')
+  const chest = room.findThing('chest')
   expect(chest?.cname).toBe('chest')
   expect(chest?.state).toBe('locked')
 })
@@ -18,7 +18,7 @@ test('get item', async () => {
   await game.story.gotoRoom('office')
   const room = game.story.room
 
-  const chest = room.findItem('chest')
+  const chest = room.findThing('chest')
   expect(chest?.cname).toBe('chest')
   expect(chest?.state).toBe('locked')
   // thru the other accessor

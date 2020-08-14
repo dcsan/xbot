@@ -1,4 +1,4 @@
-import { Logger } from '../../lib/Logger'
+import { Logger } from '../../lib/LogLib'
 import { SceneEvent } from '../MupTypes'
 import SlackBuilder from '../pal/SlackBuilder'
 

@@ -4,7 +4,7 @@
 // get to just one common log method
 
 import yaml from 'js-yaml'
-import { Logger } from '../../lib/Logger'
+import { Logger } from '../../lib/LogLib'
 import Util from '../../lib/Util'
 import SlackBuilder from './SlackBuilder'
 import chalk from 'chalk'

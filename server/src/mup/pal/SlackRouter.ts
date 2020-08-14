@@ -2,7 +2,7 @@ import AppConfig from '../../lib/AppConfig'
 
 import { App, MessageEvent, ExpressReceiver, Middleware } from '@slack/bolt';
 import BotRouter from '../../mup/routes/BotRouter'
-import { Logger } from '../../lib/Logger'
+import { Logger } from '../../lib/LogLib'
 import { PalManager } from './PalManager'
 import { Pal } from './Pal'
 

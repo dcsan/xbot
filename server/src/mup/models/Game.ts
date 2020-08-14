@@ -5,7 +5,7 @@ import yaml from 'js-yaml'
 // const posTagger = require('wink-pos-tagger');
 // import AppConfig from '../../lib/AppConfig'
 import Util from '../../lib/Util'
-import { Logger } from '../../lib/Logger'
+import { Logger } from '../../lib/LogLib'
 import SlackBuilder from '../pal/SlackBuilder'
 import { Pal } from '../pal/Pal'
 import Story from './Story'

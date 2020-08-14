@@ -1,4 +1,4 @@
-import { Logger } from '../../lib/Logger'
+import { Logger } from '../../lib/LogLib'
 import Util from '../../lib/Util'
 import SlackBuilder from '../pal/SlackBuilder'
 import Room from './Room'

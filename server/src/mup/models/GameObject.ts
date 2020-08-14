@@ -1,5 +1,5 @@
 import SlackBuilder from '../pal/SlackBuilder'
-import { MakeLogger } from '../../lib/Logger'
+import { MakeLogger } from '../../lib/LogLib'
 import Util from '../../lib/Util'
 
 import { RexParser, ParserResult } from '../routes/RexParser'
@@ -265,7 +265,7 @@ class GameObject {
       await this.runBranch(actionData.then, evt, trackResult)
     }
 
-    logger.logObj('DONE ranAction', { actionData, history: trackResult })
+    logger.logObj('DONE ranAction', { match: actionData.match, trackResult })
 
     return trackResult
   }
@@ -322,7 +322,7 @@ class GameObject {
     let found: GameObject | undefined = this.roomObj.findThing(target)
     if (!found) {
       logger.log('look in player for:', target)
-      found = this.roomObj.story.game.player.findItem(target)
+      found = this.roomObj.story.game.player.findThing(target)
     }
     if (!found) {
       logger.warn('cannot find thing to update', { target, line })
@@ -383,9 +383,9 @@ class GameObject {
   }
 
   // set props on this or other items
-  async applySetProps(branch: ActionBranch, _evt) {
-    if (!branch.setProps) return
-
+  async applySetProps(branch: ActionBranch, _evt): Promise<boolean> {
+    if (!branch.setProps) return false
+    let found = false
     for (const line of branch.setProps) {
       const pres: ParserResult = RexParser.parseSetLine(line)
       if (pres.parsed?.groups) {
@@ -396,15 +396,18 @@ class GameObject {
         if (target === 'room') {
           targetThing = this.roomObj
         } else {
-          targetThing = this.roomObj.findThing(target)
+          targetThing = this.roomObj.searchThing(target)
         }
         if (!targetThing) {
           logger.warn('cannot find targetThing to update', { target, line })
-          return
+          // do NOT return here as we need to finish looping
+        } else {
+          targetThing.setProp(field, value)
+          found = true
         }
-        targetThing.setProp(field, value)
       }
     }
+    return found
   }
 
   // take any items from the script branch

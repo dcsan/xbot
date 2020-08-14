@@ -1,9 +1,12 @@
 import Item from './Item'
-import { Logger } from '../../lib/Logger'
+import { MakeLogger } from '../../lib/LogLib'
 import { SceneEvent } from '../MupTypes'
 import SlackBuilder from '../pal/SlackBuilder'
 import { GameObject } from './GameObject'
 // import { Pal } from '../pal/Pal'
+import WordUtils from '../../lib/WordUtils';
+
+const logger = new MakeLogger('player')
 
 class Player extends GameObject {
 
@@ -31,14 +34,14 @@ class Player extends GameObject {
 
   invStatus() {
     let reply: string[] = []
-    // Logger.log('player.status.invItems:', this.invItems)
+    // logger.log('player.status.invItems:', this.invItems)
     if (!this.invItems.length) {
       reply.push('nothing')
     } else this.invItems.map(item => {
-      // Logger.log('item', item)
+      // logger.log('item', item)
       reply.push(item.name)
     })
-    // Logger.log('player.status.reply:', reply)
+    // logger.log('player.status.reply:', reply)
     return reply
   }
 
@@ -54,13 +57,13 @@ class Player extends GameObject {
   takeItem(item: GameObject): boolean {
     if (item.has === 'yes') {
       // this should have been checked already
-      Logger.warn('already had item:', item.doc)
+      logger.warn('already had item:', item.doc)
       // return false
     } // else
     item.has = "yes"
     this.copyItem(item)
     item.roomObj.removeItemByCname(item.cname)
-    Logger.logObj('inv', this.invItems)
+    logger.logObj('inv', this.invItems)
     return true
   }
 
@@ -75,15 +78,22 @@ class Player extends GameObject {
   //   this.invItems.push(item)
   // }
 
-  findItem(cname: string): Item | undefined {
+  findThing(cname: string): Item | undefined {
+    cname = WordUtils.makeCname(cname)
     let matchItems = this.invItems.filter((item) => {
       return item.cname === cname
     })
-    return matchItems.pop()
+    const found = matchItems.pop()
+    if (!found) {
+      logger.logObj('cant find thing in inv', { cname, invItems: this.invItems })
+      return
+    }
+    return found
   }
 
   hasItem(cname: string): boolean {
-    const item = this.findItem(cname)
+    cname = WordUtils.makeCname(cname)
+    const item = this.findThing(cname)
     return !!item
   }
 
@@ -92,7 +102,7 @@ class Player extends GameObject {
 
     const blocks: any[] = []
     // blocks.push(SlackBuilder.buttonsBlock([`notebook | x notebook`]))
-    Logger.logObj('showInv', this.invItems)
+    logger.logObj('showInv', this.invItems)
 
     if (!this.invItems.length) {
       blocks.push(SlackBuilder.textBlock("You aren't carrying anything"))

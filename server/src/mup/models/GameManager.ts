@@ -1,6 +1,6 @@
 import { Pal } from '../pal/Pal'
 import Game from './Game'
-import { Logger } from '../../lib/Logger'
+import { Logger } from '../../lib/LogLib'
 import { LoadOptions } from 'mup/MupTypes'
 
 let GameList: Game[] = []
