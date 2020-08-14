@@ -40,7 +40,6 @@ class Story {
     } else {
       this.room = this.rooms[0]
     }
-    RexParser.cacheNames(this.room.roomItems)
     return this.room
   }
 
@@ -100,9 +99,11 @@ class Story {
   }
 
   async gotoRoom(roomName: string, evt?: SceneEvent) {
+
     const room = this.findRoomByName(roomName)
     if (room) {
       this.room = room
+      RexParser.cacheNames(room.roomItems, room.name)
       if (evt) {
         // else just go silently
         await this.room.enterRoom(evt)

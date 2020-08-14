@@ -1,5 +1,5 @@
 // const Dispatcher = require('../Dispatcher')
-import { Logger } from '../../lib/Logger'
+import { MakeLogger } from '../../lib/logger'
 import WordUtils from '../../lib/WordUtils'
 // import RouterService from './RouterService'
 
@@ -13,6 +13,7 @@ import {
 } from '../MupTypes'
 
 const log = console.log
+const logger = new MakeLogger('rexParser')
 
 const ParserConfig = {
   verbs: 'take|move|get|open|wear|drink|rub|drop|lock|unlock'
@@ -377,7 +378,7 @@ const RexParser = {
   //     foundItem = room.findThing(itemName)
   //   }
   //   const result = { actionName, itemName, modifier, foundItem }
-  //   Logger.logObj('basicParser', { input, result })
+  //   logger.logObj('basicParser', { input, result })
   //   return result
   // }
 
@@ -389,24 +390,27 @@ const RexParser = {
   },
 
   // build a list of items when you enter a new room
-  cacheNames(itemList: GameObject[]) {
+  cacheNames(itemList: GameObject[], roomName: string) {
+    logger.logObj(`build sync cache for room [${roomName}]`, { itemList })
     itemList.forEach(item => {
       if (item.doc.called) {
         const pair: ReplacePair = {
           base: item.name,
+          called: item.doc.called,
           rex: RexParser.makeRexFromLine(item.doc.called)
         }
         synPairsCache.push(pair)
       }
     })
-    Logger.log('synPairsCache')
+    logger.logObj('created synPairsCache', { len: synPairsCache?.length })
+    logger.logObj('created synPairsCache', { synPairsCache })
   },
 
   // fixed command syns eg wear -> take
   reduceVocab(input: string) {
-    // Logger.log('synPairs', synPairsCache)
+    // logger.log('synPairs', synPairsCache)
     if (!synPairsCache || !synPairsCache.length) {
-      Logger.warn('no syn pairs for room')
+      logger.warn('no syn pairs for room')
     }
     let clean = input + ''
     for (const rep of ReplaceItems) {
@@ -417,7 +421,7 @@ const RexParser = {
       clean = clean.replace(rep.rex, rep.base)
     }
     if (input !== clean) {
-      Logger.log(`reduced vocab ${input} => ${clean}`)
+      logger.log(`reduced vocab ${input} => ${clean}`)
     }
     return clean
   },
@@ -425,7 +429,7 @@ const RexParser = {
   parseCommands(input: string): ParserResult {
     let clean = WordUtils.basicNormalize(input)
     clean = RexParser.reduceVocab(clean)
-    // Logger.log('clean', clean)
+    // logger.log('clean', clean)
     let pres: ParserResult = {
       input,
       clean,
@@ -459,9 +463,9 @@ const RexParser = {
     } else {
       // TODO - global counter for missed rules?
       // so we can show a hint?
-      Logger.log('no command matched for input', clean)  // could be a room action instead
+      logger.log('no command matched for input', clean)  // could be a room action instead
     }
-    // Logger.log('pres', pres)
+    // logger.log('pres', pres)
     return pres
   },
 

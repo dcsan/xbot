@@ -2,7 +2,7 @@
 import AppConfig from '../../lib/AppConfig'
 import { Pal } from '../pal/Pal'
 import { RexParser, ParserResult } from './RexParser'
-import { Logger } from '../../lib/Logger'
+import { MakeLogger } from '../../lib/logger'
 import Util from '../../lib/Util'
 import Game from 'mup/models/Game'
 import { GameManager } from '../models/GameManager'
@@ -14,6 +14,8 @@ import {
 } from '../MupTypes'
 
 import WordUtils from '../../lib/WordUtils'
+
+const logger = new MakeLogger('botRouter')
 
 import { ErrorHandler, HandleCodes } from '../models/ErrorHandler'
 
@@ -46,7 +48,7 @@ const BotRouter = {
   },
 
   async anyEvent(pal: Pal, input: string, eventType: string = 'text'): Promise<boolean | undefined> {
-    Logger.log('anyEvent.input:', input)
+    logger.log('anyEvent.input:', input)
     // if (input[0])
 
     if (Util.shouldIgnore(input)) {
@@ -70,7 +72,7 @@ const BotRouter = {
     if (!actionResult) {
       const err = `no match: [${clean}]`
       await pal.debugMessage(err)
-      Logger.warn(err)
+      logger.warn(err)
       const target = evt.pres.pos?.target
       const verb = evt.pres.pos?.verb
       let msg = ''
@@ -94,26 +96,26 @@ const BotRouter = {
         handled: actionResult,
         from: 'router',
       })
-      Logger.log('response:', msg)
+      logger.log('response:', msg)
     }
     return actionResult
   },
 
   async tryRoomActions(evt: SceneEvent): Promise<boolean | undefined> {
-    Logger.log('tryRoomActions evt.pres.clean=', evt.pres.clean)
+    logger.log('tryRoomActions evt.pres.clean=', evt.pres.clean)
     const result = await evt.game.story.room.findAndRunAction(evt)
-    Logger.log('roomActions.result =>', result)
+    logger.log('roomActions.result =>', result)
     return result
   },
 
   async tryCommands(evt: SceneEvent): Promise<boolean | undefined> {
     if (evt.pres.rule?.type !== 'command') {
-      Logger.log('skip tryCommands for non room action for evt.pres.rule=', evt.pres.rule)
+      logger.log('skip tryCommands for non room action for evt.pres.rule=', evt.pres.rule)
       return false
     }
-    Logger.log('tryCommands for evt.pres=', evt.pres.clean)
+    logger.log('tryCommands for evt.pres=', evt.pres.clean)
     const result = await evt.pres.rule?.event(evt)
-    Logger.log('tryCommands.result =>', result)  // FIXME - track results?
+    logger.log('tryCommands.result =>', result)  // FIXME - track results?
     return true // parser found a command
   },
 

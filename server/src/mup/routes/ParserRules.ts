@@ -8,6 +8,7 @@ import { OneRule } from '../MupTypes'
 interface ReplacePair {
   rex: RegExp
   base: string
+  called: string
 }
 
 const ReplaceItems = [
@@ -182,6 +183,13 @@ const StaticRules: RuleSpec[] = [
     cname: 'recache',
     type: 'command',
     event: RouterService.cacheNames
+  },
+
+  {
+    rex: /^(notes|notebook|nb)$/,
+    cname: 'log',
+    type: 'command',
+    event: RouterService.showNotes
   },
 
 

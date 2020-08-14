@@ -1,5 +1,5 @@
 import SlackBuilder from '../pal/SlackBuilder'
-import { Logger } from '../../lib/Logger'
+import { MakeLogger } from '../../lib/Logger'
 import Util from '../../lib/Util'
 
 import { RexParser, ParserResult } from '../routes/RexParser'
@@ -13,6 +13,8 @@ import { Pal } from '../pal/Pal'
 import { SceneEvent } from '../MupTypes'
 import { GameFuncs } from '../scripts/GameFuncs'
 import BotRouter from '../routes/BotRouter'
+
+const logger = new MakeLogger('GameObject')
 
 import {
   ActionData,
@@ -50,7 +52,7 @@ class GameObject {
   hidden?: boolean
 
   constructor(doc, story: Story, klass: string,) {
-    // Logger.log('create', doc)
+    // logger.log('create', doc)
     this.doc = doc
     this.actions = doc.actions
     this.actors = []
@@ -104,7 +106,7 @@ class GameObject {
     return this.props[key]
   }
   setProp(key, val) {
-    // Logger.logObj('setProp', { cname: this.cname, key, val })
+    // logger.logObj('setProp', { cname: this.cname, key, val })
     this.props[key] = val
   }
 
@@ -125,7 +127,7 @@ class GameObject {
   }
 
   get long() {
-    Logger.checkItem(this.doc, 'long')
+    logger.checkItem(this.doc, 'long')
     return this.doc.long ||
       this.doc.description ||
       this.doc.short ||
@@ -155,14 +157,14 @@ class GameObject {
   getStateBlock() {
     const state = this.state
     let block: StateBlock = this.doc.states.find(one => one.name === state)
-    Logger.logObj(`get state [${state}] block`, { state, block })
+    logger.logObj(`get state [${state}] block`, { state, block })
 
     if (!block) {
-      Logger.warn('cant find block for state', { name: this.name, state })
+      logger.warn('cant find block for state', { name: this.name, state })
       block = this.doc.states[0]
       if (!block) {
         // should never happen since states are required
-        Logger.assertDefined(block, 'cannot find block for state', { state: this.state, states: this.doc.states })
+        logger.assertDefined(block, 'cannot find block for state', { state: this.state, states: this.doc.states })
       }
     }
     return block
@@ -179,7 +181,7 @@ class GameObject {
   renderItem(stateInfo: StateBlock): any[] {
     const palBlocks: any[] = []
 
-    // Logger.log('describeThing', {
+    // logger.log('describeThing', {
     //   name: this.name,
     //   state: this.state,
     //   props: this.props,
@@ -212,8 +214,8 @@ class GameObject {
     if (!this.actors) return
     const foundActor = this.actors[0]
     if (!foundActor) {
-      // Logger.log('room.actors', this.actors)
-      Logger.log('no actors in room!' + this.cname)
+      // logger.log('room.actors', this.actors)
+      logger.log('no actors in room!' + this.cname)
       return false
     }
     return foundActor
@@ -263,7 +265,7 @@ class GameObject {
       await this.runBranch(actionData.then, evt, trackResult)
     }
 
-    Logger.logObj('DONE ranAction', { actionData, history: trackResult })
+    logger.logObj('DONE ranAction', { actionData, history: trackResult })
 
     return trackResult
   }
@@ -287,7 +289,7 @@ class GameObject {
       returnBlock = action.then
     }
     if (!returnBlock) {
-      Logger.warn('cannot find returnBlock', { fail })
+      logger.warn('cannot find returnBlock', { fail })
       // TODO - should handle this better? no 'else' or 'then'
     }
     return returnBlock
@@ -305,34 +307,34 @@ class GameObject {
   checkOneCondition(line: string): boolean {
     const pres = RexParser.parseSetLine(line)
     if (!pres.parsed?.groups) {
-      Logger.warn('ifBlock. missing groups', { parsed: pres.parsed })
+      logger.warn('ifBlock. missing groups', { parsed: pres.parsed })
       return false
     }
 
     const { target, field, value } = pres.parsed.groups
     if (!(target && field && value)) {
-      Logger.warn('missing parser fields', { target, field, value })
-      Logger.log('if block failed', pres.parsed.groups)
+      logger.warn('missing parser fields', { target, field, value })
+      logger.log('if block failed', pres.parsed.groups)
       return false
     }
 
     // FIXME - should be more explicit when checking player inv items
     let found: GameObject | undefined = this.roomObj.findThing(target)
     if (!found) {
-      Logger.log('look in player for:', target)
+      logger.log('look in player for:', target)
       found = this.roomObj.story.game.player.findItem(target)
     }
     if (!found) {
-      Logger.warn('cannot find thing to update', { target, line })
+      logger.warn('cannot find thing to update', { target, line })
       return false
     }
     const actual = found.getProp(field)
     // log('checked', { thing, field, value, actual })
     if (actual === value) {
-      Logger.log('if block passed', pres.parsed.groups)
+      logger.log('if block passed', pres.parsed.groups)
       return true
     } else {
-      Logger.log('if block failed', pres.parsed.groups)
+      logger.log('if block failed', pres.parsed.groups)
       return false
     }
   }
@@ -341,7 +343,7 @@ class GameObject {
     branch: ActionBranch | undefined, evt: SceneEvent, trackResult: boolean
   ): Promise<boolean | undefined> {
     if (!branch) {
-      Logger.log('tried to run a null branch for pres', evt?.pres)
+      logger.log('tried to run a null branch for pres', evt?.pres)
       return
     }
 
@@ -356,7 +358,7 @@ class GameObject {
       if (GameFuncs[funcName]) {
         GameFuncs[funcName](branch, evt)
       } else {
-        Logger.warn('tried to call non-exist JSfunc:', funcName)
+        logger.warn('tried to call non-exist JSfunc:', funcName)
       }
     }
 
@@ -388,8 +390,8 @@ class GameObject {
       const pres: ParserResult = RexParser.parseSetLine(line)
       if (pres.parsed?.groups) {
         const { target, field, value } = pres.parsed.groups
-        Logger.assertTrue((target && field && value), 'missing field', pres.parsed?.groups)
-        Logger.log(`apply setProp ${target}.${field} => ${value}`)
+        logger.assertTrue((target && field && value), 'missing field', pres.parsed?.groups)
+        logger.log(`apply setProp ${target}.${field} => ${value}`)
         let targetThing
         if (target === 'room') {
           targetThing = this.roomObj
@@ -397,7 +399,7 @@ class GameObject {
           targetThing = this.roomObj.findThing(target)
         }
         if (!targetThing) {
-          Logger.warn('cannot find targetThing to update', { target, line })
+          logger.warn('cannot find targetThing to update', { target, line })
           return
         }
         targetThing.setProp(field, value)
@@ -411,7 +413,7 @@ class GameObject {
     if (!takeItemList) return false
 
     for (const itemName of takeItemList) {
-      Logger.log('doTakeAction', itemName)
+      logger.log('doTakeAction', itemName)
       await this.roomObj.takeItemByName(itemName, evt)
     }
     return true
@@ -423,7 +425,7 @@ class GameObject {
     if (!calls) return
 
     for (const oneCall of calls) {
-      Logger.log('doCall', oneCall)
+      logger.log('doCall', oneCall)
       await BotRouter.anyEvent(evt.pal, oneCall, 'text')
     }
   }

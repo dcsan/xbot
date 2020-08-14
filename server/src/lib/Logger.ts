@@ -14,7 +14,12 @@ enum LogLevels {
   SILLY = 5,
 }
 
-class LoggerWrapper {
+class MakeLogger {
+  name: string
+
+  constructor(name: string) {
+    this.name = name.padEnd(12, ' ')
+  }
 
   nodeEnv() {
     console.log('env', process.env.NODE_ENV)
@@ -24,9 +29,13 @@ class LoggerWrapper {
     console.log('\n_____________________________________________________________\n')
   }
 
+  get where() {
+    return chalk.gray(`[${this.name}] -->\t`)
+  }
+
   log(msg, ...rest) {
     if (forceLogging || process.env.NODE_ENV !== 'test') {
-      console.log('---> ', msg, ...rest)
+      console.log(this.where, msg, ...rest)
     }
   }
 
@@ -141,6 +150,6 @@ class LoggerWrapper {
 
 }
 
-const Logger = new LoggerWrapper()
+const Logger = new MakeLogger('-')
 
-export { Logger, LogLevels }
+export { Logger, LogLevels, MakeLogger }

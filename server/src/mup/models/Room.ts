@@ -1,4 +1,4 @@
-import { Logger } from '../../lib/Logger'
+import { MakeLogger } from '../../lib/logger'
 import SlackBuilder from '../pal/SlackBuilder'
 import { GameObject } from './GameObject'
 import WordUtils from '../../lib/WordUtils'
@@ -9,6 +9,8 @@ import Util from '../../lib/Util'
 // import WordUtils from '../../lib/WordUtils'
 // import { Pal } from '../pal/Pal'
 import { ParserResult, RexParser } from '../routes/RexParser'
+
+const logger = new MakeLogger('room')
 
 import {
   ErrorHandler,
@@ -36,7 +38,7 @@ class Room extends GameObject {
   }
 
   buildThings(story: Story) {
-    Logger.log('buildThings room:', this.name)
+    logger.log('buildThings room:', this.name)
     this.roomItems = []
     this.hintStep = this.doc.setHint || 'start'
     this.loadItems(story)
@@ -68,7 +70,7 @@ class Room extends GameObject {
 
   loadActors(story) {
     const allActors = this.doc.actors
-    Logger.log('loading actors:', allActors?.length)
+    logger.log('loading actors:', allActors?.length)
     this.actors = []
     // @ts-ignore
     allActors?.map(actorDoc => {
@@ -108,7 +110,7 @@ class Room extends GameObject {
   // find and examine thing
   async lookRoomThing(evt: SceneEvent) {
     const thingName: string | undefined = evt.pres.pos?.target
-    if (!thingName) return Logger.warn('no thingName to lookat', evt)
+    if (!thingName) return logger.warn('no thingName to lookat', evt)
     const thing = this.roomObj.findThing(thingName) ||
       this.roomObj.story.game.player.findItem(thingName) // in the room
     if (!thing) {
@@ -120,7 +122,7 @@ class Room extends GameObject {
 
   async showItemsInRoom(evt: SceneEvent) {
     const itemsInfo = this.visibleItems()
-    Logger.log('itemsInfo:', itemsInfo)
+    logger.log('itemsInfo:', itemsInfo)
     if (itemsInfo) {
       await evt.pal.sendBlocks([SlackBuilder.textBlock(`You see: ` + itemsInfo)])
     }
@@ -158,7 +160,7 @@ class Room extends GameObject {
   async findAndRunAction(evt: SceneEvent): Promise<boolean> {
     // turn clean into a [list] of things to check if its the only checkable
     const checks: string[] = evt.pres.combos || [evt.pres.clean]
-    Logger.log('checks', checks)
+    logger.log('checks', checks)
 
     for (const check of checks) {
       const actionData: ActionData | undefined = this.roomObj.findAction(check)
@@ -176,7 +178,7 @@ class Room extends GameObject {
   findAction(input: string): ActionData | undefined {
     const room = this.roomObj
     if (!room.doc.actions) {
-      Logger.warn('no actions for item:', this.doc.name)
+      logger.warn('no actions for item:', this.doc.name)
     }
 
     input = WordUtils.basicNormalize(input)
@@ -193,11 +195,11 @@ class Room extends GameObject {
     })
 
     if (foundAction) {
-      Logger.log(`OK found matched roomAction for [ ${input} ]`)
+      logger.log(`OK found matched roomAction for [ ${input} ]`)
       return foundAction
     } else {
-      // Logger.logObj('FAIL foundAction', { input, 'room.actions': room.actions })
-      Logger.log('NO roomAction for input:', input)
+      // logger.logObj('FAIL foundAction', { input, 'room.actions': room.actions })
+      logger.log('NO roomAction for input:', input)
       return undefined
     }
   }
@@ -205,14 +207,14 @@ class Room extends GameObject {
   removeItemByCname(cname: string) {
     const before = this.roomItems?.length
     this.roomItems = this.roomItems?.filter(item => item.cname !== cname)
-    Logger.log('remove item before', before, 'after', this.roomItems.length)
+    logger.log('remove item before', before, 'after', this.roomItems.length)
   }
 
   // hard command direct from router
   async takeItemCommand(evt: SceneEvent): Promise<boolean> {
     const thingName = evt.pres.pos?.target
     if (!thingName) {
-      Logger.warn('no thingName to take', evt)
+      logger.warn('no thingName to take', evt)
       return false
     }
     await this.takeItemByName(thingName, evt)
@@ -292,7 +294,7 @@ class Room extends GameObject {
 
   // looks for actors
   findThing(itemName: string): GameObject | undefined {
-    Logger.log('findThing', itemName, 'in', this.klass)
+    logger.log('findThing', itemName, 'in', this.klass)
     const cname = Util.safeName(itemName)
     const found = this.allThings.filter((thing: GameObject) => {
       if (thing.cname === cname) return true
@@ -307,12 +309,12 @@ class Room extends GameObject {
     })
     if (found.length > 0) {
       const item = found[0]
-      Logger.log('found thing:', item.name)
+      logger.log('found thing:', item.name)
       return item
     } else {
-      Logger.warn('cannot find thing in room:', itemName)
-      Logger.logObj('room items:', this.roomObj.itemCnames())
-      // Logger.log('this:', this.cname, this.klass)
+      logger.warn('cannot find thing in room:', itemName)
+      logger.logObj('room items:', this.roomObj.itemCnames())
+      // logger.log('this:', this.cname, this.klass)
       return undefined
     }
   }
@@ -322,47 +324,21 @@ class Room extends GameObject {
     return vis.map(item => item.name).join(', ')
   }
 
-
-  // default action for `take ITEM`
-  // async baseTakeAction(evt: SceneEvent) {
-  //   // TODO player status
-  //   if (this.getProp('has') === 'yes') {
-  //     const msg = `you already have the ${this.name}`
-  //     const blocks = [
-  //       SlackBuilder.textBlock(msg),
-  //       SlackBuilder.contextBlock("type `inv` to see what you're carrying"),
-  //     ]
-  //     return await evt.pal.sendBlocks(blocks)
-  //   }
-  //   if (this.doc.canTake) {
-  //     const msg = `you get the ${this.name}`
-  //     const blocks = [
-  //       SlackBuilder.textBlock(msg),
-  //       SlackBuilder.contextBlock("type `inv` to see what you're carrying"),
-  //     ]
-  //     this.story.game.player.takeItem(this) // removes from the room
-  //     this.setProp('has', 'yes')
-  //     await evt.pal.sendBlocks(blocks)
-  //   } else {
-  //     // cannot take
-  //     await ErrorHandler.sendError(HandleCodes.ignoredCannotTake, evt, { name: this.name })
-  //     await evt.pal.sendBlocks(
-  //       [SlackBuilder.contextBlock("type `inv` to see what you're carrying")]
-  //     )
-  //     // this.setProp('has', 'no')  // or dont change state?
-  //   }
-  // }
+  async showNotes(evt: SceneEvent) {
+    const notes = this.findThing('notebook')
+    await notes?.describeThing(evt)
+  }
 
   findActor(name) {
     if (!name) {
-      Logger.error('findActor but no name!')
+      logger.error('findActor but no name!')
     }
     if (!this.actors) return false
     name = name.toLowerCase()
     const foundActor = this.actors.find(actor => actor.cname === name)
     if (!foundActor) {
-      // Logger.log('room.actors', this.actors)
-      Logger.log('cannot find actor named:' + name)
+      // logger.log('room.actors', this.actors)
+      logger.log('cannot find actor named:' + name)
       return false
     }
     return foundActor
@@ -402,12 +378,12 @@ class Room extends GameObject {
   // async tryThingActions(result: ParserResult, evt: SceneEvent): Promise<boolean> {
   //   const target = result.pos?.target
   //   if (!target) {
-  //     Logger.assertDefined(target, 'no target for tryThingActions')
+  //     logger.assertDefined(target, 'no target for tryThingActions')
   //     return false
   //   }
   //   const thing = this.findThing(target)
   //   if (!thing) {
-  //     Logger.warn('cannot find subject', result.parsed?.groups)
+  //     logger.warn('cannot find subject', result.parsed?.groups)
   //     return false
   //     // return { handled: HandleCodes.errthingNotFound, err: true }
   //   }

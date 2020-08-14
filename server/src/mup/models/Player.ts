@@ -89,7 +89,9 @@ class Player extends GameObject {
 
   async showInventory(evt: SceneEvent) {
     // await evt.pal.sendText('Inventory:')
+
     const blocks: any[] = []
+    // blocks.push(SlackBuilder.buttonsBlock([`notebook | x notebook`]))
     Logger.logObj('showInv', this.invItems)
 
     if (!this.invItems.length) {
@@ -98,6 +100,7 @@ class Player extends GameObject {
       const buttonLinks = this.invItems.map(item => {
         return `${item.name}|x ${item.name}`
       })
+      // buttonLinks.push(`notebook | x notebook`) // artificial
       blocks.push(SlackBuilder.buttonsBlock(buttonLinks))
     }
     blocks.push(SlackBuilder.contextBlock(':bulb: hint: _try to `use item with ...` other things in the room_'))
