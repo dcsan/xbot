@@ -84,6 +84,6 @@ storyPull:
 	cd server/cdn/storydata && git pull
 
 storyPush:
-	server/cdn/storydata ; \
+	cd server/cdn/storydata ; \
 	git pull; \
 	git add . && git commit -m "auto" && git push
