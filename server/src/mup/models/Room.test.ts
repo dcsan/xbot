@@ -59,7 +59,7 @@ it('should handle a special action with a goto', async () => {
   const game = await testEnv.loadGame('office')
   await game.story.gotoRoom('office')
   const room = game.story.room
-  console.log('room', room)
+  // console.log('room', room)
   expect(room.cname).toBe('office')
   expect(room.description).toMatch(/A large empty room/)
 

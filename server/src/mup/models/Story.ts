@@ -8,6 +8,7 @@ import Game from './Game'
 import AppConfig from '../../lib/AppConfig'
 import { SceneEvent } from '../MupTypes'
 import { LoadOptions } from '../MupTypes'
+import { RexParser } from '../routes/RexParser'
 
 class Story {
   game: Game
@@ -39,6 +40,7 @@ class Story {
     } else {
       this.room = this.rooms[0]
     }
+    RexParser.cacheNames(this.room.roomItems)
     return this.room
   }
 

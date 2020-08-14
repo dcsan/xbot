@@ -399,25 +399,33 @@ const RexParser = {
         synPairsCache.push(pair)
       }
     })
-    Logger.log('synPairsCache', synPairsCache)
+    Logger.log('synPairsCache')
   },
 
+  // fixed command syns eg wear -> take
   reduceVocab(input: string) {
-    // fixed command syns eg wear -> take
+    // Logger.log('synPairs', synPairsCache)
+    if (!synPairsCache || !synPairsCache.length) {
+      Logger.warn('no syn pairs for room')
+    }
+    let clean = input + ''
     for (const rep of ReplaceItems) {
-      input = input.replace(rep.rex, rep.base)
+      clean = clean.replace(rep.rex, rep.base)
     }
     // names of items in game
     for (const rep of synPairsCache) {
-      input = input.replace(rep.rex, rep.base)
+      clean = clean.replace(rep.rex, rep.base)
     }
-    return input
+    if (input !== clean) {
+      Logger.log(`reduced vocab ${input} => ${clean}`)
+    }
+    return clean
   },
 
   parseCommands(input: string): ParserResult {
     let clean = WordUtils.basicNormalize(input)
     clean = RexParser.reduceVocab(clean)
-    Logger.log('clean', clean)
+    // Logger.log('clean', clean)
     let pres: ParserResult = {
       input,
       clean,

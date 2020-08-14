@@ -54,8 +54,8 @@ class Player extends GameObject {
   takeItem(item: GameObject): boolean {
     if (item.has === 'yes') {
       // this should have been checked already
-      Logger.warn('already had item:', item)
-      return false
+      Logger.warn('already had item:', item.doc)
+      // return false
     } // else
     item.has = "yes"
     this.copyItem(item)

@@ -1,7 +1,7 @@
 import SlackBuilder from '../pal/SlackBuilder'
 import { Logger } from '../../lib/Logger'
 import Util from '../../lib/Util'
-import WordUtils from '../../lib/WordUtils'
+
 import { RexParser, ParserResult } from '../routes/RexParser'
 import Room from './Room'
 import Story from './Story'
@@ -16,7 +16,7 @@ import BotRouter from '../routes/BotRouter'
 
 import {
   ActionData,
-  ActionResult,
+  // ActionResult,
   ActionBranch,
   StateBlock
   // ActionIf
@@ -229,58 +229,12 @@ class GameObject {
     return text
   }
 
-  async findAndRunAction(evt: SceneEvent): Promise<boolean> {
-    // turn clean into a [list] of things to check if its the only checkable
-    const checks: string[] = evt.pres.combos || [evt.pres.clean]
-    Logger.log('checks', checks)
-
-    for (const check of checks) {
-      const actionData = this.roomObj.findAction(check)
-      if (actionData) {
-        await this.runAction(actionData, evt)
-        return true
-      }
-    }
-    return false
-  }
-
-  // FIXME - this could be on room or thing
-  // but room should recurse afterward into all room.things ?
-  // just going to look for actions on the ROOM
-  findAction(input: string): ActionData | undefined {
-    const room = this.roomObj
-    if (!room.doc.actions) {
-      Logger.warn('no actions for item:', this.doc.name)
-    }
-
-    input = WordUtils.basicNormalize(input)
-
-    const foundAction: ActionData = room.doc.actions?.find((action: ActionData) => {
-      const rex = new RegExp(action.match, 'i')
-      const check = rex.test(input)
-      if (check) {
-        return action // and exit loop
-      } else {
-        // console.log(`no match for input: [${input}]`, rex, check)
-        return false
-      }
-    })
-
-    if (foundAction) {
-      Logger.logObj('OK foundAction for', { input, foundAction })
-      return foundAction
-    } else {
-      // Logger.logObj('FAIL foundAction', { input, 'room.actions': room.actions })
-      Logger.log('NO roomAction for input:', input)
-      return
-    }
-  }
 
   // FIXME - this applies to things and rooms
   // which are a different level of hierarchy
   // making polymorphism harder
   async runAction(actionData: ActionData, evt: SceneEvent): Promise<boolean> {
-    const player = evt?.game?.player
+    // const player = evt?.game?.player
     let trackResult = false
     // let trackResult: ActionResult = {
     //   handled: HandleCodes.processing,
@@ -434,8 +388,8 @@ class GameObject {
       const pres: ParserResult = RexParser.parseSetLine(line)
       if (pres.parsed?.groups) {
         const { target, field, value } = pres.parsed.groups
-        Logger.logObj('apply setProp', { target, field, value })
         Logger.assertTrue((target && field && value), 'missing field', pres.parsed?.groups)
+        Logger.log(`apply setProp ${target}.${field} => ${value}`)
         let targetThing
         if (target === 'room') {
           targetThing = this.roomObj
@@ -457,43 +411,11 @@ class GameObject {
     if (!takeItemList) return false
 
     for (const itemName of takeItemList) {
+      Logger.log('doTakeAction', itemName)
       await this.roomObj.takeItemByName(itemName, evt)
-      // const thing = this.roomObj.findThing(targetName)
-      // if (thing) {
-      //   evt.game?.player.takeItem(thing)
-      //   return true
-      // } else {
-      //   Logger.error('cannot find thing to take', { targetName })
-      // }
-
-      // // if already carrying then it won't show up in the room
-      // if (this.story.game.player.hasItem(targetName)) {
-      //   // you're already carrying it
-      //   const msg = `you already have the ${this.name}`
-      //   const blocks = [
-      //     SlackBuilder.textBlock(msg),
-      //     SlackBuilder.contextBlock("type `inv` to see what you're carrying"),
-      //   ]
-      //   await evt.pal.sendBlocks(blocks)
-      //   return true
-      // }
     }
     return true
   }
-
-  // called from BotRouter
-
-  // this runs before any actions on the object itself
-  // async takeAction(evt: SceneEvent) {
-  //   await this.baseTakeAction(evt)
-  //   // after run a custom event after in case we need to modify anything
-  //   const customTake: ActionData = this.findAction('take')
-  //   if (customTake) {
-  //     await this.runAction(customTake, evt)
-  //   }
-  //   // TODO run custom action
-  // }
-
 
   // trigger other events into the scene
   // create a new synthetic event and call back into the room
@@ -501,21 +423,8 @@ class GameObject {
     if (!calls) return
 
     for (const oneCall of calls) {
-      // const newEvt: SceneEvent = {
-      //   pal: evt.pal,
-      //   game: evt.game,
-      //   pres: {
-      //     clean: oneCall
-      //   }
-      // }
-
-      // TODO add a short delay / so they're in order?
-      // FIXME - this is calling into BotRouter which may introduce a circular deps
-      // but we need this for commands and other non-room actions
       Logger.log('doCall', oneCall)
-      // evt.pal.input(oneCall)
       await BotRouter.anyEvent(evt.pal, oneCall, 'text')
-      // await this.findRoom.findAndRunAction(newEvt)
     }
   }
 

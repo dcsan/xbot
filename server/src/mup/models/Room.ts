@@ -1,6 +1,7 @@
 import { Logger } from '../../lib/Logger'
 import SlackBuilder from '../pal/SlackBuilder'
 import { GameObject } from './GameObject'
+import WordUtils from '../../lib/WordUtils'
 import Actor from './Actor'
 import Item from './Item'
 import Story from './Story'
@@ -16,6 +17,7 @@ import {
 
 import {
   SceneEvent,
+  ActionData,
   // ActionResult
 } from '../MupTypes'
 
@@ -76,9 +78,10 @@ class Room extends GameObject {
     })
   }
 
-  async enterRoom(evt: SceneEvent) {
-    RexParser.cacheNames(this.roomItems)
-    await this.lookRoom(evt)
+  async enterRoom(evt?: SceneEvent) {
+    if (evt) {
+      return await this.lookRoom(evt)
+    }
     // await this.showItemsInRoom(evt)
   }
 
@@ -94,10 +97,12 @@ class Room extends GameObject {
   }
 
   itemCnames() {
-    const names = this.roomItems.map(item => {
-      return item.cname
-    })
-    return names
+    const names = this.roomItems
+      // .sort((one, two) => one.cname > two.cname)
+      .map(item => {
+        return item.cname
+      })
+    return names.sort()
   }
 
   // find and examine thing
@@ -150,10 +155,57 @@ class Room extends GameObject {
     return this.findThing(name)
   }
 
+  async findAndRunAction(evt: SceneEvent): Promise<boolean> {
+    // turn clean into a [list] of things to check if its the only checkable
+    const checks: string[] = evt.pres.combos || [evt.pres.clean]
+    Logger.log('checks', checks)
+
+    for (const check of checks) {
+      const actionData: ActionData | undefined = this.roomObj.findAction(check)
+      if (actionData) {
+        await this.runAction(actionData, evt)
+        return true
+      }
+    }
+    return false
+  }
+
+  // FIXME - this could be on room only
+  // but room should recurse afterward into all room.things ?
+  // just going to look for actions on the ROOM
+  findAction(input: string): ActionData | undefined {
+    const room = this.roomObj
+    if (!room.doc.actions) {
+      Logger.warn('no actions for item:', this.doc.name)
+    }
+
+    input = WordUtils.basicNormalize(input)
+
+    const foundAction: ActionData = room.doc.actions?.find((action: ActionData) => {
+      const rex = new RegExp(action.match, 'i')
+      const check = rex.test(input)
+      if (check) {
+        return action // and exit loop
+      } else {
+        // console.log(`no match for input: [${input}]`, rex, check)
+        return undefined
+      }
+    })
+
+    if (foundAction) {
+      Logger.log(`OK found matched roomAction for [ ${input} ]`)
+      return foundAction
+    } else {
+      // Logger.logObj('FAIL foundAction', { input, 'room.actions': room.actions })
+      Logger.log('NO roomAction for input:', input)
+      return undefined
+    }
+  }
+
   removeItemByCname(cname: string) {
     const before = this.roomItems?.length
     this.roomItems = this.roomItems?.filter(item => item.cname !== cname)
-    Logger.log('before', before, 'after', this.roomItems.length)
+    Logger.log('remove item before', before, 'after', this.roomItems.length)
   }
 
   // hard command direct from router
@@ -165,6 +217,56 @@ class Room extends GameObject {
     }
     await this.takeItemByName(thingName, evt)
     return true // found
+  }
+
+  // in the room
+  async takeItemByName(thingName: string, evt: SceneEvent): Promise<boolean> {
+    const thing = this.findThing(thingName)
+
+    if (!thing) {
+      // then look into inventory
+      if (evt.game?.player?.hasItem(thingName)) {
+        const msg = `You already have the ${thingName}`
+        const blocks = [
+          SlackBuilder.textBlock(msg),
+          SlackBuilder.contextBlock("type `inv` to see what you're carrying"),
+        ]
+        await evt.pal.sendBlocks(blocks)
+        // return { handled: HandleCodes.foundAction, err: false } // even if you didn't get it
+        return true   // handled
+      } else {
+        const msg = `You can't see a ${thingName}`
+        const blocks = [
+          SlackBuilder.textBlock(msg),
+          SlackBuilder.contextBlock("type `look` to see what's in the room"),
+        ]
+        await evt.pal.sendBlocks(blocks)
+        return true  // replied even though it wasnt found
+      }
+    }
+
+    // found a thing
+    if (!thing.doc.canTake) {
+      const msg = `You can't take the ${thingName}`
+      const blocks = [
+        SlackBuilder.textBlock(msg),
+        SlackBuilder.contextBlock("type `inv` to see what you're carrying"),
+      ]
+      await evt.pal.sendBlocks(blocks)
+      return true   // handled at least
+    }
+
+    const took = evt.game?.player.takeItem(thing)
+    if (took) {
+      // TODO custom take message eg 'wear item'
+      const msg = thing.doc.onTake || `You take the ${thingName}`
+      const blocks = [
+        SlackBuilder.textBlock(msg),
+        SlackBuilder.contextBlock("type `inv` to see what you're carrying"),
+      ]
+      await evt.pal.sendBlocks(blocks)
+    }
+    return true
   }
 
   // should just be called on a Room
@@ -205,12 +307,12 @@ class Room extends GameObject {
     })
     if (found.length > 0) {
       const item = found[0]
-      Logger.log('found thing::', item.name)
+      Logger.log('found thing:', item.name)
       return item
     } else {
-      Logger.warn('cannot find thing:', itemName)
-      Logger.warn('in list', this.roomObj.itemCnames())
-      Logger.log('this:', this.cname, this.klass)
+      Logger.warn('cannot find thing in room:', itemName)
+      Logger.logObj('room items:', this.roomObj.itemCnames())
+      // Logger.log('this:', this.cname, this.klass)
       return undefined
     }
   }
@@ -220,54 +322,6 @@ class Room extends GameObject {
     return vis.map(item => item.name).join(', ')
   }
 
-  // in the room
-  async takeItemByName(thingName: string, evt: SceneEvent): Promise<boolean> {
-    const thing = this.findThing(thingName)
-    if (!thing) {
-      // then look into inventory
-      if (evt.game?.player?.hasItem(thingName)) {
-        const msg = `You already have the ${thingName}`
-        const blocks = [
-          SlackBuilder.textBlock(msg),
-          SlackBuilder.contextBlock("type `inv` to see what you're carrying"),
-        ]
-        await evt.pal.sendBlocks(blocks)
-        // return { handled: HandleCodes.foundAction, err: false } // even if you didn't get it
-        return true   // handled
-      } else {
-        const msg = `You can't see a ${thingName}`
-        const blocks = [
-          SlackBuilder.textBlock(msg),
-          SlackBuilder.contextBlock("type `look` to see what's in the room"),
-        ]
-        await evt.pal.sendBlocks(blocks)
-        return false  // cannot find in room or player
-      }
-    }
-
-    // found a thing
-    if (!thing.doc.canTake) {
-      const msg = `You can't take the ${thingName}`
-      const blocks = [
-        SlackBuilder.textBlock(msg),
-        SlackBuilder.contextBlock("type `inv` to see what you're carrying"),
-      ]
-      await evt.pal.sendBlocks(blocks)
-      return true   // handled at least
-    }
-
-    const took = evt.game?.player.takeItem(thing)
-    if (took) {
-      // TODO custom take message eg 'wear item'
-      const msg = `You take the ${thingName}`
-      const blocks = [
-        SlackBuilder.textBlock(msg),
-        SlackBuilder.contextBlock("type `inv` to see what you're carrying"),
-      ]
-      await evt.pal.sendBlocks(blocks)
-    }
-    return true
-  }
 
   // default action for `take ITEM`
   // async baseTakeAction(evt: SceneEvent) {
@@ -340,25 +394,25 @@ class Room extends GameObject {
     return pair
   }
 
-  /**
-   * actions on just one thing
-   * @param posResult
-   * @param evt
-   */
-  async tryThingActions(result: ParserResult, evt: SceneEvent): Promise<boolean> {
-    const target = result.pos?.target
-    if (!target) {
-      Logger.assertDefined(target, 'no target for tryThingActions')
-      return false
-    }
-    const thing = this.findThing(target)
-    if (!thing) {
-      Logger.warn('cannot find subject', result.parsed?.groups)
-      return false
-      // return { handled: HandleCodes.errthingNotFound, err: true }
-    }
-    return await thing?.findAndRunAction(evt)  // assumes evt.parsed.clean
-  }
+  // /**
+  //  * actions on just one thing
+  //  * @param posResult
+  //  * @param evt
+  //  */
+  // async tryThingActions(result: ParserResult, evt: SceneEvent): Promise<boolean> {
+  //   const target = result.pos?.target
+  //   if (!target) {
+  //     Logger.assertDefined(target, 'no target for tryThingActions')
+  //     return false
+  //   }
+  //   const thing = this.findThing(target)
+  //   if (!thing) {
+  //     Logger.warn('cannot find subject', result.parsed?.groups)
+  //     return false
+  //     // return { handled: HandleCodes.errthingNotFound, err: true }
+  //   }
+  //   return await thing?.findAndRunAction(evt)  // assumes evt.parsed.clean
+  // }
 
   async useRoomThingAlone(evt: SceneEvent): Promise<boolean> {
     const pos = evt.pres.pos

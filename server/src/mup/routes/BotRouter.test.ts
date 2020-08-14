@@ -8,15 +8,22 @@ import { ActionResult } from '../MupTypes'
 
 const log = console.log
 
-beforeAll(async () => {
-  // process.stdout.write('start > BotRouterTest\n')
-})
+// beforeAll(async () => {
+//   // process.stdout.write('start > BotRouterTest\n')
+// })
 
-afterAll(async () => {
-  // Logger.log('done')
-  // log('done')
-  // process.stdout.write('done > BotRouterTest\n')
-})
+// afterAll(async () => {
+//   // Logger.log('done')
+//   // log('done')
+//   // process.stdout.write('done > BotRouterTest\n')
+// })
+
+async function setupStory() {
+  const testEnv = new TestEnv()
+  await testEnv.loadGame('office')
+  await testEnv.game.story.gotoRoom('lobby')
+  return testEnv
+}
 
 it('should handle verb target to get thing', async () => {
   const testEnv = new TestEnv()
@@ -63,10 +70,10 @@ it('should allow to examine something', async () => {
 
   // const evt = env.makeSceneEvent('x soap')
   await BotRouter.anyEvent(testEnv.pal, 'look', 'test')
-  await BotRouter.anyEvent(testEnv.pal, 'x gown', 'test')
+  await BotRouter.anyEvent(testEnv.pal, 'x shirt', 'test')
   // console.log(await testEnv.pal.showLog())
 
-  expect(testEnv.pal.logTailText(2)).toMatch(/An old dressing gown/i)
+  expect(testEnv.pal.logTailText(2)).toMatch(/a spare office shirt/i)
 
 })
 
@@ -88,10 +95,28 @@ it('should allow top level room command with actions', async () => {
 })
 
 describe('inventory', () => {
-  it('should allow you to get items', async () => {
-    const testEnv = new TestEnv()
-    await testEnv.loadGame('office')
-    await testEnv.game.story.gotoRoom('lobby')
+  it('should allow generic get and take', async () => {
+    const testEnv = await setupStory()
+
+    expect(testEnv.game.player.hasItem('shirt')).toBe(false)
+
+    expect(await testEnv.getReply('get shirt')).toMatch(/You take the shirt/i)
+    expect(await testEnv.getReply('inv')).toMatch(/shirt/i)
+
+    expect(await testEnv.getReply('get shirt')).toMatch(/You already have the shirt/i)
+
+    // expect(await testEnv.getReply('take letter')).toMatch(/You've read the letter'/i)
+    expect(await testEnv.getReply('x shirt')).toMatch(/a spare office shirt/i)
+
+    expect(testEnv.game.player.hasItem('shirt')).toBe(true)
+
+  })
+
+  it('should allow you to get items based on special scripts', async () => {
+    const testEnv = await setupStory()
+
+    expect(testEnv.game.player.hasItem('letter')).toBe(false)
+
     expect(await testEnv.getReply('get letter')).toMatch(/You read the letter/i)
     expect(await testEnv.getReply('inv')).toMatch(/letter/i)
 
@@ -99,6 +124,9 @@ describe('inventory', () => {
     expect(await testEnv.getReply('x letter')).toMatch(/a letter with something shocking/i)
     expect(await testEnv.getReply('read letter')).toMatch(/a letter with something shocking/i)
 
+    expect(testEnv.game.player.hasItem('letter')).toBe(true)
+
   })
+
 })
 

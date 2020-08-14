@@ -88,17 +88,21 @@ const BotRouter = {
   },
 
   async tryRoomActions(evt: SceneEvent): Promise<boolean | undefined> {
-    const res = await evt.game.story.room.findAndRunAction(evt)
-    Logger.log('roomActions.res', res)
-    return res
+    Logger.log('tryRoomActions evt.pres.clean=', evt.pres.clean)
+    const result = await evt.game.story.room.findAndRunAction(evt)
+    Logger.log('roomActions.result =>', result)
+    return result
   },
 
   async tryCommands(evt: SceneEvent): Promise<boolean | undefined> {
-    Logger.log('tryCommands for', evt.pres)
-    if (evt.pres.rule?.type !== 'command') return false
-    const res = await evt.pres.rule?.event(evt)
-    Logger.log('tryCommands.res', res)
-    return res
+    if (evt.pres.rule?.type !== 'command') {
+      Logger.log('skip tryCommands for non room action for evt.pres.rule=', evt.pres.rule)
+      return false
+    }
+    Logger.log('tryCommands for evt.pres=', evt.pres.clean)
+    const result = await evt.pres.rule?.event(evt)
+    Logger.log('tryCommands.result =>', result)  // FIXME - track results?
+    return true // parser found a command
   },
 
 }
