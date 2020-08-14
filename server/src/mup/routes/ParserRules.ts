@@ -186,7 +186,7 @@ const StaticRules: RuleSpec[] = [
   },
 
   {
-    rex: /^(notes|notebook|nb)$/,
+    rex: /^(notes|notebook|nb|hint)$/,
     cname: 'log',
     type: 'command',
     event: RouterService.showNotes

@@ -85,7 +85,7 @@ class Player extends GameObject {
     })
     const found = matchItems.pop()
     if (!found) {
-      logger.logObj('cant find thing in inv', { cname, invItems: this.invItems })
+      logger.logObj(`cant find [${cname}] in invItems:`, { invItems: this.invItems })
       return
     }
     return found
