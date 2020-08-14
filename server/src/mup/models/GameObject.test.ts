@@ -74,7 +74,7 @@ it('can change state by actions', async () => {
 
   expect(item?.state).toBe('closed')
   expect(item?.description).toBe('The wardrobe is closed')
-  const action: ActionData | undefined = item?.findRoom?.findAction('open wardrobe')
+  const action: ActionData | undefined = item?.roomObj?.findAction('open wardrobe')
 
   // FIXME - not returning action results
   // expect(action).toBeDefined()

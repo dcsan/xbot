@@ -80,7 +80,7 @@ it('should allow top level room command with actions', async () => {
   testEnv.game?.story.gotoRoom('cell')
   const door = testEnv.game?.story.room.findThing('door')
   expect(door?.state).toBe('locked')  // initial
-  testEnv.pal.input('sesame')
+  testEnv.pal.sendInput('sesame')
   const res: ActionResult = await BotRouter.textEvent(testEnv.pal)
   // expect(res.handled).toBe(HandleCodes.processing)
   expect(res.err).not.toBe(true)
