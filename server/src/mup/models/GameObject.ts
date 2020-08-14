@@ -30,9 +30,9 @@ const DEFAULT_STATE = 'default'
 
 import { ErrorHandler, HandleCodes } from './ErrorHandler'
 
-let blankActionResult = {
-  handled: HandleCodes.processing
-}
+// let blankActionResult = {
+//   handled: HandleCodes.processing
+// }
 
 
 class GameObject {
@@ -229,44 +229,25 @@ class GameObject {
     return text
   }
 
-  async findAndRunAction(evt: SceneEvent): Promise<ActionResult> {
+  async findAndRunAction(evt: SceneEvent): Promise<boolean> {
     // turn clean into a [list] of things to check if its the only checkable
     const checks: string[] = evt.pres.combos || [evt.pres.clean]
-
     Logger.log('checks', checks)
 
     for (const check of checks) {
-      const actionData: ActionData = this.roomObj.findAction(check)
-      // if (!actionData) {
-      //   return {
-      //     handled: HandleCodes.errActionNotFound,
-      //     err: true
-      //   }
-      //   // break the loop
-      // }
+      const actionData = this.roomObj.findAction(check)
       if (actionData) {
-        const actionResult = await this.runAction(actionData, evt)
-        if (actionResult.err) {
-          Logger.assertTrue(actionResult.handled, 'actionResult found but not handled?', evt.pres)
-        }
-        return actionResult
-        // break
+        await this.runAction(actionData, evt)
+        return true
       }
     }
-    // TODO
-    // found but not replied ?
-    // should probably be handled inside 'runAction'
-    // eg if verb / noun just missing
-    return {
-      handled: HandleCodes.errNoResponse,
-      err: true
-    }
+    return false
   }
 
   // FIXME - this could be on room or thing
   // but room should recurse afterward into all room.things ?
   // just going to look for actions on the ROOM
-  findAction(input: string): ActionData {
+  findAction(input: string): ActionData | undefined {
     const room = this.roomObj
     if (!room.doc.actions) {
       Logger.warn('no actions for item:', this.doc.name)
@@ -287,31 +268,34 @@ class GameObject {
 
     if (foundAction) {
       Logger.logObj('OK foundAction for', { input, foundAction })
+      return foundAction
     } else {
       // Logger.logObj('FAIL foundAction', { input, 'room.actions': room.actions })
       Logger.log('NO roomAction for input:', input)
+      return
     }
-    return foundAction
   }
 
   // FIXME - this applies to things and rooms
   // which are a different level of hierarchy
   // making polymorphism harder
-  async runAction(actionData: ActionData, evt: SceneEvent): Promise<ActionResult> {
+  async runAction(actionData: ActionData, evt: SceneEvent): Promise<boolean> {
     const player = evt?.game?.player
-    let trackResult: ActionResult = {
-      handled: HandleCodes.processing,
-      doc: actionData,
-      klass: this.klass,
-      history: []
-    }
+    let trackResult = false
+    // let trackResult: ActionResult = {
+    //   handled: HandleCodes.processing,
+    //   doc: actionData,
+    //   klass: this.klass,
+    //   history: []
+    // }
 
     // quick reply
     if (actionData.reply) {
       const msg = this.formatReply(actionData.reply)
       if (evt) await evt.pal.sendText(msg)
-      trackResult.handled = HandleCodes.okReplied
-      trackResult.history?.push('reply')
+      trackResult = true
+      // trackResult.handled = HandleCodes.okReplied
+      // trackResult.history?.push('reply')
     }
 
     if (actionData.always) {
@@ -325,12 +309,12 @@ class GameObject {
       await this.runBranch(actionData.then, evt, trackResult)
     }
 
-    Logger.logObj('DONE ranAction', { actionData, history: trackResult.history })
+    Logger.logObj('DONE ranAction', { actionData, history: trackResult })
 
     return trackResult
   }
 
-  async runConditionalBranch(action: ActionData, evt: SceneEvent, trackResult: ActionResult) {
+  async runConditionalBranch(action: ActionData, evt: SceneEvent, trackResult: boolean) {
     const condBranch: ActionBranch = this.getConditionalBranch(action)
     await this.runBranch(condBranch, evt, trackResult)
   }
@@ -399,7 +383,9 @@ class GameObject {
     }
   }
 
-  async runBranch(branch: ActionBranch | undefined, evt: SceneEvent, trackResult: ActionResult) {
+  async runBranch(
+    branch: ActionBranch | undefined, evt: SceneEvent, trackResult: boolean
+  ): Promise<boolean | undefined> {
     if (!branch) {
       Logger.log('tried to run a null branch for pres', evt?.pres)
       return
@@ -433,9 +419,10 @@ class GameObject {
     if (branch.goto) {
       const roomName: string = branch.goto
       await this.story.gotoRoom(roomName, evt)
-      trackResult.handled = HandleCodes.foundGoto
-      trackResult.history?.push('goto')
+      trackResult = true
+      // trackResult.history?.push('goto')
     }
+    return trackResult
 
   }
 

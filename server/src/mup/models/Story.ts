@@ -32,9 +32,10 @@ class Story {
     if (startRoomName) {
       const room: Room | undefined = this.findRoomByName(startRoomName)
       if (!room) {
-        return Logger.fatal('cannot find start room:' + startRoomName, {})
+        Logger.fatal('cannot find start room:' + startRoomName, {})
+      } else {
+        this.room = room
       }
-      this.room = room
     } else {
       this.room = this.rooms[0]
     }

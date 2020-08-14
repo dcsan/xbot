@@ -14,34 +14,34 @@ enum LogLevels {
   SILLY = 5,
 }
 
-const Logger = {
+class LoggerWrapper {
 
   nodeEnv() {
     console.log('env', process.env.NODE_ENV)
-  },
+  }
 
   startLoop() {
     console.log('\n_____________________________________________________________\n')
-  },
+  }
 
   log(msg, ...rest) {
     if (forceLogging || process.env.NODE_ENV !== 'test') {
       console.log('---> ', msg, ...rest)
     }
-  },
+  }
 
   // this will log even when testing
   testLog(msg, ...rest) {
     // process.stdout.write('---> ', msg, ...rest, '\n')
     console.log('---> ', msg, ...rest, '\n')
-  },
+  }
 
   warn(msg, obj = {}, force = false) {
     if (AppConfig.logLevel < LogLevels.WARN || force) return
-    Logger.log(
+    this.log(
       chalk.black.bgYellow.bold(' WARNING ' + msg),
       obj, force)
-  },
+  }
 
   error(msg, obj = {}) {
     console.log("------- ERROR ---------", msg)
@@ -50,56 +50,56 @@ const Logger = {
     // console.log('keys', Object.keys(obj))
 
     // if (obj) {
-    //   Logger.logObj('obj', obj)
+    //   this.logObj('obj', obj)
     // }
     // throw new Error(msg)
-  },
+  }
 
   assertEqual(actual, expected, msg: string, obj: any = {}): boolean {
     if (actual != expected) {
       const err = 'FAIL assertEqual: ' + msg
-      Logger.error(err, obj)
+      this.error(err, obj)
       console.log('actual', actual)
       throw new Error(err)
     }
     return true
-  },
+  }
 
   assertDefined(elem, msg, obj?): boolean {
     if (elem === undefined) {
-      Logger.warn('undefined', msg, obj)
+      this.warn('undefined', msg, obj)
     }
     return true
-  },
+  }
 
   trace(err) {
     console.trace(err)
-  },
+  }
 
   assertTrue(check, msg: string, obj: any = {}): boolean {
     if (!check) {
       const err = `FAIL ASSERT.true ` + msg
-      Logger.logObj(err, obj, true)
-      Logger.trace(err)
+      this.logObj(err, obj, true)
+      this.trace(err)
     }
     return true
-  },
+  }
 
   // error and throw
   fatal(msg, obj) {
     console.log("FATAL", msg)
     if (obj) {
-      Logger.logObj('obj', obj)
+      this.logObj('obj', obj)
     }
     throw new Error(msg)
-  },
+  }
 
   /**
    * yaml log is stripping out Functions
    */
   logJson(msg, obj, _force = false) {
     console.log(msg, JSON.stringify(obj, null, 2))
-  },
+  }
 
   // force to ALWAYS run even in test mode
   logObj(msg: string, obj?: any, force: boolean = false) {
@@ -115,7 +115,7 @@ const Logger = {
       console.log('failed to stringify')
       console.log(msg)
     }
-  },
+  }
 
   // use to avoid jest noisy logging on console.log
   writeLine(msg, obj = {}) {
@@ -124,21 +124,23 @@ const Logger = {
     } else {
       process.stdout.write(msg + '\n')
     }
-  },
+  }
 
   silly(msg, ...rest) {
     if (AppConfig.logLevel >= LogLevels.SILLY) {
-      Logger.logObj(msg, rest)
+      this.logObj(msg, rest)
     }
-  },
+  }
 
   checkItem(obj, field) {
     const res = obj[field]
     if (!res) {
-      Logger.warn(`checkItem: missing field: [ ${field} ] in obj`, obj, true)
+      this.warn(`checkItem: missing field: [ ${field} ] in obj`, obj, true)
     }
   }
 
 }
+
+const Logger = new LoggerWrapper()
 
 export { Logger, LogLevels }

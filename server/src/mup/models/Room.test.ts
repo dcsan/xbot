@@ -20,10 +20,11 @@ it('should respond to smell action', async () => {
   const pres: ParserResult = RexParser.parseCommands(input)
   expect(pres.parsed).not.toBeDefined()
   const evt: SceneEvent = { pal: testEnv.pal, pres, game }
-  const actualResult: ActionResult = await game.story.room.findAndRunAction(evt)
-  expect(actualResult.err).not.toBe(true)
-  expect(actualResult.handled).toBe(HandleCodes.processing)
-  expect(actualResult.klass).toBe('room')
+  const ran = await game.story.room.findAndRunAction(evt)
+  expect(ran).toBe(true)
+  // expect(actualResult.err).not.toBe(true)
+  // expect(actualResult.handled).toBe(HandleCodes.processing)
+  // expect(actualResult.klass).toBe('room')
   // expect(actualResult?.history ? actualResult?.history[0] : false).toBe('reply')
   expect(evt.pal.logTailText(1)).toMatch(/A musty smell/)
 })
@@ -38,10 +39,11 @@ it('should respond to random sesame action', async () => {
   const pres: ParserResult = RexParser.parseCommands(input)
   expect(pres.parsed).not.toBeDefined()
   const evt: SceneEvent = { pal: testEnv.pal, pres, game }
-  const trackResult: ActionResult = await game.story.room.findAndRunAction(evt)
-  expect(trackResult.err).not.toBe(true)
-  expect(trackResult.handled).toBe(HandleCodes.processing)
-  expect(trackResult.klass).toBe('room')
+  const ran = await game.story.room.findAndRunAction(evt)
+  expect(ran).toBe(true)
+  // expect(trackResult.err).not.toBe(true)
+  // expect(trackResult.handled).toBe(HandleCodes.processing)
+  // expect(trackResult.klass).toBe('room')
   // Logger.logObj('pal.logger', evt.pal.logger, true)
   expect(evt.pal.logTailText(2)).toMatch(/The door opens/)
   // const history: string[] | undefined = trackResult?.history
@@ -66,17 +68,17 @@ it('should handle a special action with a goto', async () => {
   expect(pres.parsed).not.toBeDefined()
 
   const evt: SceneEvent = { pal: testEnv.pal, pres, game }
-  const actualResult: ActionResult = await game.story.room.findAndRunAction(evt)
+  const ran = await game.story.room.findAndRunAction(evt)
+  expect(ran).toBe(true)
 
   // console.log('store', evt.pal.logger)
   expect(evt.pal.logTailText(2)).toMatch(/The attic is upstairs/i)
-
-  expect(actualResult.err).not.toBe(true)
-  expect(actualResult.handled).toBe(HandleCodes.foundGoto)
+  // expect(actualResult.err).not.toBe(true)
+  // expect(actualResult.handled).toBe(HandleCodes.foundGoto)
   expect(game.story.room.name).toBe('attic')
-  expect(actualResult.klass).toBe('room')
-  expect(actualResult.history?.length).toBe(1)
-  expect(actualResult.history ? actualResult.history[0] : false).toBe('goto')
+  // expect(actualResult.klass).toBe('room')
+  // expect(actualResult.history?.length).toBe(1)
+  // expect(actualResult.history ? actualResult.history[0] : false).toBe('goto')
 })
 
 

@@ -21,7 +21,7 @@ const ReplaceItems = [
   },
   {
     base: 'examine',
-    rex: /\b(x|look at|examine|look at the)\b/
+    rex: /\b(x|look at|examine|look at the|read|inspect)\b/
   },
 
   // {
@@ -136,7 +136,7 @@ const StaticRules: RuleSpec[] = [
   },
 
   {
-    rex: /^(rs|start|restart)$/i,
+    rex: /^(rs|start|restart|reset)$/i,
     cname: 'restart',
     event: RouterService.startGame,
     type: 'command'

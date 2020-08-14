@@ -93,7 +93,7 @@ const RouterService = {
 
   // for quicker parsing
   cacheNames: async (evt: SceneEvent) => {
-    const itemList = evt.game?.story.room.items!
+    const itemList = evt.game?.story.room.roomItems!
     await RexParser.cacheNames(itemList)
     await evt.pal.sendText('rebuilt cache')
   },

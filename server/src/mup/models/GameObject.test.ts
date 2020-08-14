@@ -91,17 +91,6 @@ it('can change state by actions', async () => {
   expect(item?.description).toMatch(/You see some clothes inside/)
 })
 
-// moved all actions to the room for now
-xit('item has action', async () => {
-  const testEnv = new TestEnv()
-  const game = await testEnv.loadGame('office')
-  await game.story.gotoRoom('office')
-  const action1: ActionData = game.story.room.findAction('use matches on lamp')
-  expect(action1.if).toHaveLength(1)
-  const action2: ActionData = game.story.room.findAction('use the matches with a lamp')
-  expect(action2.if).toHaveLength(1)
-})
-
 it('can check conditions before actions', async () => {
   const testEnv = new TestEnv()
   const game = await testEnv.loadGame('office')
@@ -118,21 +107,3 @@ it('can check conditions before actions', async () => {
   // console.log('logs', testEnv.pal.getLogs())
   // expect(testEnv.pal.getLogLineText(1)).toBe("You'll have to open the wardrobe first.")
 })
-
-
-// xit('can use one item on another', async () => {
-
-//   expect(matches).toBeDefined()
-//   if (matches) {
-//     // needed for test
-//     matches.props['has'] = 'no'
-//     room.findAndRunAction(evt)
-//     expect(pal.getReceivedText(0)).toMatch(/you don't have any matches/)
-
-//     matches.props['has'] = 'no'
-//     room.findAndRunAction(evt)
-//   }
-//   expect(pal.getReceivedText(0)).toMatch(/you light the lamp/)
-//   expect(lamp?.props['lit']).toBe('yes')
-
-// })

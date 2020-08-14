@@ -26,7 +26,7 @@ const log = console.log
 
 class TestEnv {
   pal: Pal
-  game?: Game
+  game!: Game   // force to assume we've always done an async loadGame
 
   constructor() {
     this.pal = this.getMockPal()
@@ -58,7 +58,7 @@ class TestEnv {
     }
     const evt: SceneEvent = {
       pal: this.pal,
-      game: this.game,
+      game: this.game!,
       pres
     }
     return evt

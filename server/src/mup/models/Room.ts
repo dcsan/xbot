@@ -16,26 +16,26 @@ import {
 
 import {
   SceneEvent,
-  ActionResult
+  // ActionResult
 } from '../MupTypes'
 
 
 class Room extends GameObject {
 
   hintStep: string
-  items: Item[]
+  roomItems: Item[]
 
   constructor(doc, story: Story) {
     super(doc, story, 'room')
     this.hintStep = 'start'
     this.klass = 'room'
-    this.items = []
+    this.roomItems = []
     this.buildThings(story)
   }
 
   buildThings(story: Story) {
     Logger.log('buildThings room:', this.name)
-    this.items = []
+    this.roomItems = []
     this.hintStep = this.doc.setHint || 'start'
     this.loadItems(story)
     this.loadActors(story)
@@ -44,7 +44,7 @@ class Room extends GameObject {
   reset() {
     super.reset()
     this.actors?.map(actor => actor.reset())
-    this.items?.map(item => item.reset())
+    this.roomItems?.map(item => item.reset())
   }
 
   get name() {
@@ -60,7 +60,7 @@ class Room extends GameObject {
     this.doc.items?.forEach((itemData) => {
       const item = new Item(itemData, story)
       item.room = this
-      this.items.push(item)
+      this.roomItems.push(item)
     })
   }
 
@@ -77,7 +77,7 @@ class Room extends GameObject {
   }
 
   async enterRoom(evt: SceneEvent) {
-    RexParser.cacheNames(this.items)
+    RexParser.cacheNames(this.roomItems)
     await this.lookRoom(evt)
     // await this.showItemsInRoom(evt)
   }
@@ -87,14 +87,14 @@ class Room extends GameObject {
   }
 
   itemFormalNamesOneLine() {
-    const names = this.items.map(item => {
+    const names = this.roomItems.map(item => {
       return item.article + ' `' + item.formalName + '`'   // tick marks to highlight
     })
     return names.join(', ')
   }
 
   itemCnames() {
-    const names = this.items.map(item => {
+    const names = this.roomItems.map(item => {
       return item.cname
     })
     return names
@@ -121,7 +121,6 @@ class Room extends GameObject {
     }
   }
 
-
   status() {
     let reply = {
       name: this.name,
@@ -131,7 +130,7 @@ class Room extends GameObject {
     }
     // FIXME!
     // @ts-ignore
-    reply.items = this.items?.map((thing: Item) => {
+    reply.items = this.roomItems?.map((thing: Item) => {
       return {
         [thing.name]: {
           // state: thing.state,
@@ -152,27 +151,27 @@ class Room extends GameObject {
   }
 
   removeItemByCname(cname: string) {
-    const before = this.items?.length
-    this.items = this.items?.filter(item => item.cname !== cname)
-    Logger.log('before', before, 'after', this.items.length)
+    const before = this.roomItems?.length
+    this.roomItems = this.roomItems?.filter(item => item.cname !== cname)
+    Logger.log('before', before, 'after', this.roomItems.length)
   }
 
   // hard command direct from router
-  async takeItemCommand(evt: SceneEvent): Promise<ActionResult> {
+  async takeItemCommand(evt: SceneEvent): Promise<boolean> {
     const thingName = evt.pres.pos?.target
     if (!thingName) {
       Logger.warn('no thingName to take', evt)
-      return { handled: HandleCodes.errThingName, err: true }
+      return false
     }
     await this.takeItemByName(thingName, evt)
-    return { handled: HandleCodes.unknown, err: true } // not found but we did reply
+    return true // found
   }
 
   // should just be called on a Room
   get allThings() {
     const things: GameObject[] = []
     if (this.actors) things.push(...this.actors)
-    if (this.items) things.push(...this.items)
+    if (this.roomItems) things.push(...this.roomItems)
     return things
   }
 
@@ -217,7 +216,7 @@ class Room extends GameObject {
   }
 
   visibleItems(): string {
-    const vis = this.items.filter(item => !item.doc.hidden)
+    const vis = this.roomItems.filter(item => !item.doc.hidden)
     return vis.map(item => item.name).join(', ')
   }
 
@@ -346,39 +345,39 @@ class Room extends GameObject {
    * @param posResult
    * @param evt
    */
-  async tryThingActions(result: ParserResult, evt: SceneEvent): Promise<ActionResult> {
+  async tryThingActions(result: ParserResult, evt: SceneEvent): Promise<boolean> {
     const target = result.pos?.target
     if (!target) {
       Logger.assertDefined(target, 'no target for tryThingActions')
-      return { handled: HandleCodes.errThingName, err: true }
+      return false
     }
     const thing = this.findThing(target)
     if (!thing) {
       Logger.warn('cannot find subject', result.parsed?.groups)
-      return { handled: HandleCodes.errthingNotFound, err: true }
+      return false
+      // return { handled: HandleCodes.errthingNotFound, err: true }
     }
     return await thing?.findAndRunAction(evt)  // assumes evt.parsed.clean
   }
 
-  async useRoomThingAlone(evt: SceneEvent): Promise<ActionResult> {
+  async useRoomThingAlone(evt: SceneEvent): Promise<boolean> {
     const pos = evt.pres.pos
-    if (!pos?.target || !pos?.verb) return {
-      handled: HandleCodes.errMissingPos,
-      err: true
-    }
+    if (!pos?.target || !pos?.verb) return false
+    // {
+    //   handled: HandleCodes.errMissingPos,
+    //   err: true
+    // }
     evt.pal.sendText(`You ${pos.verb} the ${pos.target} but nothing happens.`)
-    return {
-      handled: HandleCodes.foundUse,
-    }
+    return true
   }
 
-  async useRoomThingOn(evt: SceneEvent): Promise<ActionResult> {
+  async useRoomThingOn(evt: SceneEvent): Promise<boolean> {
     const pos = evt.pres.pos
     if (!pos?.target || !pos?.subject) {
-      return { handled: HandleCodes.errMissingPos, err: true }
+      return false
     }
     evt.pal.sendText(`You ${pos.verb} the ${pos.subject} on the ${pos.target} but nothing happens.`)
-    return { handled: HandleCodes.foundUse }
+    return true
   }
 
   // async tryRoomActions(input: string, pal: Pal) {

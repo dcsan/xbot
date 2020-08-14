@@ -59,7 +59,8 @@ class Player extends GameObject {
     } // else
     item.has = "yes"
     this.copyItem(item)
-    item.room?.removeItemByCname(item.cname)
+    item.roomObj.removeItemByCname(item.cname)
+    Logger.logObj('inv', this.invItems)
     return true
   }
 
