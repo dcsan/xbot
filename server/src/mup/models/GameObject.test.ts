@@ -29,11 +29,12 @@ it('take item', async () => {
   const evt = testEnv.makeSceneEvent('get lamp')
   await game.story.gotoRoom('office')
   const lamp = game.story.room.findThing('lamp')
-  await lamp?.takeAction(evt)
+  await game.story.room.takeItemByName('lamp', evt)
+  // await lamp?.takeAction(evt)
   expect(lamp?.has).toBe('yes')
   // expect(pal.getLogLineText(0)).toBe('you get the Lamp')
 
-  await lamp?.takeAction(evt)
+  // await lamp?.takeAction(evt)
   // expect(pal.getLogLineText(2)).toBe('you already have the Lamp')
 
   await lamp?.dropItem(testEnv.pal)

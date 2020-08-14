@@ -1,6 +1,5 @@
 // Platform Abstraction Layer
 
-
 // TODO - cleanup different log methods
 // get to just one common log method
 
@@ -162,11 +161,6 @@ class Pal {
   //   this.channelEvent.say(message)
   // }
 
-  // called for incoming events
-  logEvent(opts: ChatLogItem) {
-    this.logger.log(opts)
-  }
-
   async wrapSay(msg, type = 'text') {
     if (logMode) {
       Logger.logObj('msg', msg)
@@ -235,6 +229,12 @@ class Pal {
     }
   }
 
+  // called for incoming events
+  logInput(opts: ChatLogItem) {
+    this.logger.log(opts)
+  }
+
+  // log bot output messages
   logOutput(msg, type: string) {
     if (debugOutput) {
       Logger.log('send:', msg)
@@ -264,18 +264,23 @@ class Pal {
     return this.logger.lines
   }
 
-  getLogLineText(index = -1) {
-    if (index === -1) {
-      index = this.logger.lines.length - 1
-    }
-    const log: ChatLine = this.logger.lines[index]
-    return log.opts.text
-  }
+  // getLogLineText(index = -1) {
+  //   if (index === -1) {
+  //     index = this.logger.lines.length - 1
+  //   }
+  //   const log: ChatLine = this.logger.lines[index]
+  //   return log.opts.text
+  // }
 
-  tailLogs(count: number = 1): string[] {
+  logTail(lines: number = 1): string[] {
     const logs = this.logger.lines.map(line => line.opts.text)
     const len = logs.length
-    return logs.slice(len - count, len)
+    return logs.slice(len - lines, len)
+  }
+
+  logTailText(lines = 1): string {
+    const logs = this.logTail(lines)
+    return logs.join(' / ')
   }
 
   async showLog() {

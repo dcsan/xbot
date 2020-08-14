@@ -18,7 +18,8 @@ enum HandleCodes {
   okReplied = 'okReplied',
   errMissingPos = 'errMissingPos',
   errThingName = 'errThingName',
-  errNoResponse = 'errNoResponse'
+  errNoResponse = 'errNoResponse',
+  takeThing = 'takeThing'
 }
 
 interface ErrorOpts {
@@ -41,13 +42,13 @@ const ErrorHandler = {
     let msg: string
     switch (which) {
       case HandleCodes.errthingNotFound:
-        msg = `You can't see a ${ opts.name }`
+        msg = `You can't see a ${opts.name}`
         break
       case HandleCodes.ignoredCannotTake:
-        msg = `You can't take the ${ opts.name }`
+        msg = `You can't take the ${opts.name}`
         break
       case HandleCodes.unknown:
-        msg = `I don't understand ${ opts.input }`
+        msg = `I don't understand ${opts.input}`
         break
 
       default:

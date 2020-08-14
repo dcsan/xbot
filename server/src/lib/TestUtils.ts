@@ -39,6 +39,7 @@ class TestEnv {
     }
     const game: Game = await GameManager.findGame(opts)
     // FIXME - not needed for a new game, but no way to tell if its new....
+    // so it gets fired twice on new games and tests
     await game.reset()
     this.game = game
     return game
@@ -63,6 +64,14 @@ class TestEnv {
     return evt
   }
 
+  // goes through the full botRouter
+  async getReply(input: string) {
+    const evt = this.makeSceneEvent(input)
+    const output = await BotRouter.anyEvent(evt.pal, input)
+    return this.pal.logTailText(2)
+    // return output
+  }
+
   // check tail of logs in text format
   // tailCount to just check the last response
   // but usually we check last 2 or 3 to include images, buttons etc, in same reply
@@ -71,13 +80,13 @@ class TestEnv {
     await BotRouter.anyEvent(this.pal, input, 'text')
     // const actual = this.pal.lastOutput()
     const rex = new RegExp(output, 'im')
-    const logTail: string[] = this.pal.tailLogs(lines)
+    const logTail: string[] = this.pal.logTail(lines)
 
     let ok = false
 
     // @ts-ignore
     if (oneTest.checks) {
-      const room = this.game?.story.currentRoom.roomObj
+      const room = this.game?.story.room.roomObj
       // test conditionals
       oneTest.checks.map(line => {
         const testOk = room?.checkOneCondition(line)

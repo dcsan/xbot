@@ -28,7 +28,7 @@ it('should handle verb target to get thing', async () => {
   const res = await BotRouter.tryCommands(evt)
   expect(res.err).not.toBe(true)
   expect(res.handled).toBe(HandleCodes.foundCommand)
-  expect(evt.pal.blob).toMatch(/You get the soap/i)
+  expect(evt.pal.logTailText(2)).toMatch(/You take the soap/i)
 })
 
 it('handle canTake: false items', async () => {
@@ -41,7 +41,7 @@ it('handle canTake: false items', async () => {
   const res = await BotRouter.tryCommands(evt)
   expect(res.err).not.toBe(true)
   expect(res.handled).toBe(HandleCodes.foundCommand)
-  expect(evt.pal.blob).toMatch(/You can't take the table/i)
+  expect(evt.pal.logTailText(2)).toMatch(/You can't take the table/i)
 
 })
 
@@ -55,7 +55,7 @@ it('should have fallback if thing cannot be found', async () => {
   const done = await BotRouter.tryCommands(evt)
   // expect(done).toBe(true)
   // Logger.logObj('txt', evt.pal.allText, true)
-  expect(evt.pal.getLogLineText(0)).toMatch(/You can't see/i)
+  expect(evt.pal.logTailText(2)).toMatch(/You can't see/i)
 })
 
 it('should allow to examine something', async () => {
@@ -68,7 +68,7 @@ it('should allow to examine something', async () => {
   await BotRouter.anyEvent(testEnv.pal, 'x gown', 'test')
   // console.log(await testEnv.pal.showLog())
 
-  expect(testEnv.pal.getLogLineText(-1)).toMatch(/An old dressing gown/i)
+  expect(testEnv.pal.logTailText(2)).toMatch(/An old dressing gown/i)
 
 })
 
@@ -84,10 +84,21 @@ it('should allow top level room command with actions', async () => {
   const res: ActionResult = await BotRouter.textEvent(testEnv.pal)
   // expect(res.handled).toBe(HandleCodes.processing)
   expect(res.err).not.toBe(true)
-  expect(testEnv.pal.getLogLineText(-1)).toMatch(/The door opens/i)
+  expect(testEnv.pal.logTailText(1)).toMatch(/The door opens/i)
   Logger.assertTrue(!res.err, 'res', res)
   expect(res.err).not.toBe(true)
   // expect(res.handled).toBe(HandleCodes.okReplied)
 
   expect(door?.state).toBe('open')
 })
+
+describe('inventory', () => {
+  it('should allow you to get items', async () => {
+    const testEnv = new TestEnv()
+    await testEnv.loadGame('office')
+    expect(await testEnv.getReply('get letter')).toMatch(/You take the letter/i)
+    expect(await testEnv.getReply('inv')).toMatch(/letter/i)
+
+  })
+})
+

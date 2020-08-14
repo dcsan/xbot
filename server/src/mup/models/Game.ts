@@ -40,16 +40,15 @@ class Game {
   // reset all the vars without reloading
   async reset() {
     Logger.log('game.reset')
-    this.story.reset()
+    this.story.reset()  // resets rooms
     this.player.reset()
-    this.story.room.reset()
     await this.pal.sendText('reset game. now in room:' + this.story.room.name)
   }
 
   // reload and show message
   async restart(evt: SceneEvent) {
-    this.reset()
-    await this.story.currentRoom.enterRoom(evt)
+    await this.reset()
+    await this.story.room.enterRoom(evt)
     if (evt.pal) {
       await evt.pal.sendText('restarted')
     }

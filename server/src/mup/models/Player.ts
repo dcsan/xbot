@@ -7,19 +7,19 @@ import { GameObject } from './GameObject'
 
 class Player extends GameObject {
 
-  items: Item[]
+  invItems: Item[]
 
   constructor(doc, story) {
     doc = {
       name: 'player'
     }
     super(doc, story, 'player')
-    this.items = []
+    this.invItems = []
     this.reset()
   }
 
   reset() {
-    this.items = []
+    this.invItems = []
   }
 
   status() {
@@ -31,10 +31,10 @@ class Player extends GameObject {
 
   invStatus() {
     let reply: string[] = []
-    // Logger.log('player.status.items:', this.items)
-    if (!this.items.length) {
+    // Logger.log('player.status.invItems:', this.invItems)
+    if (!this.invItems.length) {
       reply.push('nothing')
-    } else this.items.map(item => {
+    } else this.invItems.map(item => {
       // Logger.log('item', item)
       reply.push(item.name)
     })
@@ -44,15 +44,23 @@ class Player extends GameObject {
 
   // add to inventory takeItem
   // this creates an extra reference so careful about memory leaks
-  addItem(item) {
-    this.items.push(item)
-    this.status()
+  // copies item but also leaves it in the room
+  copyItem(item) {
+    this.invItems.push(item)
+    item.doc.hidden = false   // can always see things you're holding
+    // this.status()
   }
 
-  takeItem(item: GameObject) {
-    this.addItem(item)
-    item.doc.hidden = false   // can always see things you're holding
+  takeItem(item: GameObject): boolean {
+    if (item.has === 'yes') {
+      // this should have been checked already
+      Logger.warn('already had item:', item)
+      return false
+    } // else
+    item.has = "yes"
+    this.copyItem(item)
     item.room?.removeItemByCname(item.cname)
+    return true
   }
 
   // addItemByName(itemName) {
@@ -63,11 +71,11 @@ class Player extends GameObject {
   // }
 
   // dropItem(item) {
-  //   this.items.push(item)
+  //   this.invItems.push(item)
   // }
 
   findItem(cname: string): Item | undefined {
-    let matchItems = this.items.filter((item) => {
+    let matchItems = this.invItems.filter((item) => {
       return item.cname === cname
     })
     return matchItems.pop()
@@ -81,11 +89,12 @@ class Player extends GameObject {
   async showInventory(evt: SceneEvent) {
     // await evt.pal.sendText('Inventory:')
     const blocks: any[] = []
+    Logger.logObj('showInv', this.invItems)
 
-    if (!this.items.length) {
+    if (!this.invItems.length) {
       blocks.push(SlackBuilder.textBlock("You aren't carrying anything"))
     } else {
-      const buttonLinks = this.items.map(item => {
+      const buttonLinks = this.invItems.map(item => {
         return `${item.name}|x ${item.name}`
       })
       blocks.push(SlackBuilder.buttonsBlock(buttonLinks))

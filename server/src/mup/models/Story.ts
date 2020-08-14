@@ -11,7 +11,7 @@ import { LoadOptions } from '../MupTypes'
 
 class Story {
   game: Game
-  currentRoom: Room    // fixme - when declared
+  room: Room    // fixme - when declared
   doc: any
   rooms: Room[]
   storyName: string
@@ -20,30 +20,39 @@ class Story {
     this.game = game
     this.rooms = []       // FIXME - just to shut up typescript
     this.storyName = this.load(opts)
-    this.currentRoom = this.reset()
+    this.room = {} as Room   // force a definition or we have to deal with room? everywhere
   }
 
-  reset(): Room {
+  async reset(): Promise<Room> {
     Logger.log('story.reset')
+    this.rooms.forEach(async room =>
+      await room.reset()
+    )
     const startRoomName = this.doc.startRoom
     if (startRoomName) {
       const room: Room | undefined = this.findRoomByName(startRoomName)
       if (!room) {
         return Logger.fatal('cannot find start room:' + startRoomName, {})
       }
-      this.currentRoom = room
+      this.room = room
     } else {
-      this.currentRoom = this.rooms[0]
+      this.room = this.rooms[0]
     }
-    return this.currentRoom
+    return this.room
   }
 
-  get room(): Room {
-    if (!this.currentRoom) {
-      this.currentRoom = this.reset()
-    }
-    return this.currentRoom
-  }
+  // async getRoom(): Promise<Room> {
+  //   if (!this.currentRoom) {
+  //     this.currentRoom = await this.reset()
+  //   }
+  //   return this.currentRoom
+  // }
+  // get room(): Room {
+  //   if (!this.currentRoom) {
+  //     this.currentRoom = await this.reset()
+  //   }
+  //   return this.currentRoom
+  // }
 
   /**
    * called from Game
@@ -90,7 +99,7 @@ class Story {
   async gotoRoom(roomName: string, evt?: SceneEvent) {
     const room = this.findRoomByName(roomName)
     if (room) {
-      this.currentRoom = room
+      this.room = room
       if (evt) {
         // else just go silently
         await this.room.enterRoom(evt)

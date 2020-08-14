@@ -10,8 +10,8 @@ it('should export all text', () => {
   // expect(env.pal.getLogLineText(0)).toMatch(/reset game/i)
   // FIXME - new games reset twice
   // expect(env.pal.getLogLineText(1)).toMatch(/reset game/i)
-  expect(env.pal.getLogLineText(0)).toBe('this is line one')
-  expect(env.pal.getLogLineText(1)).toBe('and a second line')
+  expect(env.pal.logTail(2)[0]).toBe('this is line one')
+  expect(env.pal.logTail(2)[1]).toBe('and a second line')
 
 })
 

@@ -64,8 +64,8 @@ const AppConfig = {
 
 AppConfig.init()
 AppConfig.checkCoreKeys()
-
-// console.log('env', AppConfig.NODE_ENV)
+// console.log('AppConfig', AppConfig)
+// console.log('NODE_ENV:', AppConfig.NODE_ENV)
 // console.log('storyName', AppConfig.storyName)
 
 export default AppConfig

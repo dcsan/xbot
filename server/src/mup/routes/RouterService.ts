@@ -32,7 +32,7 @@ const RouterService = {
   },
 
   takeRoomThing: async (evt: SceneEvent) => {
-    return await evt.game?.story.room.takeRoomThing(evt)
+    return await evt.game?.story.room.takeItemCommand(evt)
   },
 
   useRoomThingAlone: async (evt: SceneEvent) => {
@@ -63,9 +63,9 @@ const RouterService = {
     const game = await GameManager.findGame({ pal: evt.pal })
     const info = {
       room: game.story.room.name,
-      roomActions: RouterService.getActionMatchesThing(game.story.currentRoom),
+      roomActions: RouterService.getActionMatchesThing(game.story.room),
       // itemEvents: RouterService.getActionMatchesList(game.story.currentRoom.items),
-      actors: RouterService.getActionMatchesList(game.story.currentRoom.actors)
+      actors: RouterService.getActionMatchesList(game.story.room.actors)
     }
     Logger.logObj('cheatInfo', info)
     const blob = yaml.dump(info)

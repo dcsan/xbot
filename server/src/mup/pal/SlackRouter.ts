@@ -9,9 +9,9 @@ import { Pal } from './Pal'
 const SlackRouter = {
 
   init(): App {
+
     const receiver = new ExpressReceiver({ signingSecret: AppConfig.signingSecret });
 
-    console.log('AppConfig', AppConfig)
     const app = new App({
       token: AppConfig.token,
       receiver

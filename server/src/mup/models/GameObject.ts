@@ -41,7 +41,7 @@ class GameObject {
   room?: Room
   cname: string
   // allow recursing an item can have items
-  items: Item[]
+
   actors: Actor[]
   actions: ActionData[]
   klass: string
@@ -53,7 +53,6 @@ class GameObject {
     // Logger.log('create', doc)
     this.doc = doc
     this.actions = doc.actions
-    this.items = []
     this.actors = []
     this.cname = Util.safeName(this.doc.name)
     this.klass = klass
@@ -64,8 +63,10 @@ class GameObject {
   reset() {
     this.props = {}
     this.setProp('has', 'no') // cannot do booleans from script
-    this.items?.map(item => item.reset())
-    this.actors?.map(actor => actor.reset())
+    this.resetState()
+  }
+
+  resetState() {
     const state =
       this.doc.state ||
       (this.doc.states ? this.doc.states[0].name : DEFAULT_STATE)
@@ -75,6 +76,17 @@ class GameObject {
   // FIXME - dont use both
   get name() {
     return this.formalName
+  }
+
+  // keep state as a prop too
+  get state() {
+    return this.getProp('state')
+  }
+  set state(val) {
+    this.setProp('state', val)
+  }
+  setState(newState) {
+    this.state = newState
   }
 
   // not lowercase
@@ -96,16 +108,6 @@ class GameObject {
     this.props[key] = val
   }
 
-  // keep state as a prop too
-  get state() {
-    return this.getProp('state')
-  }
-  set state(val) {
-    this.setProp('state', val)
-  }
-  setState(newState) {
-    this.state = newState
-  }
 
   get has(): string {
     return this.getProp('has')
@@ -144,62 +146,10 @@ class GameObject {
       this.formalName
   }
 
-  // looks for actors
-  findThing(itemName: string): GameObject | undefined {
-    Logger.log('findThing', itemName, 'in', this.klass)
-    const cname = Util.safeName(itemName)
-    const found = this.allThings.filter((thing: GameObject) => {
-      if (thing.cname === cname) return true
-      if (thing.doc.called) {
-        const rex: RegExp = new RegExp(thing.doc.called)
-        if (rex.test(itemName)) {
-          return true
-          // found.push(thing)
-        }
-      } // else
-      return false  // not found
-    })
-    if (found.length > 0) {
-      const item = found[0]
-      Logger.log('found thing::', item.name)
-      return item
-    } else {
-      Logger.warn('cannot find thing:', itemName)
-      Logger.warn('in list', this.roomObj.itemCnames())
-      Logger.log('this:', this.cname, this.klass)
-      return undefined
-    }
-  }
 
   isNamed(text) {
     // todo - allow synonyms
     return this.cname.match(text)
-  }
-
-  visibleItems(): string {
-    const vis = this.items.filter(item => !item.doc.hidden)
-    return vis.map(item => item.name).join(', ')
-  }
-
-  // list of objects in the room for other matching
-  getAllThingNames(): string[] {
-    let allNames: string[] = []
-    for (const thing of this.allThings) {
-      // this.allThings?.forEach((thing: Item) => {
-      allNames.push(thing.name)
-      if (thing.doc.called) {
-        allNames = allNames.concat(thing.doc.called)
-      }
-    }
-    return allNames
-  }
-
-  // should just be called on a Room
-  get allThings() {
-    const things: GameObject[] = []
-    if (this.actors) things.push(...this.actors)
-    if (this.items) things.push(...this.items)
-    return things
   }
 
   getStateBlock() {
@@ -428,10 +378,11 @@ class GameObject {
       return false
     }
 
+    // FIXME - should be more explicit when checking player inv items
     let found: GameObject | undefined = this.roomObj.findThing(target)
     if (!found) {
       Logger.log('look in player for:', target)
-      found = this.roomObj.story.game.player.findThing(target)
+      found = this.roomObj.story.game.player.findItem(target)
     }
     if (!found) {
       Logger.warn('cannot find thing to update', { target, line })
@@ -513,80 +464,49 @@ class GameObject {
     }
   }
 
-  // take any items
+  // take any items from the script branch
   async doTakeActions(branch: ActionBranch, evt: SceneEvent): Promise<boolean> {
     const takeItemList = branch.take
     if (!takeItemList) return false
 
-    for (const targetName of takeItemList) {
-      const thing = this.roomObj.findThing(targetName)
-      if (thing) {
-        evt.game?.player.addItem(thing)
-        this.roomObj.removeItemByCname(this.cname)
-        return true
-      } else {
-        Logger.error('cannot find thing to take', { targetName })
-      }
+    for (const itemName of takeItemList) {
+      await this.roomObj.takeItemByName(itemName, evt)
+      // const thing = this.roomObj.findThing(targetName)
+      // if (thing) {
+      //   evt.game?.player.takeItem(thing)
+      //   return true
+      // } else {
+      //   Logger.error('cannot find thing to take', { targetName })
+      // }
 
-      // if already carrying then it won't show up in the room
-      if (this.story.game.player.hasItem(targetName)) {
-        // you're already carrying it
-        const msg = `you already have the ${this.name}`
-        const blocks = [
-          SlackBuilder.textBlock(msg),
-          SlackBuilder.contextBlock("type `inv` to see what you're carrying"),
-        ]
-        await evt.pal.sendBlocks(blocks)
-        return true
-      }
+      // // if already carrying then it won't show up in the room
+      // if (this.story.game.player.hasItem(targetName)) {
+      //   // you're already carrying it
+      //   const msg = `you already have the ${this.name}`
+      //   const blocks = [
+      //     SlackBuilder.textBlock(msg),
+      //     SlackBuilder.contextBlock("type `inv` to see what you're carrying"),
+      //   ]
+      //   await evt.pal.sendBlocks(blocks)
+      //   return true
+      // }
     }
-    return false
+    return true
   }
+
+  // called from BotRouter
 
   // this runs before any actions on the object itself
-  async takeAction(evt: SceneEvent) {
-    await this.baseTakeAction(evt)
-    // if (this.doc.unique) {
-    //   evt.game.player.addItem(this)
-    //   this.room?.removeItemByCname(this.cname)
-    // }
-    // run a custom event after in case we need to modify anything
-    const customTake: ActionData = this.findAction('take')
-    if (customTake) {
-      await this.runAction(customTake, evt)
-    }
-    // TODO run custom action
-  }
+  // async takeAction(evt: SceneEvent) {
+  //   await this.baseTakeAction(evt)
+  //   // after run a custom event after in case we need to modify anything
+  //   const customTake: ActionData = this.findAction('take')
+  //   if (customTake) {
+  //     await this.runAction(customTake, evt)
+  //   }
+  //   // TODO run custom action
+  // }
 
-  // default for getting an item
-  async baseTakeAction(evt: SceneEvent) {
-    // TODO player status
-    if (this.getProp('has') === 'yes') {
-      const msg = `you already have the ${this.name}`
-      const blocks = [
-        SlackBuilder.textBlock(msg),
-        SlackBuilder.contextBlock("type `inv` to see what you're carrying"),
-      ]
-      return await evt.pal.sendBlocks(blocks)
-    }
-    if (this.doc.canTake) {
-      const msg = `you get the ${this.name}`
-      const blocks = [
-        SlackBuilder.textBlock(msg),
-        SlackBuilder.contextBlock("type `inv` to see what you're carrying"),
-      ]
-      this.story.game.player.takeItem(this) // removes from the room
-      this.setProp('has', 'yes')
-      await evt.pal.sendBlocks(blocks)
-    } else {
-      // cannot take
-      await ErrorHandler.sendError(HandleCodes.ignoredCannotTake, evt, { name: this.name })
-      await evt.pal.sendBlocks(
-        [SlackBuilder.contextBlock("type `inv` to see what you're carrying")]
-      )
-      // this.setProp('has', 'no')  // or dont change state?
-    }
-  }
 
   // trigger other events into the scene
   // create a new synthetic event and call back into the room

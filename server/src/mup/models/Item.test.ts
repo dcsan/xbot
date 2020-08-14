@@ -4,7 +4,7 @@ test('item states', async () => {
   const testEnv = new TestEnv()
   const game = await testEnv.loadGame('office')
   await game.story.gotoRoom('office')
-  const room = game.story.currentRoom
+  const room = game.story.room
   const chest = room.findItem('chest')
   expect(chest?.cname).toBe('chest')
   expect(chest?.state).toBe('locked')
@@ -16,7 +16,7 @@ test('get item', async () => {
   const game = await testEnv.loadGame('office')
 
   await game.story.gotoRoom('office')
-  const room = game.story.currentRoom
+  const room = game.story.room
 
   const chest = room.findItem('chest')
   expect(chest?.cname).toBe('chest')

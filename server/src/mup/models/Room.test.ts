@@ -25,7 +25,7 @@ it('should respond to smell action', async () => {
   expect(actualResult.handled).toBe(HandleCodes.processing)
   expect(actualResult.klass).toBe('room')
   // expect(actualResult?.history ? actualResult?.history[0] : false).toBe('reply')
-  expect(evt.pal.getLogLineText(-1)).toMatch(/A musty smell/)
+  expect(evt.pal.logTailText(1)).toMatch(/A musty smell/)
 })
 
 it('should respond to random sesame action', async () => {
@@ -43,7 +43,7 @@ it('should respond to random sesame action', async () => {
   expect(trackResult.handled).toBe(HandleCodes.processing)
   expect(trackResult.klass).toBe('room')
   // Logger.logObj('pal.logger', evt.pal.logger, true)
-  expect(evt.pal.getLogLineText()).toMatch(/The door opens/)
+  expect(evt.pal.logTailText(2)).toMatch(/The door opens/)
   // const history: string[] | undefined = trackResult?.history
   // Logger.logObj('history', history)
   // expect(history ? history[0] : '').toBe('reply')
@@ -56,8 +56,10 @@ it('should handle a special action with a goto', async () => {
   const testEnv = new TestEnv()
   const game = await testEnv.loadGame('office')
   await game.story.gotoRoom('office')
-  expect(game.story.room.cname).toBe('office')
-  expect(game.story.room.description).toMatch(/A large empty room/)
+  const room = game.story.room
+  console.log('room', room)
+  expect(room.cname).toBe('office')
+  expect(room.description).toMatch(/A large empty room/)
 
   const input = "teleport attic"
   const pres: ParserResult = RexParser.parseCommands(input)
@@ -67,7 +69,7 @@ it('should handle a special action with a goto', async () => {
   const actualResult: ActionResult = await game.story.room.findAndRunAction(evt)
 
   // console.log('store', evt.pal.logger)
-  expect(evt.pal.getLogLineText()).toMatch(/The attic is upstairs/i)
+  expect(evt.pal.logTailText(2)).toMatch(/The attic is upstairs/i)
 
   expect(actualResult.err).not.toBe(true)
   expect(actualResult.handled).toBe(HandleCodes.foundGoto)
