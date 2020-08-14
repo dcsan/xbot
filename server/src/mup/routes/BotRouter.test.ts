@@ -31,7 +31,7 @@ it('should handle verb target to get thing', async () => {
 
   testEnv.game?.story.gotoRoom('lobby')
   const evt = testEnv.makeSceneEvent('get soap')
-  expect(evt.pres.pos?.target).toBe('soap')
+  expect(evt.pres.pos?.target).toBe('Soap')
   const res = await BotRouter.tryCommands(evt)
   expect(res).toBe(true)
   expect(evt.pal.logTailText(2)).toMatch(/You take the soap/i)

@@ -71,8 +71,19 @@ const BotRouter = {
       const err = `no match: [${clean}]`
       await pal.debugMessage(err)
       Logger.warn(err)
+      const target = evt.pres.pos?.target
+      const verb = evt.pres.pos?.verb
+      let msg = ''
+      if (target && verb) {
+        msg = `I don't know how to ${verb} the ${target}`
+      } else if (target) {
+        msg = `I can't see a ${target}`
+      } else {
+        msg = `I don't understand ${input}`
+      }
+      evt.pal.sendText(msg)
     } else {
-      await pal.debugMessage({
+      const msg = ({
         ruleCname: pres.rule?.cname,
         ruleType: pres.rule?.type,
         input: clean,
@@ -83,6 +94,7 @@ const BotRouter = {
         handled: actionResult,
         from: 'router',
       })
+      Logger.log('response:', msg)
     }
     return actionResult
   },
