@@ -106,6 +106,18 @@ const RouterService = {
     return await evt.game.story.room.showNotes(evt)
   },
 
+  showHint: async (evt: SceneEvent) => {
+    return await evt.game.story.room.showHint(evt)
+  },
+
+  userJoined: async (evt: SceneEvent) => {
+    return await evt.pal.sendText('Welcome new person!')
+  },
+
+  userLeft: async (evt: SceneEvent) => {
+    return await evt.pal.sendText('Goodbye!')
+  }
+
 }
 
 export { RouterService, SceneEvent }

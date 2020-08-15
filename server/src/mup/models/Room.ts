@@ -342,6 +342,14 @@ class Room extends GameObject {
     await notes?.describeThing(evt)
   }
 
+  async showHint(evt: SceneEvent) {
+    logger.logObj('hint', evt)
+    const text = evt.pres.parsed?.groups?.text
+    await evt.pal.sendText(text)
+    // const notes = this.searchThing('notebook')
+    // await notes?.describeThing(evt)
+  }
+
   findActor(name) {
     if (!name) {
       logger.error('findActor but no name!')

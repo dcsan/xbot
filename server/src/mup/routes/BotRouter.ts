@@ -1,6 +1,6 @@
 // import { App, MessageEvent, SayFn, SlackEventMiddlewareArgs } from '@slack/bolt';
 import AppConfig from '../../lib/AppConfig'
-import { Pal } from '../pal/Pal'
+import { Pal, ISlackEvent } from '../pal/Pal'
 import { RexParser, ParserResult } from './RexParser'
 import { MakeLogger } from '../../lib/LogLib'
 import Util from '../../lib/Util'
@@ -47,12 +47,17 @@ const BotRouter = {
     return await BotRouter.anyEvent(pal, input, 'action')
   },
 
+  async command(pal, slackEvent: ISlackEvent): Promise<boolean | undefined> {
+    const input = `${slackEvent.command!.command} ${slackEvent.command!.text}`
+    return await BotRouter.anyEvent(pal, input, 'command')
+  },
+
   async anyEvent(pal: Pal, input: string, _eventType: string = 'text'): Promise<boolean | undefined> {
     logger.log('anyEvent.input:', input)
     // if (input[0])
 
     if (Util.shouldIgnore(input)) {
-      // handled but ignored
+      logger.log('ignoring')
       return true
     }
 

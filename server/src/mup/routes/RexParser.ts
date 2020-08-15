@@ -426,10 +426,24 @@ const RexParser = {
     return clean
   },
 
+
+  findRule(usedText: string): OneRule | undefined {
+    let rule = StaticRules.find((oneRule: OneRule) => {
+      const result = oneRule.rex.test(usedText)
+      // logger.writeLine('test', { clean, rex: oneRule.rex, result })
+      return result
+    })
+    if (!rule) {
+      logger.log('no ruleMatch', usedText)
+    }
+    return rule
+  },
+
   parseCommands(input: string): ParserResult {
+
     let clean = WordUtils.basicNormalize(input)
     clean = RexParser.reduceVocab(clean)
-    // logger.log('clean', clean)
+
     let pres: ParserResult = {
       input,
       clean,
@@ -438,19 +452,25 @@ const RexParser = {
         input
       ],
     }
-
     if (input !== clean) {
       pres.combos?.push(clean)
     }
 
-    // find first match
-    let rule: OneRule | undefined = StaticRules.find((oneRule: OneRule) => {
-      if (oneRule.rex.test(clean)) return true
-      return false
-    })
+    // we search plain input first for things like /commands
+    // // then remove punctuation and search again
+    let text = input
+    let rule = RexParser.findRule(text)
+    if (!rule) {
+      rule = RexParser.findRule(text)
+      text = clean
+    }
 
-    if (rule) {
-      const parsed = rule.rex.exec(clean)
+    if (!rule) {
+      logger.log('no command rule matched for inputs:', input, clean)  // could be a room action instead
+    } else {
+      // logger.writeLine('matched rule ', rule)
+      pres.rule = rule
+      const parsed = rule.rex.exec(text)
       // log('parsed', clean, parsed)
       if (parsed) {
         parsed.groups = { ...parsed.groups } // null object
@@ -458,14 +478,13 @@ const RexParser = {
         // @ts-ignore   assuming the right fields are found in .groups
         pres.pos = { ...parsed.groups }
         pres.parsed = parsed
-        pres.rule = rule
+        logger.log('found parseCommand', rule.cname)
+      } else {
+        // should exec after rule is found
+        logger.warn(`rule did not rex.exec with text ${text}`, { rule, text })
       }
-    } else {
-      // TODO - global counter for missed rules?
-      // so we can show a hint?
-      logger.log('no command matched for input', clean)  // could be a room action instead
     }
-    // logger.log('pres', pres)
+    // logger.writeLine('final pres', pres)
     return pres
   },
 

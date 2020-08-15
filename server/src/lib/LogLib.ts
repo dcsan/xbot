@@ -25,8 +25,8 @@ class MakeLogger {
     console.log('env', process.env.NODE_ENV)
   }
 
-  startLoop() {
-    console.log('\n_____________________________________________________________\n')
+  startLoop(msg = '') {
+    console.log(`\n_____________________________ ${msg} ________________________________\n`)
   }
 
   get where() {

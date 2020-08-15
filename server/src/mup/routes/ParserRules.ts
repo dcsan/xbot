@@ -192,6 +192,28 @@ const StaticRules: RuleSpec[] = [
     event: RouterService.showNotes
   },
 
+  {
+    rex: /.* has joined/i,
+    cname: 'userJoined',
+    type: 'command',
+    event: RouterService.userJoined
+  },
+
+  {
+    rex: /.* has left/i,
+    cname: 'userLeft',
+    type: 'command',
+    event: RouterService.userLeft
+  },
+
+  // slash commands
+  // note /slash punctuation is removed before rex comparison
+  {
+    rex: /\/hint (?<text>.*)/i,
+    cname: 'hint',
+    type: 'command',
+    event: RouterService.showHint
+  },
 
   // {
   //   cname: 'examine',

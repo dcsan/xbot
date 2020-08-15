@@ -4,16 +4,17 @@
 // get to just one common log method
 
 import yaml from 'js-yaml'
-import { Logger } from '../../lib/LogLib'
+import { MakeLogger } from '../../lib/LogLib'
 import Util from '../../lib/Util'
 import SlackBuilder from './SlackBuilder'
-import chalk from 'chalk'
+// import chalk from 'chalk'
 
 import AppConfig from '../../lib/AppConfig'
 
 const debugOutput = AppConfig.logLevel
 // const debugOutput = false
 
+const logger = new MakeLogger('Pal')
 const logMode = false
 
 interface IMessage {
@@ -21,7 +22,9 @@ interface IMessage {
 }
 
 // parent of SlackAdapter etc
-interface IChannel {
+interface ISlackEvent {
+  // ack?: any   // function
+  ack?(): void
   say: any
   message: IMessage // input message from user
   store: any[]
@@ -31,12 +34,16 @@ interface IChannel {
   },
   payload: {
     channel: string // sessionId
+  },
+  command?: {
+    command: string
+    text: string
   }
 }
 
 // actually based on a single Event, we create a channel
 // TODO refactor
-class MockChannel implements IChannel {
+class MockChannel implements ISlackEvent {
   store: any[]
   payload: {
     channel: string // sessionId
@@ -58,7 +65,7 @@ class MockChannel implements IChannel {
 
   say(msg) {
     this.store.push(msg)
-    Logger.log('mock.say', msg)
+    logger.log('mock.say', msg)
   }
 
 }
@@ -107,7 +114,7 @@ class ChatLogger {
 }
 
 class Pal {
-  channelEvent: IChannel | MockChannel
+  channelEvent: ISlackEvent | MockChannel
   sessionId: string
   logger: ChatLogger
   lastInput?: string
@@ -117,7 +124,7 @@ class Pal {
     this.channelEvent = channelEvent
     this.sessionId = channelEvent.payload?.channel || 'temp1234'
     this.logger = new ChatLogger()
-    Logger.log('new pal', { sessionId: this.sessionId })
+    logger.log('new pal', { sessionId: this.sessionId })
   }
 
   event(channelEvent: any) {
@@ -153,7 +160,7 @@ class Pal {
   }
 
   lastOutput() {
-    Logger.logObj('pal.logger', this.logger, true)
+    logger.logObj('pal.logger', this.logger, true)
     return this.logger.lines[this.logger.lines.length - 1]
   }
 
@@ -163,14 +170,14 @@ class Pal {
 
   async wrapSay(msg, type = 'text') {
     if (logMode) {
-      Logger.logObj('msg', msg)
+      logger.logObj('msg', msg)
     }
     this.logOutput(msg, type)
     try {
       await this.channelEvent.say(msg)
     } catch (err) {
-      Logger.logJson('ERROR channel.say =>', msg)
-      Logger.error('ERROR', err)  // FIXME maybe not .data ?
+      logger.logJson('ERROR channel.say =>', msg)
+      logger.error('ERROR', err)  // FIXME maybe not .data ?
     }
   }
 
@@ -224,7 +231,7 @@ class Pal {
         })
       })
     } catch (err) {
-      Logger.warn('logging err', err)
+      logger.warn('logging err', err)
       this.logger.log({ who: 'bot', text: JSON.stringify(blob), blob, type: 'blob' })
     }
   }
@@ -237,7 +244,7 @@ class Pal {
   // log bot output messages
   logOutput(msg, type: string) {
     if (debugOutput) {
-      Logger.log('send:', msg)
+      logger.log('send:', msg)
     }
     switch (type) {
       case 'blocks':
@@ -247,7 +254,7 @@ class Pal {
         this.logger.log({ type: 'text', who: 'bot', text: msg })
         break
       default:
-        Logger.log('unknown type to log', type)
+        logger.log('unknown type to log', type)
         this.logger.log({ who: 'bot', text: msg, type })
     }
   }
@@ -289,11 +296,11 @@ class Pal {
       lines.push(line.output())
     })
     const text = lines.join('\n')
-    Logger.log('log', text)
+    logger.log('log', text)
     this.channelEvent.say(Util.quoteCode(text))
     return text
   }
 
 }
 
-export { Pal, MockChannel, IChannel }
+export { Pal, MockChannel, ISlackEvent }

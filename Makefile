@@ -52,7 +52,7 @@ copyClient:
 
 prep: clean buildBoth copyClient
 
-sync: fixPermissions
+sync:
 	rsync -avi --delete \
 		--exclude .git \
 		--exclude src \
