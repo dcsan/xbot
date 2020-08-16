@@ -54,7 +54,22 @@ describe('slash commands', () => {
     const pres: ParserResult = RexParser.parseCommands('/hint under the bed')
     // note inside parser pu
     expect(pres.rule?.cname).toBe('hint')
-    expect(pres.parsed?.groups.text).toMatch('under the bed')
+    expect(pres.parsed?.groups.text).toMatch('bed')
+  })
+
+  test('slash command with words that would be replaced', () => {
+    const pres: ParserResult = RexParser.parseCommands('/hint what about checking the bed')
+    // note inside parser pu
+    expect(pres.rule?.cname).toBe('hint')
+    expect(pres.parsed?.groups.text).toMatch('what about checking bed')
+  })
+
+  test('slash command sentence', () => {
+    const pres: ParserResult = RexParser.parseCommands('/hint maybe something is under the bed')
+    // note inside parser pu
+    expect(pres.rule?.cname).toBe('hint')
+    expect(pres.parsed?.groups.text).toMatch('try maybe something is under the bed')
+    // expect(pres.parsed?.groups.text).toMatch('try looking under the bed')
   })
 
 })

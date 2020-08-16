@@ -458,15 +458,17 @@ const RexParser = {
 
     // we search plain input first for things like /commands
     // // then remove punctuation and search again
-    let text = input
-    let rule = RexParser.findRule(text)
-    if (!rule) {
-      rule = RexParser.findRule(text)
-      text = clean
-    }
+    // let text = input
+    // let rule = RexParser.findRule(text)
+    // if (!rule) {
+    //   rule = RexParser.findRule(text)
+    // }
+
+    const text = clean
+    const rule = RexParser.findRule(text)
 
     if (!rule) {
-      logger.log('no command rule matched for inputs:', input, clean)  // could be a room action instead
+      logger.log('no command rule matched for inputs:', clean)  // could be a room action instead
     } else {
       // logger.writeLine('matched rule ', rule)
       pres.rule = rule
@@ -485,6 +487,7 @@ const RexParser = {
       }
     }
     // logger.writeLine('final pres', pres)
+    logger.logObj('parseCommands.match', { pres })
     return pres
   },
 

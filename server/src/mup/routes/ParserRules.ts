@@ -22,7 +22,7 @@ const ReplaceItems = [
   },
   {
     base: 'examine',
-    rex: /\b(x|look at|examine|look at the|read|inspect)\b/
+    rex: /^\b(x|look at|examine|look at the|read|inspect)\b/
   },
 
   // {
@@ -31,7 +31,7 @@ const ReplaceItems = [
   // },
   {
     base: 'shut',
-    rex: /\b(shut|close)\b/
+    rex: /^\b(shut|close)\b/
   },
   // {
   //   base: 'robe',
@@ -47,7 +47,7 @@ const ReplaceItems = [
   // },
   {
     base: 'ask',
-    rex: /\b(say|tell|scream|speak|shout|ask)\b/
+    rex: /^\b(say|tell|scream|speak|shout|ask)\b/
   },
 
   // {
@@ -87,6 +87,15 @@ const StaticRules: RuleSpec[] = [
     rex: /^(goto|gt|g) (?<roomName>.*)/i,
     event: RouterService.goto,
     type: 'command'
+  },
+
+  // slash commands
+  // note /slash punctuation is removed before rex comparison
+  {
+    rex: /\/hint (?<text>.*)/i,
+    cname: 'hint',
+    type: 'command',
+    event: RouterService.showHint
   },
 
   {
@@ -206,14 +215,6 @@ const StaticRules: RuleSpec[] = [
     event: RouterService.userLeft
   },
 
-  // slash commands
-  // note /slash punctuation is removed before rex comparison
-  {
-    rex: /\/hint (?<text>.*)/i,
-    cname: 'hint',
-    type: 'command',
-    event: RouterService.showHint
-  },
 
   // {
   //   cname: 'examine',
