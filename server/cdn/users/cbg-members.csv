@@ -1,0 +1,30 @@
+username,email,status,billing-active,has-2fa,has-sso,userid,fullname,displayname,expiration-timestamp
+cbg2,botuser-T016GV0914P-B017MGSVD4Y@slack-bots.com,Deactivated,0,0,0,U016WAHSGLV,CBG,,
+shimotown,shimotown@gmail.com,Member,0,0,0,U0173SVPB7E,shimo,shimo,
+cbg_test,botuser-T016GV0914P-B016H30FBRD@slack-bots.com,Bot,0,0,0,U01740VLQ3E,"CBG Test",,
+trivia,botuser-T016GV0914P-B017PJGGMSR@slack-bots.com,Bot,0,0,0,U017A7LHJ2K,Trivia,,
+dc,dc@rik.ai,"Primary Owner",1,0,0,U017AACTBC1,DC,,
+dc207,dc@rikai.co,Member,0,0,0,U017AAD79FB,DCR,DCR,
+john.knauss,john.knauss@gmail.com,Admin,1,0,0,U017ADN98J1,"John Knauss","Dr. J",
+infrarat,infrarat@yahoo.com,Member,0,1,0,U017AVAP7MX,CyberTom,Tom,
+bell_hill_asylum,botuser-T016GV0914P-B017R690J03@slack-bots.com,Bot,0,0,0,U017R06KED8,"Bell Hill Asylum",,
+mprestopnik,mprestopnik@hotmail.com,"Multi-Channel Guest",0,0,0,U0186B73Q0P,Mark,,0
+moderator,moderator@rikai.co,Member,0,0,0,U0187GNRBFH,moderator,,
+abbot,abbot@rikai.co,Member,1,0,0,U0187GNTKC7,abbot,abbot,
+greglomasney,Greglomasney@gmail.com,"Multi-Channel Guest",1,0,0,U018EBMHD0W,"Greg and Nancy",,0
+jaminbogi,jaminbogi@gmail.com,Admin,1,0,0,U018F8GR26P,"Jamin Bogi",Jamin,
+dan,Dan@thebisbeeproject.org,"Multi-Channel Guest",1,0,0,U018KN3Q7FF,"Dan B",,0
+gif_keyboard,botuser-T016GV0914P-B019C79JPLY@slack-bots.com,Bot,0,0,0,U018M11L0PP,gif_keyboard,,
+jason.paul,Jason.paul@outlook.com,"Multi-Channel Guest",0,0,0,U018M3MGZ0A,Jason,Jason,0
+hrkenner2,hrkenner2@gmail.com,"Multi-Channel Guest",1,0,0,U018M9PQB8B,Heather,,0
+ivyrachelsteinberg,ivyrachelsteinberg@gmail.com,"Multi-Channel Guest",1,0,0,U018M9S6XDH,Ivy,,0
+ckelleman,ckelleman@gmail.com,"Multi-Channel Guest",1,0,0,U018W19LM8D,"Chris Kelleman",Chris,0
+schoolsfun,schoolsfun@gmail.com,"Multi-Channel Guest",1,0,0,U018ZN18QGH,Matt,,0
+kelleman,kelleman@gmail.com,"Multi-Channel Guest",0,0,0,U018ZN3NY1F,"Chris and Katja",,0
+ben.in.public,ben.in.public@gmail.com,"Multi-Channel Guest",0,0,0,U018ZN3P6KT,Ben,,0
+antoinette.for.wine,Antoinette.for.wine@gmail.com,"Multi-Channel Guest",0,0,0,U018ZN3PEG1,Nettie,,0
+github,appuser-T016GV0914P-A8GBNUWU8@slack-bots.com,Bot,0,0,0,U0197RQ2URW,GitHub,,
+host,host@rikai.co,Member,1,0,0,U019A1S7GU9,host,"Bell Hill Host",
+tarasteinberg,tarasteinberg@live.com,"Multi-Channel Guest",1,0,0,U019AUBSSQ0,Tara,,0
+lena.steinbe,Lena.steinbe@gmail.com,"Multi-Channel Guest",1,0,0,U019AUBTPQ8,"Lena Steinberg",Lena,0
+zoom,botuser-T016GV0914P-B018G2K290F@slack-bots.com,Bot,0,0,0,U019LKPQJGY,Zoom,,
