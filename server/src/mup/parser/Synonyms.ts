@@ -14,7 +14,18 @@ const loadData = () => {
   const relPath = 'storyData/shared/synData.yaml'
   const data = Util.loadYamlFileFromCdn(relPath)
   synData = data
-  // logger.logObj('synonmys', synData)
+  // wrap words into a single line for faster regex replacement
+  // premature optimization?
+  for (let elem of data) {
+    let rexStr = elem.syns.join('\\b|\\b')
+    rexStr = `\\b${rexStr}\\b`  // join just adds between items, still have to bookend it manually
+    const rex = new RegExp(rexStr, 'gi')
+    // console.log('rexStr', rexStr)
+    // console.log('rex', rex)
+    elem.rex = rex
+  }
+  return synData
+
 }
 
 loadData() // at parse time

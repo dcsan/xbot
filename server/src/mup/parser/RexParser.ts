@@ -408,7 +408,7 @@ const RexParser = {
   },
 
   // fixed command syns eg wear -> take
-  reduceVocab(input: string) {
+  replaceSyns(input: string) {
     // logger.log('synPairs', synPairsCache)
     if (!synPairsCache || !synPairsCache.length) {
       logger.warn('no syn pairs for room')
@@ -442,7 +442,7 @@ const RexParser = {
   parseCommands(input: string): ParserResult {
 
     let clean = WordUtils.basicNormalize(input)
-    clean = RexParser.reduceVocab(clean)
+    clean = RexParser.replaceSyns(clean)
 
     let pres: ParserResult = {
       input,
@@ -510,7 +510,7 @@ const RexParser = {
   // give a nounList of objects in game to help with parsing
   parseNounVerbs(input: string, nounList: string[], verbList?: string[]): ParserResult {
     let clean = WordUtils.basicNormalize(input)
-    clean = RexParser.reduceVocab(clean)
+    clean = RexParser.replaceSyns(clean)
     const nouns = nounList.join('|')
     const verbs = verbList ? verbList.join('|') : ParserConfig.verbs
     const strExp = `(?<verb>${verbs}) (?<target>${nouns})`

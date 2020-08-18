@@ -6,6 +6,12 @@ import { RexParser, ParserResult } from './RexParser';
 const nounList = ['key', 'chest', 'table lamp', 'door']
 const verbList = ['open', 'rub', 'wipe', 'wash']
 
+it('should reduce vocab', async () => {
+  const input = 'get the robe'
+  const out = RexParser.replaceSyns(input)
+  expect(out).toBe('take the robe')
+})
+
 // base 'get' command
 it('parse get command', () => {
   const pres: ParserResult = RexParser.parseCommands('get the floofy')
@@ -38,12 +44,12 @@ it('should parse actionBlock setlines', async () => {
 })
 
 it('should reduce vocab', async () => {
-  const clean = RexParser.reduceVocab('t gown')
+  const clean = RexParser.replaceSyns('t gown')
   expect(clean).toBe('take gown')
 })
 
 it('should not mess up embedded words', async () => {
-  const clean = RexParser.reduceVocab('take closet')
+  const clean = RexParser.replaceSyns('take closet')
   expect(clean).toBe('take closet')
 })
 
