@@ -84,7 +84,26 @@ class TestEnv {
     const rex = new RegExp(output, 'im')
     const logTail: string[] = this.pal.logTail(lines)
 
-    let ok = false
+    // search for any line to match
+    let foundLine = false
+    for (const line of logTail) {
+      if (rex.test(line.trim())) {
+        foundLine = true
+        break
+      }
+    }
+    if (!foundLine) {
+      const msg = (
+        chalk.white.bgRed.bold('\n\n---- FAILED response:') +
+        `\n   room:\t` + roomName +
+        `\n  input:\t` + input +
+        '\n expect:\t' + rex +
+        '\nactuals:\t' + logTail.join(' / ') +
+        // '\n actual:\t' + JSON.stringify(logTail, null, 2) +
+        '\n\n'
+      )
+      process.stdout.write(msg)
+    }
 
     // @ts-ignore
     if (oneTest.checks) {
@@ -102,26 +121,7 @@ class TestEnv {
       })
     }
 
-    for (const line of logTail) {
-      if (rex.test(line.trim())) {
-        ok = true
-        break
-      }
-    }
-    if (!ok) {
-      const msg = (
-        chalk.white.bgRed.bold('\n\n---- FAILED response:') +
-        `\n   room:\t` + roomName +
-        `\n  input:\t` + input +
-        '\n expect:\t' + rex +
-        '\nactuals:\t' + logTail.join(' / ') +
-        // '\n actual:\t' + JSON.stringify(logTail, null, 2) +
-        '\n\n'
-      )
-      process.stdout.write(msg)
-      return false
-    }
-    return true
+    return foundLine
   }
 
 }
