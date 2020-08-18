@@ -3,6 +3,8 @@ import Util from '../../lib/Util'
 import Item from '../models/Item'
 import { GameObject } from '../models/GameObject'
 
+import { ISlackSection } from './SlackTypes'
+
 import { ActionBranch } from '../MupTypes'
 import AppConfig from '../../lib/AppConfig'
 
@@ -117,8 +119,8 @@ const SlackBuilder = {
   //   }
   // },
 
-  wrapBlocks(blocks) {
-    const blob = {
+  wrapBlocks(blocks): ISlackSection {
+    const blob: ISlackSection = {
       // text: this.data.examine,
       attachments: [
         {

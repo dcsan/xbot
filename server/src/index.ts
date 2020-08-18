@@ -1,12 +1,20 @@
 console.log('compiled')
 console.time('startUp')
 
+import { dbConn, DbConfig } from './mup/core/DbConfig'
+
 console.time('import')
 import SlackRouter from './mup/pal/SlackRouter'
 console.timeEnd('import')
 
+
 async function main() {
   // Start your app
+
+  console.time('dbConnect')
+  DbConfig.init()
+  console.timeEnd('dbConnect')
+
   console.time('SlackRouter.init')
   const slackApp = SlackRouter.init()
   console.timeEnd('SlackRouter.init')

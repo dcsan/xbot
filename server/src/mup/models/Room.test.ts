@@ -1,24 +1,41 @@
 import { TestEnv } from '../../lib/TestUtils'
 import {
-  ActionResult,
+  // ActionResult,
   SceneEvent
 } from '../MupTypes'
 import { ParserResult, RexParser } from '../parser/RexParser'
 // import { HandleCodes } from './ErrorHandler'
-import { Logger } from '../../lib/LogLib'
+// import { Logger } from '../../lib/LogLib'
 
-afterAll(() => {
+const log = console.log
+
+const testEnv = new TestEnv()
+
+beforeAll(async () => {
+  await testEnv.init()
+  await testEnv.resetChatLogs()
+  log('DONE beforeAll')
+})
+
+
+afterAll(async () => {
   // Logger.log('done')
   // log('done')
   process.stdout.write('done > Room.test')
+  await testEnv.close()
+  log('DONE afterAll')
+})
+
+it('should enter a room', async () => {
+
 })
 
 
 it('should respond to smell action', async () => {
-  const testEnv = new TestEnv()
+  await testEnv.init()
   const game = await testEnv.loadGame('office')
   await game.story.gotoRoom('office')
-
+  console.log('did goto Room')
   const input = "smell"
   const pres: ParserResult = RexParser.parseCommands(input)
   expect(pres.parsed).not.toBeDefined()
@@ -29,11 +46,10 @@ it('should respond to smell action', async () => {
   // expect(actualResult.handled).toBe(HandleCodes.processing)
   // expect(actualResult.klass).toBe('room')
   // expect(actualResult?.history ? actualResult?.history[0] : false).toBe('reply')
-  expect(evt.pal.logTailText(1)).toMatch(/A musty smell/)
+  expect(evt.pal.chatLogger.tailText(2)).toMatch(/A musty smell/)
 })
 
 it('should respond to random sesame action', async () => {
-  const testEnv = new TestEnv()
   const game = await testEnv.loadGame('office')
   await game.story.gotoRoom('lobby')
   expect(game.story.room.cname).toBe('lobby')
@@ -48,7 +64,7 @@ it('should respond to random sesame action', async () => {
   // expect(trackResult.handled).toBe(HandleCodes.processing)
   // expect(trackResult.klass).toBe('room')
   // Logger.logObj('pal.logger', evt.pal.logger, true)
-  expect(evt.pal.logTailText(2)).toMatch(/The door opens/)
+  expect(evt.pal.chatLogger.tailText(2)).toMatch(/The door opens/)
   // const history: string[] | undefined = trackResult?.history
   // Logger.logObj('history', history)
   // expect(history ? history[0] : '').toBe('reply')
@@ -58,7 +74,7 @@ it('should respond to random sesame action', async () => {
 
 
 it('should handle a special action with a goto', async () => {
-  const testEnv = new TestEnv()
+
   const game = await testEnv.loadGame('office')
   await game.story.gotoRoom('office')
   const room = game.story.room
@@ -75,7 +91,7 @@ it('should handle a special action with a goto', async () => {
   expect(ran).toBe(true)
 
   // console.log('store', evt.pal.logger)
-  expect(evt.pal.logTailText(2)).toMatch(/The attic is upstairs/i)
+  expect(evt.pal.chatLogger.tailText(2)).toMatch(/The attic is upstairs/i)
   // expect(actualResult.err).not.toBe(true)
   // expect(actualResult.handled).toBe(HandleCodes.foundGoto)
   expect(game.story.room.name).toBe('attic')
@@ -86,7 +102,7 @@ it('should handle a special action with a goto', async () => {
 
 
 it('should find all things in a room', async () => {
-  const testEnv = new TestEnv()
+
   const game = await testEnv.loadGame('office')
   game.story.gotoRoom('office')
   const things = game.story.room.getAllThingNames()

@@ -1,118 +1,27 @@
 // Platform Abstraction Layer
 
+
+// import fs from 'fs'
+// import path from 'path'
+// import yaml from 'js-yaml'
+import AppConfig from '../../lib/AppConfig'
+
 // TODO - cleanup different log methods
 // get to just one common log method
-import fs from 'fs'
-import path from 'path'
-import yaml from 'js-yaml'
+import { ChatLogger, IChatRow } from './ChatLogger'
 import { MakeLogger } from '../../lib/LogLib'
+import { MockChannel, IMessage } from './MockChannel'
+import { ISlackEvent, ISlackSection } from './SlackTypes'
+
 import Util from '../../lib/Util'
 import SlackBuilder from './SlackBuilder'
 // import chalk from 'chalk'
 
-import AppConfig from '../../lib/AppConfig'
-
-const debugOutput = AppConfig.logLevel
-// const debugOutput = false
 
 const logger = new MakeLogger('Pal')
+
+const debugOutput = AppConfig.logLevel
 const logMode = false
-
-interface IMessage {
-  text: string
-}
-
-// parent of SlackAdapter etc
-interface ISlackEvent {
-  // ack?: any   // function
-  ack?(): void
-  say: any
-  message: IMessage // input message from user
-  store: any[]
-  sessionId: string
-  action: {
-    value: string,
-  },
-  payload: {
-    channel: string // sessionId
-  },
-  command?: {
-    command: string
-    text: string
-  }
-}
-
-// actually based on a single Event, we create a channel
-// TODO refactor
-class MockChannel implements ISlackEvent {
-  store: any[]
-  payload: {
-    channel: string // sessionId
-  }
-
-  action: { value: string }
-  message: IMessage
-  sessionId: string
-
-  constructor(sid: string = 'mock1234') {
-    this.store = []
-    this.sessionId = sid
-    this.message = { text: '' }   // nothing coming in yet
-    this.action = { value: '' }
-    this.payload = {
-      channel: sid
-    }
-  }
-
-  say(msg) {
-    this.store.push(msg)
-    logger.log('mock.say', msg)
-  }
-
-}
-
-interface ChatLogItem {
-  who: string
-  text: string
-  type: string    // text|buttons|
-  blob?: any
-  count?: number
-}
-
-// FIXME - do we need both class and interface?
-class ChatItem {
-  opts: ChatLogItem
-
-  constructor(opts: ChatLogItem) {
-    this.opts = opts
-  }
-
-  // wrapper for presentation
-  output() {
-    const padCount = `${this.opts.count}`.padStart(4, '0')
-    // const padWho = `${this.opts.who}`.padEnd(6, ' ')
-    const padWho = `${this.opts.who}`
-    const cursor = this.opts.who === 'user' ? '< ' : ' >'
-    const showType = this.opts.type === 'text' ? '' : `[${this.opts.type}]`
-    return (`${padCount} ${padWho} ${cursor} ${this.opts.text} ${showType}`)
-  }
-}
-
-class ChatLogger {
-  items: ChatItem[]
-
-  constructor() {
-    this.items = []
-  }
-
-  log(opts: ChatLogItem) {
-    // just keep count in here
-    opts.count = this.items.length
-    const line = new ChatItem(opts)
-    this.items.push(line)
-    // console.log('logged:', line.output())
-  }
-}
 
 class Pal {
   channelEvent: ISlackEvent | MockChannel
@@ -128,53 +37,29 @@ class Pal {
     logger.log('new pal', { sessionId: this.sessionId })
   }
 
+  // when a new event comes in to the same channel we just update the event
   event(channelEvent: any) {
     // TODO keep a list of events?
     this.channelEvent = channelEvent
   }
 
-  // for unit tests, get a line of stuff that was sent in
-  // getReceivedText(idx): string {
-  //   return this.channelEvent.store[idx]
-  // }
-
-  // just the text items
-  get allText(): string {
-    return this.channelEvent.store.join('\n')
-  }
-
-  // smash it to a blob for regex comparison
-  get blob(): string {
-    return JSON.stringify(this.channelEvent.store)
-  }
-
-  channelStore() {
-    return this.channelEvent.store
-  }
-
   // for testing
   sendInput(text: string) {
     this.lastInput = text
-    this.chatLogger.log({ text, who: 'user', type: 'text' })
-    if (this.channelEvent.message) {
-      this.channelEvent.message.text = text
-    }
+    this.chatLogger.logInput({ text, type: 'input', who: 'user' })
+    // if (this.channelEvent.message) {
+    //   this.channelEvent.message.text = text
+    // }
   }
 
   lastOutput() {
     logger.logObj('pal.logger', this.chatLogger, true)
-    return this.chatLogger.items[this.chatLogger.items.length - 1]
+    return this.chatLogger.rows[this.chatLogger.rows.length - 1]
   }
 
-  // reply(message) {
-  //   this.channelEvent.say(message)
-  // }
-
-  async wrapSay(msg, type = 'text') {
-    if (logMode) {
-      logger.logObj('msg', msg)
-    }
-    this.logOutput(msg, type)
+  // TODO - fix up these types
+  async wrapSay(msg: IChatRow) {
+    await this.chatLogger.logRow(msg)
     try {
       await this.channelEvent.say(msg)
     } catch (err) {
@@ -184,134 +69,56 @@ class Pal {
   }
 
   async sendText(text: string) {
-    this.wrapSay(text, 'text')
+    await this.wrapSay({ text, type: 'text', who: 'bot' })
   }
 
+  // convenience to send an array of lines
   async sendList(list: string[]) {
     const text = list.join('\n')
-    this.wrapSay(text, 'text')
+    await this.wrapSay({ text, type: 'text', who: 'bot' })
   }
 
   async postMessage(msg: any) {
-    this.wrapSay(msg, 'post')
+    msg.type = 'post'
+    await this.wrapSay(msg)
   }
 
   async debugMessage(obj) {
-    if (AppConfig.logLevel <= 3) return
-    // const clean = { ...obj } // remove nulls?
-    const clean = Util.removeEmptyKeys(obj)
-    // console.log('json', JSON.stringify(clean, null, 2))
-    const blob = yaml.dump(clean, { skipInvalid: true, lineWidth: 200 })
-    console.log('yaml', blob)
-    await this.wrapSay(Util.quoteCode(blob), 'debug')
+    logger.warn('debug message', obj)
+    // TODO - fixme / revive
+    // if (AppConfig.logLevel <= 3) return
+    // // const clean = { ...obj } // remove nulls?
+    // const clean = Util.removeEmptyKeys(obj)
+    // // console.log('json', JSON.stringify(clean, null, 2))
+    // const blob = yaml.dump(clean, { skipInvalid: true, lineWidth: 200 })
+    // console.log('yaml', blob)
+    // await this.wrapSay(Util.quoteCode(blob), 'debug')
   }
 
   async sendButtons(buttons: string[]) {
     const block = SlackBuilder.buttonsBlock(buttons)
     await this.sendBlocks([block])
-    this.chatLogger.log({ who: 'bot', text: buttons.join(' | '), type: 'buttons' })
-  }
-
-  logBlocks(blob) {
-    try {
-
-      blob.attachments.forEach(att => {
-        att.blocks.forEach(block => {
-          let text = block.type // initialize
-          switch (block.type) {
-            case 'image':
-              text = block.title.text
-              break
-            case 'section':
-              text = block.text.text
-              break
-            case 'actions':
-              text = block.elements[0].text.text
-              break
-          }
-          this.chatLogger.log({ who: 'bot', text, type: block.type })
-        })
-      })
-    } catch (err) {
-      logger.warn('logging err', err)
-      this.chatLogger.log({ who: 'bot', text: JSON.stringify(blob), blob, type: 'blob' })
-    }
-  }
-
-  // called for incoming events
-  logInput(opts: ChatLogItem) {
-    this.chatLogger.log(opts)
-  }
-
-  // log bot output messages
-  logOutput(msg, type: string) {
-    if (debugOutput) {
-      logger.log('send:', msg)
-    }
-    switch (type) {
-      case 'blocks':
-        this.logBlocks(msg)
-        break
-      case 'text':
-        this.chatLogger.log({ type: 'text', who: 'bot', text: msg })
-        break
-      default:
-        logger.log('unknown type to log', type)
-        this.chatLogger.log({ who: 'bot', text: msg, type })
-    }
+    await this.chatLogger.logRow({ who: 'bot', text: buttons.join(' | '), type: 'buttons' })
   }
 
   async sendBlocks(blocks) {
     if (!blocks || !blocks.length) {
       console.trace('tried to sendBlocks with no blocks:', blocks)
     }
-    const msg = SlackBuilder.wrapBlocks(blocks)
-    this.wrapSay(msg, 'blocks')
+    const msg: ISlackSection = SlackBuilder.wrapBlocks(blocks)
+    await this.channelEvent.say(msg)
+    await this.chatLogger.logBlocks(msg)
+    // await this.wrapSay(msg, 'blocks')
   }
 
   getLogs() {
-    return this.chatLogger.items
-  }
-
-  // getLogLineText(index = -1) {
-  //   if (index === -1) {
-  //     index = this.logger.lines.length - 1
-  //   }
-  //   const log: ChatLine = this.logger.lines[index]
-  //   return log.opts.text
-  // }
-
-  logTail(lines: number = 1): string[] {
-    const logs = this.chatLogger.items.map(line => line.opts.text)
-    const len = logs.length
-    return logs.slice(len - lines, len)
-  }
-
-  logTailText(lines = 1): string {
-    const logs = this.logTail(lines)
-    return logs.join(' / ')
+    return this.chatLogger.rows
   }
 
   async showLog() {
-    const lines: string[] = []
-    this.chatLogger.items.forEach(line => {
-      lines.push(line.output())
-    })
-    const text = lines.join('\n')
-    logger.log('log', text)
+    const text = this.chatLogger.getLines()
     this.channelEvent.say(Util.quoteCode(text))
     return text
-  }
-
-  async writeLog() {
-    const hour = 1000 * 60 * 60
-    const ts = Math.round(Date.now() / hour)
-    const fullPath = path.join(process.cwd(), 'logs', `${ts}.log`)
-    const lines = this.chatLogger.items.map(item => `${this.sessionId} | ` + item.output())
-    const text = lines.join('\n')
-    console.log('written to', fullPath)
-    fs.writeFileSync(fullPath, text, 'utf8')
-    logger.log('wrote chatlog to', fullPath)
   }
 
 }

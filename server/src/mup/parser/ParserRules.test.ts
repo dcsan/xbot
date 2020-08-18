@@ -68,6 +68,8 @@ describe('slash commands', () => {
     const pres: ParserResult = RexParser.parseCommands('/hint maybe something is under the bed')
     // note inside parser pu
     expect(pres.rule?.cname).toBe('hint')
+
+    // FIXME pre-parser
     expect(pres.parsed?.groups.text).toMatch('try maybe something is under the bed')
     // expect(pres.parsed?.groups.text).toMatch('try looking under the bed')
   })

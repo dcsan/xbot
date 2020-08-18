@@ -14,7 +14,7 @@ const loadData = () => {
   const relPath = 'storyData/shared/synData.yaml'
   const data = Util.loadYamlFileFromCdn(relPath)
   synData = data
-  logger.logObj('synonmys', synData)
+  // logger.logObj('synonmys', synData)
 }
 
 loadData() // at parse time

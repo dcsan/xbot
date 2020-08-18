@@ -1,4 +1,5 @@
 import chalk from 'chalk'
+const mongoose = require('mongoose');
 
 import AppConfig from './AppConfig'
 // import Room from '../mup/models/Room'
@@ -11,30 +12,48 @@ import { SceneEvent, StoryTest } from '../mup/MupTypes'
 // import { GameObject } from '../mup/models/GameObject'
 import { MakeLogger } from './LogLib'
 import BotRouter from '../mup/routing/BotRouter'
-
+import { DbConfig } from '../mup/core/DbConfig'
 const logger = new MakeLogger('testUtils')
 
-const log = console.log
-
-// interface TestEnv {
-//   game?: Game | Undefined
-//   pal: Pal
-// }
-// interface SceneOptions {
-//   roomName?: string
-// }
-
-
+import { ChatRowModel } from '../mup/pal/ChatLogger'
 
 class TestEnv {
   pal: Pal
   game!: Game   // force to assume we've always done an async loadGame
+  ready: boolean
+  dbConn: any
 
   constructor() {
     this.pal = this.getMockPal()
+    this.ready = false
+    this.dbConn = {}
+  }
+
+  async init() {
+    this.dbConn = await DbConfig.init()
+    this.ready = true
+    logger.logLine('got dbConn', this.dbConn.name)
+  }
+
+  async resetChatLogs() {
+    if (!this.ready) {
+      console.log('was not ready  @resetChatLogs')
+      await this.init()
+    }
+    await ChatRowModel.deleteMany({}) // all
+  }
+
+  async close() {
+    await mongoose.connection.close()
+    // await this.dbConn.close()
+    logger.logLine('closed DB')
   }
 
   async loadGame(storyName = 'office'): Promise<Game> {
+    if (!this.ready) {
+      console.log('was not ready @loadGame')
+      await this.init()
+    }
     const opts: LoadOptions = {
       pal: this.pal,
       storyName
@@ -70,8 +89,8 @@ class TestEnv {
   async getReply(input: string) {
     const evt = this.makeSceneEvent(input)
     const output = await BotRouter.anyEvent(evt.pal, input)
-    return this.pal.logTailText(2)
     // return output
+    return this.pal.chatLogger.tail(2)
   }
 
   // check tail of logs in text format
@@ -82,7 +101,7 @@ class TestEnv {
     await BotRouter.anyEvent(this.pal, input, 'text')
     // const actual = this.pal.lastOutput()
     const rex = new RegExp(output, 'im')
-    const logTail: string[] = this.pal.logTail(lines)
+    const logTail: string[] = this.pal.chatLogger.tail(lines)
 
     // search for any line to match
     let foundLine = false

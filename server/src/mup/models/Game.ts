@@ -40,8 +40,8 @@ class Game {
   // reset all the vars without reloading
   async reset() {
     Logger.log('game.reset')
-    this.story.reset()  // resets rooms
-    this.player.reset()
+    await this.story.reset()  // resets rooms
+    await this.player.reset()
     await this.pal.sendText('reset game. now in room:' + this.story.room.name)
   }
 

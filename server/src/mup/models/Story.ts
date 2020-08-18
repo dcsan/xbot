@@ -26,9 +26,9 @@ class Story {
 
   async reset(): Promise<Room> {
     Logger.log('story.reset')
-    this.rooms.forEach(async room =>
+    for (const room of this.rooms) {
       await room.reset()
-    )
+    }
     const startRoomName = this.doc.startRoom
     if (startRoomName) {
       const room: Room | undefined = this.findRoomByName(startRoomName)
@@ -43,18 +43,9 @@ class Story {
     return this.room
   }
 
-  // async getRoom(): Promise<Room> {
-  //   if (!this.currentRoom) {
-  //     this.currentRoom = await this.reset()
-  //   }
-  //   return this.currentRoom
-  // }
-  // get room(): Room {
-  //   if (!this.currentRoom) {
-  //     this.currentRoom = await this.reset()
-  //   }
-  //   return this.currentRoom
-  // }
+  findRoomByName(name) {
+    return (this.rooms.find(rm => rm.name === name))
+  }
 
   /**
    * called from Game
@@ -77,6 +68,7 @@ class Story {
     return this.storyName
   }
 
+
   buildStory(doc) {
     this.rooms = []
     doc.rooms.forEach((roomData) => {
@@ -85,17 +77,6 @@ class Story {
       this.rooms.push(room)
     })
     this.reset()
-  }
-
-  findRoomByName(roomName: string): Room | undefined {
-    if (!roomName) {
-      Logger.error('findRoom but no roomName given')
-    }
-    const found = this.rooms.find(room => room.name === roomName)
-    if (!found) {
-      Logger.logObj('cannot find room:', `name: ${roomName}`)
-    }
-    return found
   }
 
   async gotoRoom(roomName: string, evt?: SceneEvent) {
@@ -137,19 +118,6 @@ class Story {
     context.chat.postEphemeral(msg)
     // return msg
   }
-
-  // look(context) {
-  //   this.room.look(context)
-  // }
-
-  // examine(itemName, context) {
-  //   return this.room.examine(itemName, context)
-  // }
-
-  // things(context) {
-  //   this.room.things(context)
-  // }
-
 }
 
 export default Story

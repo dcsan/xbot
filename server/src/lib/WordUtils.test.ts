@@ -1,6 +1,7 @@
 import _ from 'lodash'
 
-import { Logger } from './Logger.js';
+import { MakeLogger } from './LogLib';
+const logger = new MakeLogger('WordUtilsTest')
 import WordUtils from './WordUtils'
 
 const log = console.log

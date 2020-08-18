@@ -37,13 +37,13 @@ const BotRouter = {
 
   async textEvent(pal: Pal): Promise<boolean | undefined> {
     const input: string = pal.channelEvent.message.text
-    pal.logInput({ who: 'user', text: input, type: 'text' })
+    pal.chatLogger.logInput({ who: 'user', text: input, type: 'text' })
     return await BotRouter.anyEvent(pal, input, 'text')
   },
 
   async actionEvent(pal: Pal): Promise<boolean | undefined> {
     const input: string = pal.channelEvent.action.value
-    pal.logInput({ who: 'user', text: input, type: 'event' })
+    pal.chatLogger.logInput({ who: 'user', text: input, type: 'event' })
     return await BotRouter.anyEvent(pal, input, 'action')
   },
 
