@@ -2,7 +2,8 @@
 
 // TODO - cleanup different log methods
 // get to just one common log method
-
+import fs from 'fs'
+import path from 'path'
 import yaml from 'js-yaml'
 import { MakeLogger } from '../../lib/LogLib'
 import Util from '../../lib/Util'
@@ -79,7 +80,7 @@ interface ChatLogItem {
 }
 
 // FIXME - do we need both class and interface?
-class ChatLine {
+class ChatItem {
   opts: ChatLogItem
 
   constructor(opts: ChatLogItem) {
@@ -91,24 +92,24 @@ class ChatLine {
     const padCount = `${this.opts.count}`.padStart(4, '0')
     // const padWho = `${this.opts.who}`.padEnd(6, ' ')
     const padWho = `${this.opts.who}`
-    const cursor = this.opts.who === 'user' ? '<=' : ' =>'
+    const cursor = this.opts.who === 'user' ? '< ' : ' >'
     const showType = this.opts.type === 'text' ? '' : `[${this.opts.type}]`
     return (`${padCount} ${padWho} ${cursor} ${this.opts.text} ${showType}`)
   }
 }
 
 class ChatLogger {
-  lines: ChatLine[]
+  items: ChatItem[]
 
   constructor() {
-    this.lines = []
+    this.items = []
   }
 
   log(opts: ChatLogItem) {
     // just keep count in here
-    opts.count = this.lines.length
-    const line = new ChatLine(opts)
-    this.lines.push(line)
+    opts.count = this.items.length
+    const line = new ChatItem(opts)
+    this.items.push(line)
     // console.log('logged:', line.output())
   }
 }
@@ -116,14 +117,14 @@ class ChatLogger {
 class Pal {
   channelEvent: ISlackEvent | MockChannel
   sessionId: string
-  logger: ChatLogger
+  chatLogger: ChatLogger
   lastInput?: string
 
   // FIXME - for slack middleware
   constructor(channelEvent: any) {
     this.channelEvent = channelEvent
     this.sessionId = channelEvent.payload?.channel || 'temp1234'
-    this.logger = new ChatLogger()
+    this.chatLogger = new ChatLogger()
     logger.log('new pal', { sessionId: this.sessionId })
   }
 
@@ -152,16 +153,17 @@ class Pal {
   }
 
   // for testing
-  sendInput(text) {
+  sendInput(text: string) {
     this.lastInput = text
+    this.chatLogger.log({ text, who: 'user', type: 'text' })
     if (this.channelEvent.message) {
       this.channelEvent.message.text = text
     }
   }
 
   lastOutput() {
-    logger.logObj('pal.logger', this.logger, true)
-    return this.logger.lines[this.logger.lines.length - 1]
+    logger.logObj('pal.logger', this.chatLogger, true)
+    return this.chatLogger.items[this.chatLogger.items.length - 1]
   }
 
   // reply(message) {
@@ -207,7 +209,7 @@ class Pal {
   async sendButtons(buttons: string[]) {
     const block = SlackBuilder.buttonsBlock(buttons)
     await this.sendBlocks([block])
-    this.logger.log({ who: 'bot', text: buttons.join(' | '), type: 'buttons' })
+    this.chatLogger.log({ who: 'bot', text: buttons.join(' | '), type: 'buttons' })
   }
 
   logBlocks(blob) {
@@ -227,18 +229,18 @@ class Pal {
               text = block.elements[0].text.text
               break
           }
-          this.logger.log({ who: 'bot', text, type: block.type })
+          this.chatLogger.log({ who: 'bot', text, type: block.type })
         })
       })
     } catch (err) {
       logger.warn('logging err', err)
-      this.logger.log({ who: 'bot', text: JSON.stringify(blob), blob, type: 'blob' })
+      this.chatLogger.log({ who: 'bot', text: JSON.stringify(blob), blob, type: 'blob' })
     }
   }
 
   // called for incoming events
   logInput(opts: ChatLogItem) {
-    this.logger.log(opts)
+    this.chatLogger.log(opts)
   }
 
   // log bot output messages
@@ -251,11 +253,11 @@ class Pal {
         this.logBlocks(msg)
         break
       case 'text':
-        this.logger.log({ type: 'text', who: 'bot', text: msg })
+        this.chatLogger.log({ type: 'text', who: 'bot', text: msg })
         break
       default:
         logger.log('unknown type to log', type)
-        this.logger.log({ who: 'bot', text: msg, type })
+        this.chatLogger.log({ who: 'bot', text: msg, type })
     }
   }
 
@@ -268,7 +270,7 @@ class Pal {
   }
 
   getLogs() {
-    return this.logger.lines
+    return this.chatLogger.items
   }
 
   // getLogLineText(index = -1) {
@@ -280,7 +282,7 @@ class Pal {
   // }
 
   logTail(lines: number = 1): string[] {
-    const logs = this.logger.lines.map(line => line.opts.text)
+    const logs = this.chatLogger.items.map(line => line.opts.text)
     const len = logs.length
     return logs.slice(len - lines, len)
   }
@@ -292,13 +294,24 @@ class Pal {
 
   async showLog() {
     const lines: string[] = []
-    this.logger.lines.forEach(line => {
+    this.chatLogger.items.forEach(line => {
       lines.push(line.output())
     })
     const text = lines.join('\n')
     logger.log('log', text)
     this.channelEvent.say(Util.quoteCode(text))
     return text
+  }
+
+  async writeLog() {
+    const hour = 1000 * 60 * 60
+    const ts = Math.round(Date.now() / hour)
+    const fullPath = path.join(process.cwd(), 'logs', `${ts}.log`)
+    const lines = this.chatLogger.items.map(item => `${this.sessionId} | ` + item.output())
+    const text = lines.join('\n')
+    console.log('written to', fullPath)
+    fs.writeFileSync(fullPath, text, 'utf8')
+    logger.log('wrote chatlog to', fullPath)
   }
 
 }

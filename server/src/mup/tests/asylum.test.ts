@@ -27,6 +27,7 @@ describe('asylum story test', () => {
         await testEnv.checkResponse(one, roomTest.room) // the button
       }
     }
+    testEnv.pal.writeLog()
 
   })
 
