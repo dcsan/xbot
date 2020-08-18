@@ -21,7 +21,7 @@
     "xtest:watch": "jest --watch",
     "start": "NODE_ENV=development node dist/index.js",
     "comment": "below pending",
-    "test": "jest",
+    "test": "jest --runInBand",
     "test:unit": "jest",
     "describe": "npm-scripts-info",
     "start:dev": "run-s clean build:main && run-p \"build:main -- -w\" \"mon\"",

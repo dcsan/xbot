@@ -4,15 +4,15 @@ const log = console.log
 import _ from 'lodash'
 
 beforeAll(async () => {
-  log('beforeAll')
+  // log('beforeAll')
   await DbConfig.init()
-  log('DONE.beforeAll')
+  // log('DONE.beforeAll')
 })
 
 afterAll(async () => {
-  log('afterAll')
+  // log('afterAll')
   await DbConfig.close()
-  log('DONE.afterAll')
+  // log('DONE.afterAll')
 })
 
 it('read and write one row to the DB', async () => {

@@ -1,10 +1,9 @@
-import _ from 'lodash'
-import { RexParser } from './RexParser';
+// import * as _ from "lodash"
+import { RexParser, ParserResult } from '../parser/RexParser';
 import { RouterService } from './RouterService'
 
 // import Game from '../models/Game.js';
 import { TestEnv } from '../../lib/TestUtils'
-import { ParserResult } from './RexParser'
 import { SceneEvent } from './RouterService'
 
 test('cheat command', async () => {
@@ -18,6 +17,6 @@ test('cheat command', async () => {
   expect(cheatInfo.roomActions).toBeDefined()
   expect(cheatInfo.actors).toBeDefined()
   // TODO - more detail for matcher?
-  expect(testEnv.pal.logTailText(1)).toMatch(/room/gim)
+  expect(testEnv.pal.chatLogger.tailText(1)).toMatch(/room/gim)
 })
 

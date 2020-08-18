@@ -23,7 +23,7 @@ const DbConfig = {
     try {
       await mongoose.connect(dbConfig.mongoUri, dbConfig.options)
       dbConn = mongoose.connection
-      console.log('OK dbConn.name=>', dbConn.name)
+      // console.log('OK dbConn.name=>', dbConn.name)
       // console.log(`Connected to database on Worker process: ${process.pid}`)
     } catch (error) {
       console.error('Connection error:', error.stack)

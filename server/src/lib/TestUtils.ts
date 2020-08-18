@@ -32,7 +32,13 @@ class TestEnv {
   async init() {
     this.dbConn = await DbConfig.init()
     this.ready = true
-    logger.logLine('got dbConn', this.dbConn.name)
+    // logger.logLine('got dbConn', this.dbConn.name)
+  }
+
+  async initStory(story: string = 'office', room: string = 'lobby') {
+    await this.init()
+    const game = await this.loadGame(story)
+    await game.story.gotoRoom(room)
   }
 
   async resetChatLogs() {
@@ -54,12 +60,12 @@ class TestEnv {
   async close() {
     await mongoose.connection.close()
     // await this.dbConn.close()
-    logger.logLine('closed DB')
+    // logger.logLine('closed DB')
   }
 
   async loadGame(storyName = 'office'): Promise<Game> {
     if (!this.ready) {
-      console.log('was not ready @loadGame')
+      // console.log('was not ready @loadGame')
       await this.init()
     }
     const opts: LoadOptions = {
@@ -98,7 +104,7 @@ class TestEnv {
     const evt = this.makeSceneEvent(input)
     const output = await BotRouter.anyEvent(evt.pal, input)
     // return output
-    return this.pal.chatLogger.tail(2)
+    return this.pal.chatLogger.tailText(2)
   }
 
   // check tail of logs in text format
