@@ -1,7 +1,7 @@
 // import { App, MessageEvent, SayFn, SlackEventMiddlewareArgs } from '@slack/bolt';
 import AppConfig from '../../lib/AppConfig'
 import { Pal, ISlackEvent } from '../pal/Pal'
-import { RexParser, ParserResult } from './RexParser'
+import { RexParser, ParserResult } from '../parser/RexParser'
 import { MakeLogger } from '../../lib/LogLib'
 import Util from '../../lib/Util'
 import Game from 'mup/models/Game'

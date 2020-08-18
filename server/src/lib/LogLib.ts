@@ -127,9 +127,13 @@ class MakeLogger {
   }
 
   // use to avoid jest noisy logging on console.log
-  writeLine(msg, obj = {}) {
+  logLine(msg, obj?) {
     if (obj) {
-      process.stdout.write(msg + JSON.stringify(obj, null, 2) + '\n')
+      if (typeof obj === 'string') {
+        process.stdout.write(msg + ' ' + obj + '\n')
+      } else {
+        process.stdout.write(msg + JSON.stringify(obj, null, 2) + '\n')
+      }
     } else {
       process.stdout.write(msg + '\n')
     }

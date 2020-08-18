@@ -26,7 +26,6 @@ describe('asylum story test', () => {
       for (const one of roomTest.tests) {
         await testEnv.checkResponse(one, roomTest.room) // the button
       }
-
     }
 
   })

@@ -2,18 +2,18 @@ import SlackBuilder from '../pal/SlackBuilder'
 import { MakeLogger } from '../../lib/LogLib'
 import Util from '../../lib/Util'
 
-import { RexParser, ParserResult } from '../routes/RexParser'
+import { RexParser, ParserResult } from '../parser/RexParser'
 import Room from './Room'
 import Story from './Story'
 import Actor from './Actor'
-import Item from './Item'
-import Player from './Player'
-const log = console.log
+// import Item from './Item'
+// import Player from './Player'
 import { Pal } from '../pal/Pal'
 import { SceneEvent } from '../MupTypes'
 import { GameFuncs } from '../scripts/GameFuncs'
-import BotRouter from '../routes/BotRouter'
+import BotRouter from '../routing/BotRouter'
 
+// const log = console.log
 const logger = new MakeLogger('GameObject')
 
 import {
@@ -335,6 +335,8 @@ class GameObject {
       return true
     } else {
       logger.log('if block failed', pres.parsed.groups)
+      // logger.logObj('if FAIL', { field, expect: value, actual }, true)
+      logger.logLine(`FAIL ${target}.${field} expect: ${value} actual: ${actual} `)
       return false
     }
   }

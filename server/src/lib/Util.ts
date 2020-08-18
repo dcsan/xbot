@@ -5,6 +5,8 @@ import yaml from 'js-yaml'
 import { Logger } from './LogLib'
 import * as _ from 'lodash'
 
+const cdnPath = path.join(__dirname, '../../cdn')
+
 const Util = {
 
   sleep(ms) {
@@ -71,6 +73,12 @@ const Util = {
 
   loadYamlFile(relPath) {
     const doc = yaml.safeLoad(fs.readFileSync(relPath, 'utf8'))
+    return doc
+  },
+
+  loadYamlFileFromCdn(relPath) {
+    const fullPath = path.join(cdnPath, relPath)
+    const doc = yaml.safeLoad(fs.readFileSync(fullPath, 'utf8'))
     return doc
   },
 

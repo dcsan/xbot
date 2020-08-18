@@ -8,7 +8,7 @@ import Game from './Game'
 import AppConfig from '../../lib/AppConfig'
 import { SceneEvent } from '../MupTypes'
 import { LoadOptions } from '../MupTypes'
-import { RexParser } from '../routes/RexParser'
+import { RexParser } from '../parser/RexParser'
 
 class Story {
   game: Game

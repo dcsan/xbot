@@ -1,7 +1,10 @@
 import { TestEnv } from '../../lib/TestUtils'
-import { ActionResult, SceneEvent } from '../MupTypes'
-import { ParserResult, RexParser } from '../routes/RexParser'
-import { HandleCodes } from './ErrorHandler'
+import {
+  ActionResult,
+  SceneEvent
+} from '../MupTypes'
+import { ParserResult, RexParser } from '../parser/RexParser'
+// import { HandleCodes } from './ErrorHandler'
 import { Logger } from '../../lib/LogLib'
 
 afterAll(() => {

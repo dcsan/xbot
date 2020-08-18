@@ -1,61 +1,10 @@
-import { RouterService } from './RouterService'
+import { RouterService } from '../routing/RouterService'
 import AppConfig from '../../lib/AppConfig'
 
-import Player from '../models/Player'
-
+// import Player from '../models/Player'
+// import { synData, ISyn } from './Synonyms'
 import { OneRule } from '../MupTypes'
 
-interface ReplacePair {
-  rex: RegExp
-  base: string
-  called: string
-}
-
-const ReplaceItems = [
-  {
-    base: 'take',
-    rex: /\b(t|take|get|wear|grab)\b/
-  },
-  {
-    base: 'goto',
-    rex: /\b(gt|g)\b/
-  },
-  {
-    base: 'examine',
-    rex: /^\b(x|look at|examine|look at the|read|inspect)\b/
-  },
-
-  // {
-  //   base: 'open',
-  //   rex: /\b(open)\b/
-  // },
-  {
-    base: 'shut',
-    rex: /^\b(shut|close)\b/
-  },
-  // {
-  //   base: 'robe',
-  //   rex: /\b(robe|clothes|gown)\b/
-  // },
-  // {
-  //   base: 'sandals',
-  //   rex: /\b(shoes|sandals)\b/
-  // },
-  // {
-  //   base: 'wardrobe',
-  //   rex: /\b(closet|cupboard|wardrobe|wr)\b/
-  // },
-  {
-    base: 'ask',
-    rex: /^\b(say|tell|scream|speak|shout|ask)\b/
-  },
-
-  // {
-  //   base: 'use',
-  //   rex: /\b(open|use)\b/
-  // }
-
-]
 
 interface RuleSpec {
   cname: string
@@ -66,6 +15,7 @@ interface RuleSpec {
 }
 
 const StaticRules: RuleSpec[] = [
+
   {
     cname: 'cheat',
     rex: /^cheat$/i,
@@ -215,26 +165,8 @@ const StaticRules: RuleSpec[] = [
     event: RouterService.userLeft
   },
 
-
-  // {
-  //   cname: 'examine',
-  //   rex: /^(x|examine|look)$/i,
-  //   event: RouterService.lookRoom,
-  //   type: 'command'
-  //   // eventName: 'startGame'
-  // },
-
-  // {
-  //   cname: 'examine',
-  //   rex: /^(x|examine|look|look at) (?<thing>\w+)$/i,
-  //   event: RouterService.lookThing,
-  //   type: 'command'
-  //   // eventName: 'startGame'
-  // },
-
 ]
 
 export {
-  StaticRules, OneRule, ReplaceItems,
-  ReplacePair, RuleSpec
+  StaticRules, OneRule, RuleSpec
 }

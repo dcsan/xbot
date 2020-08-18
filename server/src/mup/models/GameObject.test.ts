@@ -1,6 +1,6 @@
 import Game from './Game.js';
 import Room from './Room.js';
-import { RexParser, ParserResult } from '../routes/RexParser'
+import { RexParser, ParserResult } from '../parser/RexParser'
 import { TestEnv } from '../../lib/TestUtils';
 import { ActionData, SceneEvent } from '../MupTypes'
 import { Logger } from '../../lib/LogLib'

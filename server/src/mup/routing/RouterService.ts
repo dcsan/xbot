@@ -5,7 +5,7 @@ import { GameManager } from '../models/GameManager'
 import { Logger } from '../../lib/LogLib'
 import Util from '../../lib/Util'
 import { Pal } from '../pal/Pal'
-import { RexParser, ParserResult } from './RexParser'
+import { RexParser, ParserResult } from '../parser/RexParser'
 
 import { SceneEvent } from '../MupTypes'
 

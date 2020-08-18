@@ -8,7 +8,7 @@ import Story from './Story'
 import Util from '../../lib/Util'
 // import WordUtils from '../../lib/WordUtils'
 // import { Pal } from '../pal/Pal'
-import { ParserResult, RexParser } from '../routes/RexParser'
+import { ParserResult, RexParser } from '../parser/RexParser'
 
 const logger = new MakeLogger('room')
 

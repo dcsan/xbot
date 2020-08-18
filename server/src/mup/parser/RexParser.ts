@@ -3,7 +3,8 @@ import { MakeLogger } from '../../lib/LogLib'
 import WordUtils from '../../lib/WordUtils'
 // import RouterService from './RouterService'
 
-import { StaticRules, RuleSpec, OneRule, ReplaceItems, ReplacePair } from './ParserRules'
+import { StaticRules, OneRule } from './ParserRules'
+import { synData, ISyn } from './Synonyms'
 import { GameObject } from '../models/GameObject'
 
 import {
@@ -19,7 +20,7 @@ const ParserConfig = {
   verbs: 'take|move|get|open|wear|drink|rub|drop|lock|unlock'
 }
 
-let synPairsCache: ReplacePair[] = []
+let synPairsCache: ISyn[] = []
 
 const RexParser = {
 
@@ -395,7 +396,7 @@ const RexParser = {
     itemList.forEach(item => {
       if (item.doc.called) {
         const rex = RexParser.makeRexFromLine(item.doc.called)
-        const pair: ReplacePair = {
+        const pair: ISyn = {
           base: item.name,
           called: item.doc.called,
           rex
@@ -413,7 +414,7 @@ const RexParser = {
       logger.warn('no syn pairs for room')
     }
     let clean = input + ''
-    for (const rep of ReplaceItems) {
+    for (const rep of synData) {
       clean = clean.replace(rep.rex, rep.base)
     }
     // names of items in game
@@ -426,11 +427,10 @@ const RexParser = {
     return clean
   },
 
-
   findRule(usedText: string): OneRule | undefined {
     let rule = StaticRules.find((oneRule: OneRule) => {
       const result = oneRule.rex.test(usedText)
-      // logger.writeLine('test', { clean, rex: oneRule.rex, result })
+      // logger.logLine('test', { clean, rex: oneRule.rex, result })
       return result
     })
     if (!rule) {
@@ -470,7 +470,7 @@ const RexParser = {
     if (!rule) {
       logger.log('no command rule matched for inputs:', clean)  // could be a room action instead
     } else {
-      // logger.writeLine('matched rule ', rule)
+      // logger.logLine('matched rule ', rule)
       pres.rule = rule
       const parsed = rule.rex.exec(text)
       // log('parsed', clean, parsed)
@@ -486,7 +486,7 @@ const RexParser = {
         logger.warn(`rule did not rex.exec with text ${text}`, { rule, text })
       }
     }
-    // logger.writeLine('final pres', pres)
+    // logger.logLine('final pres', pres)
     logger.logObj('parseCommands.match', { pres })
     return pres
   },

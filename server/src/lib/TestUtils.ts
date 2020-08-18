@@ -6,11 +6,11 @@ import Game from '../mup/models/Game'
 import { GameManager } from '../mup/models/GameManager'
 import { Pal, MockChannel } from '../mup/pal/Pal'
 import { LoadOptions } from '../mup/MupTypes'
-import { RexParser } from '../mup/routes/RexParser'
+import { RexParser } from '../mup/parser/RexParser'
 import { SceneEvent, StoryTest } from '../mup/MupTypes'
-import { GameObject } from '../mup/models/GameObject'
+// import { GameObject } from '../mup/models/GameObject'
 import { MakeLogger } from './LogLib'
-import BotRouter from '../mup/routes/BotRouter'
+import BotRouter from '../mup/routing/BotRouter'
 
 const logger = new MakeLogger('testUtils')
 
@@ -93,11 +93,11 @@ class TestEnv {
       oneTest.checks.map(line => {
         const testOk = room?.checkOneCondition(line)
         if (!testOk) {
-          logger.writeLine(
+          logger.logLine(
             chalk.white.bgRed.bold('FAILED '), line
           )
         } else {
-          logger.writeLine(chalk.grey('passed item.check ' + line))
+          logger.logLine(chalk.grey('passed item.check ' + line))
         }
       })
     }

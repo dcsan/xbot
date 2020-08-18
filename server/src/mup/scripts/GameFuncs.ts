@@ -1,6 +1,6 @@
 import { SceneEvent, ActionData } from '../MupTypes'
 import { Logger } from '../../lib/LogLib'
-import BotRouter from '../routes/BotRouter'
+import BotRouter from '../routing/BotRouter'
 // JS functions invoked from script
 
 const GameFuncs = {
