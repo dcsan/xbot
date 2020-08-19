@@ -14,6 +14,7 @@ const ChatLogSchema = new mongoose.Schema({
   count: Number,
   minute: Number,
   hour: Number,
+  raw: Object,
   chatSession: Number
 }, {
   timestamps: true
@@ -30,6 +31,7 @@ interface IChatRow {
   count?: number
   minute?: number
   hour?: number
+  raw?: any
   chatSession?: number
 }
 
@@ -43,7 +45,7 @@ class ChatLogger {
   }
 
   async logRow(item: IChatRow) {
-    logger.logLine('logRow BG >> ', item.text)
+    // logger.logLine('logRow BG >> ', item.text)
     // just keep count in here
     const minDiv = 1000 * 60
     const minute = Math.floor(Date.now() / minDiv)
@@ -53,9 +55,8 @@ class ChatLogger {
     item.chatSession = this.chatSession
     const oneLog = new ChatRowModel(item)
     await oneLog.save()
-    logger.logLine('logRow OK << ', item.text)
+    // logger.logLine('logRow OK << ', item.text)
     this.rows.push(oneLog)
-    // console.log('logged:', oneLog)
   }
 
 
@@ -67,26 +68,44 @@ class ChatLogger {
 
   // have to use old style for each because of async iterators
   async logBlocks(blob: ISlackSection) {
+    // logger.logLine('logBlocks', blob)
     try {
       for (const att of blob.attachments) {
         for (const block of att.blocks) {
-          let text = block.type // initialize
+          let text = ''
           switch (block.type) {
             case 'image':
               text = block.title.text
               break
+
             case 'section':
               text = block.text.text
               break
+
             case 'actions':
-              text = block.elements[0].text.text
+              for (const elem of block.elements) {
+                // buttons have one extra level compared to context
+                text += `[${elem.text?.text}]`   // wrap buttons with [ ]
+              }
               break
+
+            case 'context':
+              for (const elem of block.elements) {
+                text += elem.text   // plain text
+              }
+              break
+
+            default:
+              text = 'unknown block type: ' + block.type
+              logger.warn(text, block)
+              break
+
           }
-          await this.logRow({ who: 'bot', text, type: block.type })
+          await this.logRow({ who: 'bot', text, type: block.type, raw: block })
         }
       }
     } catch (err) {
-      logger.warn('logging err', err)
+      logger.error('logging err', err)
       await this.logRow({ who: 'bot', text: JSON.stringify(blob), blob, type: 'blob' })
     }
   }

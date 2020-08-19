@@ -19,19 +19,18 @@ let testEnv: TestEnv
 
 beforeAll(async () => {
   testEnv = new TestEnv()
-  testEnv.init()  // open DB conn
+  await testEnv.init()  // open DB conn
+  await testEnv.resetChatLogs()
 })
 
 beforeEach(async () => {
   await testEnv.initStory('office', 'lobby')
-  expect(testEnv.dbConn._readyState).toBe(1)
+  // expect(testEnv.dbConn._readyState).toBe(1)
 })
 
-afterAll(async () => {
-  log('closeConn >')
-  await testEnv.close()
-  log('< closeConn DONE')
-})
+// afterAll(async () => {
+//   await testEnv.close()
+// })
 
 
 it('should handle verb target to get thing', async () => {
@@ -96,7 +95,7 @@ it('should allow generic get and take', async () => {
 
   expect(testEnv.game.player.hasItem('shirt')).toBe(false)
   expect(await testEnv.getReply('get shirt')).toMatch(/You take the shirt/i)
-  expect(await testEnv.getReply('inv')).toMatch(/shirt/i)
+  expect(await testEnv.getReply('inv')).toMatch(/\[Shirt\]/i)
 
   // you can look at items you have in inventory
   expect(await testEnv.getReply('x shirt')).toMatch(/a spare office shirt/i)

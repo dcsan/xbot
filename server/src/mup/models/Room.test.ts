@@ -19,11 +19,7 @@ beforeAll(async () => {
 
 
 afterAll(async () => {
-  // Logger.log('done')
-  // log('done')
-  process.stdout.write('done > Room.test')
   await testEnv.close()
-  // log('DONE afterAll')
 })
 
 

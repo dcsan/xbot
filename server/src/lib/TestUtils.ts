@@ -33,18 +33,10 @@ class TestEnv {
     if (this.ready) return
     this.dbConn = await DbConfig.open()
     this.ready = true
-    // logger.logLine('got dbConn', this.dbConn.name)
   }
 
   async close() {
-    if (this.dbConn._readyState === 1) {
-      // await mongoose.connection.close()
-      // console.log('closing dbConn')
-      await DbConfig.close()
-    } else {
-      // something closed it already
-      console.warn('skipped db conn close')
-    }
+    await DbConfig.close()
   }
 
   async initStory(story: string = 'office', room: string = 'lobby') {
@@ -55,7 +47,7 @@ class TestEnv {
 
   async resetChatLogs() {
     if (!this.ready) {
-      console.log('was not ready  @resetChatLogs')
+      console.warn('was not ready  @resetChatLogs')
       await this.init()
     }
     await ChatRowModel.deleteMany({}) // all
@@ -110,14 +102,14 @@ class TestEnv {
     const evt = this.makeSceneEvent(input)
     const output = await BotRouter.anyEvent(evt.pal, input)
     // return output
-    return this.pal.chatLogger.tailText(2)
+    return this.pal.chatLogger.tailText(3)
   }
 
   // check tail of logs in text format
   // tailCount to just check the last response
   // but usually we check last 2 or 3 to include images, buttons etc, in same reply
   async checkResponse(oneTest: StoryTest, roomName = 'room') {
-    const { input, output, lines = 2 } = oneTest
+    const { input, output, lines = 4 } = oneTest
     await BotRouter.anyEvent(this.pal, input, 'text')
     // const actual = this.pal.lastOutput()
     const rex = new RegExp(output, 'im')
@@ -132,7 +124,7 @@ class TestEnv {
       }
     }
     if (!foundLine) {
-      const msg = (
+      const errorMsg = (
         chalk.white.bgRed.bold('\n\n---- FAILED response:') +
         `\n   room:\t` + roomName +
         `\n  input:\t` + input +
@@ -141,14 +133,14 @@ class TestEnv {
         // '\n actual:\t' + JSON.stringify(logTail, null, 2) +
         '\n\n'
       )
-      process.stdout.write(msg)
+      process.stdout.write(errorMsg)
     }
 
     // @ts-ignore
     if (oneTest.checks) {
       const room = this.game?.story.room.roomObj
       // test conditionals
-      oneTest.checks.map(line => {
+      for (const line of oneTest.checks) {
         const testOk = room?.checkOneCondition(line)
         if (!testOk) {
           logger.logLine(
@@ -157,7 +149,7 @@ class TestEnv {
         } else {
           logger.logLine(chalk.grey('passed item.check ' + line))
         }
-      })
+      }
     }
 
     return foundLine

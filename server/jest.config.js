@@ -8,6 +8,9 @@ module.exports = {
     "ts",
     "tsx",
     "yaml"
+  ],
+  setupFilesAfterEnv: [
+    "./src/test/setup.ts",
+    // can have more setup files here
   ]
-
 };
