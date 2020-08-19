@@ -7,7 +7,7 @@ import { ParserResult, RexParser } from '../parser/RexParser'
 // import { HandleCodes } from './ErrorHandler'
 // import { Logger } from '../../lib/LogLib'
 
-const log = console.log
+// const log = console.log
 
 const testEnv = new TestEnv()
 

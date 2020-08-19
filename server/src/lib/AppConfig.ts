@@ -14,10 +14,10 @@ const AppConfig = {
     // this is run after module has been used elsewhere so not good
   },
 
-  toggleDebug(evt: SceneEvent) {
+  async toggleDebug(evt: SceneEvent) {
     const level = AppConfig.logLevel ? 0 : 5
     AppConfig.logLevel = level
-    evt.pal.sendText(` \`debugLevel: ${level} \` `)
+    await evt.pal.sendText(` \`debugLevel: ${level} \` `)
   },
 
   // TODO - merge props below

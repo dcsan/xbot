@@ -30,9 +30,21 @@ class TestEnv {
   }
 
   async init() {
-    this.dbConn = await DbConfig.init()
+    if (this.ready) return
+    this.dbConn = await DbConfig.open()
     this.ready = true
     // logger.logLine('got dbConn', this.dbConn.name)
+  }
+
+  async close() {
+    if (this.dbConn._readyState === 1) {
+      // await mongoose.connection.close()
+      // console.log('closing dbConn')
+      await DbConfig.close()
+    } else {
+      // something closed it already
+      console.warn('skipped db conn close')
+    }
   }
 
   async initStory(story: string = 'office', room: string = 'lobby') {
@@ -55,12 +67,6 @@ class TestEnv {
       const collection = mongoose.connection.collections[collectionName]
       await collection.deleteMany()
     }
-  }
-
-  async close() {
-    await mongoose.connection.close()
-    // await this.dbConn.close()
-    // logger.logLine('closed DB')
   }
 
   async loadGame(storyName = 'office'): Promise<Game> {

@@ -1,19 +1,37 @@
-// // const log = console.log
+// const log = console.log
 
-// import { DbConfig } from './DbConfig'
+import { DbConfig } from './DbConfig'
 
-// beforeAll(async () => {
-//   // log('beforeAll')
-//   await DbConfig.init()
-//   // log('DONE.beforeAll')
-// })
+let dbConn
 
-// afterAll(async () => {
-//   // log('afterAll')
-//   await DbConfig.close()
-//   // log('DONE.afterAll')
-// })
+beforeAll(async () => {
+  // log('beforeAll')
+  dbConn = await DbConfig.open()
+  // log('DONE.beforeAll')
+})
 
-// it('should open and close db conn', async () => {
-//   log('do test')
-// })
+afterAll(async () => {
+  // log('afterAll')
+  await DbConfig.close()
+  // log('DONE.afterAll')
+})
+
+
+// testing for these driver properties, a bit dodgy...
+// _readyState: 1,
+// _closeCalled: false,
+// _hasOpened: true,
+
+it('should open db conn in beforeAll', async () => {
+  expect(dbConn._readyState).toBe(1)
+  expect(dbConn._closeCalled).toBe(false)
+  expect(dbConn._hasOpened).toBe(true)
+
+})
+
+it('should close without hanging', async () => {
+  await DbConfig.close()
+  expect(dbConn._readyState).toBe(0)
+  expect(dbConn._closeCalled).toBe(true)
+  expect(dbConn._hasOpened).toBe(true)
+})

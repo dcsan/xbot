@@ -18,6 +18,7 @@
     "xdev": "NODE_ENV=development LOG_LEVEL=debug run-s build:main mon",
     "test:watch": "run-s clean build:main && run-p \"build:main -- -w\" \"test:unit -- --watch\"",
     "jest:watch": "run-s clean build:main jest -- --watch",
+    "jest:debug": "jest --runInBand --detectOpenHandles",
     "xtest:watch": "jest --watch",
     "start": "NODE_ENV=development node dist/index.js",
     "comment": "below pending",

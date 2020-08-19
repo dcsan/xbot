@@ -44,7 +44,7 @@ const RouterService = {
   },
 
   echoTest: async (evt: SceneEvent) => {
-    evt.pal.sendText('echo test back!')
+    await evt.pal.sendText('echo test back!')
   },
 
   getActionMatchesList(actions) {
@@ -69,7 +69,7 @@ const RouterService = {
     }
     Logger.logObj('cheatInfo', info)
     const blob = yaml.dump(info)
-    evt.pal.sendText(Util.quoteCode(blob))
+    await evt.pal.sendText(Util.quoteCode(blob))
     return info
   },
 

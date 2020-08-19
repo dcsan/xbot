@@ -3,7 +3,7 @@ import { MakeLogger } from '../../lib/LogLib'
 const _ = require('lodash')
 const logger = new MakeLogger('ChatLogger')
 
-import { IMessage } from './MockChannel'
+// import { IMessage } from './MockChannel'
 import { ISlackSection } from './SlackTypes'
 
 const ChatLogSchema = new mongoose.Schema({
@@ -43,6 +43,7 @@ class ChatLogger {
   }
 
   async logRow(item: IChatRow) {
+    logger.logLine('logRow BG >> ', item.text)
     // just keep count in here
     const minDiv = 1000 * 60
     const minute = Math.floor(Date.now() / minDiv)
@@ -52,6 +53,7 @@ class ChatLogger {
     item.chatSession = this.chatSession
     const oneLog = new ChatRowModel(item)
     await oneLog.save()
+    logger.logLine('logRow OK << ', item.text)
     this.rows.push(oneLog)
     // console.log('logged:', oneLog)
   }
@@ -90,23 +92,28 @@ class ChatLogger {
   }
 
   // get lines in text format
-  async getLines() {
-    const lines: string[] = []
-    this.rows.forEach((row: IChatRow) => {
-      let line = [
-        row.who,
-        row.text
-      ].join('\t|')
-      lines.push(line)
-    })
-    const text = lines.join('\n')
-    logger.log('log', text)
-  }
+  // async getLines() {
+  //   const lines: string[] = []
+  //   this.rows.forEach((row: IChatRow) => {
+  //     let line = [
+  //       row.who,
+  //       row.text
+  //     ].join('\t|')
+  //     lines.push(line)
+  //   })
+  //   const text = lines.join('\n')
+  //   logger.log('log', text)
+  // }
 
   // just the text from logs for testing
   tail(lineCount): string[] {
     const len = this.rows.length
-    const lines = this.rows.slice(len - lineCount, len)
+    let lines
+    if (lineCount === -1) {
+      lines = this.rows
+    } else {
+      lines = this.rows.slice(len - lineCount, len)
+    }
     return lines.map(line => line.text)
   }
 

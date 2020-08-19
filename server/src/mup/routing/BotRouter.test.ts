@@ -2,11 +2,12 @@ import { TestEnv } from '../../lib/TestUtils';
 import BotRouter from './BotRouter';
 import { RouterService } from './RouterService';
 // import { HandleCodes } from '../models/ErrorHandler';
-// import { Logger } from '../../lib/LogLib';
+import { MakeLogger } from '../../lib/LogLib';
+const logger = new MakeLogger('botrouter.test')
 
 // import { ActionResult } from '../MupTypes'
 
-// const log = console.log
+const log = logger.logLine
 
 let testEnv: TestEnv
 
@@ -18,19 +19,18 @@ let testEnv: TestEnv
 
 beforeAll(async () => {
   testEnv = new TestEnv()
+  testEnv.init()  // open DB conn
 })
 
 beforeEach(async () => {
   await testEnv.initStory('office', 'lobby')
-  // await setupStory()
-  // process.stdout.write('start > BotRouterTest\n')
+  expect(testEnv.dbConn._readyState).toBe(1)
 })
 
 afterAll(async () => {
+  log('closeConn >')
   await testEnv.close()
-  // Logger.log('done')
-  // log('done')
-  // process.stdout.write('done > BotRouterTest\n')
+  log('< closeConn DONE')
 })
 
 
@@ -69,12 +69,23 @@ it('should allow to examine something', async () => {
 
 
 it('should allow top level room command with actions', async () => {
-  await testEnv.initStory('office', 'lobby')
-  const door = await testEnv.game?.story.room.findThing('door')
+  // await testEnv.initStory('office', 'lobby')
+  // log('findItem >')
+  const door = await testEnv.game?.story.room.findThing('door')!
+  // log('found item:', door.cname)
+  // log('door.state', door.state)
   expect(door?.state).toBe('locked')  // initial
-  await testEnv.pal.sendInput('sesame')
+  // log('door.state', door.state)
+
+  // log('sendInput >')
+  // await testEnv.pal.sendInput('sesame')
+  await BotRouter.anyEvent(testEnv.pal, 'sesame')
+  // log('< sendInput.DONE')
+  // log('door.state >', door.state)
   // const handled = await BotRouter.textEvent(testEnv.pal)
 
+  // log('check rows >', testEnv.pal.chatLogger.rows)
+  // log('check tail >', door.state)
   expect(testEnv.pal.chatLogger.tailText(2)).toMatch(/The door opens/i)
 
   expect(door?.state).toBe('open')
@@ -82,7 +93,6 @@ it('should allow top level room command with actions', async () => {
 
 
 it('should allow generic get and take', async () => {
-  await testEnv.initStory('office', 'lobby')
 
   expect(testEnv.game.player.hasItem('shirt')).toBe(false)
   expect(await testEnv.getReply('get shirt')).toMatch(/You take the shirt/i)

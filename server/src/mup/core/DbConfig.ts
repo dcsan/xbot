@@ -18,7 +18,7 @@ let dbConn
 
 const DbConfig = {
 
-  async init() {
+  async open() {
     if (dbConn) return dbConn
     try {
       await mongoose.connect(dbConfig.mongoUri, dbConfig.options)
@@ -33,6 +33,7 @@ const DbConfig = {
   },
 
   async close() {
+    // console.log('dbConfig.close prev state', mongoose.connection)
     await mongoose.connection.close()
   }
 

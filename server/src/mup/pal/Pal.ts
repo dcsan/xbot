@@ -44,9 +44,9 @@ class Pal {
   }
 
   // for testing
-  sendInput(text: string) {
+  async sendInput(text: string) {
     this.lastInput = text
-    this.chatLogger.logInput({ text, type: 'input', who: 'user' })
+    await this.chatLogger.logInput({ text, type: 'input', who: 'user' })
     // if (this.channelEvent.message) {
     //   this.channelEvent.message.text = text
     // }
@@ -116,7 +116,7 @@ class Pal {
   }
 
   async showLog() {
-    const text = this.chatLogger.getLines()
+    const text = this.chatLogger.tailText(-1)
     this.channelEvent.say(Util.quoteCode(text))
     return text
   }

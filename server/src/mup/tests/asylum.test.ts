@@ -22,7 +22,7 @@ describe('asylum story test', () => {
 
   })
 
-  test('cell room basics', async () => {
+  xtest('cell room basics', async () => {
 
     const game = await env.loadGame('asylum')
     expect(game.story.doc.title).toMatch(/ESCAPE FROM/i)
@@ -36,7 +36,6 @@ describe('asylum story test', () => {
         await env.checkResponse(one, roomTest.room) // the button
       }
     }
-    // testEnv.pal.writeLog()
 
   })
 

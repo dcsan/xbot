@@ -1,11 +1,12 @@
 import { DbConfig } from '../core/DbConfig'
 import { ChatLogger, ChatRowModel } from './ChatLogger'
+import * as _ from 'lodash'
+
 const log = console.log
-import _ from 'lodash'
 
 beforeAll(async () => {
   // log('beforeAll')
-  await DbConfig.init()
+  await DbConfig.open()
   // log('DONE.beforeAll')
 })
 

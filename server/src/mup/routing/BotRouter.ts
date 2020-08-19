@@ -88,7 +88,7 @@ const BotRouter = {
       } else {
         msg = `I don't understand ${input}`
       }
-      evt.pal.sendText(msg)
+      await evt.pal.sendText(msg)
     } else {
       const msg = ({
         input,
