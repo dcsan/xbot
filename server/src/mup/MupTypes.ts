@@ -30,7 +30,7 @@ interface ActionBranch {
   drop?: string[]   // names
   before?: string[] // actions to call
   after?: string[]
-  invoke?: string // javascript function
+  callJS?: string // javascript function
 }
 
 interface ActionData {

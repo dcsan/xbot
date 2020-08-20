@@ -55,6 +55,16 @@ class Room extends GameObject {
     return this.doc.name
   }
 
+  get sortItems() {
+    const sorted = this.roomItems?.sort((a, b) => {
+      if (a.cname < b.cname) { return -1; }
+      if (a.cname > b.cname) { return 1; }
+      return 0;
+    })
+    logger.logObj('sorted', sorted)
+    return sorted
+  }
+
   // get player() {
   //   // not sure about this reaching back up the tree...
   //   return this.story?.game.player
@@ -143,7 +153,7 @@ class Room extends GameObject {
     }
     // FIXME!
     // @ts-ignore
-    reply.items = this.roomItems?.map((thing: Item) => {
+    reply.items = this.sortItems?.map((thing: Item) => {
       return {
         [thing.name]: {
           // state: thing.state,

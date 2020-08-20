@@ -157,7 +157,7 @@ class GameObject {
   getStateBlock() {
     const state = this.state
     let block: StateBlock = this.doc.states.find(one => one.name === state)
-    logger.logObj(`get state [${state}] block`, { state, block })
+    // logger.logObj(`get state [${state}] block`, { state, block })
 
     if (!block) {
       logger.warn('cant find block for state', { name: this.name, state })
@@ -336,7 +336,7 @@ class GameObject {
     } else {
       logger.log('if block failed', pres.parsed.groups)
       // logger.logObj('if FAIL', { field, expect: value, actual }, true)
-      logger.logLine(`FAIL ${target}.${field} expect: ${value} actual: ${actual} `)
+      // logger.logLine(`if / false ${target}.${field} expect: ${value} actual: ${actual} `)
       return false
     }
   }
@@ -354,11 +354,11 @@ class GameObject {
     await this.doTakeActions(branch, evt)
 
     // custom JS func?
-    if (branch.invoke) {
+    if (branch.callJS) {
       // call a JS script with evt
-      const funcName = branch.invoke
+      const funcName = branch.callJS
       if (GameFuncs[funcName]) {
-        GameFuncs[funcName](branch, evt)
+        await GameFuncs[funcName](branch, evt)
       } else {
         logger.warn('tried to call non-exist JSfunc:', funcName)
       }

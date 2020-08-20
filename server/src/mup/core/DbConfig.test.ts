@@ -6,7 +6,7 @@ let dbConn
 
 beforeAll(async () => {
   // log('beforeAll')
-  dbConn = await DbConfig.open()
+  dbConn = await DbConfig.init()
   // log('DONE.beforeAll')
 })
 

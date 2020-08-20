@@ -1,10 +1,13 @@
 import path from 'path'
+import { MakeLogger } from '../../lib/LogLib'
 import { TestEnv } from '../../lib/TestUtils'
 import Util from '../../lib/Util'
 
+const logger = new MakeLogger('asylum.test')
+
 let env = new TestEnv()
 
-beforeAll(async () => {
+beforeEach(async () => {
   await env.init()
   await env.resetChatLogs()
 })
@@ -29,9 +32,11 @@ describe('asylum story test', () => {
     const testList = Util.loadYamlFile(fp)
     // console.log('testList', testList)
     for (const roomTest of testList) {
-      console.log('testing room', roomTest.room)
-      await game.story.gotoRoom(roomTest.room)
+      // console.log('testing room', roomTest.room)
+      // await game.story.gotoRoom(roomTest.room)
+      let c = 0
       for (const one of roomTest.tests) {
+        c++
         await env.checkResponse(one, roomTest.room) // the button
       }
     }

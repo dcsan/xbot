@@ -102,7 +102,7 @@ const BotRouter = {
         handled,
         // from: 'router',
       })
-      logger.log('response:', msg)
+      // logger.log('handled')
     }
     return handled
   },

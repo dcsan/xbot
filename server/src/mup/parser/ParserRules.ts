@@ -57,7 +57,7 @@ const StaticRules: RuleSpec[] = [
 
   {
     cname: 'lookRoom',
-    rex: /^(look|l|x|look room|x room|look around|look at room)$/i,
+    rex: /^(look|l|x|examine|look room|x room|look around|look at room)$/i,
     event: RouterService.lookRoom,
     type: 'command'
   },

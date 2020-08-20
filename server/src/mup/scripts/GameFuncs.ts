@@ -17,10 +17,10 @@ const GameFuncs = {
       return false
     }
 
-    if (evt.pal.lastInput !== 'wash hands neck ears face') {
-      evt.pal.sendText("Hmm, that is not according to procedure.")
-      return false
-    }
+    // if (evt.pal.lastInput !== 'wash hands neck ears face') {
+    //   evt.pal.sendText("Hmm, that is not according to procedure.")
+    //   return false
+    // }
 
     evt.pal.sendText("All washed up")
 

@@ -47,6 +47,7 @@ const AppConfig = {
   CONFIG_APP: process.env.CONFIG_APP,
   logLevel: logLevel,
   storyName: process.env.storyName,
+  mongoUri: process.env.MONGO_URI,
 
   // verificationToken: process.env.VERIFICATION_TOKEN,
   // clientSigningSecret: process.env.CLIENT_SIGNING_SECRET,

@@ -31,7 +31,7 @@ class TestEnv {
 
   async init() {
     if (this.ready) return
-    this.dbConn = await DbConfig.open()
+    this.dbConn = await DbConfig.init()
     this.ready = true
   }
 
@@ -110,6 +110,7 @@ class TestEnv {
   // but usually we check last 2 or 3 to include images, buttons etc, in same reply
   async checkResponse(oneTest: StoryTest, roomName = 'room') {
     const { input, output, lines = 4 } = oneTest
+    logger.logLine(`\n----- ${input}`)
     await BotRouter.anyEvent(this.pal, input, 'text')
     // const actual = this.pal.lastOutput()
     const rex = new RegExp(output, 'im')
@@ -133,7 +134,11 @@ class TestEnv {
         // '\n actual:\t' + JSON.stringify(logTail, null, 2) +
         '\n\n'
       )
-      process.stdout.write(errorMsg)
+      logger.logLine(errorMsg)
+    } else {
+      const msg = '- OK: ' + input
+      const line = msg.padEnd(20, ' ')
+      logger.logLine(chalk.grey(line, ' => ' + output))
     }
 
     // @ts-ignore

@@ -6,7 +6,7 @@ const log = console.log
 
 beforeAll(async () => {
   // log('beforeAll')
-  await DbConfig.open()
+  await DbConfig.init()
   // log('DONE.beforeAll')
 })
 

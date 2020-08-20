@@ -1,7 +1,10 @@
 const mongoose = require('mongoose');
+import AppConfig from '../../lib/AppConfig'
+
+const mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/cbg'
 
 const dbConfig = {
-  mongoUri: 'mongodb://localhost/cbg',
+  mongoUri: AppConfig.mongoUri,
   options: {
     useUnifiedTopology: true,
     useNewUrlParser: true,
@@ -18,11 +21,12 @@ let dbConn
 
 const DbConfig = {
 
-  async open() {
+  async init() {
     if (dbConn) return dbConn
     try {
       await mongoose.connect(dbConfig.mongoUri, dbConfig.options)
       dbConn = mongoose.connection
+      console.log('connected to', dbConfig.mongoUri)
       // console.log('OK dbConn.name=>', dbConn.name)
       // console.log(`Connected to database on Worker process: ${process.pid}`)
     } catch (error) {
