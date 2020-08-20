@@ -48,6 +48,7 @@
   "exclude": [
     "src/**/*.test.ts",
     "src/*.test.ts",
+    "src/test",
     "node_modules"
   ],
   "compileOnSave": false

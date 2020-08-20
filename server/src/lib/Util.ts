@@ -2,12 +2,22 @@ import * as glob from 'glob'
 import fs from 'fs'
 import path from 'path'
 import yaml from 'js-yaml'
-import { Logger } from './LogLib'
 import * as _ from 'lodash'
+
+// FIXME circular deps
+// import { MakeLogger } from './LogLib'
+
+const logger = console
 
 const cdnPath = path.join(__dirname, '../../cdn')
 
 const Util = {
+  // logger: {} as any,
+
+  // init() {
+  //   console.log('create new logger')
+  //   Util.logger = new MakeLogger('util')
+  // },
 
   sleep(ms) {
     return new Promise((resolve) => {
@@ -30,19 +40,19 @@ const Util = {
     if (relPath.startsWith('text=')) return `https://via.placeholder.com/500x200/444488/CCC.png?${relPath}`
 
     const absPath = process.env.STATIC_SERVER + '/cdn/storydata/' + relPath + Util.cacheBust()
-    Logger.log('relPath', relPath, absPath)
+    logger.log('relPath', relPath, absPath)
     return absPath
   },
 
   loadStoryDir(storyName) {
-    Logger.log('loadStoryDir', storyName)
+    logger.log('loadStoryDir', storyName)
 
     const storyPath = `../../cdn/storydata/${storyName}/story`
     const fullPath = path.join(__dirname, storyPath)
     const pattern = `${fullPath}/*.yaml`
     const files = glob.sync(pattern)
-    // Logger.testLog('files', files)
-    // Logger.testLog('pattern', pattern)
+    // logger.testLog('files', files)
+    // logger.testLog('pattern', pattern)
 
     const docs: any[] = []
     let storyDoc = {
@@ -52,7 +62,7 @@ const Util = {
 
     for (const onePath of files) {
       try {
-        // Logger.testLog('loadOne', onePath)
+        // logger.testLog('loadOne', onePath)
         const doc = yaml.safeLoad(fs.readFileSync(onePath, 'utf8'))
         docs.push(doc)
         storyDoc.story = _.merge(storyDoc.story, doc.story)
@@ -67,7 +77,7 @@ const Util = {
       }
     }
 
-    // Logger.testLog('storyDoc', storyDoc)
+    // logger.testLog('storyDoc', storyDoc)
     return storyDoc
   },
 
@@ -78,6 +88,7 @@ const Util = {
 
   loadYamlFileFromCdn(relPath) {
     const fullPath = path.join(cdnPath, relPath)
+    logger.log('loadYaml', fullPath)
     const doc = yaml.safeLoad(fs.readFileSync(fullPath, 'utf8'))
     return doc
   },
@@ -85,7 +96,7 @@ const Util = {
   // FIXME add full regex non WS support
   safeName(name) {
     if (!name) {
-      Logger.warn('no name passed to safeName method')
+      logger.warn('no name passed to safeName method')
       return
     }
     name = name.toLowerCase()
@@ -112,9 +123,12 @@ const Util = {
   shouldIgnore(input): boolean {
     if (/^[-'"\.# `,>\\]/.test(input)) return true
     if (input.split(' ').length > 5) return true
+    if (/http/.test(input)) return true  // shared URLs - dont respond to
+    logger.log('not ignore', input)
     return false
   }
 
 }
+
 
 export default Util

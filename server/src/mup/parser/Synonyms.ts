@@ -11,7 +11,7 @@ interface ISyn {
 let synData: ISyn[] = []
 
 const loadData = () => {
-  const relPath = 'storyData/shared/synData.yaml'
+  const relPath = 'storydata/shared/synData.yaml'
   const data = Util.loadYamlFileFromCdn(relPath)
   synData = data
   // wrap words into a single line for faster regex replacement

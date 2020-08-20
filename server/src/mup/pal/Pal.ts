@@ -72,6 +72,21 @@ class Pal {
     await this.wrapSay({ text, type: 'text', who: 'bot' })
   }
 
+  async sendImage(text: string) {
+    await this.wrapSay({ text, type: 'image', who: 'bot' })
+  }
+
+  async sendUnfurl(text: string) {
+    const msg = {
+      text,
+      type: 'unfurl',
+      who: 'bot',
+      unfurl_links: false,
+      unfurl_media: false
+    }
+    await this.wrapSay(msg)
+  }
+
   // convenience to send an array of lines
   async sendList(list: string[]) {
     const text = list.join('\n')

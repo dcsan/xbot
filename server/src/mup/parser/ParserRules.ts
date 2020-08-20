@@ -152,6 +152,27 @@ const StaticRules: RuleSpec[] = [
   },
 
   {
+    rex: /^(img)$/,
+    cname: 'log',
+    type: 'command',
+    event: RouterService.sendImageLink
+  },
+
+  {
+    rex: /^(unf)$/,
+    cname: 'log',
+    type: 'command',
+    event: RouterService.sendUnfurl
+  },
+
+  {
+    rex: /^(imglink)$/im,
+    cname: 'log',
+    type: 'command',
+    event: RouterService.sendImageLink
+  },
+
+  {
     rex: /.* has joined/i,
     cname: 'userJoined',
     type: 'command',

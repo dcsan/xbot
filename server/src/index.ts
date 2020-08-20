@@ -7,6 +7,7 @@ console.time('import')
 import SlackRouter from './mup/pal/SlackRouter'
 console.timeEnd('import')
 
+import Util from './lib/Util'
 
 async function main() {
   // Start your app

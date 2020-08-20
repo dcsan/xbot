@@ -6,7 +6,7 @@ const WordUtils = {
 
   stripPunctuation(input) {
     // do NOT replace leading / just a few commands
-    const output = input.replace(/[\.#,\-\!:]/gim, '')
+    const output = input.replace(/[\.,\-\!]/gim, '')
     // const output = input.replace(/[^\w\s-]/gim, '')
     return output
   },

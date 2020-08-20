@@ -45,19 +45,28 @@ buildClient: clean fixPermissions
 buildServer:
 	cd server && npm run build
 
-buildBoth: buildClient buildServer
+# build client last as it adds files
+buildBoth: buildServer buildClient
 
 copyClient:
 	cp -r client/build server
 
 prep: clean buildBoth copyClient
 
+# --exclude src \
+
 sync:
 	rsync -avi --delete \
 		--exclude .git \
-		--exclude src \
 		--exclude coverage \
+		--exclude ./src/* \
+		--exclude *.ts \
 		--exclude .vscode \
+		--exclude .build \
+		--exclude .github \
+		--exclude coverage \
+		--exclude logs/*.log \
+		--exclude docs \
 		--exclude asylum-illustrations \
 		server/ ${login}:${deployDir}
 

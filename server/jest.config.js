@@ -10,7 +10,7 @@ module.exports = {
     "yaml"
   ],
   setupFilesAfterEnv: [
-    "./src/test/setup.ts",
+    "./src/test/setup.test.ts",
     // can have more setup files here
   ]
 };

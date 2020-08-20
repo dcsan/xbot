@@ -116,7 +116,50 @@ const RouterService = {
 
   userLeft: async (evt: SceneEvent) => {
     return await evt.pal.sendText('Goodbye!')
-  }
+  },
+
+  sendImageFooter: async (evt: SceneEvent) => {
+    await evt.pal.sendImage('https://cbg.rik.ai/cdn/storydata/asylum/items/album.jpg')
+    await evt.pal.sendText(':mag: <https://cbg.rik.ai/items/album|examine>')
+  },
+
+  sendUnfurl: async (evt: SceneEvent) => {
+    await evt.pal.sendUnfurl('<https://cbg.rik.ai/items/album| :mag: examine>')
+    // await evt.pal.sendText('<https://cbg.rik.ai/items/album|examine>')
+  },
+
+  sendImageLink: async (evt: SceneEvent) => {
+    const title = "Album"
+
+    const blocks = [
+      {
+        "type": "image",
+        "title": {
+          "type": "plain_text",
+          "text": title,
+          "emoji": true
+        },
+        "image_url": "https://cbg.rik.ai/cdn/storydata/asylum/items/album.jpg",
+        "alt_text": "marg"
+      },
+      {
+        "type": "actions",
+        "elements": [
+          {
+            "type": "button",
+            "text": {
+              "type": "plain_text",
+              "text": ":mag:  Examine",
+              "emoji": true
+            },
+            "value": "https://cbg.rik.ai/items/album"
+          }
+        ]
+      }
+    ]
+    await evt.pal.sendBlocks(blocks)
+  },
+
 
 }
 

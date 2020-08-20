@@ -65,3 +65,6 @@ storyPush:
 	cd cdn/storydata ; \
 	git pull; \
 	git add . && git commit -m "auto" && git push
+
+nginx-logs:
+	tail -f /var/log/nginx/*.log
