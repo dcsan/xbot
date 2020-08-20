@@ -27,8 +27,7 @@ const WordUtils = {
     input = WordUtils.stripPunctuation(input)
     const words = input.split(' ')
     const stops = [
-      'the', 'a', 'an', 'that', 'is',
-      'under', 'over', 'inside'
+      'the', 'a', 'an', 'that', 'is', 'of'
     ]
 
     const output = words.filter(w => {

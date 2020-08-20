@@ -22,6 +22,8 @@ const ChatLogSchema = new mongoose.Schema({
 
 const ChatRowModel = mongoose.model('ChatLog', ChatLogSchema)
 
+const logAll = false
+// const logAll = true
 
 interface IChatRow {
   who: string
@@ -45,7 +47,7 @@ class ChatLogger {
   }
 
   async logRow(item: IChatRow) {
-    logger.logLine('logRow BG >> ', item.text)
+    if (logAll) logger.logLine('logRow BG >> ', item.text)
     // just keep count in here
     const minDiv = 1000 * 60
     const minute = Math.floor(Date.now() / minDiv)
