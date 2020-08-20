@@ -1,7 +1,7 @@
 import chalk from 'chalk'
 const mongoose = require('mongoose');
 
-import AppConfig from './AppConfig'
+// import AppConfig from './AppConfig'
 // import Room from '../mup/models/Room'
 import Game from '../mup/models/Game'
 import { GameManager } from '../mup/models/GameManager'
@@ -16,6 +16,10 @@ import { DbConfig } from '../mup/core/DbConfig'
 const logger = new MakeLogger('testUtils')
 
 import { ChatRowModel } from '../mup/pal/ChatLogger'
+
+// show output during tests for "PASS" not juts fail
+// const logAll = true
+const logAll = false
 
 class TestEnv {
   pal: Pal
@@ -110,7 +114,7 @@ class TestEnv {
   // but usually we check last 2 or 3 to include images, buttons etc, in same reply
   async checkResponse(oneTest: StoryTest, roomName = 'room') {
     const { input, output, lines = 4 } = oneTest
-    logger.logLine(`\n----- ${input}`)
+    // logger.logLine(`\n----- ${input}`)
     await BotRouter.anyEvent(this.pal, input, 'text')
     // const actual = this.pal.lastOutput()
     const rex = new RegExp(output, 'im')
@@ -136,9 +140,11 @@ class TestEnv {
       )
       logger.logLine(errorMsg)
     } else {
-      const msg = '- OK: ' + input
-      const line = msg.padEnd(20, ' ')
-      logger.logLine(chalk.grey(line, ' => ' + output))
+      if (logAll) {
+        const msg = '--- OK: ' + input
+        const line = msg.padEnd(20, ' ')
+        logger.logLine(chalk.grey(line, ' => ' + output))
+      }
     }
 
     // @ts-ignore
@@ -149,10 +155,11 @@ class TestEnv {
         const testOk = room?.checkOneCondition(line)
         if (!testOk) {
           logger.logLine(
-            chalk.white.bgRed.bold('FAILED '), line
+            chalk.white.bgRed.bold('FAIL'),
+            `@ ${input} => ${line}`
           )
         } else {
-          logger.logLine(chalk.grey('passed item.check ' + line))
+          if (logAll) logger.logLine(chalk.grey('passed item.check ' + line))
         }
       }
     }

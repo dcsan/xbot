@@ -7,13 +7,13 @@ const GameFuncs = {
   async checkWashing(_action: ActionData, evt: SceneEvent): Promise<boolean> {
     const player = evt.game?.player!
     if (!player.hasItem('soap')) {
-      evt.pal.sendText("You don't have any soap!")
+      await evt.pal.sendText("You don't have any soap!")
       return false
     }
 
     const sink = evt.game?.story.room.findThing('sink')
     if (sink?.getProp('handle') !== 'yes') {
-      evt.pal.sendText("You can't turn that faucet handle like that!")
+      await evt.pal.sendText("You can't turn that faucet handle like that!")
       return false
     }
 
@@ -22,8 +22,7 @@ const GameFuncs = {
     //   return false
     // }
 
-    evt.pal.sendText("All washed up")
-
+    await evt.pal.sendText("All washed up")
     await BotRouter.anyEvent(evt.pal, 'task4', 'text')
 
     Logger.log('checkWashing')

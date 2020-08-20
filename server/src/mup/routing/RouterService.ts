@@ -12,10 +12,6 @@ import { SceneEvent } from '../MupTypes'
 
 const RouterService = {
 
-  lookRoom: async (evt: SceneEvent) => {
-    return await evt.game?.story.room.lookRoom(evt)
-  },
-
   // found: {route, parsed}
   goto: async (evt: SceneEvent) => {
     const roomName = evt.pres.parsed?.groups.roomName
@@ -25,6 +21,10 @@ const RouterService = {
 
   startGame: async (evt: SceneEvent) => {
     await evt.game?.restart(evt)
+  },
+
+  lookRoom: async (evt: SceneEvent) => {
+    return await evt.game?.story.room.lookRoom(evt)
   },
 
   lookRoomThing: async (evt: SceneEvent) => {

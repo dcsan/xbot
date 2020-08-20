@@ -387,6 +387,7 @@ class GameObject {
   // set props on this or other items
   async applySetProps(branch: ActionBranch, _evt): Promise<boolean> {
     if (!branch.setProps) return false
+    logger.logObj('setProps', branch.setProps)
     let found = false
     for (const line of branch.setProps) {
       const pres: ParserResult = RexParser.parseSetLine(line)

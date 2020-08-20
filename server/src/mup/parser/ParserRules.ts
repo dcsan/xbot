@@ -64,7 +64,7 @@ const StaticRules: RuleSpec[] = [
 
   // has to come after `look room`
   {
-    cname: 'lookRoomThing',
+    cname: 'lookAt',
     rex: /^(?<verb>look at|look|examine|x at|l|x) (?<target>\w+)$/i,
     event: RouterService.lookRoomThing,
     type: 'command'

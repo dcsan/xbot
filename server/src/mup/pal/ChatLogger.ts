@@ -45,7 +45,7 @@ class ChatLogger {
   }
 
   async logRow(item: IChatRow) {
-    // logger.logLine('logRow BG >> ', item.text)
+    logger.logLine('logRow BG >> ', item.text)
     // just keep count in here
     const minDiv = 1000 * 60
     const minute = Math.floor(Date.now() / minDiv)
