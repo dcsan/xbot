@@ -152,7 +152,7 @@ const RouterService = {
               "text": ":mag:  Examine",
               "emoji": true
             },
-            "value": "https://cbg.rik.ai/items/album"
+            "url": "https://cbg.rik.ai/items/album"
           }
         ]
       }

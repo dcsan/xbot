@@ -20,8 +20,8 @@ const data = [
   {
     cname: 'album',
     imgPath: '/cdn/storydata/asylum/items/album.jpg',
+    headCaption: '⬆︎ close this window to go back to the game',
     footCaption: 'You take the poster off the wall and flip it over...',
-    headCaption: '(close this window to go back to the game)',
     backText: [
       'Four good boys in turns did wash',
       ' ',
@@ -62,11 +62,24 @@ export function Item() {
     return <div key={'line-' + idx}>{line}</div>
   })
 
+  // @ts-ignore
+  // const opv = opacity.value
+
+  // @ts-ignore
+  // console.log('opacity', opacity.value)
+
+  // const vis = flipped ? 'visible' : 'hidden'
+  const vis = 'visible'
+
   return (
     <div onClick={flipIt}>
       <div className='brick' />
-      <div className='caption head' style={{ opacity: flipped ? 1 : 0 }}>{item?.headCaption}</div>
-      <div className='caption foot' style={{ opacity: flipped ? 1 : 0 }}>{item?.footCaption}</div>
+      <div className='caption head' >{item?.headCaption}</div>
+
+      {flipped &&
+        <div className='caption foot slider-left'>{item?.footCaption}</div>
+      }
+
       <a.img
         style={{ opacity: opacity.interpolate((o: any) => 1 - o), transform }}
         className='c'

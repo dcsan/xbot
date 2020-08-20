@@ -10,7 +10,6 @@
 }
 
 /* spring */
-
 html,
 body,
 #root {
@@ -22,6 +21,7 @@ body,
   user-select: none;
   background: #f0f0f0;
 }
+
 
 #root > div {
   width: 100%;
@@ -57,7 +57,6 @@ body,
   z-index: 5;
 }
 
-
 .brick {
   width: 100vw;
   height: 100vh;
@@ -68,25 +67,49 @@ body,
 
 .caption {
   position: fixed;
-  left: 0px;
+  /* left: 0px; */
   width: 100vw;
   /* height: 100%; */
-  padding: 10px;
+  padding: 15px;
   font-size: 5vw;
   background: rgba(0,0,0,0.75);
   color: white;
-  z-index: 5;
+  z-index: 40;
   text-align: center;
+}
+
+.caption.foot {
+  left: 0px;
+  bottom: 0px;
+  text-align: left;
 }
 
 .caption.head {
   top: 0px;
   font-size: 3vw;
+  background: rgba(0,0,0);
+  text-align: left;
 }
 
-.caption.foot {
-  bottom: 0px;
+.slider-left {
+  animation-name: slide-anim;
+  animation-duration: 1s;
+  animation-timing-function: ease-out;
 }
+
+@keyframes slide-anim {
+  from {
+    opacity: 0;
+    transform: translateY(150px);
+    /* height: 20px; */
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0px);
+    /* height: 120px; */
+  }
+}
+
 
 .item-inset {
   position: relative;
@@ -107,24 +130,6 @@ body,
   z-index: 5;
 }
 
-
-.item-bg {
-  position: fixed;
-  width: 100vw;
-  height: 100vh;
-  background: rgb(0.3, 0.2, 0.2);
-  z-index: 1;
-}
-
-.note-mini {
-  position: relative;
-  top: 26vh;
-  left: 24vh;
-  height: 10vh;
-  width: 10vh;
-  padding: 10px;
-  z-index: 20;
-}
 
 .clickable {
   border: 1px dashed red;
