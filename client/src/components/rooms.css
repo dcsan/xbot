@@ -1,4 +1,3 @@
-
 .wrapper {
   position: fixed;
   top: 0;
@@ -8,6 +7,93 @@
   overflow-y: hidden;
   overflow-x: scroll;
   /* border: 5px solid red; */
+}
+
+/* spring */
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  user-select: none;
+  background: #f0f0f0;
+}
+
+#root > div {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.c {
+  border: 2px solid #ccc;
+  position: absolute;
+  /* max-width: 500px;
+  max-height: 500px; */
+  width: 95vw;
+  height: 95vw;
+  cursor: pointer;
+  will-change: transform, opacity;
+  z-index: 10;
+}
+
+.album-back {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* padding: 20px; */
+  background: #444;
+  color: white;
+  font-size: 5vw;
+  line-height: 175%;
+  z-index: 5;
+}
+
+
+.brick {
+  width: 100vw;
+  height: 100vh;
+  background-color: #DFDBE5;
+  background-image: url("data:image/svg+xml,%3Csvg width='42' height='44' viewBox='0 0 42 44' xmlns='http://www.w3.org/2000/svg'%3E%3Cg id='Page-1' fill='none' fill-rule='evenodd'%3E%3Cg id='brick-wall' fill='%239C92AC' fill-opacity='0.4'%3E%3Cpath d='M0 0h42v44H0V0zm1 1h40v20H1V1zM0 23h20v20H0V23zm22 0h20v20H22V23z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  z-index: 1;
+}
+
+.caption {
+  position: fixed;
+  left: 0px;
+  width: 100vw;
+  /* height: 100%; */
+  padding: 10px;
+  font-size: 5vw;
+  background: rgba(0,0,0,0.75);
+  color: white;
+  z-index: 5;
+  text-align: center;
+}
+
+.caption.head {
+  top: 0px;
+  font-size: 3vw;
+}
+
+.caption.foot {
+  bottom: 0px;
+}
+
+.item-inset {
+  position: relative;
+  width: 80vw;
+  z-index: 20;
+  top: 50px;
+  z-index: 30;
 }
 
 .center {
@@ -21,17 +107,6 @@
   z-index: 5;
 }
 
-.caption {
-  position: fixed;
-  bottom: 20px;
-  left: 0px;
-  width: 100vw;
-  padding: 15px;
-  font-size: 36px;
-  color: white;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 10;
-}
 
 .item-bg {
   position: fixed;
@@ -58,14 +133,6 @@
 .clickable:hover {
   border: 1px dashed red;
   background-color: white;
-}
-
-
-.item-full {
-  position: relative;
-  width: 100vw;
-  z-index: 20;
-  top: 50px;
 }
 
 .chest-mini {

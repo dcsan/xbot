@@ -22,22 +22,17 @@ import './App.css'
 export default function BasicExample() {
   return (
     <Router>
-        <Switch>
-          <Route exact path="/">
-            <Home />
-          </Route>
-          <Route path="/about">
-            <About />
-          </Route>
-          <Route path="/rooms/:roomName">
-            <Room />
-          </Route>
-
-          <Route path="/items/:itemName">
-            <Item />
-          </Route>
-
-        </Switch>
+      <Switch>
+        <Route exact path="/">
+          <Home />
+        </Route>
+        <Route path="/about">
+          <About />
+        </Route>
+        <Route path="/items/:itemName">
+          <Item />
+        </Route>
+      </Switch>
     </Router>
   );
 }
@@ -47,7 +42,7 @@ export default function BasicExample() {
 
 function Home() {
   return (
-    <div>
+    <div className='content'>
       <h2>Home</h2>
 
       <ul>
@@ -56,9 +51,6 @@ function Home() {
         </li>
         <li>
           <Link to="/about">About</Link>
-        </li>
-        <li>
-          <Link to="/rooms/office">office</Link>
         </li>
       </ul>
 
