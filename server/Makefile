@@ -58,8 +58,10 @@ testRouter:
 testAsylum:
 	npx jest --watch asylum
 
-commitStories:
-	cd cdn/storydata; \
-	git add . ; \
-	git commit -m "auto" ; \
-	git push ; \
+storyPull:
+	cd cdn/storydata && git pull
+
+storyPush:
+	cd cdn/storydata ; \
+	git pull; \
+	git add . && git commit -m "auto" && git push

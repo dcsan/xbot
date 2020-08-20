@@ -79,11 +79,3 @@ testDeploy:
 
 testLocalImages:
 	curl http://localhost:33010/cdn/assets/items/key.png
-
-storyPull:
-	cd server/cdn/storydata && git pull
-
-storyPush:
-	cd server/cdn/storydata ; \
-	git pull; \
-	git add . && git commit -m "auto" && git push
