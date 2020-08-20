@@ -1,10 +1,11 @@
 import AppConfig from '../../lib/AppConfig'
-
+import path from 'path'
 import { App, MessageEvent, ExpressReceiver, Middleware } from '@slack/bolt';
 import BotRouter from '../../mup/routing/BotRouter'
 import { MakeLogger } from '../../lib/LogLib'
 import { PalManager } from './PalManager'
 import { Pal, ISlackEvent } from './Pal'
+const express = require('express')
 
 const logger = new MakeLogger('SlackRouter')
 
@@ -28,6 +29,7 @@ const SlackRouter = {
     }
 
     // app.use(morgan('tiny'));
+    // custom middleware to log events
     async function eventLogger(req) {
       if (req.body.command) {
         // logger.log('req', req)
@@ -49,6 +51,16 @@ const SlackRouter = {
       await req.next();
     }
     app.use(eventLogger)
+
+    // doesnt work
+    // app.use('/cdn', express.static('/cdn'))
+    receiver.router.get('/cdn/*', (req, res) => {
+      logger.log('cdn GET', req.path)
+      const fp = path.join(__dirname, '../../../', req.path)
+      res.contentType('image/jpeg');
+      res.sendFile(fp);
+    })
+
 
     // testing
     app.message(/helloSlack/i, async ({ message, say }) => {
