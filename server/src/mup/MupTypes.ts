@@ -12,6 +12,8 @@ interface LoadOptions {
 export interface StateBlock {
   name: string
   imageUrl: string
+  webUrl: string
+  webLinkText: string
   short: string
   long: string
   reply?: string

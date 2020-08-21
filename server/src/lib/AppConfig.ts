@@ -48,6 +48,7 @@ const AppConfig = {
   logLevel: logLevel,
   storyName: process.env.storyName,
   mongoUri: process.env.MONGO_URI,
+  webDomain: process.env.STATIC_SERVER || "https://cbg.rik.ai",
 
   // verificationToken: process.env.VERIFICATION_TOKEN,
   // clientSigningSecret: process.env.CLIENT_SIGNING_SECRET,

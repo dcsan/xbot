@@ -192,6 +192,10 @@ class GameObject {
       palBlocks.push(SlackBuilder.imageBlock(stateInfo, this))
     }
 
+    if (stateInfo.webUrl) {
+      palBlocks.push(SlackBuilder.webLink(stateInfo, this))
+    }
+
     const text = stateInfo.long || stateInfo.short || stateInfo.reply
     if (text) {
       palBlocks.push(

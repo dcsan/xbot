@@ -104,6 +104,26 @@ const SlackBuilder = {
     }
   },
 
+  // link to the item on the web with a button beneath
+  webLink(doc: StateBlock, thing: GameObject) {
+    const fullUrl = AppConfig.webDomain + doc.webUrl
+    const linkText = doc.webLinkText || `:mag:  Examine ${thing.name}`
+    return {
+      "type": "actions",
+      "elements": [
+        {
+          "type": "button",
+          "text": {
+            "type": "plain_text",
+            "text": linkText,
+            "emoji": true
+          },
+          "url": fullUrl
+        }
+      ]
+    }
+  },
+
   // imageBox(opts) {
   //   return {
   //     "type": "section",
