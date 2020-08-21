@@ -1,4 +1,4 @@
-import { Logger } from '../../lib/LogLib'
+import { MakeLogger } from '../../lib/LogLib'
 import Util from '../../lib/Util'
 import SlackBuilder from '../pal/SlackBuilder'
 import Room from './Room'
@@ -9,6 +9,8 @@ import AppConfig from '../../lib/AppConfig'
 import { SceneEvent } from '../MupTypes'
 import { LoadOptions } from '../MupTypes'
 import { RexParser } from '../parser/RexParser'
+
+const logger = new MakeLogger('Story')
 
 class Story {
   game: Game
@@ -25,7 +27,7 @@ class Story {
   }
 
   async reset(): Promise<Room> {
-    Logger.log('story.reset')
+    logger.log('story.reset')
     for (const room of this.rooms) {
       await room.reset()
     }
@@ -33,7 +35,7 @@ class Story {
     if (startRoomName) {
       const room: Room | undefined = this.findRoomByName(startRoomName)
       if (!room) {
-        Logger.fatal('cannot find start room:' + startRoomName, {})
+        logger.fatal('cannot find start room:' + startRoomName, {})
       } else {
         this.room = room
       }
@@ -64,7 +66,7 @@ class Story {
     this.doc = fullDoc.story
     this.buildStory(fullDoc)
     const msg = 'reloaded' + this.storyName
-    Logger.log(msg)
+    logger.log(msg)
     return this.storyName
   }
 
@@ -114,7 +116,7 @@ class Story {
   hint(context) {
     const block = SlackBuilder.textBlock(":bulb: try reading the note")
     const msg = SlackBuilder.wrapBlocks([block])
-    Logger.log('hint', msg)
+    logger.log('hint', msg)
     context.chat.postEphemeral(msg)
     // return msg
   }

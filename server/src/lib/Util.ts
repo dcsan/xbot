@@ -113,6 +113,7 @@ const Util = {
 
   // strip out elements with undef values for cleaner YAML dumps
   removeEmptyKeys(obj) {
+    if (!obj) return {}  // fixme - handle better?
     Object.keys(obj).forEach(key => {
       // if (obj[key] && typeof obj[key] === 'object') Util.removeEmptyKeys(obj[key]);
       if (obj[key] === undefined) delete obj[key];

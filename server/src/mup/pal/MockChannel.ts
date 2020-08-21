@@ -12,6 +12,12 @@ interface IMessage {
 // TODO refactor
 class MockChannelEvent implements ISlackEvent {
   store: any[]
+  user?: {
+    id: string
+    username: string
+    name: string
+    team_id: string
+  }
   payload: {
     text: string
     channel: string // sessionId

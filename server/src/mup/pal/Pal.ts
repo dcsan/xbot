@@ -39,9 +39,10 @@ class Pal {
 
   // when a new event comes in to the same channel we just update the event
   // but keep the same Pal object for things like linked game/session/internal convoId
-  event(slackEvent: any) {
+  event(slackEvent: ISlackEvent) {
     // TODO keep a list of events?
     this.slackEvent = slackEvent
+    logger.logObj('new slackEvent.user', slackEvent)
   }
 
   // for testing
@@ -69,7 +70,17 @@ class Pal {
     }
   }
 
+  processTemplate(text: string): string {
+    const username = this.slackEvent.user?.username
+    logger.log('processTemplate user:', this.slackEvent.user)
+    if (username) {
+      text = text.replace(/$username/gi, username)
+    }
+    return text
+  }
+
   async sendText(text: string) {
+    text = this.processTemplate(text)
     await this.wrapSay({ text, type: 'text', who: 'bot' })
   }
 

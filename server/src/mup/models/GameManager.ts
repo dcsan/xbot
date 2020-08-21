@@ -1,7 +1,9 @@
 import { Pal } from '../pal/Pal'
 import Game from './Game'
-import { Logger } from '../../lib/LogLib'
+import { MakeLogger } from '../../lib/LogLib'
 import { LoadOptions } from 'mup/MupTypes'
+
+const logger = new MakeLogger('GameManager')
 
 let GameList: Game[] = []
 
@@ -16,8 +18,8 @@ const GameManager = {
       GameList[sid] = game
       // dont reset existing games just new ones
       await game.reset()
-      Logger.log('new game', sid)
-      Logger.log('init routes gameObj.story', game.story.room.name)
+      logger.log('new game', sid)
+      logger.log('init routes gameObj.story', game.story.room.name)
     }
     return game
   },

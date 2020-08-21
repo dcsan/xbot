@@ -18,6 +18,12 @@ interface ISlackEvent {
   message: IMessage // input message from user
   store: any[]
   sessionId: string
+  user?: {
+    id: string
+    username: string
+    name: string
+    team_id: string
+  }
   action: {
     value?: string,
     text?: {

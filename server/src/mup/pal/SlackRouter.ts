@@ -84,7 +84,10 @@ const SlackRouter = {
         'store',
         'sessionId',
         'action',
-        'payload'
+        'payload',
+        'user',
+        'body.channel',  // team, channel
+        'body.team'  // team, channel
       ])
 
       const pal: Pal = PalManager.findPal(slackEvent, args.event.channel)
@@ -97,7 +100,7 @@ const SlackRouter = {
     app.action(/.*/, async (slackEvent: any) => {
       logger.startLoop('action')
       slackEvent.ack();
-      logger.logObj('action', slackEvent)
+      // logger.logObj('action', slackEvent)
       const pal: Pal = PalManager.findPal(slackEvent)
       logger.logObj('action', slackEvent.action)
       await BotRouter.actionEvent(pal)
