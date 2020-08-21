@@ -53,13 +53,11 @@ const BotRouter = {
   },
 
   async anyEvent(pal: Pal, input: string, _eventType: string = 'text'): Promise<boolean | undefined> {
-    logger.log('anyEvent.input:', input)
-    // if (input[0])
-
     if (Util.shouldIgnore(input)) {
-      logger.log('ignoring')
+      logger.log('anyEvent ignoring input:', input)
       return true
     }
+    logger.log('anyEvent.input: ', input)
 
     // const { message: MessageEvent, say: SayFn } = slackEvent
     const clean = WordUtils.basicNormalize(input)
