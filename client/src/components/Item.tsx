@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import { useSpring, animated as a } from 'react-spring'
+import { useSpring, animated } from 'react-spring'
 // import './styles.css'
 
 import {
@@ -20,7 +20,7 @@ const data = [
   {
     cname: 'album',
     imgPath: '/cdn/storydata/asylum/items/album.jpg',
-    headCaption: '⬆︎ close this window to go back to the game',
+    headCaption: '⬆️ close this window to go back to the game',
     footCaption: 'You take the poster off the wall and flip it over...',
     backText: [
       'Four good boys in turns did wash',
@@ -80,15 +80,15 @@ export function Item() {
         <div className='caption foot slider-left'>{item?.footCaption}</div>
       }
 
-      <a.img
+      <animated.img
         style={{ opacity: opacity.interpolate((o: any) => 1 - o), transform }}
         className='c'
         src={cdnPath(item!.imgPath)} alt={item!.headCaption}
       />
 
-      <a.div className="c album-back" style={{ opacity, transform: transform.interpolate(t => `${t} rotateX(180deg)`) }}>
+      <animated.div className="c album-back" style={{ opacity, transform: transform.interpolate((t: any) => `${t} rotateX(180deg)`) }}>
         {backLines}
-      </a.div>
+      </animated.div>
     </div>
   )
 

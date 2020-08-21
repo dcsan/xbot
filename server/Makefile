@@ -12,11 +12,11 @@ dev-slack:
 # verbose
 proxy:
 	echo "--- connecting ---"
+	ssh -v -R 80:localhost:33010 xbot2@ssh.localhost.run
 	# ssh -v -R 80:localhost:33010 xbot@ssh.localhost.run &2> logs/proxy.log &
 	# ssh -v -R 80:localhost:33010 xbot@ssh.localhost.run | grep "Connect to" | xargs echo "$1/api/slack/webhooks"
-	ssh -v -R 80:localhost:33010 xbot2@ssh.localhost.run | grep "Connect to"
+	# ssh -v -R 80:localhost:33010 xbot2@ssh.localhost.run | grep "Connect to"
 	# ssh -v -R 80:localhost:33010 xbot@ssh.localhost.run
-
 	# grep "Connect to" logs/proxy.log | xargs "$1/api/slack/webhooks"
 	# sleep 2
 	# echo "--- done ---"

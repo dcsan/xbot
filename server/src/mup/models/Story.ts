@@ -84,6 +84,9 @@ class Story {
   async gotoRoom(roomName: string, evt?: SceneEvent) {
 
     const room = this.findRoomByName(roomName)
+    if (!room) {
+      logger.warn('cannot find goto room', roomName)
+    }
     if (room) {
       this.room = room
       RexParser.cacheNames(room.roomItems, room.name)
