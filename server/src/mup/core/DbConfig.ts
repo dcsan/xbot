@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 import AppConfig from '../../lib/AppConfig'
 
-const mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/cbg'
+// const mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/cbg'
 
 const dbConfig = {
   mongoUri: AppConfig.mongoUri,
@@ -26,9 +26,7 @@ const DbConfig = {
     try {
       await mongoose.connect(dbConfig.mongoUri, dbConfig.options)
       dbConn = mongoose.connection
-      console.log('connected to', dbConfig.mongoUri)
-      // console.log('OK dbConn.name=>', dbConn.name)
-      // console.log(`Connected to database on Worker process: ${process.pid}`)
+      // console.log(`Connected to db ${AppConfig.mongoUri} on Worker process: ${process.pid}`)
     } catch (error) {
       console.error('Connection error:', error.stack)
       // process.exit(1)

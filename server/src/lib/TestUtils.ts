@@ -83,8 +83,9 @@ class TestEnv {
   }
 
   getMockPal(): Pal {
-    const mockChannel = new MockChannel('testMockSession1234')
-    const pal = new Pal(mockChannel)
+    const mockChannel = new MockChannel()
+    const mockSessionId = 'mockSessionId-1234'
+    const pal = new Pal(mockChannel, mockSessionId)
     return pal
   }
 

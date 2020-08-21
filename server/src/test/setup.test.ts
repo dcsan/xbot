@@ -1,5 +1,7 @@
 import { DbConfig } from '../mup/core/DbConfig'
 
+// this is used to wrap all the other tests and close the DbConn after the whole suite has run
+
 let dbConn
 
 beforeAll(async () => {
@@ -13,3 +15,9 @@ afterAll(async () => {
   await DbConfig.close()
   // log('DONE.afterAll')
 })
+
+
+it('should setup and tear down tests', () => {
+  expect(true).toBe(true)
+})
+

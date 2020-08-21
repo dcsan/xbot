@@ -1,4 +1,5 @@
-// FIXME - maybe not needed
+// a mock channel event for testing
+// simulates the SlackEvent or other adapter incoming event
 
 import { ISlackEvent } from './SlackTypes'
 
@@ -9,9 +10,10 @@ interface IMessage {
 
 // actually based on a single Event, we create a channel
 // TODO refactor
-class MockChannel implements ISlackEvent {
+class MockChannelEvent implements ISlackEvent {
   store: any[]
   payload: {
+    text: string
     channel: string // sessionId
   }
 
@@ -22,13 +24,19 @@ class MockChannel implements ISlackEvent {
   constructor(sid: string = 'mock1234') {
     this.store = []
     this.sessionId = sid
-    this.message = { text: '' }   // nothing coming in yet
-    this.action = { value: '' }
+    this.message = {
+      text: ''
+    }   // nothing coming in yet
+    this.action = {
+      value: ''
+    }
     this.payload = {
+      text: '',
       channel: sid
     }
   }
 
+  // the adapter should log this first
   say(msg) {
     this.store.push(msg)
     // logger.log('mock.say', msg)
@@ -36,4 +44,4 @@ class MockChannel implements ISlackEvent {
 
 }
 
-export { MockChannel, IMessage }
+export { MockChannelEvent as MockChannel, IMessage }

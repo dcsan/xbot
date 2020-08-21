@@ -1,10 +1,11 @@
 import { RexParser, ParserResult } from './RexParser';
-// import { Logger } from '../../lib/LogLib';
+// import { MakeLogger } from '../../lib/LogLib';
 
 // const log = console.log
 
-const nounList = ['key', 'chest', 'table lamp', 'door']
-const verbList = ['open', 'rub', 'wipe', 'wash']
+// these are replaced by synData?
+const nounList = ['key', 'chest', 'lamp', 'door']
+const verbList = ['open', 'rub', 'wipe', 'wash', 'use']
 
 it('should reduce vocab', async () => {
   const input = 'get the robe'
@@ -20,17 +21,25 @@ it('parse get command', () => {
 })
 
 // noun phrase command
-it('should parse verb target into parsed.pos', () => {
+it('should parse common "use" verbs into parsed.verb as "use" ', () => {
   const pres: ParserResult = RexParser.parseNounVerbs('open the chest', nounList)
+  expect(pres.pos?.verb).toBe('use')
   expect(pres.pos?.target).toBe('chest')
-  expect(pres.pos?.verb).toBe('open')
+
+  // verb noun1 on|with|at noun2 | use handle on sink
+  // put soap on bed | verb subject on object
+  // use soap on faucet | faucet: use soap
+  // wash face
+  // wash face with soap
+  // const strExp = `(?<verb>${ verbs }) (?<noun1>${ nouns })`
+
 })
 
 
-it('should parse verb target into parsed.pos', () => {
-  const pres: ParserResult = RexParser.parseNounVerbs('open the chest', nounList)
-  expect(pres.pos?.target).toBe('chest')
-  expect(pres.pos?.verb).toBe('open')
+it('should parse uncommon verbs target into parsed.verb', () => {
+  const pres: ParserResult = RexParser.parseNounVerbs('rub the lamp', nounList)
+  expect(pres.pos?.verb).toBe('rub')
+  expect(pres.pos?.target).toBe('lamp')
 })
 
 

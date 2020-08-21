@@ -1,11 +1,25 @@
 import AppConfig from '../../lib/AppConfig'
 import path from 'path'
-import { App, MessageEvent, ExpressReceiver, Middleware } from '@slack/bolt';
+import {
+  App, ExpressReceiver,
+  SlackCommandMiddlewareArgs,
+  SlackActionMiddlewareArgs,
+  SlackEventMiddlewareArgs,
+  // AllMiddlewareArgs,
+  // AllMiddlewareArgs,
+  MessageEvent,
+  Middleware
+} from '@slack/bolt';
 import BotRouter from '../../mup/routing/BotRouter'
 import { MakeLogger } from '../../lib/LogLib'
 import { PalManager } from './PalManager'
 import { Pal, ISlackEvent } from './Pal'
+
+import * as _ from 'lodash'
+
 const express = require('express')
+
+
 
 const logger = new MakeLogger('SlackRouter')
 
@@ -19,14 +33,6 @@ const SlackRouter = {
       token: AppConfig.token,
       receiver
     });
-
-    const onCommands = async (slackEvent: ISlackEvent) => {
-      slackEvent.ack!();
-      logger.startLoop(`command: ${slackEvent.command!.command} [${slackEvent.command!.text}]`)
-      const pal: Pal = PalManager.findPal(slackEvent)
-      logger.logObj('command', slackEvent.command)
-      await BotRouter.command(pal, slackEvent)
-    }
 
     // app.use(morgan('tiny'));
     // custom middleware to log events
@@ -53,14 +59,13 @@ const SlackRouter = {
     app.use(eventLogger)
 
     // doesnt work
-    // app.use('/cdn', express.static('/cdn'))
-    receiver.router.get('/cdn/*', (req, res) => {
-      logger.log('cdn GET', req.path)
-      const fp = path.join(__dirname, '../../../', req.path)
-      res.contentType('image/jpeg');
-      res.sendFile(fp);
-    })
-
+    receiver.app.use('/cdn', express.static('/cdn'))
+    // receiver.router.get('/cdn/*', (req, res) => {
+    //   logger.log('cdn GET', req.path)
+    //   const fp = path.join(__dirname, '../../../', req.path)
+    //   res.contentType('image/jpeg');
+    //   res.sendFile(fp);
+    // })
 
     // testing
     app.message(/helloSlack/i, async ({ message, say }) => {
@@ -68,14 +73,25 @@ const SlackRouter = {
       await say(`hola there <@${message.user}!`);
     });
 
-    app.message(/.*/, async (slackEvent) => {
+    app.message(/.*/, async (args: SlackEventMiddlewareArgs<'message'>) => {
       logger.startLoop('message')
-      const pal: Pal = PalManager.findPal(slackEvent)
+      const slackEvent: ISlackEvent = _.pick(args, [
+        'say',
+        'message',
+        'store',
+        'sessionId',
+        'action',
+        'payload'
+      ])
+
+      const pal: Pal = PalManager.findPal(slackEvent, args.event.channel)
       logger.log('app.message')
       await BotRouter.textEvent(pal)
     });
 
-    app.action(/.*/, async (slackEvent) => {
+    // slack typings are incomprehensible so 'any'
+    // app.action(/.*/, async (args: SlackActionMiddlewareArgs<'action'>) => {
+    app.action(/.*/, async (slackEvent: any) => {
       logger.startLoop('action')
       slackEvent.ack();
       logger.log(slackEvent)
@@ -84,6 +100,14 @@ const SlackRouter = {
       await BotRouter.actionEvent(pal)
       // say('you hit an action')
     });
+
+    const onCommands = async (slackEvent: ISlackEvent) => {
+      slackEvent.ack!();
+      logger.startLoop(`command: ${slackEvent.command!.command} [${slackEvent.command!.text}]`)
+      const pal: Pal = PalManager.findPal(slackEvent)
+      logger.logObj('command', slackEvent.command)
+      await BotRouter.command(pal, slackEvent)
+    }
 
     // we have to route the comamnds separately to get the `ack` event to call
     // Argument of type 'SlackCommandMiddlewareArgs & AllMiddlewareArgs' is not assignable to parameter of type 'ISlackEvent'.
@@ -96,25 +120,6 @@ const SlackRouter = {
       // @ts-ignore
       await onCommands(slackEvent)
     });
-
-
-    // const welcomeChannelId = 'C12345';
-    // When a user joins the team, send a message in a predefined channel asking them to introduce themselves
-    // app.event('team_join', async ({ event, context }) => {
-    //   logger.logObj('team_join', { token: context.botToken, event })
-    //   const userName = event.user
-    //   try {
-    //     const result = await app.client.chat.postMessage({
-    //       token: context.botToken,
-    //       channel: welcomeChannelId,
-    //       text: `Welcome to the team, <@${ userName }>! 🎉 You can introduce yourself in this channel and play in #Games`
-    //     });
-    //     logger.log('evtResult', result);
-    //   }
-    //   catch (error) {
-    //     logger.error('sendEvent', error);
-    //   }
-    // });
 
     app.action('continue', async (slackEvent) => {
       slackEvent.ack()

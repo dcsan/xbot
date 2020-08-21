@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+import { Document, Model, model, Types, Schema, Query } from "mongoose"
+
 import { MakeLogger } from '../../lib/LogLib'
 const _ = require('lodash')
 const logger = new MakeLogger('ChatLogger')
@@ -6,7 +8,7 @@ const logger = new MakeLogger('ChatLogger')
 // import { IMessage } from './MockChannel'
 import { ISlackSection } from './SlackTypes'
 
-const ChatLogSchema = new mongoose.Schema({
+const ChatLogSchema = Schema({
   who: String,
   text: String,
   type: String,
@@ -25,7 +27,7 @@ const ChatRowModel = mongoose.model('ChatLog', ChatLogSchema)
 const logAll = false
 // const logAll = true
 
-interface IChatRow {
+interface IChatRow extends Document {
   who: string
   text: string
   type: string
@@ -34,16 +36,16 @@ interface IChatRow {
   minute?: number
   hour?: number
   raw?: any
-  chatSession?: number
+  sid?: string
 }
 
 class ChatLogger {
   rows: IChatRow[] = []
-  chatSession: number
+  sid: string
 
-  constructor() {
+  constructor(sid?: string) {
     this.rows = []
-    this.chatSession = _.random(0, 10000)
+    this.sid = sid || 'sid-' + _.random(0, 10000)
   }
 
   async logRow(item: IChatRow) {
@@ -54,7 +56,7 @@ class ChatLogger {
     item.count = this.rows.length
     item.minute = minute
     item.hour = Math.floor(minute / 60)
-    item.chatSession = this.chatSession
+    item.sid = this.sid
     const oneLog = new ChatRowModel(item)
     await oneLog.save()
     // logger.logLine('logRow OK << ', item.text)

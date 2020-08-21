@@ -7,7 +7,11 @@ import * as _ from 'lodash'
 // FIXME circular deps
 // import { MakeLogger } from './LogLib'
 
-const logger = console
+const logger = {
+  log(..._rest) {
+    // console.log(...rest)
+  }
+}
 
 const cdnPath = path.join(__dirname, '../../cdn')
 
@@ -96,7 +100,7 @@ const Util = {
   // FIXME add full regex non WS support
   safeName(name) {
     if (!name) {
-      logger.warn('no name passed to safeName method')
+      console.warn('no name passed to safeName method')
       return
     }
     name = name.toLowerCase()
@@ -124,7 +128,7 @@ const Util = {
     if (/^[-'"\.# `,>\\]/.test(input)) return true
     if (input.split(' ').length > 5) return true
     if (/http/.test(input)) return true  // shared URLs - dont respond to
-    logger.log('not ignore', input)
+    // logger.log('not ignore', input)
     return false
   }
 

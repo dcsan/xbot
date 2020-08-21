@@ -1,3 +1,5 @@
+import { SlashCommand } from '@slack/bolt'
+
 import { IMessage } from './MockChannel'
 
 interface ISlackSection {
@@ -19,9 +21,27 @@ interface ISlackEvent {
   action: {
     value: string,
   },
+
+  // just extracting the main payload types from SlashCommand | Message
   payload: {
-    channel: string // sessionId
-  },
+    command?: string;
+    text: string;
+    user_id?: string;
+    user_name?: string;
+    team_id?: string;
+    channel_id?: string;
+    // token: string;
+    // response_url: string;
+    // trigger_id: string;
+    // team_domain: string;
+    // channel_name: string;
+    // enterprise_id?: string;
+    // enterprise_name?: string;
+  }
+  // SlashCommand
+  // {
+  //   channel: string // sessionId
+  // },
   command?: {
     command: string
     text: string

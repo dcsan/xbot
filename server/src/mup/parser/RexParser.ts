@@ -4,7 +4,7 @@ import WordUtils from '../../lib/WordUtils'
 // import RouterService from './RouterService'
 
 import { StaticRules, OneRule } from './ParserRules'
-import { synData, ISyn } from './Synonyms'
+import { SynManager, ISyn } from './Synonyms'
 import { GameObject } from '../models/GameObject'
 
 import {
@@ -17,7 +17,7 @@ const log = console.log
 const logger = new MakeLogger('rexParser')
 
 const ParserConfig = {
-  verbs: 'take|move|get|open|wear|drink|rub|drop|lock|unlock'
+  verbs: 'take|move|get|open|wear|drink|rub|drop|lock|unlock|use'
 }
 
 let synPairsCache: ISyn[] = []
@@ -410,11 +410,14 @@ const RexParser = {
   // fixed command syns eg wear -> take
   replaceSyns(input: string) {
     // logger.log('synPairs', synPairsCache)
+    let clean = input + ''
+    const syns = SynManager.all()
+
     if (!synPairsCache || !synPairsCache.length) {
+      // should have been setup when entering a room based on objects in the room
       logger.warn('no syn pairs for room')
     }
-    let clean = input + ''
-    for (const rep of synData) {
+    for (const rep of syns) {
       clean = clean.replace(rep.rex, rep.base)
     }
     // names of items in game
@@ -508,18 +511,14 @@ const RexParser = {
   },
 
   // give a nounList of objects in game to help with parsing
-  parseNounVerbs(input: string, nounList: string[], verbList?: string[]): ParserResult {
+  // reduce verbs down to 'use' using synonyms
+  // and then see if we have a match!
+  parseNounVerbs(input: string, nounList: string[]): ParserResult {
     let clean = WordUtils.basicNormalize(input)
     clean = RexParser.replaceSyns(clean)
     const nouns = nounList.join('|')
-    const verbs = verbList ? verbList.join('|') : ParserConfig.verbs
+    const verbs = SynManager.verbsStr()
     const strExp = `(?<verb>${verbs}) (?<target>${nouns})`
-    // verb noun1 on|with|at noun2 | use handle on sink
-    // put soap on bed | verb subject on object
-    // use soap on faucet | faucet: use soap
-    // wash face
-    // wash face with soap
-    // const strExp = `(?<verb>${ verbs }) (?<noun1>${ nouns })`
     const rex = new RegExp(strExp, 'im')
     // console.log(strExp, 'rex')
     const parsed = rex.exec(clean)

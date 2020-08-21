@@ -8,31 +8,29 @@ let palCache = {}
 const PalManager = {
 
   // TODO store in mongo
-  findPal(channelEvent: ISlackEvent | any): Pal {
-    const sid =
-      channelEvent.event?.channel ||
-      channelEvent.payload?.channel?.id ||
-      channelEvent.payload?.channel_id ||    // action
-      channelEvent.body?.container?.channel_id
+  findPal(slackEvent: ISlackEvent | any, sid?: string): Pal {
+    sid = sid ||
+      slackEvent.event?.channel ||
+      slackEvent.payload?.channel?.id ||
+      slackEvent.payload?.channel_id ||    // action
+      slackEvent.body?.container?.channel_id
 
     if (!sid) {
-      logger.fatal('cannot get sessionId', JSON.stringify(channelEvent, null, 2))
+      logger.fatal('cannot get sessionId', JSON.stringify(slackEvent, null, 2))
     }
 
-    let pal: Pal = palCache[sid]
+    let pal: Pal = palCache[sid!]
     if (pal) {
       logger.log('cached pal')
-      pal.event(channelEvent)
+      pal.event(slackEvent)
       return pal
     }
 
-    // else create it
-    // logger.logObj(`pal not found for sid [${sid}]`, { payload: channelEvent.payload })
-    logger.log('new pal for', { sid })
-    pal = new Pal(channelEvent)
-    palCache[sid] = pal
+    pal = new Pal(slackEvent, sid!)
+    palCache[sid!] = pal
     return pal
-  },
+
+  }
 
 }
 

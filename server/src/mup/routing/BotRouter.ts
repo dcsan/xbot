@@ -36,13 +36,13 @@ import { ErrorHandler, HandleCodes } from '../models/ErrorHandler'
 const BotRouter = {
 
   async textEvent(pal: Pal): Promise<boolean | undefined> {
-    const input: string = pal.channelEvent.message.text
+    const input: string = pal.slackEvent.message.text
     pal.chatLogger.logInput({ who: 'user', text: input, type: 'text' })
     return await BotRouter.anyEvent(pal, input, 'text')
   },
 
   async actionEvent(pal: Pal): Promise<boolean | undefined> {
-    const input: string = pal.channelEvent.action.value
+    const input: string = pal.slackEvent.action.value
     pal.chatLogger.logInput({ who: 'user', text: input, type: 'event' })
     return await BotRouter.anyEvent(pal, input, 'action')
   },

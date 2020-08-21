@@ -24,23 +24,24 @@ const debugOutput = AppConfig.logLevel
 const logMode = false
 
 class Pal {
-  channelEvent: ISlackEvent | MockChannel
+  slackEvent: ISlackEvent | MockChannel
   sessionId: string
   chatLogger: ChatLogger
   lastInput?: string
 
   // FIXME - for slack middleware
-  constructor(channelEvent: any) {
-    this.channelEvent = channelEvent
-    this.sessionId = channelEvent.payload?.channel || 'temp1234'
-    this.chatLogger = new ChatLogger()
+  constructor(channelEvent: any, sid: string) {
+    this.slackEvent = channelEvent
+    this.sessionId = sid
+    this.chatLogger = new ChatLogger(sid)
     logger.log('new pal', { sessionId: this.sessionId })
   }
 
   // when a new event comes in to the same channel we just update the event
-  event(channelEvent: any) {
+  // but keep the same Pal object for things like linked game/session/internal convoId
+  event(slackEvent: any) {
     // TODO keep a list of events?
-    this.channelEvent = channelEvent
+    this.slackEvent = slackEvent
   }
 
   // for testing
@@ -61,7 +62,7 @@ class Pal {
   async wrapSay(msg: IChatRow) {
     await this.chatLogger.logRow(msg)
     try {
-      await this.channelEvent.say(msg)
+      await this.slackEvent.say(msg)
     } catch (err) {
       logger.logJson('ERROR channel.say =>', msg)
       logger.error('ERROR', err)  // FIXME maybe not .data ?
@@ -121,7 +122,7 @@ class Pal {
       console.trace('tried to sendBlocks with no blocks:', blocks)
     }
     const msg: ISlackSection = SlackBuilder.wrapBlocks(blocks)
-    await this.channelEvent.say(msg)
+    await this.slackEvent.say(msg)
     await this.chatLogger.logBlocks(msg)
     // await this.wrapSay(msg, 'blocks')
   }
@@ -132,7 +133,7 @@ class Pal {
 
   async showLog() {
     const text = this.chatLogger.tailText(-1)
-    this.channelEvent.say(Util.quoteCode(text))
+    this.slackEvent.say(Util.quoteCode(text))
     return text
   }
 
