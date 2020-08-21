@@ -5,6 +5,7 @@ import morgan from 'morgan'
 import {
   App, ExpressReceiver,
   SlackCommandMiddlewareArgs,
+  SlackAction,
   SlackActionMiddlewareArgs,
   SlackEventMiddlewareArgs,
   // AllMiddlewareArgs,
@@ -97,12 +98,18 @@ const SlackRouter = {
 
     // slack typings are incomprehensible so 'any'
     // app.action(/.*/, async (args: SlackActionMiddlewareArgs<'action'>) => {
-    app.action(/.*/, async (slackEvent: any) => {
+    // (parameter) args: SlackActionMiddlewareArgs<SlackAction> & AllMiddlewareArgs
+
+    app.action(/.*/, async (args: SlackActionMiddlewareArgs<SlackAction>) => {
+      args.ack();
       logger.startLoop('action')
-      slackEvent.ack();
-      // logger.logObj('action', slackEvent)
-      const pal: Pal = PalManager.findPal(slackEvent)
-      logger.logObj('action', slackEvent.action)
+      // switch (args.action.type) {
+      //   case 'block_actions':
+      // }
+
+      logger.logObj('action args.action', args.action)
+      const pal: Pal = PalManager.findPal(args)
+      logger.logObj('action', args.action)
       await BotRouter.actionEvent(pal)
       // say('you hit an action')
     });
