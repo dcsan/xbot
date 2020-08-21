@@ -42,9 +42,12 @@ const BotRouter = {
   },
 
   async actionEvent(pal: Pal): Promise<boolean | undefined> {
-    const input: string = pal.slackEvent.action.value
+    const input: string | undefined =
+      pal.slackEvent.action.value ||
+      pal.slackEvent.action.text?.text  // button with URL link
+
     pal.chatLogger.logInput({ who: 'user', text: input, type: 'event' })
-    return await BotRouter.anyEvent(pal, input, 'action')
+    return await BotRouter.anyEvent(pal, input!, 'action')
   },
 
   async command(pal, slackEvent: ISlackEvent): Promise<boolean | undefined> {
@@ -53,9 +56,9 @@ const BotRouter = {
   },
 
   async anyEvent(pal: Pal, input: string, _eventType: string = 'text'): Promise<boolean | undefined> {
-    if (Util.shouldIgnore(input)) {
+    if (!input || Util.shouldIgnore(input)) {
       logger.log('anyEvent ignoring input:', input)
-      return true
+      return false
     }
     logger.log('anyEvent.input: ', input)
 

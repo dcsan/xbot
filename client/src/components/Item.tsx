@@ -49,7 +49,7 @@ export function Item() {
   const { transform, opacity } = useSpring({
     opacity: flipped ? 1 : 0,
     transform: `perspective(600px) rotateX(${flipped ? 180 : 0}deg)`,
-    config: { mass: 20, tension: 250, friction: 80 }
+    config: { mass: 20, tension: 550, friction: 120 }
   })
 
   const flipIt = () => {

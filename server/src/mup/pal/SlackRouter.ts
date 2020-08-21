@@ -1,5 +1,7 @@
 import AppConfig from '../../lib/AppConfig'
 import path from 'path'
+import morgan from 'morgan'
+
 import {
   App, ExpressReceiver,
   SlackCommandMiddlewareArgs,
@@ -34,7 +36,6 @@ const SlackRouter = {
       receiver
     });
 
-    // app.use(morgan('tiny'));
     // custom middleware to log events
     async function eventLogger(req) {
       if (req.body.command) {
@@ -59,7 +60,9 @@ const SlackRouter = {
     app.use(eventLogger)
 
     // doesnt work
-    receiver.app.use('/cdn', express.static('/cdn'))
+    receiver.app.use(morgan('tiny'));
+    receiver.app.use('/cdn', express.static('cdn'))
+
     // receiver.router.get('/cdn/*', (req, res) => {
     //   logger.log('cdn GET', req.path)
     //   const fp = path.join(__dirname, '../../../', req.path)
@@ -94,7 +97,7 @@ const SlackRouter = {
     app.action(/.*/, async (slackEvent: any) => {
       logger.startLoop('action')
       slackEvent.ack();
-      logger.log(slackEvent)
+      logger.logObj('action', slackEvent)
       const pal: Pal = PalManager.findPal(slackEvent)
       logger.logObj('action', slackEvent.action)
       await BotRouter.actionEvent(pal)

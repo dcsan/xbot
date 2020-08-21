@@ -17,7 +17,12 @@ class MockChannelEvent implements ISlackEvent {
     channel: string // sessionId
   }
 
-  action: { value: string }
+  action: {
+    value: string
+    text?: {
+      text: string
+    }
+  }
   message: IMessage
   sessionId: string
 

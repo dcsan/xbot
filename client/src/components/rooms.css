@@ -37,8 +37,8 @@ body,
   position: absolute;
   /* max-width: 500px;
   max-height: 500px; */
-  width: 95vw;
-  height: 95vw;
+  width: 80vw;
+  height: 80vw;
   cursor: pointer;
   will-change: transform, opacity;
   z-index: 10;
@@ -52,7 +52,7 @@ body,
   /* padding: 20px; */
   background: #444;
   color: white;
-  font-size: 5vw;
+  font-size: 4vw;
   line-height: 175%;
   z-index: 5;
 }
@@ -72,41 +72,41 @@ body,
   /* height: 100%; */
   padding: 15px;
   font-size: 5vw;
-  background: rgba(0,0,0,0.75);
-  color: white;
   z-index: 40;
-  text-align: center;
+  text-align: left;
 }
 
 .caption.foot {
-  left: 0px;
-  bottom: 0px;
-  text-align: left;
+  left: 10px;
+  bottom: 10px;
+  /* margin: 10px; */
+  width: calc(100vw - 20px);
+  background: rgba(255, 250, 183, 0.75);
+  color: black;
 }
 
 .caption.head {
   top: 0px;
   font-size: 3vw;
   background: rgba(0,0,0);
-  text-align: left;
+  color: white;
+
 }
 
 .slider-left {
   animation-name: slide-anim;
-  animation-duration: 1s;
+  animation-duration: 0.5s;
   animation-timing-function: ease-out;
 }
 
 @keyframes slide-anim {
   from {
-    opacity: 0;
-    transform: translateY(150px);
-    /* height: 20px; */
+    /* from offscreen */
+    transform: translateX(100vw);
   }
   to {
-    opacity: 1;
-    transform: translateY(0px);
-    /* height: 120px; */
+    /* opacity: 1; */
+    transform: translateX(0px);
   }
 }
 

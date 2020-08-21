@@ -19,7 +19,17 @@ interface ISlackEvent {
   store: any[]
   sessionId: string
   action: {
-    value: string,
+    value?: string,
+    text?: {
+      text?: string
+      type?: string // plain_text | ??
+      emoji?: boolean
+    }
+
+    action_id?: string
+    block_id?: string
+    type?: string  // button | ???
+    action_ts?: string // epoch timestamp 1598002814.864981
   },
 
   // just extracting the main payload types from SlashCommand | Message
