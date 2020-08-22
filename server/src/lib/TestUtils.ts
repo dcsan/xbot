@@ -18,8 +18,8 @@ const logger = new MakeLogger('testUtils')
 import { ChatRowModel } from '../mup/pal/ChatLogger'
 
 // show output during tests for "PASS" not juts fail
-// const logAll = true
-const logAll = false
+const logAll = true
+// const logAll = false
 
 class TestEnv {
   pal: Pal
