@@ -20,27 +20,27 @@ it('parse get command', () => {
   expect(pres.pos?.verb).toBe('take')
 })
 
-// noun phrase command
-it('should parse common "use" verbs into parsed.verb as "use" ', () => {
-  const pres: ParserResult = RexParser.parseNounVerbs('open the chest', nounList)
-  expect(pres.pos?.verb).toBe('use')
-  expect(pres.pos?.target).toBe('chest')
+// // noun phrase command
+// xit('should parse common "use" verbs into parsed.verb as "use" ', () => {
+//   const pres: ParserResult = RexParser.parseNounVerbs('open the chest', nounList)
+//   expect(pres.pos?.verb).toBe('use')
+//   expect(pres.pos?.target).toBe('chest')
 
-  // verb noun1 on|with|at noun2 | use handle on sink
-  // put soap on bed | verb subject on object
-  // use soap on faucet | faucet: use soap
-  // wash face
-  // wash face with soap
-  // const strExp = `(?<verb>${ verbs }) (?<noun1>${ nouns })`
+// verb noun1 on|with|at noun2 | use handle on sink
+// put soap on bed | verb subject on object
+// use soap on faucet | faucet: use soap
+// wash face
+// wash face with soap
+// const strExp = `(?<verb>${ verbs }) (?<noun1>${ nouns })`
 
-})
+// })
 
 
-it('should parse uncommon verbs target into parsed.verb', () => {
-  const pres: ParserResult = RexParser.parseNounVerbs('rub the lamp', nounList)
-  expect(pres.pos?.verb).toBe('rub')
-  expect(pres.pos?.target).toBe('lamp')
-})
+// xit('should parse uncommon verbs target into parsed.verb', () => {
+//   const pres: ParserResult = RexParser.parseNounVerbs('rub the lamp', nounList)
+//   expect(pres.pos?.verb).toBe('rub')
+//   expect(pres.pos?.target).toBe('lamp')
+// })
 
 
 it('should parse actionBlock setlines', async () => {

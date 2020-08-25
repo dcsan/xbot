@@ -20,7 +20,7 @@ const StaticRules: RuleSpec[] = [
     cname: 'cheat',
     rex: /^cheat$/i,
     event: RouterService.handleCheat,
-    type: 'command',
+    type: 'preCommand',
     extra: undefined
   },
 
@@ -28,7 +28,7 @@ const StaticRules: RuleSpec[] = [
     cname: 'help',
     rex: /(help|halp)/i,
     event: RouterService.handleHelp,
-    type: 'command',
+    type: 'preCommand',
     extra: undefined
   },
 
@@ -36,15 +36,15 @@ const StaticRules: RuleSpec[] = [
     cname: 'goto',
     rex: /^(goto|gt|g) (?<roomName>.*)/i,
     event: RouterService.goto,
-    type: 'command'
+    type: 'preCommand'
   },
 
-  // slash commands
+  // slash preCommands
   // note /slash punctuation is removed before rex comparison
   {
     rex: /\/hint (?<text>.*)/i,
     cname: 'hint',
-    type: 'command',
+    type: 'preCommand',
     event: RouterService.showHint
   },
 
@@ -52,22 +52,125 @@ const StaticRules: RuleSpec[] = [
     cname: 'inventory',
     rex: /^(inventory|items|inv|i)$/i,
     event: RouterService.showInventory,
-    type: 'command'
+    type: 'preCommand'
   },
 
   {
     cname: 'lookRoom',
     rex: /^(look|l|x|examine|look room|x room|look around|look at room)$/i,
     event: RouterService.lookRoom,
-    type: 'command'
+    type: 'preCommand'
   },
+
+  // just on its own no 'with' or 'on'
+  {
+    cname: 'useThingOn',
+    rex: /^(?<verb>use|put|place) (?<subject>\w+) (on|onto|in|with|against) (?<target>\w+)$/i,
+    event: RouterService.useRoomThingOn,
+    type: 'postCommand'
+  },
+
+  {
+    rex: /^(rs|start|restart|reset)$/i,
+    cname: 'restart',
+    event: RouterService.startGame,
+    type: 'preCommand'
+  },
+
+  {
+    rex: /^(test)$/i,
+    cname: 'test',
+    event: RouterService.echoTest,
+    type: 'preCommand'
+  },
+
+  {
+    rex: /^(rl|reload)$/i,
+    cname: 'reload',
+    event: RouterService.reload,
+    type: 'preCommand'
+  },
+
+  {
+    rex: /^dbg$/,
+    cname: 'debug',
+    type: 'preCommand',
+    event: AppConfig.toggleDebug
+  },
+
+  {
+    rex: /^(st|status)$/,
+    cname: 'status',
+    type: 'preCommand',
+    event: RouterService.showStatus
+  },
+
+  {
+    rex: /^(log)$/,
+    cname: 'log',
+    type: 'preCommand',
+    event: RouterService.showLog
+  },
+
+  {
+    rex: /^(cacheNames|cn)$/i,
+    cname: 'recache',
+    type: 'preCommand',
+    event: RouterService.cacheNames
+  },
+
+  {
+    rex: /^(notes|notebook|nb|hint)$/,
+    cname: 'log',
+    type: 'preCommand',
+    event: RouterService.showNotes
+  },
+
+  {
+    rex: /.* has joined/i,
+    cname: 'userJoined',
+    type: 'preCommand',
+    event: RouterService.userJoined
+  },
+
+  {
+    rex: /.* has left/i,
+    cname: 'userLeft',
+    type: 'preCommand',
+    event: RouterService.userLeft
+  },
+
+  // dev testing
+
+  {
+    rex: /^(img)$/,
+    cname: 'log',
+    type: 'preCommand',
+    event: RouterService.sendImageLink
+  },
+
+  {
+    rex: /^(unf)$/,
+    cname: 'log',
+    type: 'preCommand',
+    event: RouterService.sendUnfurl
+  },
+
+  {
+    rex: /^(imglink)$/im,
+    cname: 'log',
+    type: 'preCommand',
+    event: RouterService.sendImageLink
+  },
+
+  // ------ postCommands run later
 
   // has to come after `look room`
   {
     cname: 'lookAt',
     rex: /^(?<verb>look at|look|examine|x at|l|x) (?<target>\w+)$/i,
     event: RouterService.lookRoomThing,
-    type: 'command'
+    type: 'postCommand'
   },
 
   // captures all wear related tasks
@@ -76,7 +179,7 @@ const StaticRules: RuleSpec[] = [
     cname: 'takeRoomThing',
     rex: /^(?<verb>get|take|grab|try on|wear|put on|pick up|t) (?<target>\w+)$/i,
     event: RouterService.takeRoomThing,
-    type: 'command'
+    type: 'postCommand'
   },
 
   // just on its own no 'with' or 'on'
@@ -84,107 +187,9 @@ const StaticRules: RuleSpec[] = [
     cname: 'useRoomThingAlone',
     rex: /^(?<verb>use) (?<target>\w+)$/i,
     event: RouterService.useRoomThingAlone,
-    type: 'command'
+    type: 'postCommand'
   },
 
-  // just on its own no 'with' or 'on'
-  {
-    cname: 'useThingOn',
-    rex: /^(?<verb>use|put|place) (?<subject>\w+) (on|onto|in|with|against) (?<target>\w+)$/i,
-    event: RouterService.useRoomThingOn,
-    type: 'command'
-  },
-
-  {
-    rex: /^(rs|start|restart|reset)$/i,
-    cname: 'restart',
-    event: RouterService.startGame,
-    type: 'command'
-  },
-
-  {
-    rex: /^(test)$/i,
-    cname: 'test',
-    event: RouterService.echoTest,
-    type: 'command'
-  },
-
-  {
-    rex: /^(rl|reload)$/i,
-    cname: 'reload',
-    event: RouterService.reload,
-    type: 'command'
-  },
-
-  {
-    rex: /^dbg$/,
-    cname: 'debug',
-    type: 'command',
-    event: AppConfig.toggleDebug
-  },
-
-  {
-    rex: /^(st|status)$/,
-    cname: 'status',
-    type: 'command',
-    event: RouterService.showStatus
-  },
-
-  {
-    rex: /^(log)$/,
-    cname: 'log',
-    type: 'command',
-    event: RouterService.showLog
-  },
-
-  {
-    rex: /^(cacheNames|cn)$/i,
-    cname: 'recache',
-    type: 'command',
-    event: RouterService.cacheNames
-  },
-
-  {
-    rex: /^(notes|notebook|nb|hint)$/,
-    cname: 'log',
-    type: 'command',
-    event: RouterService.showNotes
-  },
-
-  {
-    rex: /^(img)$/,
-    cname: 'log',
-    type: 'command',
-    event: RouterService.sendImageLink
-  },
-
-  {
-    rex: /^(unf)$/,
-    cname: 'log',
-    type: 'command',
-    event: RouterService.sendUnfurl
-  },
-
-  {
-    rex: /^(imglink)$/im,
-    cname: 'log',
-    type: 'command',
-    event: RouterService.sendImageLink
-  },
-
-  {
-    rex: /.* has joined/i,
-    cname: 'userJoined',
-    type: 'command',
-    event: RouterService.userJoined
-  },
-
-  {
-    rex: /.* has left/i,
-    cname: 'userLeft',
-    type: 'command',
-    event: RouterService.userLeft
-  },
 
 ]
 

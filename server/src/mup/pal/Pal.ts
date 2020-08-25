@@ -46,7 +46,7 @@ class Pal {
   }
 
   // for testing
-  async sendInput(text: string) {
+  async logInput(text: string) {
     this.lastInput = text
     await this.chatLogger.logInput({ text, type: 'input', who: 'user' })
     // if (this.channelEvent.message) {

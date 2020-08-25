@@ -442,22 +442,26 @@ const RexParser = {
     return rule
   },
 
-  parseCommands(input: string): ParserResult {
+  parseCommands(clean: string): ParserResult {
 
-    let clean = WordUtils.basicNormalize(input)
-    clean = RexParser.replaceSyns(clean)
+    // let clean = WordUtils.basicNormalize(input)
+    // clean = RexParser.replaceSyns(clean)
 
     let pres: ParserResult = {
-      input,
+      // input,
       clean,
-      // this is what we use to search in roomActions
+      // TODO - not needed if using NLP parser
       combos: [
-        input
-      ],
+        clean
+      ]
+      // this is what we use to search in roomActions
+      // combos: [
+      //   input
+      // ],
     }
-    if (input !== clean) {
-      pres.combos?.push(clean)
-    }
+    // if (input !== clean) {
+    //   pres.combos?.push(clean)
+    // }
 
     // we search plain input first for things like /commands
     // // then remove punctuation and search again
@@ -513,37 +517,37 @@ const RexParser = {
   // give a nounList of objects in game to help with parsing
   // reduce verbs down to 'use' using synonyms
   // and then see if we have a match!
-  parseNounVerbs(input: string, nounList: string[]): ParserResult {
-    let clean = WordUtils.basicNormalize(input)
-    clean = RexParser.replaceSyns(clean)
-    const nouns = nounList.join('|')
-    const verbs = SynManager.verbsStr()
-    const strExp = `(?<verb>${verbs}) (?<target>${nouns})`
-    const rex = new RegExp(strExp, 'im')
-    // console.log(strExp, 'rex')
-    const parsed = rex.exec(clean)
-    let pres: ParserResult = {
-      clean, input, parsed
-    }
+  // parseNounVerbs(input: string, nounList: string[]): ParserResult {
+  //   let clean = WordUtils.basicNormalize(input)
+  //   clean = RexParser.replaceSyns(clean)
+  //   const nouns = nounList.join('|')
+  //   const verbs = SynManager.verbsStr()
+  //   const strExp = `(?<verb>${verbs}) (?<target>${nouns})`
+  //   const rex = new RegExp(strExp, 'im')
+  //   // console.log(strExp, 'rex')
+  //   const parsed = rex.exec(clean)
+  //   let pres: ParserResult = {
+  //     clean, input, parsed
+  //   }
 
-    if (parsed?.groups) {
-      parsed.groups = { ...parsed.groups }
+  //   if (parsed?.groups) {
+  //     parsed.groups = { ...parsed.groups }
 
-      // @ts-ignore
-      pres.pos = { ...parsed.groups }
+  //     // @ts-ignore
+  //     pres.pos = { ...parsed.groups }
 
-      // try just the verb, eg removing the item
-      // so 'wear robe' becomes robe => `wear`
-      const verb = parsed.groups?.verb
-      pres.combos = [
-        input,  // search without any keyword replacement first
-        clean,  // ask->say etc.
-        verb    // look commands
-        // `${ pos.verb } ${ subject }`
-      ]
-    }
-    return pres
-  }
+  //     // try just the verb, eg removing the item
+  //     // so 'wear robe' becomes robe => `wear`
+  //     const verb = parsed.groups?.verb
+  //     pres.combos = [
+  //       input,  // search without any keyword replacement first
+  //       clean,  // ask->say etc.
+  //       verb    // look commands
+  //       // `${ pos.verb } ${ subject }`
+  //     ]
+  //   }
+  //   return pres
+  // }
 
 }
 

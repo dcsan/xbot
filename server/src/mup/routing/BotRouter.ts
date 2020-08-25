@@ -3,6 +3,8 @@ import AppConfig from '../../lib/AppConfig'
 import { Pal, ISlackEvent } from '../pal/Pal'
 import { RexParser, ParserResult } from '../parser/RexParser'
 import { MakeLogger } from '../../lib/LogLib'
+import { dfQuery } from '../nlp/DfWrapper'
+
 import Util from '../../lib/Util'
 import Game from 'mup/models/Game'
 import { GameManager } from '../models/GameManager'
@@ -17,7 +19,7 @@ import WordUtils from '../../lib/WordUtils'
 
 const logger = new MakeLogger('botRouter')
 
-import { ErrorHandler, HandleCodes } from '../models/ErrorHandler'
+// import { ErrorHandler, HandleCodes } from '../models/ErrorHandler'
 
 // async function chainEvents(chain: any, evt: SceneEvent): Promise<ActionResult> {
 //   for (const fn of chain) {
@@ -61,21 +63,38 @@ const BotRouter = {
       return false
     }
     logger.log('anyEvent.input: ', input)
+    pal.logInput(input)  // store it for GameFuncs
 
-    // const { message: MessageEvent, say: SayFn } = slackEvent
-    const clean = WordUtils.basicNormalize(input)
-    pal.sendInput(clean)  // store it for GameFuncs
     const storyName = AppConfig.read('storyName')
     const game: Game = await GameManager.findGame({ pal, storyName })
+    const clean: string = WordUtils.basicNormalize(input)
     const pres: ParserResult = RexParser.parseCommands(clean)
-    const evt: SceneEvent = { pal, pres, game }
+
+    let evt: SceneEvent = { pal, pres, game }
+
+    let handled =
+      await this.preCommands(evt) ||
+      await this.tryRoomActions(evt)
+    if (handled) return handled
+
+    // we didn't get a hit on plain input so use NLP methods
+    const nluResult = await dfQuery(input)
+    const { textResponse } = nluResult
+    if (!textResponse) {
+      logger.warn('no nlu.textResponse found', nluResult)
+    } else {
+      logger.log('using textResponse:', textResponse)
+    }
 
     // chain of methods
-    const handled: boolean | undefined =
+    evt.pres = RexParser.parseCommands(textResponse)
+    handled =
       await this.tryRoomActions(evt) ||
-      await this.tryCommands(evt)
+      await this.postCommands(evt)
 
-    if (!handled) {
+    if (handled) {
+      return true
+    } else {
       const err = `no match: [${clean}]`
       await pal.debugMessage(err)
       logger.warn(err)
@@ -90,22 +109,8 @@ const BotRouter = {
         msg = `I don't understand ${input}`
       }
       await evt.pal.sendText(msg)
-    } else {
-      const msg = ({
-        input,
-        clean,
-        ruleCname: pres.rule?.cname,
-        // ruleType: pres.rule?.type,
-        // parsed: pres.parsed,
-        // groups: pres.parsed?.groups,
-        pos: pres.pos,
-        // eventType,
-        handled,
-        // from: 'router',
-      })
-      // logger.log('handled')
+      return false
     }
-    return handled
   },
 
   async tryRoomActions(evt: SceneEvent): Promise<boolean | undefined> {
@@ -115,8 +120,20 @@ const BotRouter = {
     return result
   },
 
-  async tryCommands(evt: SceneEvent): Promise<boolean | undefined> {
-    if (evt.pres.rule?.type !== 'command') {
+  async preCommands(evt: SceneEvent): Promise<boolean | undefined> {
+    if (evt.pres.rule?.type !== 'preCommand') {
+      logger.log('skip preCommands')
+      return false
+    }
+    // logger.log('tryCommands for evt.pres=', evt.pres.clean)
+    logger.log('preCommands found rule =>', evt.pres.rule.cname)
+    const result = await evt.pres.rule?.event(evt)
+    logger.log('tryCommands.result =>', result)  // FIXME - track results?
+    return true // parser found a command
+  },
+
+  async postCommands(evt: SceneEvent): Promise<boolean | undefined> {
+    if (evt.pres.rule?.type !== 'postCommand') {
       logger.log('skip tryCommands for non room action for evt.pres.rule=', evt.pres.rule)
       return false
     }
