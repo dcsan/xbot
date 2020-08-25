@@ -88,7 +88,7 @@ class MakeLogger {
   assertTrue(check, msg: string, obj: any = {}): boolean {
     if (!check) {
       const err = `FAIL ASSERT.true ` + msg
-      this.logObj(err, obj, true)
+      this.logObj(err, obj, { force: true })
       this.trace(err)
     }
     return true
@@ -111,7 +111,8 @@ class MakeLogger {
   }
 
   // force to ALWAYS run even in test mode
-  logObj(msg: string, obj?: any, force: boolean = false) {
+  logObj(msg: string, obj?: any, opts = { force: false }) {
+    const force = opts.force || false
     // dont noisy log for tests
     if (process.env.NODE_ENV == 'test' && !force) return
     obj = Util.removeEmptyKeys(obj)

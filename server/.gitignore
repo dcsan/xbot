@@ -13,3 +13,5 @@ dist
 
 logs/*
 !logs/.gitkeep
+
+google-creds.json

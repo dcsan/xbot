@@ -55,7 +55,7 @@ class Pal {
   }
 
   lastOutput() {
-    logger.logObj('pal.logger', this.chatLogger, true)
+    logger.logObj('pal.logger', this.chatLogger, { force: true })
     return this.chatLogger.rows[this.chatLogger.rows.length - 1]
   }
 
