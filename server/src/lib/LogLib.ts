@@ -116,14 +116,18 @@ class MakeLogger {
     // dont noisy log for tests
     if (process.env.NODE_ENV == 'test' && !force) return
     obj = Util.removeEmptyKeys(obj)
+    if (!obj) {
+      this.warn('logObj with null obj')
+      obj = {}
+    }
     try {
       // this dumps better
       const json = JSON.stringify(obj, null, 2)
       const blob = yaml.dump(json)
       console.log(this.where, msg, blob)
     } catch (err) {
-      console.log('failed to stringify obj')
-      console.log(this.where, msg)
+      console.warn('failed to stringify obj')
+      console.log('log', this.where, msg)
     }
   }
 

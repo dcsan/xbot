@@ -207,6 +207,11 @@ class GameObject {
       const buttonsBlock = SlackBuilder.buttonsBlock(stateInfo.buttons)
       palBlocks.push(buttonsBlock)
     }
+
+    if (stateInfo.hint) {
+      palBlocks.push(SlackBuilder.contextBlock(stateInfo.hint))
+    }
+
     return palBlocks
   }
 
@@ -355,7 +360,6 @@ class GameObject {
 
     await this.doCallActions(branch.before, evt)
     await this.applySetProps(branch, evt)
-    await this.doTakeActions(branch, evt)
 
     // custom JS func?
     if (branch.callJS) {
@@ -375,7 +379,10 @@ class GameObject {
       await evt.pal.sendBlocks(palBlocks)
     }
 
-    await this.doCallActions(branch.after, evt)
+    // show take actions after base output
+    await this.doTakeActions(branch, evt)
+
+    if (branch.after) await this.doCallActions(branch.after, evt)
 
     // goto at top level of the block
     if (branch.goto) {
@@ -423,14 +430,14 @@ class GameObject {
     if (!takeItemList) return false
 
     for (const itemName of takeItemList) {
-      logger.log('doTakeAction', itemName)
-      await this.roomObj.takeItemByName(itemName, evt)
+      await this.roomObj.takeItemByName(itemName, evt, { output: false })
     }
     return true
   }
 
   // trigger other events into the scene
-  // create a new synthetic event and call back into the room
+  // create a new synthetic event and call back into the botRouter
+  // this could probably be short circuited to just send the event here?
   async doCallActions(calls: string[] | undefined, evt: SceneEvent) {
     if (!calls) return
 

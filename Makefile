@@ -72,6 +72,15 @@ sync:
 
 	echo "done"
 
+
+syncCdn:
+	rsync -avi --delete \
+		--exclude .git \
+		server/cdn/ "${login}:${deployDir}/cdn"
+
+	echo "done"
+
+
 deploy: prep sync pm2restart
 
 # just server code

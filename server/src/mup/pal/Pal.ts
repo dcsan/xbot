@@ -42,7 +42,8 @@ class Pal {
   event(slackEvent: ISlackEvent) {
     // TODO keep a list of events?
     this.slackEvent = slackEvent
-    logger.logObj('new slackEvent.user', slackEvent)
+    const text = slackEvent.message?.text
+    logger.log('new Pal.slackEvent .text:', text)
   }
 
   // for testing
@@ -70,6 +71,7 @@ class Pal {
     }
   }
 
+  // todo - FIXME
   processTemplate(text: string): string {
     const username = this.slackEvent.user?.username
     logger.log('processTemplate user:', this.slackEvent.user)
@@ -81,7 +83,9 @@ class Pal {
 
   async sendText(text: string) {
     text = this.processTemplate(text)
-    await this.wrapSay({ text, type: 'text', who: 'bot' })
+    const block = SlackBuilder.textBlock(text)
+    await this.sendBlocks([block])
+    // await this.wrapSay({ text, type: 'text', who: 'bot' })
   }
 
   async sendImage(text: string) {

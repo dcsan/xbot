@@ -15,6 +15,7 @@ export interface StateBlock {
   webUrl: string
   webLinkText: string
   short: string
+  hint: string
   long: string
   reply?: string
   buttons: string[]

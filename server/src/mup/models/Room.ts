@@ -91,10 +91,17 @@ class Room extends GameObject {
   }
 
   async enterRoom(evt?: SceneEvent) {
+    await this.resetRoomState()
     if (evt) {
       return await this.lookRoom(evt)
     }
     // await this.showItemsInRoom(evt)
+  }
+
+  resetRoomState() {
+    const state = this.doc.state || 'default'
+    logger.log('resetRoomState', { roomName: this.name, state })
+    this.state = state
   }
 
   async lookRoom(evt: SceneEvent) {
@@ -238,7 +245,11 @@ class Room extends GameObject {
   }
 
   // in the room
-  async takeItemByName(thingName: string, evt: SceneEvent): Promise<boolean> {
+  async takeItemByName(
+    thingName: string,
+    evt: SceneEvent,
+    options = { output: true }  // allow a script to override
+  ): Promise<boolean> {
     const thing = this.findThing(thingName)
 
     if (!thing) {
@@ -277,12 +288,15 @@ class Room extends GameObject {
     const took = evt.game?.player.takeItem(thing)
     if (took) {
       // TODO custom take message eg 'wear item'
-      const msg = thing.doc.onTake || `You take the ${thingName}`
-      const blocks = [
-        SlackBuilder.textBlock(msg),
-        SlackBuilder.contextBlock("type `inv` to see what you're carrying"),
-      ]
-      await evt.pal.sendBlocks(blocks)
+      if (options.output) {
+        const msg = thing.doc.onTake || `You take the ${thingName}`
+        const getMsg = SlackBuilder.textBlock(msg)
+        let blocks = [
+          getMsg,
+          SlackBuilder.contextBlock("type `inv` to see what you're carrying"),
+        ]
+        await evt.pal.sendBlocks(blocks)
+      }
     }
     return true
   }

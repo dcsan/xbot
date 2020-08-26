@@ -23,6 +23,7 @@ const WordUtils = {
    * @param input
    */
   basicNormalize(input) {
+    if (!input || input.length < 1) return input
     input = input.toLowerCase()
     input = WordUtils.stripPunctuation(input)
     const words = input.split(' ')

@@ -63,7 +63,8 @@ class Player extends GameObject {
     item.has = "yes"
     this.copyItem(item)
     item.roomObj.removeItemByCname(item.cname)
-    logger.logObj('inv', this.invItems)
+    logger.log('invItems.length', this.invItems.length)
+    logger.logObj('invItems:', { items: this.invItems })
     return true
   }
 
@@ -113,7 +114,7 @@ class Player extends GameObject {
       // buttonLinks.push(`notebook | x notebook`) // artificial
       blocks.push(SlackBuilder.buttonsBlock(buttonLinks))
     }
-    blocks.push(SlackBuilder.contextBlock(':bulb: hint: _try to `use item with ...` other things in the room_'))
+    blocks.push(SlackBuilder.contextBlock(':information_source: hint: _try to `use item with ...` other things in the room_'))
     await evt.pal.sendBlocks(blocks)
   }
 

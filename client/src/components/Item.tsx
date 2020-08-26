@@ -19,7 +19,7 @@ const log = console.log
 const data = [
   {
     cname: 'album',
-    imgPath: '/cdn/storydata/asylum/items/album.jpg',
+    imgPath: '/cdn/storydata/asylum/items/600/album.jpg',
     headCaption: '⬆️ close this window to go back to the game',
     footCaption: 'You take the poster off the wall and flip it over...',
     backText: [

@@ -11,6 +11,20 @@ import AppConfig from '../../lib/AppConfig'
 
 import { StateBlock } from '../MupTypes'
 
+// FIXME - try to find slack types OR use Union types
+interface ISlackBlock {
+  type: string
+  text?: {
+    type: string
+    text: string
+    emoji?: boolean
+  }
+  elements?: any[]
+  title?: any
+  image_url?: string
+  alt_text?: string
+}
+
 const SlackBuilder = {
 
   logging: AppConfig.logLevel,
@@ -51,7 +65,7 @@ const SlackBuilder = {
   },
 
   contextBlock(text) {
-    const block = {
+    const block: ISlackBlock = {
       "type": "context",
       "elements": [
         // {
@@ -69,7 +83,7 @@ const SlackBuilder = {
   },
 
   textBlock(text: string) {
-    const block = {
+    const block: ISlackBlock = {
       "type": "section",
       "text": {
         "type": "mrkdwn",
@@ -91,8 +105,8 @@ const SlackBuilder = {
     }
   },
 
-  imageBlock(doc: StateBlock, thing: GameObject) {
-    return {
+  imageBlock(doc: StateBlock, thing: GameObject): ISlackBlock {
+    const imgBlock: ISlackBlock = {
       "type": "image",
       "title": {
         "type": "plain_text",   // no mrkdwn?
@@ -102,6 +116,7 @@ const SlackBuilder = {
       "image_url": Util.imageUrl(doc.imageUrl),
       "alt_text": doc.name || doc.short || "image"
     }
+    return imgBlock
   },
 
   // link to the item on the web with a button beneath
@@ -112,13 +127,14 @@ const SlackBuilder = {
       "type": "actions",
       "elements": [
         {
-          "type": "button",
-          "text": {
-            "type": "plain_text",
-            "text": linkText,
-            "emoji": true
+          type: "button",
+          style: "primary",
+          text: {
+            type: "plain_text",
+            text: linkText,
+            emoji: true
           },
-          "url": fullUrl
+          url: fullUrl
         }
       ]
     }
