@@ -16,6 +16,9 @@ const dialogflow = require('@google-cloud/dialogflow');
 // Instantiates a session client
 const sessionClient = new dialogflow.SessionsClient();
 
+// to log even during testing
+const logMode = { force: false }
+
 async function detectIntent(
   projectId,
   sessionId,
@@ -123,7 +126,7 @@ async function dfQuery(query): Promise<INlpResult> {
     }
   }
 
-  logger.logObj('intentResponse.queryResult', intentResponse.queryResult, { force: true })
+  logger.logObj('intentResponse.queryResult', intentResponse.queryResult)
 
   const entNames = entities.map(e => e.value)
   const firstEnt = entities && entities[0] ? entities[0].value : undefined
@@ -148,7 +151,7 @@ async function dfQuery(query): Promise<INlpResult> {
     entities
   }
 
-  logger.logObj('nlpResult', nlpResult, { force: true })
+  logger.logObj('nlpResult', nlpResult, logMode)
 
   return nlpResult
 
