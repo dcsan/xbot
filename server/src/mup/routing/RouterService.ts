@@ -83,7 +83,11 @@ const RouterService = {
   },
 
   showStatus: async (evt: SceneEvent) => {
-    await evt.game?.showStatus(evt.pal)
+    await evt.game?.showStatus(evt)
+  },
+
+  showThingStatus: async (evt: SceneEvent) => {
+    await evt.game?.showThingStatus(evt)
   },
 
   showLog: async (evt: SceneEvent) => {

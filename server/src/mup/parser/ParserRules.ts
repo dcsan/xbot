@@ -99,6 +99,13 @@ const StaticRules: RuleSpec[] = [
   },
 
   {
+    rex: /^st (?<thingName>\w+)$/,
+    cname: 'thingStatus',
+    type: 'preCommand',
+    event: RouterService.showThingStatus
+  },
+
+  {
     rex: /^(st|status)$/,
     cname: 'status',
     type: 'preCommand',

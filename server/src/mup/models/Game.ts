@@ -114,7 +114,7 @@ class Game {
   }
 
   // TODO add debug/admin on user check
-  async showStatus(pal: Pal) {
+  async showStatus(evt: SceneEvent) {
     const statusInfo = {
       story: this.story.status(),
       room: this.story.room.status(),
@@ -122,7 +122,18 @@ class Game {
     }
     // await pal.sendText('state ```\n' + JSON.stringify(pal.state, null, 2) + '```')
     const blob = yaml.dump(statusInfo)
-    await pal.sendText(Util.quoteCode(blob))
+    await evt.pal.sendText(Util.quoteCode(blob))
+  }
+
+  async showThingStatus(evt: SceneEvent) {
+    const name = evt.pres.parsed?.groups?.thingName
+    const thing = this.story.room.findThing(name)
+    if (thing) {
+      const blob = yaml.dump(thing.props)
+      await evt.pal.sendText(Util.quoteCode(blob))
+    } else {
+      await evt.pal.sendText('cannot find thing:' + name)
+    }
   }
 
 }

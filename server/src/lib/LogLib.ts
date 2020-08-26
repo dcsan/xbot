@@ -146,6 +146,11 @@ class MakeLogger {
     return line
   }
 
+  table(msg, obj) {
+    console.log(msg)
+    console.table(obj)
+  }
+
   silly(msg, ...rest) {
     if (AppConfig.logLevel >= LogLevels.SILLY) {
       this.logObj(msg, rest)

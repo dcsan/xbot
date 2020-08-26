@@ -34,6 +34,7 @@ class Room extends GameObject {
     this.hintStep = 'start'
     this.klass = 'room'
     this.roomItems = []
+    // this.reset()  // in super
     this.buildThings(story)
   }
 
@@ -161,14 +162,17 @@ class Room extends GameObject {
     // FIXME!
     // @ts-ignore
     reply.items = this.sortItems?.map((thing: Item) => {
+      const props = Util.removeEmptyKeys(thing.props)
+      // hidden getters
+      props.canTake = props.canTake ? true : false
+      props.hidden = props.hidden ? true : false
+      logger.table(thing.name, props)
       return {
-        [thing.name]: {
-          // state: thing.state,
-          props: Util.removeEmptyKeys(thing.props) || {}
-        }
+        [thing.name]: { props }
       }
     }) || []
-    console.log('props', this.props)
+
+    // logger.table('props', reply.items)
     // @ts-ignore
     reply.actors = this.actors?.map((thing: Actor) => {
       return { [thing.name]: thing.state }

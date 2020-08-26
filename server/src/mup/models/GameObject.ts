@@ -36,6 +36,13 @@ import { ErrorHandler, HandleCodes } from './ErrorHandler'
 //   handled: HandleCodes.processing
 // }
 
+interface ThingProps {
+  hidden: boolean
+  canTake: boolean
+  has: string   // yes|no
+  state?: string
+}
+
 
 class GameObject {
   doc: any
@@ -48,7 +55,7 @@ class GameObject {
   actions: ActionData[]
   klass: string
   // key:string objects for property setting
-  props: any
+  props?: ThingProps
   hidden?: boolean
 
   constructor(doc, story: Story, klass: string,) {
@@ -59,18 +66,21 @@ class GameObject {
     this.cname = Util.safeName(this.doc.name)
     this.klass = klass
     this.story = story
+    // this.props = this.resetProps()
     this.reset()
   }
 
   reset() {
-    this.props = {}
-    this.setProp('has', 'no') // cannot do booleans from script
-    this.resetState()
+    this.props = {
+      canTake: this.doc.canTake,
+      hidden: this.doc.hidden,
+      has: 'no'
+    }
+    this.initState()
   }
 
-  resetState() {
-    const state =
-      this.doc.state ||
+  initState() {
+    const state = this.doc.state ||
       (this.doc.states ? this.doc.states[0].name : DEFAULT_STATE)
     this.state = state
   }
@@ -103,13 +113,12 @@ class GameObject {
   }
 
   getProp(key) {
-    return this.props[key]
+    return this.props![key]
   }
   setProp(key, val) {
     // logger.logObj('setProp', { cname: this.cname, key, val })
-    this.props[key] = val
+    this.props![key] = val
   }
-
 
   get has(): string {
     return this.getProp('has')
@@ -343,7 +352,7 @@ class GameObject {
       logger.log('if block passed', pres.parsed.groups)
       return true
     } else {
-      logger.log('if block failed', pres.parsed.groups)
+      logger.warn('if block failed', pres.parsed.groups)
       // logger.logObj('if FAIL', { field, expect: value, actual }, true)
       // logger.logLine(`if / false ${target}.${field} expect: ${value} actual: ${actual} `)
       return false
