@@ -19,7 +19,7 @@ const RouterService = {
     await evt.game?.story.gotoRoom(roomName, evt)
   },
 
-  startGame: async (evt: SceneEvent) => {
+  resetGame: async (evt: SceneEvent) => {
     await evt.game?.restart(evt)
   },
 

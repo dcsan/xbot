@@ -63,8 +63,8 @@ const BotRouter = {
       return false
     }
 
-    if (Util.isCommand(input)) {
-      logger.log('isCommand true > ignore')
+    if (!Util.isCommand(input)) {
+      logger.log('isCommand > ignore')
       return false
     }
     input = Util.stripPrefix(input)

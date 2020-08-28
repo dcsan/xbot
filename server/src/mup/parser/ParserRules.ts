@@ -71,9 +71,9 @@ const StaticRules: RuleSpec[] = [
   },
 
   {
-    rex: /^(rs|start|restart|reset)$/i,
+    rex: /^(rs|restart|reset)$/i,
     cname: 'restart',
-    event: RouterService.startGame,
+    event: RouterService.resetGame,
     type: 'preCommand'
   },
 
