@@ -49,6 +49,11 @@ it('should merge objects', () => {
 
 })
 
+it('should strip prefix', async () => {
+  const clean = Util.stripPrefix('! some')
+  expect(clean).toBe('some')
+})
+
 it('should ingore commands start with punctuation', async () => {
   const tests = [
     '.something',

@@ -125,9 +125,22 @@ const Util = {
     return typeof obj === 'object' && Object.keys(obj).length === 0;
   },
 
+  isCommand(input): boolean {
+    if (/^[-'"\.#!`,>\\]/.test(input)) return true
+    return false
+  },
+
+  hasPrefix(input): boolean {
+    return (/^[-'"\.#! `,>\\]/.test(input))
+  },
+
+  stripPrefix(input): string {
+    let clean = input.replace(/^[-'"\.#! `,>\\]+/, '')
+    return clean.trim()
+  },
+
   shouldIgnore(input): boolean {
     if (!input) return true
-    if (/^[-'"\.# `,>\\]/.test(input)) return true
     if (input.split(' ').length > 5) return true
     if (/http/.test(input)) return true  // shared URLs - dont respond to
     // logger.log('not ignore', input)

@@ -62,6 +62,13 @@ const BotRouter = {
       logger.log('anyEvent ignoring input:', input)
       return false
     }
+
+    if (!Util.hasPrefix(input)) {
+      logger.log('prefix ignore hasPrefix=', Util.hasPrefix(input))
+      return false
+    }
+    input = Util.stripPrefix(input)
+
     logger.log('anyEvent.input: ', input)
     pal.logInput(input)  // store it for GameFuncs
 
