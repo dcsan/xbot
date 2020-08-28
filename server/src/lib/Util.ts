@@ -125,13 +125,17 @@ const Util = {
     return typeof obj === 'object' && Object.keys(obj).length === 0;
   },
 
-  isCommand(input): boolean {
-    if (/^[-'"\.#!`,>\\]/.test(input)) return true
-    return false
-  },
+  // isCommand(input): boolean {
+  //   if (/^[-'"\.#!`,>\\]/.test(input)) return true
+  //   return false
+  // },
 
-  hasPrefix(input): boolean {
-    return (/^[-'"\.#! `,>\\]/.test(input))
+  isCommand(input): boolean {
+    if (!input) return false
+    if (/^[-'"\.#! `,>\\]/.test(input)) { return true } // has prefix
+    if (input.split(' ').length < 3) { return true } // 2 words = command
+    if (/^btn /.test(input)) { return true } // its a button
+    return false
   },
 
   stripPrefix(input): string {
