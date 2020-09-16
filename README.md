@@ -10,6 +10,9 @@ if you update/deploy the nginx script,
 you might need to run certbot on the server again
 check the certificate is in the correct place
 
+### Static files
+
+
 ### Notes
 
 - NgInx permissions
