@@ -41,12 +41,12 @@ const StaticRules: RuleSpec[] = [
 
   // slash preCommands
   // note /slash punctuation is removed before rex comparison
-  {
-    rex: /\/hint (?<text>.*)/i,
-    cname: 'hint',
-    type: 'preCommand',
-    event: RouterService.showHint
-  },
+  // {
+  //   rex: /\/hint (?<text>.*)/i,
+  //   cname: 'hint',
+  //   type: 'preCommand',
+  //   event: RouterService.showHint
+  // },
 
   {
     cname: 'inventory',
@@ -127,7 +127,7 @@ const StaticRules: RuleSpec[] = [
   },
 
   {
-    rex: /^(notes|notebook|nb|hint)$/,
+    rex: /^(hint|tasks|tasklist|tl)$/,
     cname: 'log',
     type: 'preCommand',
     event: RouterService.showNotes

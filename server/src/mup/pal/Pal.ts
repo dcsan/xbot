@@ -137,7 +137,12 @@ class Pal {
       console.trace('tried to sendBlocks with no blocks:', blocks)
     }
     const msg: ISlackSection = SlackBuilder.wrapBlocks(blocks)
-    await this.slackEvent.say(msg)
+    try {
+      await this.slackEvent.say(msg)
+    } catch (err) {
+      logger.error('slack err', err)
+      logger.logObj('sending msg:', msg)
+    }
     await this.chatLogger.logBlocks(msg)
     // await this.wrapSay(msg, 'blocks')
   }

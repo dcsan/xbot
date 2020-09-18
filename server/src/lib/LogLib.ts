@@ -53,7 +53,7 @@ class MakeLogger {
   }
 
   error(msg, obj = {}) {
-    console.log("------- ERROR ---------", msg)
+    console.log(chalk.white.bgRed.bold(' ERROR ', msg))
     if (!Util.isEmptyObject(obj)) { console.log(obj) }
     // console.log('typeof', typeof (obj))
     // console.log('keys', Object.keys(obj))

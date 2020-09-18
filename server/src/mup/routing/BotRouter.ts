@@ -58,13 +58,13 @@ const BotRouter = {
   },
 
   async anyEvent(pal: Pal, input: string, _eventType: string = 'text'): Promise<boolean | undefined> {
+
     if (!input || Util.shouldIgnore(input)) {
-      logger.log('anyEvent ignoring input:', input)
+      logger.warn('shouldIgnore:', input)
       return false
     }
-
     if (!Util.isCommand(input)) {
-      logger.log('isCommand > ignore')
+      logger.warn('isCommand > ignore:', input)
       return false
     }
     input = Util.stripPrefix(input)

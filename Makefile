@@ -73,7 +73,7 @@ sync:
 	echo "done"
 
 
-syncCdn:
+syncCdn: fixPermissions
 	rsync -avi --delete \
 		--exclude .git \
 		server/cdn/ "${login}:${deployDir}/cdn"
