@@ -1,8 +1,8 @@
 import { SlashCommand } from '@slack/bolt'
 
-import { IMessage } from './MockChannel'
+import { IMessage } from '../MockChannel'
 
-interface ISlackSection {
+export interface ISlackSection {
   attachments: [
     {
       blocks: any[]
@@ -11,7 +11,7 @@ interface ISlackSection {
 }
 
 // parent of SlackAdapter etc
-interface ISlackEvent {
+export interface ISlackEvent {
   // ack?: any   // function
   ack?(): void
   say: any
@@ -64,4 +64,18 @@ interface ISlackEvent {
   }
 }
 
-export { ISlackEvent, ISlackSection }
+
+// FIXME - try to find slack types OR use Union types
+export interface ISlackBlock {
+  type: string
+  text?: {
+    type: string
+    text: string
+    emoji?: boolean
+  }
+  elements?: any[]
+  title?: any
+  image_url?: string
+  alt_text?: string
+}
+

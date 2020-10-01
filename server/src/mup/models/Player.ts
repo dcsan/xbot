@@ -1,7 +1,7 @@
 import Item from './Item'
 import { MakeLogger } from '../../lib/LogLib'
 import { SceneEvent } from '../MupTypes'
-import SlackBuilder from '../pal/SlackBuilder'
+import SlackBuilder from '../pal/slack/SlackBuilder'
 import { GameObject } from './GameObject'
 // import { Pal } from '../pal/Pal'
 import WordUtils from '../../lib/WordUtils';

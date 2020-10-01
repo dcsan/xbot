@@ -1,7 +1,10 @@
+// require this first to setup env
+// this should not require anything to avoid circular deps
+
 import dotEnv from 'dotenv-flow';
 dotEnv.config()
 
-import { SceneEvent } from '../mup/MupTypes'
+// import { SceneEvent } from '../mup/MupTypes'
 // console.log('NODE_ENV:\t', process.env.NODE_ENV)
 // console.log('CONFIG_APP:\t', process.env.CONFIG_APP)
 
@@ -14,20 +17,22 @@ const AppConfig = {
     // this is run after module has been used elsewhere so not good
   },
 
-  async toggleDebug(evt: SceneEvent) {
-    const level = AppConfig.logLevel ? 0 : 5
-    AppConfig.logLevel = level
-    await evt.pal.sendText(` \`debugLevel: ${level} \` `)
-  },
+  // async toggleDebug(evt: SceneEvent) {
+  //   const level = AppConfig.logLevel ? 0 : 5
+  //   AppConfig.logLevel = level
+  //   await evt.pal.sendText(` \`debugLevel: ${level} \` `)
+  // },
 
   // TODO - merge props below
   read(key) {
     const check = AppConfig[key] || process.env[key]
     if (check !== undefined) { return check } // allow 'false'
     // else
-    const msg = "cannot find env var:" + key
-    console.warn('process.env = ', process.env, msg)
-    throw (msg)
+    const msg = "cannot find env var: " + key
+    console.error(msg)
+    // console.error('process.env = ', process.env, msg)
+    return undefined
+    // throw (msg)
   },
 
   checkCoreKeys() {

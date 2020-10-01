@@ -1,7 +1,7 @@
 // a mock channel event for testing
 // simulates the SlackEvent or other adapter incoming event
 
-import { ISlackEvent } from './SlackTypes'
+import { ISlackEvent } from './slack/SlackTypes'
 
 interface IMessage {
   text: string

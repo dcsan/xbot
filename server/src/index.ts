@@ -1,13 +1,12 @@
 console.log('compiled')
 console.time('startUp')
 
+import AppConfig from './lib/AppConfig'
 import { dbConn, DbConfig } from './mup/core/DbConfig'
 
-console.time('import')
-import SlackRouter from './mup/pal/SlackRouter'
-console.timeEnd('import')
+import SlackRouter from './mup/pal/slack/SlackRouter'
+import { DiscordRouter } from './mup/pal/discord/DiscordRouter'
 
-import Util from './lib/Util'
 
 async function main() {
   // Start your app
@@ -16,14 +15,14 @@ async function main() {
   DbConfig.init()
   console.timeEnd('dbConnect')
 
-  console.time('SlackRouter.init')
-  const slackApp = SlackRouter.init()
-  console.timeEnd('SlackRouter.init')
-  const port = process.env.PORT || 3000
-  console.time('slackApp.start')
-  await slackApp.start(port);
-  console.timeEnd('slackApp.start')
-  console.log('⚡️ Bolt running on port', port)
+  if (AppConfig.read('SLACK_BOT_TOKEN')) {
+    await SlackRouter.startUp()
+  }
+
+  if (AppConfig.read('DISCORD_BOT_TOKEN')) {
+    await DiscordRouter.init()
+  }
+
 }
 
 console.time('main')

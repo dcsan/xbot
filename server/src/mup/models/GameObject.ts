@@ -1,4 +1,4 @@
-import SlackBuilder from '../pal/SlackBuilder'
+import SlackBuilder from '../pal/slack/SlackBuilder'
 import { MakeLogger } from '../../lib/LogLib'
 import Util from '../../lib/Util'
 

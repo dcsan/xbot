@@ -37,6 +37,11 @@ const Util = {
     return ('?x=' + ts) // 10 minute
   },
 
+  localCdnPath(relPath) {
+    const fp = path.join(__dirname, '../../cdn/storydata', relPath)
+    return fp
+  },
+
   // wrap relative image URLs
   // also allows `text=xxx` links
   imageUrl(relPath) {

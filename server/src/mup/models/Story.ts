@@ -1,6 +1,6 @@
 import { MakeLogger } from '../../lib/LogLib'
 import Util from '../../lib/Util'
-import SlackBuilder from '../pal/SlackBuilder'
+import SlackBuilder from '../pal/slack/SlackBuilder'
 import Room from './Room'
 import Game from './Game'
 // const assert = require('chai').assert

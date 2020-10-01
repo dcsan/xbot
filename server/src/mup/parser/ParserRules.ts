@@ -91,12 +91,12 @@ const StaticRules: RuleSpec[] = [
     type: 'preCommand'
   },
 
-  {
-    rex: /^dbg$/,
-    cname: 'debug',
-    type: 'preCommand',
-    event: AppConfig.toggleDebug
-  },
+  // {
+  //   rex: /^dbg$/,
+  //   cname: 'debug',
+  //   type: 'preCommand',
+  //   event: AppConfig.toggleDebug
+  // },
 
   {
     rex: /^st (?<thingName>\w+)$/,
@@ -156,12 +156,12 @@ const StaticRules: RuleSpec[] = [
     event: RouterService.sendImageLink
   },
 
-  {
-    rex: /^(unf)$/,
-    cname: 'log',
-    type: 'preCommand',
-    event: RouterService.sendUnfurl
-  },
+  // {
+  //   rex: /^(unf)$/,
+  //   cname: 'log',
+  //   type: 'preCommand',
+  //   event: RouterService.sendUnfurl
+  // },
 
   {
     rex: /^(imglink)$/im,

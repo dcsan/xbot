@@ -1,5 +1,9 @@
 // Platform Abstraction Layer
 
+import {
+  Message
+} from "discord.js";
+
 
 // import fs from 'fs'
 // import path from 'path'
@@ -11,39 +15,71 @@ import AppConfig from '../../lib/AppConfig'
 import { ChatLogger, IChatRow } from './ChatLogger'
 import { MakeLogger } from '../../lib/LogLib'
 import { MockChannel, IMessage } from './MockChannel'
-import { ISlackEvent, ISlackSection } from './SlackTypes'
+import { ISlackEvent, ISlackSection } from './slack/SlackTypes'
 
 import Util from '../../lib/Util'
-import SlackBuilder from './SlackBuilder'
-// import chalk from 'chalk'
 
+// import chalk from 'chalk'
 
 const logger = new MakeLogger('Pal')
 
 const debugOutput = AppConfig.logLevel
 const logMode = false
 
-class Pal {
-  slackEvent: ISlackEvent | MockChannel
+interface IPal {
+  sendBlocks(blocks)
+  sendText(msg: string)
+  postMessage(msg: string)
+  showLog()
+}
+
+export type FlexEvent = ISlackEvent | MockChannel | Message
+
+class Pal implements IPal {
+  lastEvent: FlexEvent
   sessionId: string
   chatLogger: ChatLogger
   lastInput?: string
 
   // FIXME - for slack middleware
-  constructor(channelEvent: any, sid: string) {
-    this.slackEvent = channelEvent
+  constructor(channelEvent: FlexEvent, sid: string) {
+    this.lastEvent = channelEvent
     this.sessionId = sid
     this.chatLogger = new ChatLogger(sid)
     logger.log('new pal', { sessionId: this.sessionId })
   }
 
-  // when a new event comes in to the same channel we just update the event
-  // but keep the same Pal object for things like linked game/session/internal convoId
-  event(slackEvent: ISlackEvent) {
-    // TODO keep a list of events?
-    this.slackEvent = slackEvent
-    const text = slackEvent.message?.text
-    logger.log('new Pal.slackEvent .text:', text)
+  postMessage(_msg: string) {
+    throw new Error("Method not implemented.");
+  }
+  showLog() {
+    throw new Error("Method not implemented.");
+  }
+
+  // abstract methods
+  processTemplate(text: string): string {
+    return text
+  }
+
+  sendBlocks(_blocks: any[]) {
+    throw new Error("sendBlocks Method not implemented.");
+  }
+
+  sendText(msg: string) {
+    logger.warn('send text should be in child', msg)
+  }
+
+  // abstract method
+  lastText(): string {
+    const msg = "should be implement in child class"
+    logger.error(msg)
+    return msg
+  }
+
+  lastActionValue(): string {
+    const msg = "lastActionValue should be in subclass"
+    logger.error(msg)
+    return msg
   }
 
   // for testing
@@ -60,101 +96,9 @@ class Pal {
     return this.chatLogger.rows[this.chatLogger.rows.length - 1]
   }
 
-  // TODO - fix up these types
-  async wrapSay(msg: IChatRow) {
-    await this.chatLogger.logRow(msg)
-    try {
-      await this.slackEvent.say(msg)
-    } catch (err) {
-      logger.logJson('ERROR channel.say =>', msg)
-      logger.error('ERROR', err)  // FIXME maybe not .data ?
-    }
-  }
-
-  // todo - FIXME
-  processTemplate(text: string): string {
-    const username = this.slackEvent.user?.username
-    logger.log('processTemplate user:', this.slackEvent.user)
-    if (username) {
-      text = text.replace(/$username/gi, username)
-    }
-    return text
-  }
-
-  async sendText(text: string) {
-    text = this.processTemplate(text)
-    const block = SlackBuilder.textBlock(text)
-    await this.sendBlocks([block])
-    // await this.wrapSay({ text, type: 'text', who: 'bot' })
-  }
-
-  async sendImage(text: string) {
-    await this.wrapSay({ text, type: 'image', who: 'bot' })
-  }
-
-  async sendUnfurl(text: string) {
-    const msg = {
-      text,
-      type: 'unfurl',
-      who: 'bot',
-      unfurl_links: false,
-      unfurl_media: false
-    }
-    await this.wrapSay(msg)
-  }
-
-  // convenience to send an array of lines
-  async sendList(list: string[]) {
-    const text = list.join('\n')
-    await this.wrapSay({ text, type: 'text', who: 'bot' })
-  }
-
-  async postMessage(msg: any) {
-    msg.type = 'post'
-    await this.wrapSay(msg)
-  }
-
-  async debugMessage(obj) {
-    logger.warn('debug message', obj)
-    // TODO - fixme / revive
-    // if (AppConfig.logLevel <= 3) return
-    // // const clean = { ...obj } // remove nulls?
-    // const clean = Util.removeEmptyKeys(obj)
-    // // console.log('json', JSON.stringify(clean, null, 2))
-    // const blob = yaml.dump(clean, { skipInvalid: true, lineWidth: 200 })
-    // console.log('yaml', blob)
-    // await this.wrapSay(Util.quoteCode(blob), 'debug')
-  }
-
-  async sendButtons(buttons: string[]) {
-    const block = SlackBuilder.buttonsBlock(buttons)
-    await this.sendBlocks([block])
-    await this.chatLogger.logRow({ who: 'bot', text: buttons.join(' | '), type: 'buttons' })
-  }
-
-  async sendBlocks(blocks) {
-    if (!blocks || !blocks.length) {
-      console.trace('tried to sendBlocks with no blocks:', blocks)
-    }
-    const msg: ISlackSection = SlackBuilder.wrapBlocks(blocks)
-    try {
-      await this.slackEvent.say(msg)
-    } catch (err) {
-      logger.error('slack err', err)
-      logger.logObj('sending msg:', msg)
-    }
-    await this.chatLogger.logBlocks(msg)
-    // await this.wrapSay(msg, 'blocks')
-  }
 
   getLogs() {
     return this.chatLogger.rows
-  }
-
-  async showLog() {
-    const text = this.chatLogger.tailText(-1)
-    this.slackEvent.say(Util.quoteCode(text))
-    return text
   }
 
 }

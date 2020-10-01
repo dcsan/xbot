@@ -1,29 +1,15 @@
-import { Logger } from "../../lib/LogLib"
-import Util from '../../lib/Util'
-import Item from '../models/Item'
-import { GameObject } from '../models/GameObject'
+import { Logger } from "../../../lib/LogLib"
+import Util from '../../../lib/Util'
+import Item from '../../models/Item'
+import { GameObject } from '../../models/GameObject'
 
-import { ISlackSection } from './SlackTypes'
+import { ISlackSection, ISlackBlock } from './SlackTypes'
 
-import { ActionBranch } from '../MupTypes'
-import AppConfig from '../../lib/AppConfig'
+import { ActionBranch } from '../../MupTypes'
+import AppConfig from '../../../lib/AppConfig'
 
 
-import { StateBlock } from '../MupTypes'
-
-// FIXME - try to find slack types OR use Union types
-interface ISlackBlock {
-  type: string
-  text?: {
-    type: string
-    text: string
-    emoji?: boolean
-  }
-  elements?: any[]
-  title?: any
-  image_url?: string
-  alt_text?: string
-}
+import { StateBlock } from '../../MupTypes'
 
 const SlackBuilder = {
 
@@ -106,6 +92,11 @@ const SlackBuilder = {
   },
 
   imageBlock(doc: StateBlock, thing: GameObject): ISlackBlock {
+
+    // FIXME - discord builds images differently
+    // const image_url = Util.imageUrl(doc.imageUrl)
+    const image_url = doc.imageUrl
+
     const imgBlock: ISlackBlock = {
       "type": "image",
       "title": {
@@ -113,7 +104,7 @@ const SlackBuilder = {
         "text": thing.name || doc.short || "image", // name of the STATE not the room?
         "emoji": true
       },
-      "image_url": Util.imageUrl(doc.imageUrl),
+      "image_url": image_url,
       "alt_text": doc.name || doc.short || "image"
     }
     return imgBlock

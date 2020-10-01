@@ -38,15 +38,16 @@ const logger = new MakeLogger('botRouter')
 const BotRouter = {
 
   async textEvent(pal: Pal): Promise<boolean | undefined> {
-    const input: string = pal.slackEvent.message.text
+    const input: string = pal.lastText()
     pal.chatLogger.logInput({ who: 'user', text: input, type: 'text' })
     return await BotRouter.anyEvent(pal, input, 'text')
   },
 
   async actionEvent(pal: Pal): Promise<boolean | undefined> {
     const input: string | undefined =
-      pal.slackEvent.action.value ||
-      pal.slackEvent.action.text?.text  // button with URL link
+      pal.lastActionValue()
+    // pal.lastEvent.action.value ||
+    // pal.lastEvent.action.text?.text  // button with URL link
 
     pal.chatLogger.logInput({ who: 'user', text: input, type: 'event' })
     return await BotRouter.anyEvent(pal, input!, 'action')
@@ -103,7 +104,7 @@ const BotRouter = {
       return true
     } else {
       const err = `no match: [${clean}]`
-      await pal.debugMessage(err)
+      // await pal.debugMessage(err)
       logger.warn(err)
       const target = evt.pres.pos?.target
       const verb = evt.pres.pos?.verb
@@ -133,7 +134,7 @@ const BotRouter = {
       return false
     }
     // logger.log('tryCommands for evt.pres=', evt.pres.clean)
-    logger.log('preCommands found rule =>', evt.pres.rule.cname)
+    logger.log('preCommands found rule =>', evt.pres.rule.cname, evt.pres.rule.event)
     const result = await evt.pres.rule?.event(evt)
     logger.log('tryCommands.result =>', result)  // FIXME - track results?
     return true // parser found a command

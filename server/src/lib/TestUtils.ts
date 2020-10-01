@@ -5,7 +5,9 @@ const mongoose = require('mongoose');
 // import Room from '../mup/models/Room'
 import Game from '../mup/models/Game'
 import { GameManager } from '../mup/models/GameManager'
-import { Pal, MockChannel } from '../mup/pal/Pal'
+import { MockChannel, Pal } from '../mup/pal/Pal'
+import { MockPal } from '../mup/pal/mock/MockPal'
+
 import { LoadOptions } from '../mup/MupTypes'
 import { RexParser } from '../mup/parser/RexParser'
 import { SceneEvent, StoryTest } from '../mup/MupTypes'
@@ -22,7 +24,7 @@ const logAll = true
 // const logAll = false
 
 class TestEnv {
-  pal: Pal
+  pal: MockPal
   game!: Game   // force to assume we've always done an async loadGame
   ready: boolean
   dbConn: any
@@ -85,7 +87,7 @@ class TestEnv {
   getMockPal(): Pal {
     const mockChannel = new MockChannel()
     const mockSessionId = 'mockSessionId-1234'
-    const pal = new Pal(mockChannel, mockSessionId)
+    const pal = new MockPal(mockChannel, mockSessionId)
     return pal
   }
 

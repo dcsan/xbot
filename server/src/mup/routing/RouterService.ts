@@ -122,15 +122,15 @@ const RouterService = {
     return await evt.pal.sendText('Goodbye!')
   },
 
-  sendImageFooter: async (evt: SceneEvent) => {
-    await evt.pal.sendImage('https://cbg.rik.ai/cdn/storydata/asylum/items/album.jpg')
-    await evt.pal.sendText(':mag: <https://cbg.rik.ai/items/album|examine>')
-  },
+  // sendImageFooter: async (evt: SceneEvent) => {
+  //   await evt.pal.sendImage('https://cbg.rik.ai/cdn/storydata/asylum/items/album.jpg')
+  //   await evt.pal.sendText(':mag: <https://cbg.rik.ai/items/album|examine>')
+  // },
 
-  sendUnfurl: async (evt: SceneEvent) => {
-    await evt.pal.sendUnfurl('<https://cbg.rik.ai/items/album| :mag: examine>')
-    // await evt.pal.sendText('<https://cbg.rik.ai/items/album|examine>')
-  },
+  // sendUnfurl: async (evt: SceneEvent) => {
+  //   await evt.pal.sendUnfurl('<https://cbg.rik.ai/items/album| :mag: examine>')
+  //   // await evt.pal.sendText('<https://cbg.rik.ai/items/album|examine>')
+  // },
 
   sendImageLink: async (evt: SceneEvent) => {
     const title = "Album"

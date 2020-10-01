@@ -1,6 +1,6 @@
 import { Logger } from '../../lib/LogLib'
 import { SceneEvent } from '../MupTypes'
-import SlackBuilder from '../pal/SlackBuilder'
+import SlackBuilder from '../pal/slack/SlackBuilder'
 
 enum HandleCodes {
   processing = 'processing',   // started looking

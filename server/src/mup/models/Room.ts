@@ -1,5 +1,5 @@
 import { MakeLogger } from '../../lib/LogLib'
-import SlackBuilder from '../pal/SlackBuilder'
+import SlackBuilder from '../pal/slack/SlackBuilder'
 import { GameObject } from './GameObject'
 import WordUtils from '../../lib/WordUtils'
 import Actor from './Actor'
@@ -106,6 +106,7 @@ class Room extends GameObject {
   }
 
   async lookRoom(evt: SceneEvent) {
+    logger.log('lookRoom', this.roomObj.doc.name)
     await this.roomObj.describeThing(evt) // the room
   }
 

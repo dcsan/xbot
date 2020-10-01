@@ -6,7 +6,7 @@ const _ = require('lodash')
 const logger = new MakeLogger('ChatLogger')
 
 // import { IMessage } from './MockChannel'
-import { ISlackSection } from './SlackTypes'
+import { ISlackSection } from './slack/SlackTypes'
 
 const ChatLogSchema = Schema({
   who: String,
