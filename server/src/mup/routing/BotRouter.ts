@@ -43,9 +43,8 @@ const BotRouter = {
     return await BotRouter.anyEvent(pal, input, 'text')
   },
 
-  async actionEvent(pal: Pal): Promise<boolean | undefined> {
-    const input: string | undefined =
-      pal.lastActionValue()
+  async actionEvent(pal: Pal, input?: string): Promise<boolean | undefined> {
+    input = input || pal.lastActionValue()
     // pal.lastEvent.action.value ||
     // pal.lastEvent.action.text?.text  // button with URL link
 

@@ -82,7 +82,8 @@ class Game {
     const help = SlackBuilder.textBlock(this.helpDoc)
     const msg = SlackBuilder.wrapBlocks([help])
     // await pal.postEphemeral(msg)
-    await pal.postMessage(msg)
+    // await pal.postMessage(msg)
+    await pal.sendBlocks([msg])
   }
 
   async SayTest(pal: Pal) {

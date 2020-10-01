@@ -96,10 +96,10 @@ class Pal implements IPal {
     return this.chatLogger.rows[this.chatLogger.rows.length - 1]
   }
 
-
   getLogs() {
     return this.chatLogger.rows
   }
+
 
 }
 

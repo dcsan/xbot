@@ -21,7 +21,8 @@ const SlackBuilder = {
 
   // a single button: text|value
   buttonItem(buttonLine: string) {
-    let [text, value] = buttonLine.split('|')
+    let [text, value, icon] = buttonLine.split('|')
+    // icon = (icon).trim()
     text = text.trim()
     value = (value || text).trim()
     return {
@@ -31,6 +32,7 @@ const SlackBuilder = {
         "text": text,
         "emoji": true
       },
+      icon, // for discord emoji
       "value": value
     }
   },

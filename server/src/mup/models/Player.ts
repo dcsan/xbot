@@ -114,7 +114,9 @@ class Player extends GameObject {
       // buttonLinks.push(`notebook | x notebook`) // artificial
       blocks.push(SlackBuilder.buttonsBlock(buttonLinks))
     }
-    blocks.push(SlackBuilder.contextBlock(':information_source: hint: _try to `use item with ...` other things in the room_'))
+    // blocks.push(SlackBuilder.contextBlock(':information_source: hint: _try to `use item with ...` other things in the room_'))
+    blocks.push(SlackBuilder.contextBlock(
+      ':information_source: you can `x item` to examine it'))
     await evt.pal.sendBlocks(blocks)
   }
 
