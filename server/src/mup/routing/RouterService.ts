@@ -28,6 +28,10 @@ const RouterService = {
 
   clear: async (evt: SceneEvent) => {
     await evt.pal.clearChannel()
+    return await evt.game?.story.room.enterRoom(evt.pal)
+  },
+  voice: async (evt: SceneEvent) => {
+    await evt.pal.showVoiceChannel(evt.pal)
   },
 
   resetGame: async (evt: SceneEvent) => {

@@ -112,9 +112,12 @@ const BotRouter = {
       } else if (target) {
         msg = `I can't see a ${target}`
       } else {
-        msg = `I don't understand ${input}`
+        // handle with an emoji reaction?
+        // msg = `I don't understand ${input}`
       }
-      await evt.pal.sendText(msg)
+      if (msg) {
+        await evt.pal.sendText(msg)
+      }
       return false
     }
   },

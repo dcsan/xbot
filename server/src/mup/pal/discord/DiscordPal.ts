@@ -132,6 +132,8 @@ class DiscordPal extends Pal {
   }
  */
 
+  // TODO refactor so we can build it natively here,
+  // this is parsing the slackbuilder format now
   // just for one button 'continue' block now
   async sendButtons(block: ISlackBlock) {
 
@@ -140,15 +142,17 @@ class DiscordPal extends Pal {
     let emojis: string[] = []
     let title: string = ''
     if (block.elements && block.elements.length > 1) {
-
+      // TODO - handle multiple buttons
     }
+    let useEmbeds = false
     for (const elem of block.elements!) {
       let text
       if (elem.url) {
+        useEmbeds = true
         // :mag:  :earth_americas:
         text = `:mag: [${elem.text.text}](${elem.url}) `
       } else {
-        text = `[${elem.text.text}] `
+        text = ` \`\`\`⬇︎ [${elem.text.text}] \`\`\` `
       }
       title += text
       // fields.push({
@@ -160,19 +164,24 @@ class DiscordPal extends Pal {
       emojis.push(elem.icon)
     }
     // bodyText = `\`\`\`${bodyText}\`\`\``.trim()
-    const embed = {
-      // title,
-      description: title,
-      // fields
+
+    let message
+    if (useEmbeds) {
+      const embed = {
+        // title,
+        description: title,
+        // fields
+      }
+      logger.logObj('embed', embed)
+      message = await this.lastEvent.channel.send({ embed })
+    } else {
+      message = await this.lastEvent.channel.send(title)
     }
-    logger.logObj('embed', embed)
-    const message = await this.lastEvent.channel.send({ embed })
     const emoList = emojis.filter(em => !!em)
     for (const em of emoList) {
       await message.react(em)
     }
-    // logger.log('sendButtons=>', embed, emoList)
-
+    logger.log('sendButtons=>', message.content, emoList)
   }
 
   async sendBlocks(blocks: ISlackBlock[]) {
@@ -202,6 +211,15 @@ class DiscordPal extends Pal {
       }
 
     }
+  }
+
+  async showVoiceChannel(pal: Pal) {
+    const message: Message = pal.lastEvent as Message
+    let text = `https://discord.gg/HZeTnGq \n`
+    text += "click here to join the voice chat"
+    const m2 = await message.channel.send(text)
+    // await m2.react('\:fire:');
+    // await m2.react('🎲');
   }
 
   // TODO - find names for common emoji

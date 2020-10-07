@@ -35,6 +35,7 @@ interface IPal {
   // discord only
   clearChannel(): Promise<void>
   showInstallUrl(): Promise<void>
+  showVoiceChannel(_pal: Pal): Promise<void>
 }
 
 export type FlexEvent = ISlackEvent | MockChannel | Message
@@ -52,11 +53,14 @@ class Pal implements IPal {
     this.chatLogger = new ChatLogger(sid)
     logger.log('new pal', { sessionId: this.sessionId })
   }
-  clearChannel(): Promise<void> {
 
+  async showVoiceChannel(_pal: Pal) {
     throw new Error("Method not implemented.");
   }
-  showInstallUrl(): Promise<void> {
+  async clearChannel(): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
+  async showInstallUrl(): Promise<void> {
     throw new Error("Method not implemented.");
   }
 

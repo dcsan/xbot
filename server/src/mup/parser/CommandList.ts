@@ -56,6 +56,14 @@ const StaticRules: RuleSpec[] = [
     admin: true
   },
 
+  {
+    cname: 'voice',
+    rex: /^voice/i,
+    event: RouterService.voice,
+    type: 'preCommand',
+    admin: true
+  },
+
   // slash preCommands
   // note /slash punctuation is removed before rex comparison
   // {
