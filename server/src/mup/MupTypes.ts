@@ -1,5 +1,5 @@
 import Game from 'mup/models/Game'
-import { Pal } from '../mup/pal/Pal'
+import { Pal } from './pal/base/Pal'
 
 import { HandleCodes } from './models/ErrorHandler'
 

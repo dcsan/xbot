@@ -1,4 +1,4 @@
-import { Pal } from '../pal/Pal'
+import { Pal } from '../pal/base/Pal'
 import Game from './Game'
 import { MakeLogger } from '../../lib/LogLib'
 import { LoadOptions } from 'mup/MupTypes'

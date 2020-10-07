@@ -30,7 +30,7 @@ class MakeLogger {
   }
 
   get where() {
-    return chalk.gray(`[${this.name}] -->\t`)
+    return chalk.gray(`[${this.name}]  \t`)
   }
 
   log(msg, ...rest) {
@@ -57,7 +57,7 @@ class MakeLogger {
   }
 
   error(msg, obj = {}) {
-    console.log(chalk.white.bgRed.bold(' ERROR ', msg))
+    console.log(this.where, chalk.white.bgRed.bold(' ERROR ', msg))
     if (!Util.isEmptyObject(obj)) { console.log(obj) }
     // console.log('typeof', typeof (obj))
     // console.log('keys', Object.keys(obj))

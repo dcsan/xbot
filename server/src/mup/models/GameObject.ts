@@ -8,7 +8,7 @@ import Story from './Story'
 import Actor from './Actor'
 // import Item from './Item'
 // import Player from './Player'
-import { Pal } from '../pal/Pal'
+import { Pal } from '../pal/base/Pal'
 import { SceneEvent } from '../MupTypes'
 import { GameFuncs } from '../scripts/GameFuncs'
 import BotRouter from '../routing/BotRouter'
@@ -183,12 +183,15 @@ class GameObject {
   // may work for rooms and things
   async describeThing(evt: SceneEvent) {
     const stateInfo: StateBlock = this.getStateBlock()
-    const palBlocks = this.renderItem(stateInfo)
+    const palBlocks = this.renderBlocks(stateInfo)
     await evt.pal.sendBlocks(palBlocks)
     return palBlocks
   }
 
-  renderItem(stateInfo: StateBlock): any[] {
+  // render item as a display set of blocks
+  // TODO - use pal.builder to decide what type of builder to use - slack/discord
+  // so rendering is different
+  renderBlocks(stateInfo: StateBlock): any[] {
     const palBlocks: any[] = []
 
     // logger.log('describeThing', {
@@ -383,7 +386,7 @@ class GameObject {
     }
 
     // FIXME merge types for branch and stateBlock
-    const palBlocks = this.renderItem(branch as StateBlock)
+    const palBlocks = this.renderBlocks(branch as StateBlock)
     if (palBlocks && palBlocks.length) {
       // console.log('palBlocks', palBlocks)
       await evt.pal.sendBlocks(palBlocks)

@@ -1,19 +1,22 @@
-import { Pal, ISlackEvent } from '../pal/Pal'
-import { DiscordPal } from '../pal/discord/DiscordPal'
+import { Pal, ISlackEvent } from './base/Pal'
 import {
   Message
 } from "discord.js";
+
+import { SlackPal } from './slack/SlackPal'
+import { DiscordPal } from '../pal/discord/DiscordPal'
 
 import { MakeLogger } from '../../lib/LogLib'
 
 const logger = new MakeLogger('PalManager')
 
+// could hold both slack and discord Pals
 let palCache = {}
 
 const PalManager = {
 
   // TODO store in mongo
-  findSlackPal(slackEvent: ISlackEvent | any, sid?: string): Pal {
+  findSlackPal(slackEvent: ISlackEvent | any, sid?: string): SlackPal {
     sid = sid ||
       slackEvent.event?.channel ||
       slackEvent.payload?.channel?.id ||
@@ -23,18 +26,18 @@ const PalManager = {
     if (!sid) {
       logger.fatal('cannot get sessionId', JSON.stringify(slackEvent, null, 2))
     }
-    let pal: Pal = palCache[sid!]
+    let pal: SlackPal = palCache[sid!]
     if (!pal) {
-      pal = new Pal(slackEvent, sid!)
+      pal = new SlackPal(slackEvent, sid!)
       palCache[sid!] = pal
     }
     pal.lastEvent = slackEvent
     return pal
   },
 
-  findDiscoPal(message: Message): Pal {
+  findDiscoPal(message: Message): DiscordPal {
     const sid = message.channel.id
-    let pal: Pal = palCache[sid]
+    let pal: DiscordPal = palCache[sid]
 
     if (!pal) {
       pal = new DiscordPal(message, sid!)

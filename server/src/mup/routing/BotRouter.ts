@@ -1,6 +1,6 @@
 // import { App, MessageEvent, SayFn, SlackEventMiddlewareArgs } from '@slack/bolt';
 import AppConfig from '../../lib/AppConfig'
-import { Pal, ISlackEvent } from '../pal/Pal'
+import { Pal, ISlackEvent } from '../pal/base/Pal'
 import { RexParser, ParserResult } from '../parser/RexParser'
 import { MakeLogger } from '../../lib/LogLib'
 import { dfQuery } from '../nlp/DfWrapper'

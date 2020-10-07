@@ -6,7 +6,7 @@ import { GameManager } from '../models/GameManager'
 
 import { MakeLogger } from '../../lib/LogLib'
 import Util from '../../lib/Util'
-import { Pal } from '../pal/Pal'
+import { Pal } from '../pal/base/Pal'
 import { RexParser, ParserResult } from '../parser/RexParser'
 
 import { SceneEvent } from '../MupTypes'
@@ -147,37 +147,37 @@ const RouterService = {
   //   // await evt.pal.sendText('<https://cbg.rik.ai/items/album|examine>')
   // },
 
-  sendImageLink: async (evt: SceneEvent) => {
-    const title = "Album"
+  // sendImageLink: async (evt: SceneEvent) => {
+  //   const title = "Album"
 
-    const blocks = [
-      {
-        "type": "image",
-        "title": {
-          "type": "plain_text",
-          "text": title,
-          "emoji": true
-        },
-        "image_url": "https://cbg.rik.ai/cdn/storydata/asylum/items/album.jpg",
-        "alt_text": "marg"
-      },
-      {
-        "type": "actions",
-        "elements": [
-          {
-            "type": "button",
-            "text": {
-              "type": "plain_text",
-              "text": ":mag:  Examine",
-              "emoji": true
-            },
-            "url": "https://cbg.rik.ai/items/album"
-          }
-        ]
-      }
-    ]
-    await evt.pal.sendBlocks(blocks)
-  },
+  //   const blocks = [
+  //     {
+  //       "type": "image",
+  //       "title": {
+  //         "type": "plain_text",
+  //         "text": title,
+  //         "emoji": true
+  //       },
+  //       "image_url": "https://cbg.rik.ai/cdn/storydata/asylum/items/album.jpg",
+  //       "alt_text": "marg"
+  //     },
+  //     {
+  //       "type": "actions",
+  //       "elements": [
+  //         {
+  //           "type": "button",
+  //           "text": {
+  //             "type": "plain_text",
+  //             "text": ":mag:  Examine",
+  //             "emoji": true
+  //           },
+  //           "url": "https://cbg.rik.ai/items/album"
+  //         }
+  //       ]
+  //     }
+  //   ]
+  //   await evt.pal.sendBlocks(blocks)
+  // },
 
 
 }

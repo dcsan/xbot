@@ -1,4 +1,4 @@
-import { Pal } from '../Pal'
+import { Pal } from '../base/Pal'
 
 class MockPal extends Pal {
 

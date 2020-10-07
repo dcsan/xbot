@@ -8,15 +8,20 @@ import BotRouter from '../../routing/BotRouter'
 import { DiscoUtils } from './DiscoUtils'
 import { MakeLogger } from '../../../lib/LogLib'
 import { PalManager } from '../PalManager'
-import { Pal, ISlackEvent } from '../Pal'
+import { Pal, ISlackEvent } from '../base/Pal'
 
-const logger = new MakeLogger('Pal')
+const logger = new MakeLogger('DiscordRouter')
 
 const prefix = ''
 
 const DiscordRouter = {
 
   init() {
+    const enabled = AppConfig.read('DISCORD_ENABLED')
+    if (enabled !== 'yes') {
+      logger.log('DISCORD_ENABLED', enabled, 'skipping')
+      return
+    }
     const client = new Discord.Client();
     client.login(AppConfig.read('DISCORD_BOT_TOKEN'));
     client.once('ready', () => {

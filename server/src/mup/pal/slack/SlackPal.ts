@@ -1,4 +1,4 @@
-import { Pal } from '../Pal'
+import { Pal, IPal, FlexEvent } from '../base/Pal'
 
 import {
   ChatLogger, IChatRow
@@ -6,16 +6,19 @@ import {
 
 import { MakeLogger } from '../../../lib/LogLib'
 import {
-  ISlackEvent, ISlackSection,
+  ISlackEvent,
+  ISlackSection,
   ISlackBlock
 } from './SlackTypes'
 import SlackBuilder from './SlackBuilder'
 
 const logger = new MakeLogger('SlackPal')
 
-class SlackPal extends Pal {
+class SlackPal extends Pal implements IPal {
 
-  lastEvent: ISlackEvent
+  // lastEvent: ISlackEvent
+  // lastEvent: FlexEvent
+  // lastSlackEvent: ISlackEvent
 
   constructor(channelEvent: any, sid: string) {
     super(channelEvent, sid)
@@ -35,7 +38,6 @@ class SlackPal extends Pal {
     return this.lastEvent.message.text
   }
 
-
   lastActionValue(): string {
     const text =
       this.lastEvent.action.value ||
@@ -44,6 +46,7 @@ class SlackPal extends Pal {
   }
 
   // TODO - fix up these types
+  // rename as this is more like sendSay
   async wrapSay(msg: IChatRow) {
     await this.chatLogger.logRow(msg)
     try {
@@ -61,8 +64,8 @@ class SlackPal extends Pal {
     // await this.wrapSay({ text, type: 'text', who: 'bot' })
   }
 
-  async sendImage(text: string) {
-    await this.wrapSay({ text, type: 'image', who: 'bot' })
+  async sendImage(url: string) {
+    await this.wrapSay({ text: url, type: 'image', who: 'bot' })
   }
 
   async sendUnfurl(text: string) {

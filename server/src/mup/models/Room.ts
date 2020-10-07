@@ -7,7 +7,7 @@ import Item from './Item'
 import Story from './Story'
 import Util from '../../lib/Util'
 // import WordUtils from '../../lib/WordUtils'
-import { Pal } from '../pal/Pal'
+import { Pal } from '../pal/base/Pal'
 import { ParserResult, RexParser } from '../parser/RexParser'
 
 const logger = new MakeLogger('room')
@@ -94,7 +94,7 @@ class Room extends GameObject {
   async enterRoom(pal: Pal) {
 
     const stateInfo: StateBlock = this.getStateBlock()
-    const palBlocks = this.renderItem(stateInfo)
+    const palBlocks = this.renderBlocks(stateInfo)
     await pal.sendBlocks(palBlocks)
     return palBlocks
 

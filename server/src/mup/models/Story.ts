@@ -1,5 +1,5 @@
 import { MakeLogger } from '../../lib/LogLib'
-import { Pal } from '../pal/Pal'
+import { Pal } from '../pal/base/Pal'
 import Util from '../../lib/Util'
 import SlackBuilder from '../pal/slack/SlackBuilder'
 import Room from './Room'

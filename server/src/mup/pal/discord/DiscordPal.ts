@@ -1,5 +1,5 @@
 import { MessageEmbed, TextChannel } from 'discord.js'
-import { Pal } from '../Pal'
+import { Pal, IPal, FlexEvent } from '../base/Pal'
 import {
   Message
 } from "discord.js"
@@ -8,13 +8,14 @@ import AppConfig from '../../../lib/AppConfig'
 import Util from '../../../lib/Util'
 
 import { ISlackBlock } from '../slack/SlackTypes'
+import SlackBuilder from '../slack/SlackBuilder'
 import { MakeLogger } from '../../../lib/LogLib'
 
 const logger = new MakeLogger('DiscordPal')
 
-class DiscordPal extends Pal {
+class DiscordPal extends Pal implements IPal {
 
-  lastEvent: Message  // to force typechecking
+  // lastEvent: Message  // to force typechecking
 
   constructor(message: Message, sid: string) {
     super(message, sid)
@@ -79,8 +80,21 @@ class DiscordPal extends Pal {
   //   }
   // ]
 
-  async sendImage(block: ISlackBlock) {
+  // FIXME - we should not have to extract formatted images from blocks
+  // by using a custom DiscordBuilder in the first place
+  async sendImageBlock(block: ISlackBlock) {
     const imgPath = Util.localCdnPath(block.image_url)
+    await this.lastEvent.channel.send(
+      // block.alt_text,
+      {
+        files: [
+          imgPath
+        ]
+      })
+  }
+
+  async sendImage(url: string) {
+    const imgPath = Util.localCdnPath(url)
     await this.lastEvent.channel.send(
       // block.alt_text,
       {
@@ -108,12 +122,19 @@ class DiscordPal extends Pal {
     }
   ]
   */
-  async sendContext(section: ISlackBlock) {
+  async sendFooter(section: ISlackBlock) {
     const elem = section.elements![0]
     const text = elem.text
     await this.sendText(text)
   }
 
+  // FIXME - to send emoji buttons
+  // use pal.builder earlier in flow to format for discord as emoji buttons
+  async sendButtons(buttons: string[]) {
+    const block = SlackBuilder.buttonsBlock(buttons)
+    await this.sendBlocks([block])
+    await this.chatLogger.logRow({ who: 'bot', text: buttons.join(' | '), type: 'buttons' })
+  }
 
   /**
     {
@@ -135,7 +156,7 @@ class DiscordPal extends Pal {
   // TODO refactor so we can build it natively here,
   // this is parsing the slackbuilder format now
   // just for one button 'continue' block now
-  async sendButtons(block: ISlackBlock) {
+  async sendButtonsBlock(block: ISlackBlock) {
 
     // let bodyText = ''
     const fields: any[] = []
@@ -189,7 +210,7 @@ class DiscordPal extends Pal {
       console.log('block', block)
       switch (block.type) {
         case 'image':
-          await this.sendImage(block)
+          await this.sendImageBlock(block)
           break
 
         case 'section':
@@ -197,11 +218,11 @@ class DiscordPal extends Pal {
           break
 
         case 'actions':
-          await this.sendButtons(block)
+          await this.sendButtonsBlock(block)
           break
 
         case 'context':
-          await this.sendContext(block)
+          await this.sendFooter(block)
           break
 
         default:
@@ -222,10 +243,6 @@ class DiscordPal extends Pal {
     // await m2.react('🎲');
   }
 
-  // TODO - find names for common emoji
-  emojiName(emoji): string {
-    return emoji
-  }
 
 
 }

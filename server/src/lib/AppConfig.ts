@@ -47,6 +47,23 @@ const AppConfig = {
     })
   },
 
+  showVal(k) {
+    const val = AppConfig.read(k)
+    console.log(`${k} => ${val}`)
+  },
+
+  info() {
+    AppConfig.showVal('DISCORD_ENABLED')
+    AppConfig.showVal('NODE_ENV')
+    AppConfig.showVal('storyName')
+    AppConfig.showVal('PORT')
+    // console.log(':', typeof AppConfig.read('SLACK_ENABLED'))
+    // console.log('AppConfig', AppConfig)
+    // console.log('NODE_ENV:', AppConfig.NODE_ENV)
+    // console.log('storyName', AppConfig.storyName)
+
+  },
+
   NODE_ENV: process.env.NODE_ENV,
   CONFIG_ENV: process.env.CONFIG_ENV,
   CONFIG_APP: process.env.CONFIG_APP,
@@ -71,8 +88,6 @@ const AppConfig = {
 
 AppConfig.init()
 AppConfig.checkCoreKeys()
-// console.log('AppConfig', AppConfig)
-// console.log('NODE_ENV:', AppConfig.NODE_ENV)
-// console.log('storyName', AppConfig.storyName)
+AppConfig.info()
 
 export default AppConfig

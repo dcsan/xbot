@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 // import Room from '../mup/models/Room'
 import Game from '../mup/models/Game'
 import { GameManager } from '../mup/models/GameManager'
-import { MockChannel, Pal } from '../mup/pal/Pal'
+import { MockChannel, Pal } from '../mup/pal/base/Pal'
 import { MockPal } from '../mup/pal/mock/MockPal'
 
 import { LoadOptions } from '../mup/MupTypes'

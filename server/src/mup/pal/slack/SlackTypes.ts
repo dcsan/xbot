@@ -1,6 +1,6 @@
 import { SlashCommand } from '@slack/bolt'
 
-import { IMessage } from '../MockChannel'
+import { IMessage } from '../mock/MockChannel'
 
 export interface ISlackSection {
   attachments: [

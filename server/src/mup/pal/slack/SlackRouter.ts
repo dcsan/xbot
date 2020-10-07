@@ -1,6 +1,8 @@
 import AppConfig from '../../../lib/AppConfig'
 // import path from 'path'
 import morgan from 'morgan'
+import * as _ from 'lodash'
+const express = require('express')
 
 import {
   App, ExpressReceiver,
@@ -16,24 +18,27 @@ import {
 import BotRouter from '../../routing/BotRouter'
 import { MakeLogger } from '../../../lib/LogLib'
 import { PalManager } from '../PalManager'
-import { Pal, ISlackEvent } from '../Pal'
-
-import * as _ from 'lodash'
-
-const express = require('express')
+import { ISlackEvent } from '../base/Pal'
+import { SlackPal } from './SlackPal'
 
 const logger = new MakeLogger('SlackRouter')
 
 const SlackRouter = {
 
   async startUp() {
-    console.log('SlackRouter startup')
-    console.time('SlackRouter.init')
+    // console.log('SlackRouter startup')
+    // console.time('SlackRouter.init')
+    const enabled = AppConfig.read('SLACK_ENABLED')
+    if (enabled !== 'yes') {
+      logger.log('SLACK_ENABLED', enabled, 'skipping')
+      return
+    }
     const slackApp = SlackRouter.init()
-    console.timeEnd('SlackRouter.init')
+    // console.timeEnd('SlackRouter.init')
     const port = process.env.PORT || 3000
-    console.time('slackApp.start')
+    console.time('slackApp.init')
     await slackApp.start(port);
+    console.timeEnd('slackApp.init')
   },
 
   init(): App {
@@ -68,6 +73,7 @@ const SlackRouter = {
     }
     app.use(eventLogger)
 
+
     // doesnt work
     receiver.app.use(morgan('tiny'));
     receiver.app.use('/cdn', express.static('cdn'))
@@ -99,7 +105,7 @@ const SlackRouter = {
         'body.team'  // team, channel
       ])
 
-      const pal: Pal = PalManager.findSlackPal(slackEvent, args.event.channel)
+      const pal: SlackPal = PalManager.findSlackPal(slackEvent, args.event.channel)
       logger.log('app.message')
       await BotRouter.textEvent(pal)
     });
@@ -116,7 +122,7 @@ const SlackRouter = {
       // }
 
       logger.logObj('action args.action', args.action)
-      const pal: Pal = PalManager.findSlackPal(args)
+      const pal: SlackPal = PalManager.findSlackPal(args)
       logger.logObj('action', args.action)
       await BotRouter.actionEvent(pal)
       // say('you hit an action')
@@ -125,7 +131,7 @@ const SlackRouter = {
     const onCommands = async (slackEvent: ISlackEvent) => {
       slackEvent.ack!();
       logger.startLoop(`command: ${slackEvent.command!.command} [${slackEvent.command!.text}]`)
-      const pal: Pal = PalManager.findSlackPal(slackEvent)
+      const pal: SlackPal = PalManager.findSlackPal(slackEvent)
       logger.logObj('command', slackEvent.command)
       await BotRouter.command(pal, slackEvent)
     }
@@ -144,7 +150,7 @@ const SlackRouter = {
 
     app.action('continue', async (slackEvent) => {
       slackEvent.ack()
-      const pal: Pal = PalManager.findSlackPal(slackEvent)
+      const pal: SlackPal = PalManager.findSlackPal(slackEvent)
       logger.log('action.continue')
       await BotRouter.actionEvent(pal)
     });
@@ -152,7 +158,7 @@ const SlackRouter = {
     app.shortcut(/.*/, async (slackEvent) => {
       // { shortcut, ack, say }
       await slackEvent.ack();
-      const pal: Pal = PalManager.findSlackPal(slackEvent)
+      const pal: SlackPal = PalManager.findSlackPal(slackEvent)
       logger.logObj('shortcut', slackEvent.shortcut)
       slackEvent.say('shortcut not done yet!')
     });
@@ -164,6 +170,7 @@ const SlackRouter = {
         CONFIG_ENV: AppConfig.CONFIG_ENV,
       })
     })
+
     return app
 
   }

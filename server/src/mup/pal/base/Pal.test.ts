@@ -1,5 +1,5 @@
 import { Pal } from './Pal'
-import { TestEnv } from '../../lib/TestUtils'
+import { TestEnv } from '../../../lib/TestUtils'
 const mongoose = require('mongoose');
 
 let env = new TestEnv()
