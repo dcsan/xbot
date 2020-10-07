@@ -17,7 +17,7 @@ import { MakeLogger } from '../../lib/LogLib'
 import { MockChannel, IMessage } from './MockChannel'
 import { ISlackEvent, ISlackSection } from './slack/SlackTypes'
 
-import Util from '../../lib/Util'
+// import Util from '../../lib/Util'
 
 // import chalk from 'chalk'
 
@@ -27,10 +27,14 @@ const debugOutput = AppConfig.logLevel
 const logMode = false
 
 interface IPal {
-  sendBlocks(blocks)
+  sendBlocks(blocks): Promise<any>
   sendText(msg: string)
   postMessage(msg: string)
   showLog()
+
+  // discord only
+  clearChannel(): Promise<void>
+  showInstallUrl(): Promise<void>
 }
 
 export type FlexEvent = ISlackEvent | MockChannel | Message
@@ -48,6 +52,13 @@ class Pal implements IPal {
     this.chatLogger = new ChatLogger(sid)
     logger.log('new pal', { sessionId: this.sessionId })
   }
+  clearChannel(): Promise<void> {
+
+    throw new Error("Method not implemented.");
+  }
+  showInstallUrl(): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
 
   postMessage(_msg: string) {
     throw new Error("Method not implemented.");
@@ -61,8 +72,12 @@ class Pal implements IPal {
     return text
   }
 
-  sendBlocks(_blocks: any[]) {
-    throw new Error("sendBlocks Method not implemented.");
+  async sendBlocks(_blocks: any[]) {
+    // const msg = this.wrapBlocks_(blocks)
+    // await this.chatLogger.logBlocks(msg)
+    // throw new Error("sendBlocks Method not implemented.");
+    // TODO - implement and this.builder.xx for a builder type based on Pal.type
+    logger.warn('sendBlocks not implemented')
   }
 
   sendText(msg: string) {

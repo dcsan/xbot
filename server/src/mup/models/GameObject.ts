@@ -57,6 +57,7 @@ class GameObject {
   // key:string objects for property setting
   props?: ThingProps
   hidden?: boolean
+  ready?: boolean   // been initialized?
 
   constructor(doc, story: Story, klass: string,) {
     // logger.log('create', doc)

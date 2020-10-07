@@ -7,7 +7,7 @@ import Item from './Item'
 import Story from './Story'
 import Util from '../../lib/Util'
 // import WordUtils from '../../lib/WordUtils'
-// import { Pal } from '../pal/Pal'
+import { Pal } from '../pal/Pal'
 import { ParserResult, RexParser } from '../parser/RexParser'
 
 const logger = new MakeLogger('room')
@@ -20,6 +20,7 @@ import {
 import {
   SceneEvent,
   ActionData,
+  StateBlock
   // ActionResult
 } from '../MupTypes'
 
@@ -66,11 +67,6 @@ class Room extends GameObject {
     return sorted
   }
 
-  // get player() {
-  //   // not sure about this reaching back up the tree...
-  //   return this.story?.game.player
-  // }
-
   loadItems(story) {
     this.doc.items?.forEach((itemData) => {
       const item = new Item(itemData, story)
@@ -81,6 +77,7 @@ class Room extends GameObject {
 
   loadActors(story) {
     const allActors = this.doc.actors
+    if (!allActors?.length) return
     logger.log('loading actors:', allActors?.length)
     this.actors = []
     // @ts-ignore
@@ -91,11 +88,23 @@ class Room extends GameObject {
     })
   }
 
-  async enterRoom(evt?: SceneEvent) {
-    await this.resetRoomState()
-    if (evt) {
-      return await this.lookRoom(evt)
-    }
+  // FIXME - much overlap with describeRoom but we use a Pal not a SceneEvent
+  // cos this is triggered from reload too - needs a refactor
+  // async enterRoom(evt?: SceneEvent) {
+  async enterRoom(pal: Pal) {
+
+    const stateInfo: StateBlock = this.getStateBlock()
+    const palBlocks = this.renderItem(stateInfo)
+    await pal.sendBlocks(palBlocks)
+    return palBlocks
+
+    // FIXME - reset everything in room on entry????
+
+    // await this.lookRoom(evt)
+    // await this.resetRoomState()
+    // if (evt) {
+    //   return await this.lookRoom(evt)
+    // }
     // await this.showItemsInRoom(evt)
   }
 

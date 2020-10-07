@@ -1,9 +1,10 @@
-import { MessageEmbed } from 'discord.js'
+import { MessageEmbed, TextChannel } from 'discord.js'
 import { Pal } from '../Pal'
 import {
   Message
 } from "discord.js"
 
+import AppConfig from '../../../lib/AppConfig'
 import Util from '../../../lib/Util'
 
 import { ISlackBlock } from '../slack/SlackTypes'
@@ -20,6 +21,7 @@ class DiscordPal extends Pal {
     this.lastEvent = message  // to force the type
   }
 
+  // for logger
   lastText(): string {
     const lastEvent = this.lastEvent as Message
     return lastEvent.content
@@ -29,6 +31,28 @@ class DiscordPal extends Pal {
   lastActionValue(): string {
     const lastEvent = this.lastEvent as Message
     return lastEvent.content
+  }
+
+  // --------- admin commands ----------
+  async clearChannel() {
+    const message = this.lastEvent
+    if (message.channel.type === 'text') {
+      try {
+        const count = 99
+        const ch = message.channel as TextChannel
+        await ch!.bulkDelete(count)
+        // message.delete();
+      } catch (err) {
+        logger.error('failed to delete', err)
+      }
+    }
+  }
+
+  async showInstallUrl() {
+    const DiscordClientId = AppConfig.read('DISCORD_CLIENT_ID')
+    const msg = `https://discord.com/oauth2/authorize?client_id=${DiscordClientId}&scope=bot`
+    logger.log('install => ' + msg)
+    await this.sendText(msg)
   }
 
   async sendText(text: string) {

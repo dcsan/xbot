@@ -60,20 +60,19 @@ const BotRouter = {
   async anyEvent(pal: Pal, input: string, _eventType: string = 'text'): Promise<boolean | undefined> {
 
     if (!input || Util.shouldIgnore(input)) {
-      logger.warn('shouldIgnore:', input)
+      logger.warn('shouldIgnore? TRUE:', input)
       return false
     }
     if (!Util.isCommand(input)) {
-      logger.warn('isCommand > ignore:', input)
+      logger.warn('isCommand? FALSE:', input)
       return false
     }
     input = Util.stripPrefix(input)
 
-    logger.log('anyEvent.input: ', input)
+    logger.break('anyEvent.input: ', input)
     pal.logInput(input)  // store it for GameFuncs
 
-    const storyName = AppConfig.read('storyName')
-    const game: Game = await GameManager.findGame({ pal, storyName })
+    const game: Game = await GameManager.findGame({ pal })
     const clean: string = WordUtils.basicNormalize(input)
     const pres: ParserResult = RexParser.parseCommands(clean)
 
@@ -120,13 +119,8 @@ const BotRouter = {
     }
   },
 
-  async tryRoomActions(evt: SceneEvent): Promise<boolean | undefined> {
-    logger.log('tryRoomActions evt.pres.clean=', evt.pres.clean)
-    const result = await evt.game.story.room.findAndRunAction(evt)
-    logger.log('roomActions.result =>', result)
-    return result
-  },
-
+  // run before room actions
+  // for high-priority admin commands
   async preCommands(evt: SceneEvent): Promise<boolean | undefined> {
     if (evt.pres.rule?.type !== 'preCommand') {
       logger.log('skip preCommands')
@@ -137,6 +131,13 @@ const BotRouter = {
     const result = await evt.pres.rule?.event(evt)
     logger.log('tryCommands.result =>', result)  // FIXME - track results?
     return true // parser found a command
+  },
+
+  async tryRoomActions(evt: SceneEvent): Promise<boolean | undefined> {
+    logger.log('tryRoomActions evt.pres.clean=', evt.pres.clean)
+    const result = await evt.game.story.room.findAndRunAction(evt)
+    logger.log('roomActions.result =>', result)
+    return result
   },
 
   async postCommands(evt: SceneEvent): Promise<boolean | undefined> {

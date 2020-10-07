@@ -4,8 +4,8 @@ import { RexParser, ParserResult } from './RexParser';
 // const log = console.log
 
 // these are replaced by synData?
-const nounList = ['key', 'chest', 'lamp', 'door']
-const verbList = ['open', 'rub', 'wipe', 'wash', 'use']
+// const nounList = ['key', 'chest', 'lamp', 'door']
+// const verbList = ['open', 'rub', 'wipe', 'wash', 'use']
 
 it('should reduce vocab', async () => {
   const input = 'get the robe'

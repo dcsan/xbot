@@ -3,7 +3,7 @@ import { MakeLogger } from '../../lib/LogLib'
 import WordUtils from '../../lib/WordUtils'
 // import RouterService from './RouterService'
 
-import { StaticRules, OneRule } from './ParserRules'
+import { StaticRules, OneRule } from './CommandList'
 import { SynManager, ISyn } from './Synonyms'
 import { GameObject } from '../models/GameObject'
 

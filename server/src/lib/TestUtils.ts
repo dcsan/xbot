@@ -79,7 +79,7 @@ class TestEnv {
     const game: Game = await GameManager.findGame(opts)
     // FIXME - not needed for a new game, but no way to tell if its new....
     // so it gets fired twice on new games and tests
-    await game.reset()
+    await game.reset(this.pal)
     this.game = game
     return game
   }

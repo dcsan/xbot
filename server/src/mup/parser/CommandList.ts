@@ -12,6 +12,7 @@ interface RuleSpec {
   event: any,
   type: string
   extra?: any
+  admin?: boolean
 }
 
 const StaticRules: RuleSpec[] = [
@@ -37,6 +38,22 @@ const StaticRules: RuleSpec[] = [
     rex: /^(goto|gt|g) (?<roomName>.*)/i,
     event: RouterService.goto,
     type: 'preCommand'
+  },
+
+  {
+    cname: 'install',
+    rex: /^(install)/i,
+    event: RouterService.install,
+    type: 'preCommand',
+    admin: true
+  },
+
+  {
+    cname: 'clear',
+    rex: /^(clear)/i,
+    event: RouterService.clear,
+    type: 'preCommand',
+    admin: true
   },
 
   // slash preCommands

@@ -1,4 +1,5 @@
 import { MakeLogger } from '../../lib/LogLib'
+import { Pal } from '../pal/Pal'
 import Util from '../../lib/Util'
 import SlackBuilder from '../pal/slack/SlackBuilder'
 import Room from './Room'
@@ -26,21 +27,39 @@ class Story {
     this.room = {} as Room   // force a definition or we have to deal with room? everywhere
   }
 
-  async reset(): Promise<Room> {
+  async reset(pal: Pal): Promise<Room> {
     logger.log('story.reset')
     for (const room of this.rooms) {
       await room.reset()
     }
-    const startRoomName = this.doc.startRoom
+    // load the right room for this channel
+    let startRoomName
+    // @ts-ignore  // FIXME lastEvent.channel only works for discord
+    const channelName = pal.lastEvent.channel?.name
+    if (!channelName) {
+      // FIXME - slack?
+      logger.warn('cannot find channelName for lastEvent:', pal.lastEvent)
+    } else {
+      const startRoom = this.doc.startRooms.find(elem => {
+        const rex = new RegExp(elem.channels)
+        return rex.test(channelName)
+      })
+      startRoomName = startRoom?.room
+    }
+    if (!startRoomName) {
+      logger.warn('cannot find startRoomName for channel: ', channelName)
+      startRoomName = this.doc.startRoomDefault
+    }
+
     if (startRoomName) {
       const room: Room | undefined = this.findRoomByName(startRoomName)
       if (!room) {
-        logger.fatal('cannot find start room:' + startRoomName, {})
+        logger.warn('cannot find room for startRoomName: ', startRoomName)
+        this.room = this.rooms[0]
       } else {
+        logger.log('OK reset to room', room.name)
         this.room = room
       }
-    } else {
-      this.room = this.rooms[0]
     }
     return this.room
   }
@@ -54,12 +73,14 @@ class Story {
    * @param {*} opts
    * @memberof Story
    */
-  load(opts: LoadOptions): string {
+  load(_opts: LoadOptions): string {
     // default to config if not passed
-    const storyName =
-      opts?.storyName ||
-      this.storyName ||
-      AppConfig.read('storyName')
+    const storyName = AppConfig.read('storyName')
+
+    // const storyName =
+    //   opts?.storyName ||
+    //   this.storyName ||
+    //   AppConfig.read('storyName')
 
     this.storyName = storyName // save for reload
     const fullDoc = Util.loadStoryDir(storyName)
@@ -70,7 +91,6 @@ class Story {
     return this.storyName
   }
 
-
   buildStory(doc) {
     this.rooms = []
     doc.rooms.forEach((roomData) => {
@@ -78,7 +98,7 @@ class Story {
       room.story = this
       this.rooms.push(room)
     })
-    this.reset()
+    // this.reset()
   }
 
   async gotoRoom(roomName: string, evt?: SceneEvent) {
@@ -88,11 +108,11 @@ class Story {
       logger.warn('cannot find goto room', roomName)
     }
     if (room) {
+      logger.log('gotoRoom', roomName)
       this.room = room
       RexParser.cacheNames(room.roomItems, room.name)
       if (evt) {
-        // else just go silently
-        await this.room.enterRoom(evt)
+        await this.room.enterRoom(evt.pal)
       }
     }
   }

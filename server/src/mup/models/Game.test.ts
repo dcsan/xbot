@@ -22,7 +22,7 @@ test('asylum game loading', async () => {
   game.story.load({ storyName: 'asylum', pal: testEnv.pal })
   expect(game.story.doc.title).toMatch(/Escape From Bell Hill/i)
   expect(game.story.doc.cname).toBe('asylum')
-  expect(game.story.rooms.length).toBe(8)
+  expect(game.story.rooms.length).toBe(10)
 
   game.story.gotoRoom('cell')
   expect(game.story.room.name).toBe('cell')

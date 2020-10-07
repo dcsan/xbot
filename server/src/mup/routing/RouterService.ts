@@ -2,25 +2,36 @@ import yaml from 'js-yaml'
 import Game from '../models/Game'
 import { GameManager } from '../models/GameManager'
 
-import { Logger } from '../../lib/LogLib'
+
+
+import { MakeLogger } from '../../lib/LogLib'
 import Util from '../../lib/Util'
 import { Pal } from '../pal/Pal'
 import { RexParser, ParserResult } from '../parser/RexParser'
 
 import { SceneEvent } from '../MupTypes'
 
+const logger = new MakeLogger('Router.svc')
 
 const RouterService = {
 
   // found: {route, parsed}
   goto: async (evt: SceneEvent) => {
     const roomName = evt.pres.parsed?.groups.roomName
-    Logger.logObj('goto', roomName)
+    logger.logObj('goto', roomName)
     await evt.game?.story.gotoRoom(roomName, evt)
   },
 
+  install: async (evt: SceneEvent) => {
+    await evt.pal.showInstallUrl()
+  },
+
+  clear: async (evt: SceneEvent) => {
+    await evt.pal.clearChannel()
+  },
+
   resetGame: async (evt: SceneEvent) => {
-    await evt.game?.restart(evt)
+    await evt.game?.reset(evt.pal)
   },
 
   lookRoom: async (evt: SceneEvent) => {
@@ -67,7 +78,7 @@ const RouterService = {
       // itemEvents: RouterService.getActionMatchesList(game.story.currentRoom.items),
       actors: RouterService.getActionMatchesList(game.story.room.actors)
     }
-    Logger.logObj('cheatInfo', info)
+    logger.logObj('cheatInfo', info)
     const blob = yaml.dump(info)
     await evt.pal.sendText(Util.quoteCode(blob))
     return info

@@ -39,6 +39,10 @@ class MakeLogger {
     }
   }
 
+  break(msg, ...rest) {
+    console.log('\n\n-------------\n' + this.where, msg, ...rest)
+  }
+
   // this will log even when testing
   testLog(msg, ...rest) {
     // process.stdout.write('---> ', msg, ...rest, '\n')

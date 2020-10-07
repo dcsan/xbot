@@ -5,7 +5,7 @@ import yaml from 'js-yaml'
 // const posTagger = require('wink-pos-tagger');
 // import AppConfig from '../../lib/AppConfig'
 import Util from '../../lib/Util'
-import { Logger } from '../../lib/LogLib'
+import { MakeLogger } from '../../lib/LogLib'
 import SlackBuilder from '../pal/slack/SlackBuilder'
 import { Pal } from '../pal/Pal'
 import Story from './Story'
@@ -13,10 +13,9 @@ import Player from './Player'
 import { SceneEvent } from '../MupTypes'
 import Menu from './Menu'
 
-
 import { LoadOptions } from '../MupTypes'
-// const tagger = posTagger()
 
+const logger = new MakeLogger('Game')
 const menu = new Menu()
 
 class Game {
@@ -38,21 +37,22 @@ class Game {
   }
 
   // reset all the vars without reloading
-  async reset() {
-    Logger.log('game.reset')
-    await this.story.reset()  // resets rooms
+  async reset(pal: Pal) {
+    logger.log('game.reset')
+    await this.story.reset(pal)  // resets rooms
     await this.player.reset()
-    await this.pal.sendText('reset game. now in room:' + this.story.room.name)
+    // await this.pal.sendText('reset game. now in room:' + this.story.room.name)
+    await this.story.room.enterRoom(pal)
   }
 
   // reload and show message
-  async restart(evt: SceneEvent) {
-    await this.reset()
-    await this.story.room.enterRoom(evt)
-    if (evt.pal) {
-      await evt.pal.sendText('restarted')
-    }
-  }
+  // async restart(pal: Pal) {
+  //   await this.reset(pal)
+  //   // await this.story.room.enterRoom(pal)
+  //   if (pal) {
+  //     await pal.sendText('restarted')
+  //   }
+  // }
 
   /**
    * simple reload of current story without resetting user vars

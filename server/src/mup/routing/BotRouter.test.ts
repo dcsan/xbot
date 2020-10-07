@@ -36,7 +36,7 @@ beforeEach(async () => {
 it('should handle verb target to get thing', async () => {
   const evt = testEnv.makeSceneEvent('get soap')
   expect(evt.pres.pos?.target).toBe('Soap')
-  const res = await BotRouter.tryCommands(evt)
+  const res = await BotRouter.postCommands(evt)
   expect(res).toBe(true)
   expect(evt.pal.chatLogger.tailText(2)).toMatch(/You take the soap/i)
 })
@@ -44,7 +44,7 @@ it('should handle verb target to get thing', async () => {
 it('handle canTake: false items', async () => {
   const evt = testEnv.makeSceneEvent('get table')
   expect(evt.pres.pos?.target).toBe('table')
-  const res = await BotRouter.tryCommands(evt)
+  const res = await BotRouter.postCommands(evt)
   expect(res).toBe(true)
   expect(evt.pal.chatLogger.tailText(2)).toMatch(/You can't take the table/i)
 
@@ -54,7 +54,7 @@ it('should have fallback if thing cannot be found', async () => {
   const evt = testEnv.makeSceneEvent('get XYZ')
   expect(evt.pres.pos?.target).toBe('xyz')
   expect(evt.pres.rule?.event).toBe(RouterService.takeRoomThing)
-  const done = await BotRouter.tryCommands(evt)
+  const done = await BotRouter.postCommands(evt)
   expect(done).toBe(true)
   // Logger.logObj('txt', evt.pal.allText, true)
   expect(evt.pal.chatLogger.tailText(2)).toMatch(/You can't see/i)

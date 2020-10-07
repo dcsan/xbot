@@ -137,7 +137,7 @@ const Util = {
 
   isCommand(input): boolean {
     if (!input) return false
-    if (input.split(' ').length < 5) { return true } // use x on y
+    if (input.split(' ').length < 6) { return true } // use x on y
     if (/^btn /.test(input)) { return true } // its a button
     return false
   },
