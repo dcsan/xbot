@@ -32,7 +32,7 @@ const SlackBuilder = {
         "text": text,
         "emoji": true
       },
-      icon, // for discord emoji
+      // icon, // for discord emoji
       "value": value
     }
   },

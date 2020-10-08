@@ -1,7 +1,8 @@
 import { Pal, IPal, FlexEvent } from '../base/Pal'
-
+import Util from '../../../lib/Util'
 import {
-  ChatLogger, IChatRow
+  // ChatLogger,
+  IChatRow
 } from '../ChatLogger'
 
 import { MakeLogger } from '../../../lib/LogLib'
@@ -108,10 +109,22 @@ class SlackPal extends Pal implements IPal {
     await this.chatLogger.logRow({ who: 'bot', text: buttons.join(' | '), type: 'buttons' })
   }
 
+  // we keep imageURLs local for other Pals that read from file system
+  expandImageUrls(blocks: ISlackBlock[]) {
+    blocks = blocks.map(block => {
+      if (block.type === 'image') {
+        block.image_url = Util.imageUrl(block.image_url)
+      }
+      return block
+    })
+    return blocks
+  }
+
   async sendBlocks(blocks: ISlackBlock[]) {
     if (!blocks || !blocks.length) {
       console.trace('tried to sendBlocks with no blocks:', blocks)
     }
+    blocks = this.expandImageUrls(blocks)
     const msg: ISlackSection = SlackBuilder.wrapBlocks(blocks)
     try {
       await this.lastEvent.say(msg)

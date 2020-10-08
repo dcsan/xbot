@@ -205,6 +205,8 @@ class DiscordPal extends Pal implements IPal {
     logger.log('sendButtons=>', message.content, emoList)
   }
 
+  // FIXME - based on slack notion of sending list of blocks
+  // TODO rebuild this with embeds and a Discord builder
   async sendBlocks(blocks: ISlackBlock[]) {
     for (const block of blocks) {
       console.log('block', block)
