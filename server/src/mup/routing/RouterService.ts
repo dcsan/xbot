@@ -36,6 +36,7 @@ const RouterService = {
 
   resetGame: async (evt: SceneEvent) => {
     await evt.game?.reset(evt.pal)
+    return await evt.game?.story.room.enterRoom(evt.pal)
   },
 
   lookRoom: async (evt: SceneEvent) => {

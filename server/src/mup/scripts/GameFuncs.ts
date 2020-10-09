@@ -8,7 +8,9 @@ import BotRouter from '../routing/BotRouter'
 const GameFuncs = {
   async checkWashing(_action: ActionData, evt: SceneEvent): Promise<boolean> {
     const player = evt.game?.player!
+
     logger.log('js.checkWashing >>')
+
     if (!player.hasItem('soap')) {
       logger.log('js.checkWashing: no soap')
       await evt.pal.sendText("You don't have any soap!")

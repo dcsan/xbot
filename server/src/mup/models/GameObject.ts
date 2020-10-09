@@ -236,11 +236,11 @@ class GameObject {
         palBlocks.push(pal.builder.navbar(stateInfo.navbar))
         break
 
-      default:  // 30% chance if not stated
-        if (stateInfo.buttons) break  // dont mix with navbar
-        if (Math.random() < 0.3) {
-          palBlocks.push(pal.builder.navbar(stateInfo.navbar))
-        }
+      default: // 30% chance if not stated
+        // if (stateInfo.buttons) break  // dont mix with navbar
+        // if (Math.random() < 0.3) {
+        //   palBlocks.push(pal.builder.navbar(stateInfo.navbar))
+        // }
         break
     }
 
