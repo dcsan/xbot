@@ -1,10 +1,13 @@
-const log = console.log
 import stopword from 'stopword'
-
+import { MakeLogger } from '../lib/LogLib'
+const logger = new MakeLogger('WordUtils')
 
 const WordUtils = {
 
   stripPunctuation(input) {
+    if (!input) {
+      logger.warn('tried to stripPunctuation from empty input')
+    }
     // do NOT replace leading / just a few commands
     const output = input.replace(/[\.,\-\!]/gim, '')
     // const output = input.replace(/[^\w\s-]/gim, '')

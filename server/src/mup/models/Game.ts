@@ -116,19 +116,22 @@ class Game {
 
   // TODO add debug/admin on user check
   async showStatus(evt: SceneEvent) {
+    // const tasklist = await this.showThingStatus(evt, 'tasklist')
+    const tasklist = this.story.room.findThing('tasklist')
     const statusInfo = {
       story: this.story.status(),
       room: this.story.room.status(),
       player: this.player.status(),
+      tasklist: tasklist?.props
     }
     // await pal.sendText('state ```\n' + JSON.stringify(pal.state, null, 2) + '```')
-    const blob = yaml.dump(statusInfo)
+    const blob = Util.yamlDump(statusInfo)
     await evt.pal.sendText(Util.quoteCode(blob))
   }
 
-  async showThingStatus(evt: SceneEvent) {
-    const name = evt.pres.parsed?.groups?.thingName
-    const thing = this.story.room.findThing(name)
+  async showThingStatus(evt: SceneEvent, name?: string) {
+    name = name || evt.pres.parsed?.groups?.thingName
+    const thing = this.story.room.findThing(name!)
     if (thing) {
       const blob = yaml.dump(thing.props)
       await evt.pal.sendText(Util.quoteCode(blob))

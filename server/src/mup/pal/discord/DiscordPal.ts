@@ -179,7 +179,7 @@ class DiscordPal extends Pal implements IPal {
         useEmbeds = true
         wrapText = false // dont wrap emoji below
         // :mag:  :earth_americas:
-        text = `:mag::link: [${elem.text.text}](${elem.url}) `
+        text = `:link: [${elem.text.text}](${elem.url}) :mag:`
       } else {
         if (singleButton) {
           // text += ` \`\`\`[ ${elem.text.text} ] \`\`\` `

@@ -117,13 +117,21 @@ const Util = {
   },
 
   // strip out elements with undef values for cleaner YAML dumps
-  removeEmptyKeys(obj) {
+  removeEmptyKeys(obj, depth = 0) {
+    if (depth > 5) return obj
     if (!obj) return {}  // fixme - handle better?
     Object.keys(obj).forEach(key => {
-      // if (obj[key] && typeof obj[key] === 'object') Util.removeEmptyKeys(obj[key]);
+      if (obj[key] && typeof obj[key] === 'object') {
+        obj[key] = Util.removeEmptyKeys(obj[key], depth++) // recurse
+      }
       if (obj[key] === undefined) delete obj[key];
     });
     return obj;
+  },
+
+  yamlDump(obj) {
+    const clean = Util.removeEmptyKeys(obj)
+    return yaml.dump(clean)
   },
 
   isEmptyObject(obj) {

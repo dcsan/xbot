@@ -152,7 +152,7 @@ const StaticRules: RuleSpec[] = [
   },
 
   {
-    rex: /^(hint|tasks|tasklist|tl)$/,
+    rex: /^(task|tasks|tasklist|t)$/,
     cname: 'log',
     type: 'preCommand',
     event: RouterService.showNotes
