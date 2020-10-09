@@ -137,6 +137,12 @@ class SlackPal extends Pal implements IPal {
     await this.chatLogger.logBlocks(msg)
     // await this.wrapSay(msg, 'blocks')
   }
+
+  // TODO
+  // async channelName(): Promise<string> {
+  //   return this.lastEvent.channel.name
+  // }
+
 }
 
 export { SlackPal }

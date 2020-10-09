@@ -4,12 +4,18 @@ import path from 'path'
 import yaml from 'js-yaml'
 import * as _ from 'lodash'
 
+import AppConfig from '../lib/AppConfig'
+import { Pal } from 'mup/pal/base/Pal'
+
 // FIXME circular deps
 // import { MakeLogger } from './LogLib'
 
 const logger = {
   log(..._rest) {
-    // console.log(...rest)
+    console.log(..._rest)
+  },
+  warn(..._rest) {
+    console.warn(..._rest)
   }
 }
 
@@ -144,15 +150,30 @@ const Util = {
   // },
 
   isCommand(input): boolean {
+    let cmdFlag = false
     if (!input) return false
-    if (input.split(' ').length < 6) { return true } // use x on y
-    if (/^btn /.test(input)) { return true } // its a button
-    return false
+    if (input.split(' ').length < 6) cmdFlag = true
+    if (/^btn /.test(input)) cmdFlag = true
+    if (cmdFlag) {
+      logger.log('isCommand: TRUE =>', input)
+    }
+    return cmdFlag
   },
 
   stripPrefix(input): string {
     let clean = input.replace(/^[-'"\.#! `,>\\]+/, '')
     return clean.trim()
+  },
+
+  isMutedChannel(pal: Pal): boolean {
+    const channelName = pal.channelName()
+    const mutes = AppConfig.read('MUTED_CHANNELS')
+    if (mutes.includes(channelName)) {
+      logger.warn('muted in channel', channelName, ' SKIP reply')
+      return true
+    }
+    logger.log('not muted', channelName, mutes)
+    return false
   },
 
   shouldIgnore(input): boolean {

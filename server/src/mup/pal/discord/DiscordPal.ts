@@ -252,6 +252,10 @@ class DiscordPal extends Pal implements IPal {
     // await m2.react('🎲');
   }
 
+  channelName(): string {
+    return this.lastEvent.channel.name
+  }
+
 
 
 }

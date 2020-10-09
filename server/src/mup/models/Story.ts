@@ -35,7 +35,7 @@ class Story {
     // load the right room for this channel
     let startRoomName
     // @ts-ignore  // FIXME lastEvent.channel only works for discord
-    const channelName = pal.lastEvent.channel?.name
+    const channelName = await pal.channelName()
     if (!channelName) {
       // FIXME - slack?
       logger.warn('cannot find channelName for lastEvent:', pal.lastEvent)

@@ -43,7 +43,7 @@ export interface IPal {
   sendList(list: string[]): Promise<void>
   debugMessage(obj): Promise<void>
   sendButtons(buttons: string[]): Promise<void>
-  channelName(): Promise<string>
+  channelName(): string
 
   // builder methods
   // buttonsBlock(buttons: string[]): Buttons
@@ -71,8 +71,9 @@ class Pal implements IPal {
     // this.builder = BaseBuilder  // overridden in child
     logger.log('new pal', { sessionId: this.sessionId })
   }
-  async channelName(): Promise<string> {
-    throw new Error("channelName Method not implemented.");
+  channelName(): string {
+    logger.error("channelName Method not implemented.");
+    return ('cannot find channel name')  // todo in subclass
   }
   sendList(_list: string[]): Promise<void> {
     throw new Error("Method not implemented.");

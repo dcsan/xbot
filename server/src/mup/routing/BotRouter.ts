@@ -64,9 +64,12 @@ const BotRouter = {
       return false
     }
     if (!Util.isCommand(input)) {
-      logger.warn('isCommand? FALSE:', input)
       return false
     }
+    if (Util.isMutedChannel(pal)) {
+      return false
+    }
+
     input = Util.stripPrefix(input)
 
     logger.break('anyEvent.input: ', input)
