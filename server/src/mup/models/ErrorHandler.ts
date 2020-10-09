@@ -1,6 +1,6 @@
 import { Logger } from '../../lib/LogLib'
 import { SceneEvent } from '../MupTypes'
-import SlackBuilder from '../pal/slack/SlackBuilder'
+import { BaseBuilder } from '../pal/base/BaseBuilder'
 
 enum HandleCodes {
   processing = 'processing',   // started looking
@@ -34,7 +34,7 @@ const ErrorHandler = {
     const lines = [
       ':bulb: type `help` to see what you can do!'
     ]
-    const hint = SlackBuilder.contextBlock(lines[0])
+    const hint = BaseBuilder.contextBlock(lines[0])
     return hint
   },
 
@@ -55,7 +55,7 @@ const ErrorHandler = {
         msg = `hmm, that didn't work out`
     }
     const blocks: any = []
-    blocks.push(SlackBuilder.textBlock(msg))
+    blocks.push(BaseBuilder.textBlock(msg))
     blocks.push(ErrorHandler.hintBlock())
     Logger.warn(msg, evt.pres.clean)
     evt.pal.sendBlocks(blocks)

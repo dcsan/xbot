@@ -19,6 +19,7 @@ export interface StateBlock {
   long: string
   reply?: string
   buttons: string[]
+  navbar: string
 }
 
 // the fail/pass block branches of a full ActionData

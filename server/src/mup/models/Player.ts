@@ -1,7 +1,7 @@
 import Item from './Item'
 import { MakeLogger } from '../../lib/LogLib'
 import { SceneEvent } from '../MupTypes'
-import SlackBuilder from '../pal/slack/SlackBuilder'
+import { BaseBuilder } from '../pal/base/BaseBuilder'
 import { GameObject } from './GameObject'
 // import { Pal } from '../pal/Pal'
 import WordUtils from '../../lib/WordUtils';
@@ -102,21 +102,21 @@ class Player extends GameObject {
     // await evt.pal.sendText('Inventory:')
 
     const blocks: any[] = []
-    // blocks.push(SlackBuilder.buttonsBlock([`notebook | x notebook`]))
+    const builder = evt.pal.builder
     logger.logObj('showInv', this.invItems)
 
     if (!this.invItems.length) {
-      blocks.push(SlackBuilder.textBlock("You aren't carrying anything"))
+      blocks.push(builder.textBlock("You aren't carrying anything. Type `get item` to pick things up."))
     } else {
       const buttonLinks = this.invItems.map(item => {
         return `${item.name}|x ${item.name}`
       })
       // buttonLinks.push(`notebook | x notebook`) // artificial
-      blocks.push(SlackBuilder.buttonsBlock(buttonLinks))
+      blocks.push(builder.buttonsBlock(buttonLinks))
+      blocks.push(builder.contextBlock(
+        ':pencil2: you can `x item` to examine it'))
     }
-    // blocks.push(SlackBuilder.contextBlock(':information_source: hint: _try to `use item with ...` other things in the room_'))
-    blocks.push(SlackBuilder.contextBlock(
-      ':information_source: you can `x item` to examine it'))
+    // blocks.push(BaseBuilder.contextBlock(':information_source: hint: _try to `use item with ...` other things in the room_'))
     await evt.pal.sendBlocks(blocks)
   }
 

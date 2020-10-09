@@ -16,6 +16,7 @@ import { ChatLogger, IChatRow } from '../ChatLogger'
 import { MakeLogger } from '../../../lib/LogLib'
 import { MockChannel, IMessage } from '../mock/MockChannel'
 import { ISlackEvent, ISlackSection } from '../slack/SlackTypes'
+import { BaseBuilder } from './BaseBuilder'
 
 // import Util from '../../lib/Util'
 
@@ -43,6 +44,9 @@ export interface IPal {
   debugMessage(obj): Promise<void>
   sendButtons(buttons: string[]): Promise<void>
   channelName(): Promise<string>
+
+  // builder methods
+  // buttonsBlock(buttons: string[]): Buttons
 }
 
 // FIXME - some special union type?
@@ -57,12 +61,14 @@ class Pal implements IPal {
   sessionId: string
   chatLogger: ChatLogger
   lastInput?: string
+  builder = BaseBuilder
 
   // FIXME - for slack middleware
   constructor(channelEvent: FlexEvent, sid: string) {
     this.lastEvent = channelEvent
     this.sessionId = sid
     this.chatLogger = new ChatLogger(sid)
+    // this.builder = BaseBuilder  // overridden in child
     logger.log('new pal', { sessionId: this.sessionId })
   }
   async channelName(): Promise<string> {

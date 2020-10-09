@@ -8,17 +8,19 @@ import AppConfig from '../../../lib/AppConfig'
 import Util from '../../../lib/Util'
 
 import { ISlackBlock } from '../slack/SlackTypes'
-import SlackBuilder from '../slack/SlackBuilder'
+import { DiscordBuilder } from './DiscordBuilder'
+import { BaseBuilder } from '../base/BaseBuilder'
 import { MakeLogger } from '../../../lib/LogLib'
 
 const logger = new MakeLogger('DiscordPal')
 
 class DiscordPal extends Pal implements IPal {
 
-  // lastEvent: Message  // to force typechecking
+  builder = DiscordBuilder
 
   constructor(message: Message, sid: string) {
     super(message, sid)
+    this.builder = DiscordBuilder
     this.lastEvent = message  // to force the type
   }
 
@@ -131,7 +133,7 @@ class DiscordPal extends Pal implements IPal {
   // FIXME - to send emoji buttons
   // use pal.builder earlier in flow to format for discord as emoji buttons
   async sendButtons(buttons: string[]) {
-    const block = SlackBuilder.buttonsBlock(buttons)
+    const block = this.builder.buttonsBlock(buttons)
     await this.sendBlocks([block])
     await this.chatLogger.logRow({ who: 'bot', text: buttons.join(' | '), type: 'buttons' })
   }
@@ -147,6 +149,7 @@ class DiscordPal extends Pal implements IPal {
             "text": "BEGIN",
             "emoji": true
           },
+          icon, // react emoji
           "value": "home"
         }
       ]
@@ -155,55 +158,59 @@ class DiscordPal extends Pal implements IPal {
 
   // TODO refactor so we can build it natively here,
   // this is parsing the slackbuilder format now
-  // just for one button 'continue' block now
+  // but that will require a native internal format to transform
+  // build and send are separate so we can batch sending a whole block
   async sendButtonsBlock(block: ISlackBlock) {
 
     // let bodyText = ''
     const fields: any[] = []
     let emojis: string[] = []
-    let title: string = ''
+    let text: string = ''
+    let singleButton = true
     if (block.elements && block.elements.length > 1) {
       // TODO - handle multiple buttons
+      singleButton = false
     }
     let useEmbeds = false
+    let wrapText = true
     for (const elem of block.elements!) {
-      let text
+
       if (elem.url) {
         useEmbeds = true
+        wrapText = false // dont wrap emoji below
         // :mag:  :earth_americas:
-        text = `:mag: [${elem.text.text}](${elem.url}) `
+        text = `:mag::link: [${elem.text.text}](${elem.url}) `
       } else {
-        text = ` \`\`\`⬇︎ [${elem.text.text}] \`\`\` `
+        if (singleButton) {
+          // text += ` \`\`\`[ ${elem.text.text} ] \`\`\` `
+          text += `⬇︎ ${elem.text.text}`
+        } else {
+          text += `${elem.text.text}|`
+        }
       }
-      title += text
-      // fields.push({
-      //   // name: text,
-      //   value: text
-      // })
-      // TODO - for longer lists we might want to show emoji next to each choice?
-      // bodyText += `${elem.icon} ${elem.text.text} \n`
       emojis.push(elem.icon)
     }
-    // bodyText = `\`\`\`${bodyText}\`\`\``.trim()
-
+    if (wrapText) {
+      text = '```' + text + '```'
+    }
     let message
     if (useEmbeds) {
       const embed = {
-        // title,
-        description: title,
-        // fields
+        description: text,
       }
       logger.logObj('embed', embed)
       message = await this.lastEvent.channel.send({ embed })
     } else {
-      message = await this.lastEvent.channel.send(title)
+      message = await this.lastEvent.channel.send(text)
     }
     const emoList = emojis.filter(em => !!em)
+    logger.log('reactions', emoList)
     for (const em of emoList) {
       await message.react(em)
     }
     logger.log('sendButtons=>', message.content, emoList)
   }
+
 
   // FIXME - based on slack notion of sending list of blocks
   // TODO rebuild this with embeds and a Discord builder

@@ -1,4 +1,4 @@
-import SlackBuilder from '../pal/slack/SlackBuilder'
+import { BaseBuilder } from '../pal/base/BaseBuilder'
 import { MakeLogger } from '../../lib/LogLib'
 import Util from '../../lib/Util'
 
@@ -183,7 +183,7 @@ class GameObject {
   // may work for rooms and things
   async describeThing(evt: SceneEvent) {
     const stateInfo: StateBlock = this.getStateBlock()
-    const palBlocks = this.renderBlocks(stateInfo)
+    const palBlocks = this.renderBlocks(stateInfo, evt.pal)
     await evt.pal.sendBlocks(palBlocks)
     return palBlocks
   }
@@ -191,7 +191,7 @@ class GameObject {
   // render item as a display set of blocks
   // TODO - use pal.builder to decide what type of builder to use - slack/discord
   // so rendering is different
-  renderBlocks(stateInfo: StateBlock): any[] {
+  renderBlocks(stateInfo: StateBlock, pal: Pal): any[] {
     const palBlocks: any[] = []
 
     // logger.log('describeThing', {
@@ -202,27 +202,46 @@ class GameObject {
     // })
 
     if (stateInfo.imageUrl) {
-      palBlocks.push(SlackBuilder.imageBlock(stateInfo, this))
+      palBlocks.push(BaseBuilder.imageBlock(stateInfo, this))
     }
 
     if (stateInfo.webUrl) {
-      palBlocks.push(SlackBuilder.webLink(stateInfo, this))
+      palBlocks.push(BaseBuilder.webLink(stateInfo, this))
     }
 
     const text = stateInfo.long || stateInfo.short || stateInfo.reply
     if (text) {
       palBlocks.push(
-        SlackBuilder.textBlock(text)
+        BaseBuilder.textBlock(text)
       )
     }
 
     if (stateInfo.buttons) {
-      const buttonsBlock = SlackBuilder.buttonsBlock(stateInfo.buttons)
+      const buttonsBlock = pal.builder.buttonsBlock(stateInfo.buttons)
       palBlocks.push(buttonsBlock)
     }
 
     if (stateInfo.hint) {
-      palBlocks.push(SlackBuilder.contextBlock(stateInfo.hint))
+      palBlocks.push(BaseBuilder.contextBlock(stateInfo.hint))
+    }
+
+
+    switch (stateInfo.navbar) {
+      case 'no':
+      case 'none':
+      case 'false':
+        break
+      case 'full':
+      case 'yes':
+        palBlocks.push(pal.builder.navbar(stateInfo.navbar))
+        break
+
+      default:  // 30% chance if not stated
+        if (stateInfo.buttons) break  // dont mix with navbar
+        if (Math.random() < 0.3) {
+          palBlocks.push(pal.builder.navbar(stateInfo.navbar))
+        }
+        break
     }
 
     return palBlocks
@@ -386,7 +405,7 @@ class GameObject {
     }
 
     // FIXME merge types for branch and stateBlock
-    const palBlocks = this.renderBlocks(branch as StateBlock)
+    const palBlocks = this.renderBlocks(branch as StateBlock, evt.pal)
     if (palBlocks && palBlocks.length) {
       // console.log('palBlocks', palBlocks)
       await evt.pal.sendBlocks(palBlocks)

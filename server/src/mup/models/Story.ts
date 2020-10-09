@@ -1,7 +1,7 @@
 import { MakeLogger } from '../../lib/LogLib'
 import { Pal } from '../pal/base/Pal'
 import Util from '../../lib/Util'
-import SlackBuilder from '../pal/slack/SlackBuilder'
+// import { BaseBuilder} from '../pal/base/BaseBuilder'
 import Room from './Room'
 import Game from './Game'
 // const assert = require('chai').assert
@@ -117,16 +117,16 @@ class Story {
     }
   }
 
-  runCommand(commandName, context) {
-    switch (commandName) {
-      case '/hint':
-        this.hint(context)
-        break
+  // runCommand(commandName, context) {
+  //   switch (commandName) {
+  //     case '/hint':
+  //       this.hint(context)
+  //       break
 
-      default:
-        console.warn('unknown command:', commandName)
-    }
-  }
+  //     default:
+  //       console.warn('unknown command:', commandName)
+  //   }
+  // }
 
   status() {
     // let msg = `\`${this.doc.cname}\``
@@ -136,13 +136,14 @@ class Story {
     }
   }
 
-  hint(context) {
-    const block = SlackBuilder.textBlock(":bulb: try reading the note")
-    const msg = SlackBuilder.wrapBlocks([block])
-    logger.log('hint', msg)
-    context.chat.postEphemeral(msg)
-    // return msg
-  }
+  // hint(context) {
+  //   const block = SlackBuilder.textBlock(":bulb: try reading the note")
+  //   const msg = SlackBuilder.wrapBlocks([block])
+  //   logger.log('hint', msg)
+  //   context.chat.postEphemeral(msg)
+  //   // return msg
+  // }
+
 }
 
 export default Story

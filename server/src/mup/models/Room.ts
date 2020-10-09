@@ -1,5 +1,5 @@
 import { MakeLogger } from '../../lib/LogLib'
-import SlackBuilder from '../pal/slack/SlackBuilder'
+import { BaseBuilder } from '../pal/base/BaseBuilder'
 import { GameObject } from './GameObject'
 import WordUtils from '../../lib/WordUtils'
 import Actor from './Actor'
@@ -94,7 +94,7 @@ class Room extends GameObject {
   async enterRoom(pal: Pal) {
 
     const stateInfo: StateBlock = this.getStateBlock()
-    const palBlocks = this.renderBlocks(stateInfo)
+    const palBlocks = this.renderBlocks(stateInfo, pal)
     await pal.sendBlocks(palBlocks)
     return palBlocks
 
@@ -158,7 +158,7 @@ class Room extends GameObject {
     const itemsInfo = this.visibleItems()
     logger.log('itemsInfo:', itemsInfo)
     if (itemsInfo) {
-      await evt.pal.sendBlocks([SlackBuilder.textBlock(`You see: ` + itemsInfo)])
+      await evt.pal.sendBlocks([BaseBuilder.textBlock(`You see: ` + itemsInfo)])
     }
   }
 
@@ -171,16 +171,16 @@ class Room extends GameObject {
     }
     // FIXME!
     // @ts-ignore
-    reply.items = this.sortItems?.map((thing: Item) => {
-      const props = Util.removeEmptyKeys(thing.props)
-      // hidden getters
-      props.canTake = props.canTake ? true : false
-      props.hidden = props.hidden ? true : false
-      logger.table(thing.name, props)
-      return {
-        [thing.name]: { props }
-      }
-    }) || []
+    // reply.items = this.sortItems?.map((thing: Item) => {
+    //   const props = Util.removeEmptyKeys(thing.props)
+    //   // hidden getters
+    //   props.canTake = props.canTake ? true : false
+    //   props.hidden = props.hidden ? true : false
+    //   logger.table(thing.name, props)
+    //   return {
+    //     [thing.name]: { props }
+    //   }
+    // }) || []
 
     // logger.table('props', reply.items)
     // @ts-ignore
@@ -271,8 +271,8 @@ class Room extends GameObject {
       if (evt.game?.player?.hasItem(thingName)) {
         const msg = `You already have the ${thingName}`
         const blocks = [
-          SlackBuilder.textBlock(msg),
-          SlackBuilder.contextBlock("type `inv` to see what you're carrying"),
+          BaseBuilder.textBlock(msg),
+          BaseBuilder.contextBlock("type `inv` to see what you're carrying"),
         ]
         await evt.pal.sendBlocks(blocks)
         // return { handled: HandleCodes.foundAction, err: false } // even if you didn't get it
@@ -280,8 +280,8 @@ class Room extends GameObject {
       } else {
         const msg = `You can't see a ${thingName}`
         const blocks = [
-          SlackBuilder.textBlock(msg),
-          SlackBuilder.contextBlock("type `look` to see what's in the room"),
+          BaseBuilder.textBlock(msg),
+          BaseBuilder.contextBlock("type `look` to see what's in the room"),
         ]
         await evt.pal.sendBlocks(blocks)
         return true  // replied even though it wasnt found
@@ -292,8 +292,8 @@ class Room extends GameObject {
     if (!thing.doc.canTake) {
       const msg = `You can't take the ${thingName}`
       const blocks = [
-        SlackBuilder.textBlock(msg),
-        SlackBuilder.contextBlock("type `inv` to see what you're carrying"),
+        BaseBuilder.textBlock(msg),
+        BaseBuilder.contextBlock("type `inv` to see what you're carrying"),
       ]
       await evt.pal.sendBlocks(blocks)
       return true   // handled at least
@@ -304,10 +304,10 @@ class Room extends GameObject {
       // TODO custom take message eg 'wear item'
       if (options.output) {
         const msg = thing.doc.onTake || `You take the ${thingName}`
-        const getMsg = SlackBuilder.textBlock(msg)
+        const getMsg = BaseBuilder.textBlock(msg)
         let blocks = [
           getMsg,
-          SlackBuilder.contextBlock("type `inv` to see what you're carrying"),
+          BaseBuilder.contextBlock("type `inv` to see what you're carrying"),
         ]
         await evt.pal.sendBlocks(blocks)
       }

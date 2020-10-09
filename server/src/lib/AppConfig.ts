@@ -54,6 +54,7 @@ const AppConfig = {
 
   info() {
     AppConfig.showVal('DISCORD_ENABLED')
+    AppConfig.showVal('SLACK_ENABLED')
     AppConfig.showVal('NODE_ENV')
     AppConfig.showVal('storyName')
     AppConfig.showVal('PORT')

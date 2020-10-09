@@ -6,7 +6,7 @@ import yaml from 'js-yaml'
 // import AppConfig from '../../lib/AppConfig'
 import Util from '../../lib/Util'
 import { MakeLogger } from '../../lib/LogLib'
-import SlackBuilder from '../pal/slack/SlackBuilder'
+import { BaseBuilder } from '../pal/base/BaseBuilder'
 import { Pal } from '../pal/base/Pal'
 import Story from './Story'
 import Player from './Player'
@@ -42,7 +42,7 @@ class Game {
     await this.story.reset(pal)  // resets rooms
     await this.player.reset()
     // await this.pal.sendText('reset game. now in room:' + this.story.room.name)
-    await this.story.room.enterRoom(pal)
+    // await this.story.room.enterRoom(pal)
   }
 
   // reload and show message
@@ -79,8 +79,8 @@ class Game {
   }
 
   async moreHelp(pal: Pal) {
-    const help = SlackBuilder.textBlock(this.helpDoc)
-    const msg = SlackBuilder.wrapBlocks([help])
+    const help = BaseBuilder.textBlock(this.helpDoc)
+    const msg = BaseBuilder.wrapBlocks([help])
     // await pal.postEphemeral(msg)
     // await pal.postMessage(msg)
     await pal.sendBlocks([msg])
@@ -105,10 +105,10 @@ class Game {
   //   await pal.sendText(msg)
   // }
 
-  async hint(pal: Pal) {
-    // pal.postEphemeral({ text: 'Hint!' });
-    this.story.runCommand('/hint', pal)
-  }
+  // async hint(pal: Pal) {
+  //   // pal.postEphemeral({ text: 'Hint!' });
+  //   this.story.runCommand('/hint', pal)
+  // }
 
   async welcome(pal: Pal) {
     pal.sendText(`Welcome!`)  // FIXME - welcome player by name

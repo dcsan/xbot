@@ -11,12 +11,14 @@ import {
   ISlackSection,
   ISlackBlock
 } from './SlackTypes'
-import SlackBuilder from './SlackBuilder'
+import { BaseBuilder } from '../base/BaseBuilder'
+import { SlackBuilder } from './SlackBuilder'
 
 const logger = new MakeLogger('SlackPal')
 
 class SlackPal extends Pal implements IPal {
 
+  builder = SlackBuilder
   // lastEvent: ISlackEvent
   // lastEvent: FlexEvent
   // lastSlackEvent: ISlackEvent
@@ -60,7 +62,7 @@ class SlackPal extends Pal implements IPal {
 
   async sendText(text: string) {
     text = this.processTemplate(text)
-    const block = SlackBuilder.textBlock(text)
+    const block = BaseBuilder.textBlock(text)
     await this.sendBlocks([block])
     // await this.wrapSay({ text, type: 'text', who: 'bot' })
   }
@@ -104,7 +106,7 @@ class SlackPal extends Pal implements IPal {
   }
 
   async sendButtons(buttons: string[]) {
-    const block = SlackBuilder.buttonsBlock(buttons)
+    const block = BaseBuilder.buttonsBlock(buttons)
     await this.sendBlocks([block])
     await this.chatLogger.logRow({ who: 'bot', text: buttons.join(' | '), type: 'buttons' })
   }
@@ -125,7 +127,7 @@ class SlackPal extends Pal implements IPal {
       console.trace('tried to sendBlocks with no blocks:', blocks)
     }
     blocks = this.expandImageUrls(blocks)
-    const msg: ISlackSection = SlackBuilder.wrapBlocks(blocks)
+    const msg: ISlackSection = BaseBuilder.wrapBlocks(blocks)
     try {
       await this.lastEvent.say(msg)
     } catch (err) {
