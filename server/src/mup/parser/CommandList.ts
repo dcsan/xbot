@@ -49,6 +49,14 @@ const StaticRules: RuleSpec[] = [
   },
 
   {
+    cname: 'survey',
+    rex: /^(survey)/i,
+    event: RouterService.showSurvey,
+    type: 'preCommand',
+    admin: false
+  },
+
+  {
     cname: 'clear',
     rex: /^(clear)/i,
     event: RouterService.clear,
@@ -172,6 +180,13 @@ const StaticRules: RuleSpec[] = [
     event: RouterService.userLeft
   },
 
+  {
+    rex: /^(invite|link)$/i,
+    cname: 'inviteLink',
+    type: 'preCommand',
+    event: RouterService.inviteLink
+  },
+
   // dev testing
 
   // {
@@ -221,7 +236,6 @@ const StaticRules: RuleSpec[] = [
     event: RouterService.useRoomThingAlone,
     type: 'postCommand'
   },
-
 
 ]
 

@@ -45,6 +45,9 @@ export interface IPal {
   sendButtons(buttons: string[]): Promise<void>
   channelName(): string
 
+  // fixme - signatue
+  isAdmin(): boolean
+
   // builder methods
   // buttonsBlock(buttons: string[]): Buttons
 }
@@ -70,6 +73,9 @@ class Pal implements IPal {
     this.chatLogger = new ChatLogger(sid)
     // this.builder = BaseBuilder  // overridden in child
     logger.log('new pal', { sessionId: this.sessionId })
+  }
+  isAdmin(): boolean {
+    throw new Error("Method not implemented.")
   }
   channelName(): string {
     logger.error("channelName Method not implemented.");
@@ -112,6 +118,9 @@ class Pal implements IPal {
     throw new Error("showLog Method not implemented in Pal");
   }
 
+  async sendInvite() {
+    this.sendText('invite your friends!')
+  }
   // abstract methods
   processTemplate(text: string): string {
     return text

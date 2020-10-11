@@ -1,8 +1,5 @@
-import { MessageEmbed, TextChannel } from 'discord.js'
+import { MessageEmbed, Message, TextChannel } from 'discord.js'
 import { Pal, IPal, FlexEvent } from '../base/Pal'
-import {
-  Message
-} from "discord.js"
 
 import AppConfig from '../../../lib/AppConfig'
 import Util from '../../../lib/Util'
@@ -36,19 +33,46 @@ class DiscordPal extends Pal implements IPal {
     return lastEvent.content
   }
 
+  isAdmin(): boolean {
+    const message = this.lastEvent
+    // const role = message.guild.roles.cache.find(role => role.name === '<role name>');
+    const adminRoles = AppConfig.read('ADMIN_ROLES')
+    const userRoles = message?.member?.roles.cache
+    if (userRoles?.find(role => adminRoles.includes(role.name))) { return true }
+    return false
+  }
+
   // --------- admin commands ----------
   async clearChannel() {
-    const message = this.lastEvent
-    if (message.channel.type === 'text') {
-      try {
-        const count = 99
-        const ch = message.channel as TextChannel
-        await ch!.bulkDelete(count)
-        // message.delete();
-      } catch (err) {
-        logger.error('failed to delete', err)
-      }
+    if (!this.isAdmin()) {
+      await this.sendText('you need to be an admin to use that!')
+      logger.warn("blocked admin clearChannel")
+      return
     }
+    const message = this.lastEvent
+    if (message.channel.type !== 'text') {
+      return logger.warn('cannot clear channel type', message.channel.type)
+    }
+    let c
+    try {
+      // FIXME - the error isn't throwing properly it exits the loop instead and doesnt catch
+      const count = 99
+      const ch = message.channel as TextChannel
+      for (c = 0; c < 10; c++) {
+        const deleted = await ch!.bulkDelete(count)
+        // .catch(console.error) // FIXME - breaks to "done" if this isn't here?
+        // .then((result) => console.error('clear result', result))
+        if (deleted?.size < 1) {
+          logger.log('finish clear at c =', c)
+          break
+        }
+        logger.log('clear', c)
+      }
+      // message.delete();
+    } catch (err) {
+      logger.warn('exit to delete at c=', c, err)
+    }
+    logger.log('clear done!')
   }
 
   async showInstallUrl() {
@@ -256,7 +280,11 @@ class DiscordPal extends Pal implements IPal {
     return this.lastEvent.channel.name
   }
 
-
+  async sendInvite() {
+    const link = AppConfig.read('DISCORD_INVITE')
+    const text = `Invite Yo Friends!\n${link}`
+    await this.sendText(text)
+  }
 
 }
 

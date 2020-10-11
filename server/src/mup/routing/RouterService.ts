@@ -1,3 +1,5 @@
+import AppConfig from '../../lib/AppConfig'
+
 import yaml from 'js-yaml'
 import Game from '../models/Game'
 import { GameManager } from '../models/GameManager'
@@ -17,6 +19,9 @@ const RouterService = {
 
   // found: {route, parsed}
   goto: async (evt: SceneEvent) => {
+    if (!evt.pal.isAdmin()) {
+      return
+    }
     const roomName = evt.pres.parsed?.groups.roomName
     logger.logObj('goto', roomName)
     await evt.game?.story.gotoRoom(roomName, evt)
@@ -24,20 +29,6 @@ const RouterService = {
 
   install: async (evt: SceneEvent) => {
     await evt.pal.showInstallUrl()
-  },
-
-  clear: async (evt: SceneEvent) => {
-    await evt.pal.clearChannel()
-    return await evt.game?.story.room.enterRoom(evt.pal)
-  },
-  voice: async (evt: SceneEvent) => {
-    await evt.pal.showVoiceChannel(evt.pal)
-  },
-
-  resetGame: async (evt: SceneEvent) => {
-    await evt.pal.clearChannel()
-    await evt.game?.reset(evt.pal)
-    return await evt.game?.story.room.enterRoom(evt.pal)
   },
 
   lookRoom: async (evt: SceneEvent) => {
@@ -95,11 +86,33 @@ const RouterService = {
     await evt.pal.sendText(help)
   },
 
+  // admin commands
+
   reload: async (evt: SceneEvent) => {
     await evt.game?.reload(evt)
+    await evt.pal.sendText('reloaded')
+  },
+
+  clear: async (evt: SceneEvent) => {
+    await evt.pal.clearChannel()
+    // return await evt.game?.story.room.enterRoom(evt.pal)
+  },
+  voice: async (evt: SceneEvent) => {
+    await evt.pal.showVoiceChannel(evt.pal)
+  },
+
+  resetGame: async (evt: SceneEvent) => {
+    if (!evt.pal.isAdmin()) {
+      return
+    }
+    await evt.game?.reset(evt.pal)
+    return await evt.game?.story.room.enterRoom(evt.pal)
   },
 
   showStatus: async (evt: SceneEvent) => {
+    if (!evt.pal.isAdmin()) {
+      return
+    }
     await evt.game?.showStatus(evt)
   },
 
@@ -131,12 +144,22 @@ const RouterService = {
     return await evt.game.story.room.showHint(evt)
   },
 
+  showSurvey: async (evt: SceneEvent) => {
+    const link = AppConfig.read('SURVEY_LINK')
+    const text = `Please help us improve the gameplay with this little survey!\n${link}`
+    return await evt.pal.sendText(text)
+  },
+
   userJoined: async (evt: SceneEvent) => {
     return await evt.pal.sendText('Welcome new person!')
   },
 
   userLeft: async (evt: SceneEvent) => {
     return await evt.pal.sendText('Goodbye!')
+  },
+
+  inviteLink: async (evt: SceneEvent) => {
+    return await evt.pal.sendInvite()
   },
 
   // sendImageFooter: async (evt: SceneEvent) => {
