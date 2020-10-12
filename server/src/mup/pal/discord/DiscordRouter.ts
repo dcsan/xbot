@@ -1,8 +1,13 @@
 import AppConfig from '../../../lib/AppConfig'
 import Discord from 'discord.js'
 import {
-  Message
+  Message,
+  User,
+  GuildMember,
+  TextChannel
 } from "discord.js";
+
+import _ from 'lodash'
 
 import BotRouter from '../../routing/BotRouter'
 import { DiscoUtils } from './DiscoUtils'
@@ -61,6 +66,36 @@ const DiscordRouter = {
       // console.log(`${reaction.message.author}'s message "${reaction.message.content}" gained a reaction!`);
       // The reaction is now also fully available and the properties will be reflected accurately:
       // console.log(`${reaction.count} user(s) have given the same reaction to this message!`);
+    });
+
+    // Create an event listener for new guild members
+    client.on('guildMemberAdd', async (member) => {
+      const lobbyChannel = AppConfig.read('LOBBY_CHANNEL')
+      logger.log('member added', member.user?.username, member)
+      const channelCache = member.guild.channels.cache
+      // Send the message to a designated channel on a server:
+      const channel = channelCache.find(ch => {
+        return (ch.type === 'text' && ch.name === lobbyChannel)
+      }) as TextChannel
+
+      // Do nothing if the channel wasn't found on this server
+      if (!channel) {
+        logger.warn('cannot find lobby channel:', { lobbyChannel })
+        return
+      }
+      // @ts-ignore
+      const intro = _.sample([
+        `Welcome ${member}!`,
+        `${member} just joined!`,
+        `Hey ${member}!`,
+        `Good to see you ${member}!`,
+        `Thanks for joining ${member}!`,
+        `${member} just landed`,
+      ])
+
+      const msg = await channel.send(intro + `\n⬇︎ Hit the 🚀 to get started!`);
+      logger.log('msg', msg)
+      await msg.react('🚀')
     });
 
   }

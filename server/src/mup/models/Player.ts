@@ -106,7 +106,10 @@ class Player extends GameObject {
     logger.logObj('showInv', this.invItems)
 
     if (!this.invItems.length) {
-      blocks.push(builder.textBlock("You aren't carrying anything. Type `get (name of item)` to pick things up."))
+      blocks.push(builder.textBlock(
+        `You aren't carrying anything.
+        \nType \`get (name of item)\` to pick things up.`
+      ))
     } else {
       const buttonLinks = this.invItems.map(item => {
         return `${item.name}|x ${item.name}`

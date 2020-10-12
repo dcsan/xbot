@@ -77,8 +77,8 @@ class DiscordPal extends Pal implements IPal {
   }
 
   async showInstallUrl() {
-    const DiscordClientId = AppConfig.read('DISCORD_CLIENT_ID')
-    const msg = `https://discord.com/oauth2/authorize?client_id=${DiscordClientId}&scope=bot`
+    const discordClientId = AppConfig.read('DISCORD_CLIENT_ID')
+    const msg = `https://discord.com/oauth2/authorize?client_id=${discordClientId}&scope=bot&permissions=37215553`
     logger.log('install => ' + msg)
     await this.sendText(msg)
   }

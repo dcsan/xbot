@@ -23,8 +23,11 @@ async function main() {
     await DiscordRouter.init()
   }
 
+  console.log('--- READY! ----')
+
 }
 
 console.time('main')
 main()
 console.timeEnd('main')
+
