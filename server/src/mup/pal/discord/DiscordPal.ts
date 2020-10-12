@@ -39,7 +39,9 @@ class DiscordPal extends Pal implements IPal {
     const adminRoles = AppConfig.read('ADMIN_ROLES')
     const userRoles = message?.member?.roles.cache
     if (userRoles?.find(role => adminRoles.includes(role.name))) { return true }
-    logger.warn('failed admin check')
+    const msg = 'failed admin check'
+    this.sendText(msg)
+    logger.warn(msg)
     return false
   }
 

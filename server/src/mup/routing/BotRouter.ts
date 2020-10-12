@@ -129,7 +129,7 @@ const BotRouter = {
   // for high-priority admin commands
   async preCommands(evt: SceneEvent): Promise<boolean | undefined> {
     if (evt.pres.rule?.type !== 'preCommand') {
-      logger.log('skip preCommands')
+      logger.log('no preCommands')
       return false
     }
     // logger.log('tryCommands for evt.pres=', evt.pres.clean)

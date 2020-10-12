@@ -95,6 +95,14 @@ const StaticRules: RuleSpec[] = [
     type: 'preCommand'
   },
 
+  // has to come after `look room`
+  {
+    cname: 'lookAt',
+    rex: /^(?<verb>look at|look|examine|x at|l|x) (?<target>\w+)$/i,
+    event: RouterService.lookRoomThing,
+    type: 'preCommand'
+  },
+
   // just on its own no 'with' or 'on'
   {
     cname: 'useThingOn',
@@ -212,13 +220,6 @@ const StaticRules: RuleSpec[] = [
 
   // ------ postCommands run later
 
-  // has to come after `look room`
-  {
-    cname: 'lookAt',
-    rex: /^(?<verb>look at|look|examine|x at|l|x) (?<target>\w+)$/i,
-    event: RouterService.lookRoomThing,
-    type: 'postCommand'
-  },
 
   // captures all wear related tasks
   // have to fire from your inventory too...
