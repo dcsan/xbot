@@ -206,7 +206,7 @@ class BaseBuilder {
   static navbar(_version) {
     const items = [
       'look|look|👀',
-      'item|item|📦',
+      'item|item|🧰',
       'task|task|📕',
       'help|help|❓'
     ]

@@ -113,8 +113,13 @@ class Player extends GameObject {
       })
       // buttonLinks.push(`notebook | x notebook`) // artificial
       blocks.push(builder.buttonsBlock(buttonLinks))
+    }
+    if (this.invItems.length === 1) {
       blocks.push(builder.contextBlock(
-        ':pencil2: you can `x item` to examine it'))
+        ':pencil2: you can `x note` to examine the note'))
+    } else {
+      blocks.push(builder.contextBlock(
+        ':pencil2: you can `x (name of the item)` to examine items'))
     }
     // blocks.push(BaseBuilder.contextBlock(':information_source: hint: _try to `use item with ...` other things in the room_'))
     await evt.pal.sendBlocks(blocks)

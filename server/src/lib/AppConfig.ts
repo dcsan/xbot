@@ -58,6 +58,7 @@ const AppConfig = {
     AppConfig.showVal('NODE_ENV')
     AppConfig.showVal('storyName')
     AppConfig.showVal('PORT')
+    AppConfig.showVal('ADMIN_ROLES')
     // console.log(':', typeof AppConfig.read('SLACK_ENABLED'))
     // console.log('AppConfig', AppConfig)
     // console.log('NODE_ENV:', AppConfig.NODE_ENV)
