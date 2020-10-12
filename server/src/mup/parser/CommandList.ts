@@ -27,7 +27,7 @@ const StaticRules: RuleSpec[] = [
 
   {
     cname: 'help',
-    rex: /(help|❓)/i,
+    rex: /^(help|\?|❓)$/i,
     event: RouterService.handleHelp,
     type: 'preCommand',
     extra: undefined
@@ -74,12 +74,12 @@ const StaticRules: RuleSpec[] = [
 
   // slash preCommands
   // note /slash punctuation is removed before rex comparison
-  // {
-  //   rex: /\/hint (?<text>.*)/i,
-  //   cname: 'hint',
-  //   type: 'preCommand',
-  //   event: RouterService.showHint
-  // },
+  {
+    rex: /\/hint (?<text>.*)/i,
+    cname: 'hint',
+    type: 'preCommand',
+    event: RouterService.showHint
+  },
 
   {
     cname: 'inventory',
@@ -90,7 +90,7 @@ const StaticRules: RuleSpec[] = [
 
   {
     cname: 'lookRoom',
-    rex: /^(look|l|x|examine|look room|x room|look at room|👀)$/i,
+    rex: /^(look|l|x|examine|look room|x room|l room|look at room|👀)$/i,
     event: RouterService.lookRoom,
     type: 'preCommand'
   },

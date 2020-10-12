@@ -40,7 +40,7 @@ class Story {
       // FIXME - slack?
       logger.warn('cannot find channelName for lastEvent:', pal.lastEvent)
     } else {
-      const startRoom = this.doc.startRooms.find(elem => {
+      const startRoom = this.doc.startRooms?.find(elem => {
         const rex = new RegExp(elem.channels)
         return rex.test(channelName)
       })

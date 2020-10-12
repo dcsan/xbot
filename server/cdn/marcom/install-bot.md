@@ -4,7 +4,7 @@ You need to have some type of 'verify' setup for your server, as the bot doesn't
 
 ## Roles
 
-Make a role for the bot. It needs:
+Make a role for the bot for example. It needs:
   read write and emoji reactions
 
 Install the bot from here:
@@ -13,17 +13,21 @@ https://discord.com/oauth2/authorize?client_id=759874591694389279&scope=bot
 add that role to the bot
 
 ## Bot Admin Commands
-Make another role called one of these (case sensitive)
-admin|mod|staff|Hint Giver|Escape Room staff|Bot Dev|Escape Host
-
-Better to have it as a separate new admin role than your current one in case you give out to someone else.
-
-Give yourself that role. Now you (and only you) can use admin commands on the bot.
-These are:
+Make another role called `AsylumStaff`
+It's better to have this as a separate new role in case you give out to someone else.
+Give yourself that role. Now you (and only you) can use admin commands on the bot:
 
 - clear - clears history in the channel
-- gt (room) - jump right to a specific room (eg cell or lobby) (we don't have that many rooms yet but we will... :D)
-- reset - resets current player
+- reset - resets current channel
+- gt (room) - jump right to a specific room (eg cell or lobby)
 - st - status - for debugging
+
+Also we have a help message telling people to ping `@AsylumStaff` for help
+
+## Bonus Welcome Message
+If you create a channel called
+🚀-lobby
+then the bot will welcome new users joining your server.
+Later I'm going to add buttons there to create private "team" channels.
 
 Enjoy!

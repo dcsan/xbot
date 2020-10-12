@@ -24,7 +24,7 @@ beforeAll(async () => {
 })
 
 beforeEach(async () => {
-  await testEnv.initStory('office', 'lobby')
+  await testEnv.initStory('asylum', 'cell')
   // expect(testEnv.dbConn._readyState).toBe(1)
 })
 
@@ -35,15 +35,15 @@ beforeEach(async () => {
 
 it('should handle verb target to get thing', async () => {
   const evt = testEnv.makeSceneEvent('get soap')
-  expect(evt.pres.pos?.target).toBe('Soap')
+  expect(evt.pres.pos?.target).toBe('soap')
   const res = await BotRouter.postCommands(evt)
   expect(res).toBe(true)
   expect(evt.pal.chatLogger.tailText(2)).toMatch(/You take the soap/i)
 })
 
 it('handle canTake: false items', async () => {
-  const evt = testEnv.makeSceneEvent('get table')
-  expect(evt.pres.pos?.target).toBe('table')
+  const evt = testEnv.makeSceneEvent('get chair')
+  expect(evt.pres.pos?.target).toBe('chair')
   const res = await BotRouter.postCommands(evt)
   expect(res).toBe(true)
   expect(evt.pal.chatLogger.tailText(2)).toMatch(/You can't take the table/i)
