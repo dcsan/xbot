@@ -82,6 +82,14 @@ const StaticRules: RuleSpec[] = [
   },
 
   {
+    rex: /^(teams)$/i,
+    cname: 'hint',
+    type: 'preCommand',
+    event: RouterService.showTeams
+  },
+
+
+  {
     cname: 'inventory',
     rex: /^(inventory|item|inv|i|🧰)$/i,
     event: RouterService.showInventory,

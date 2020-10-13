@@ -174,6 +174,10 @@ class Pal implements IPal {
     return emoji
   }
 
+  async showTeams() {
+    logger.warn('not implemented')
+  }
+
 }
 
 export { Pal, MockChannel, ISlackEvent }

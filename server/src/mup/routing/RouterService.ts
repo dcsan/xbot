@@ -145,6 +145,10 @@ const RouterService = {
     return await evt.game.story.room.showHint(evt)
   },
 
+  showTeams: async (evt: SceneEvent) => {
+    await evt.pal.showTeams()
+  },
+
   showSurvey: async (evt: SceneEvent) => {
     const link = AppConfig.read('SURVEY_LINK')
     const text = `Please help us improve the gameplay with this little survey!\n${link}`

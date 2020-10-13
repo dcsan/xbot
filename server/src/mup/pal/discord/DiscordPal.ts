@@ -289,6 +289,26 @@ class DiscordPal extends Pal implements IPal {
     await this.sendText(text)
   }
 
+  // show linked channels for team-1 etc channel names
+  async showTeams() {
+    const channelNames = AppConfig.read('TEAM_CHANNELS').split('|')
+    logger.log('channelNames', channelNames)
+    const channelCache = this.lastEvent.member.guild.channels.cache
+    const teamIds = channelNames.map(channelName => {
+      const channel = channelCache.find(ch => ch.name === channelName)
+      if (channel) {
+        return channel.toString()
+      } else {
+        logger.log('cannot find team', channelName)
+      }
+    }).filter(x => x) // remove nulls
+
+    let text = "This game is more fun with friends! \nIf a friend invited you, join their team channel below, or choose one to start a new game and invite your friends to join you!\n"
+    text += teamIds.join('  |  ')
+    console.log('teams msg', text)
+    await this.sendText(text)
+  }
+
 }
 
 export { DiscordPal }
