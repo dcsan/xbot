@@ -182,6 +182,13 @@ const StaticRules: RuleSpec[] = [
     event: RouterService.showNotes
   },
 
+  // {
+  //   rex: /^(task\\d{1})$/,
+  //   cname: 'log',
+  //   type: 'preCommand',
+  //   event: RouterService.jumpTask
+  // },
+
   {
     rex: /.* has joined/i,
     cname: 'userJoined',

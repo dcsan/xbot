@@ -141,6 +141,10 @@ const RouterService = {
     return await evt.game.story.room.showNotes(evt)
   },
 
+  // jumpTask: async (evt: SceneEvent) => {
+  //   return await evt.game.story.room.showNotes(evt)
+  // },
+
   showHint: async (evt: SceneEvent) => {
     return await evt.game.story.room.showHint(evt)
   },

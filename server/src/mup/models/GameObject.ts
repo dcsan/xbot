@@ -321,6 +321,7 @@ class GameObject {
     let returnBlock: ActionBranch
     let passed = true
     // find first *failing* condition
+    logger.log('getCondBranch for allBlock:', allBlock)
     const fail = allBlock.find(line => !(this.checkOneCondition(line)));
     if (fail) {
       passed = false
