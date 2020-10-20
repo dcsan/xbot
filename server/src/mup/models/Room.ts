@@ -73,6 +73,7 @@ class Room extends GameObject {
       item.room = this
       this.roomItems.push(item)
     })
+    logger.log('load roomItems', this.roomItems)
   }
 
   loadActors(story) {
@@ -127,8 +128,8 @@ class Room extends GameObject {
   }
 
   itemCnames() {
+    // .sort((one, two) => one.cname > two.cname)
     const names = this.roomItems
-      // .sort((one, two) => one.cname > two.cname)
       .map(item => {
         return item.cname
       })
@@ -171,18 +172,18 @@ class Room extends GameObject {
     }
     // FIXME!
     // @ts-ignore
-    // reply.items = this.sortItems?.map((thing: Item) => {
-    //   const props = Util.removeEmptyKeys(thing.props)
-    //   // hidden getters
-    //   props.canTake = props.canTake ? true : false
-    //   props.hidden = props.hidden ? true : false
-    //   logger.table(thing.name, props)
-    //   return {
-    //     [thing.name]: { props }
-    //   }
-    // }) || []
+    reply.items = this.allThings.map((thing: Item) => {
+      const props = Util.removeEmptyKeys(thing.props)
+      // hidden getters
+      props.canTake = props.canTake ? true : false
+      props.hidden = props.hidden ? true : false
+      return {
+        [thing.name]: { props }
+      }
+    }) || []
 
-    // logger.table('props', reply.items)
+    // logger.table(thing.name, props)
+    logger.table('props', reply.items)
     // @ts-ignore
     reply.actors = this.actors?.map((thing: Actor) => {
       return { [thing.name]: thing.state }
@@ -338,8 +339,8 @@ class Room extends GameObject {
 
   // looks for actors
   findThing(itemName: string): GameObject | undefined {
-    logger.log('findThing', itemName, 'in', this.klass)
     const cname = Util.safeName(itemName)
+    logger.log('findThing', cname, 'in', this.klass)
     const found = this.allThings.filter((thing: GameObject) => {
       if (thing.cname === cname) return true
       if (thing.doc.called) {
@@ -356,7 +357,7 @@ class Room extends GameObject {
       logger.log('found thing:', item.name)
       return item
     } else {
-      logger.warn('cannot find thing in room:', itemName)
+      logger.warn(`cannot find ${cname} in room:`)
       logger.logObj('room items:', this.roomObj.itemCnames())
       // logger.log('this:', this.cname, this.klass)
       return undefined
