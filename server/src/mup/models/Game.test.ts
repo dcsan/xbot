@@ -9,7 +9,7 @@ test('office game loading', async () => {
 
   expect(game.story.doc.title).toBe('The Office')
   expect(game.story.room.name).toBe('lobby')
-  expect(game.story.rooms.length).toBe(3)
+  expect(game.story.rooms.length).toBe(4)
 
   game.story.gotoRoom('office')
   expect(game.story.room.name).toBe('office')

@@ -1,4 +1,5 @@
 import { RexParser, ParserResult } from './RexParser';
+import { SynManager } from './Synonyms';
 // import { MakeLogger } from '../../lib/LogLib';
 
 // const log = console.log
@@ -7,17 +8,14 @@ import { RexParser, ParserResult } from './RexParser';
 // const nounList = ['key', 'chest', 'lamp', 'door']
 // const verbList = ['open', 'rub', 'wipe', 'wash', 'use']
 
-it('should reduce vocab', async () => {
-  const input = 'get the robe'
-  const out = RexParser.replaceSyns(input)
-  expect(out).toBe('take the robe')
-})
 
 // base 'get' command
 it('parse get command', () => {
-  const pres: ParserResult = RexParser.parseCommands('get the floofy')
+  const input = SynManager.simplify('take the floofy')
+  expect(input).toBe('get floofy')
+  const pres: ParserResult = RexParser.parseCommands(input)
   expect(pres.pos?.target).toBe('floofy')
-  expect(pres.pos?.verb).toBe('take')
+  expect(pres.pos?.verb).toBe('get')
 })
 
 // // noun phrase command
@@ -52,16 +50,6 @@ it('should parse actionBlock setlines', async () => {
   expect(pres.parsed?.groups?.value).toBe('no')
 })
 
-it('should reduce vocab', async () => {
-  const clean = RexParser.replaceSyns('t gown')
-  expect(clean).toBe('take gown')
-})
-
-it('should not mess up embedded words', async () => {
-  const clean = RexParser.replaceSyns('take closet')
-  expect(clean).toBe('take closet')
-})
-
 it('should expand parser phrases', async () => {
   const called = 'red|blue|other color'
   let rexstr = called.split('|').join('\\b|\\b')
@@ -87,10 +75,3 @@ it('should expand parser phrases', async () => {
   })
 
 })
-
-it('should pass some basic regex stuff', () => {
-  const line = "termsandconds|ask about terms|and"
-  const rex = RexParser.makeRexFromLine(line)
-  expect(rex.test('ask about terms')).toBe(true)
-})
-

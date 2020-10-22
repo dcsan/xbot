@@ -22,7 +22,6 @@ afterAll(async () => {
   await testEnv.close()
 })
 
-
 it('should respond to smell action', async () => {
 
   await testEnv.initStory('office', 'office')
@@ -32,7 +31,7 @@ it('should respond to smell action', async () => {
   const evt: SceneEvent = { pal: testEnv.pal, pres, game: testEnv.game }
   const ran = await testEnv.game.story.room.findAndRunAction(evt)
   expect(ran).toBe(true)
-  expect(evt.pal.chatLogger.tailText(2)).toMatch(/A musty smell/)
+  expect(evt.pal.chatLogger.tailText(2)).toMatch(/A musty smell of industrial/i)
 })
 
 it('should respond to random sesame action', async () => {

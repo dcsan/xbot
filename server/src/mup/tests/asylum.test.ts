@@ -20,8 +20,8 @@ describe('asylum story test', () => {
 
   test('intro sequence', async () => {
     // const { pal, game } = new TestEnv('office')
-    const game = await env.loadGame('asylum')
-    expect(game.story.doc.title).toMatch(/ESCAPE FROM/i)
+    const game = await env.loadGame('office')
+    expect(game.story.doc.title).toMatch(/The Office/i)
   })
 
   test('cell room basics', async () => {

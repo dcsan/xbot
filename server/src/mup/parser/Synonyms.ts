@@ -3,6 +3,7 @@ import Room from '../models/Room'
 
 import Util from '../../lib/Util'
 import { MakeLogger } from '../../lib/LogLib'
+import WordUtils from '../../lib/WordUtils'
 const logger = new MakeLogger('Synonyms')
 
 interface ISyn {
@@ -114,6 +115,12 @@ const SynManager = {
     }
     return clean
   },
+
+  simplify(input, _room?: string) {
+    input = WordUtils.basicNormalize(input)
+    input = SynManager.replaceSyns(input, _room)
+    return input
+  }
 
 }
 

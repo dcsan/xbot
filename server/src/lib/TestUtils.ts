@@ -117,7 +117,7 @@ class TestEnv {
   // but usually we check last 2 or 3 to include images, buttons etc, in same reply
   async checkResponse(oneTest: StoryTest, roomName = 'room') {
     const { input, output, lines = 4 } = oneTest
-    // logger.logLine(`\n----- ${input}`)
+    // logger.log(`\n----- ${input}`)
     await BotRouter.anyEvent(this.pal, input, 'text')
     // const actual = this.pal.lastOutput()
     const rex = new RegExp(output, 'im')
@@ -141,12 +141,12 @@ class TestEnv {
         // '\n actual:\t' + JSON.stringify(logTail, null, 2) +
         '\n\n'
       )
-      logger.logLine(errorMsg)
+      logger.log(errorMsg)
     } else {
       if (logAll) {
         const msg = '--- OK: ' + input
         const line = msg.padEnd(20, ' ')
-        logger.logLine(chalk.grey(line, ' => ' + output))
+        logger.log(chalk.grey(line, ' => ' + output))
       }
     }
 
@@ -157,12 +157,11 @@ class TestEnv {
       for (const line of oneTest.checks) {
         const testOk = room?.checkOneCondition(line)
         if (!testOk) {
-          logger.logLine(
-            chalk.white.bgRed.bold('FAIL'),
-            `@ ${input} => ${line}`
+          logger.log(
+            chalk.white.bgRed.bold('FAIL') + `@ ${input} => ${line}`
           )
         } else {
-          if (logAll) logger.logLine(chalk.grey('passed item.check ' + line))
+          if (logAll) logger.log(chalk.grey('passed item.check ' + line))
         }
       }
     }

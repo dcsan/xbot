@@ -75,8 +75,7 @@ const BotRouter = {
 
     input = Util.stripPrefix(input)
     const roomName = '' // FIXME for filtering what to replace/optimize
-    input = SynManager.replaceSyns(input, roomName)
-    const clean: string = WordUtils.basicNormalize(input)
+    const clean = SynManager.simplify(input, roomName)
     const pres: ParserResult = RexParser.parseCommands(clean)
 
     logger.log('parserResult ', pres)

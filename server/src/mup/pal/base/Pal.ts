@@ -136,11 +136,11 @@ class Pal implements IPal {
     // await this.chatLogger.logBlocks(msg)
     // throw new Error("sendBlocks Method not implemented in Pal");
     // TODO - implement and this.builder.xx for a builder type based on Pal.type
-    logger.warn('sendBlocks not implemented in Pal')
+    logger.error('sendBlocks not implemented in Pal')
   }
 
   async sendText(msg: string) {
-    logger.warn('sendText not implement in Pal', msg)
+    logger.error('sendText not implement in BasePal', msg)
   }
 
   // abstract method

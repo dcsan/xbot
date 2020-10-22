@@ -19,8 +19,10 @@ class BaseBuilder {
   // },
 
   // a single button: text|value|emoji
+  // TODO - add 'MockBuilder'
   static buttonItem(buttonLine: string) {
-    logger.fatal('buttonItem should be in subclass', buttonLine)
+    logger.warn('buttonItem should be in subclass', buttonLine)
+    return ('button: ' + buttonLine)
     // let [text, value, icon] = buttonLine.split('|')
     // // icon = (icon).trim()
     // text = text.trim()

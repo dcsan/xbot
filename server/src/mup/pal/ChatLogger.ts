@@ -49,7 +49,7 @@ class ChatLogger {
   }
 
   async logRow(item: IChatRow) {
-    if (logAll) logger.logLine('logRow BG >> ', item.text)
+    if (logAll) logger.log('logRow BG >> ', item.text)
     // just keep count in here
     const minDiv = 1000 * 60
     const minute = Math.floor(Date.now() / minDiv)
@@ -62,7 +62,6 @@ class ChatLogger {
     // logger.logLine('logRow OK << ', item.text)
     this.rows.push(oneLog)
   }
-
 
   // called for incoming events from user
   async logInput(blob) {
