@@ -18,6 +18,7 @@ const logger = new MakeLogger('GameObject')
 
 import {
   ActionData,
+  SwitchBlock,
   // ActionResult,
   ActionBranch,
   StateBlock
@@ -225,11 +226,14 @@ class GameObject {
       palBlocks.push(BaseBuilder.contextBlock(stateInfo.hint))
     }
 
+    if (stateInfo.navbar === 'false') {
+      logger.warn('dont use navbar: false', stateInfo)
+    }
 
     switch (stateInfo.navbar) {
+      case 'false':
       case 'no':
       case 'none':
-      case 'false':
         break
       case 'full':
       case 'yes':
@@ -272,7 +276,6 @@ class GameObject {
     return text
   }
 
-
   // FIXME - this applies to things and rooms
   // which are a different level of hierarchy
   // making polymorphism harder
@@ -295,14 +298,19 @@ class GameObject {
       // trackResult.history?.push('reply')
     }
 
+    // rename to .before and .after / .first and .last
     if (actionData.always) {
       await this.runBranch(actionData.always, evt, trackResult)
+    }
+
+    if (actionData.switch) {
+      const ran = await this.runSwitchBlock(actionData.switch, evt, trackResult)
     }
 
     if (actionData.if) {
       await this.runConditionalBranch(actionData, evt, trackResult)
     } else {
-      // just a 'then' without an 'if'
+      // just a 'then' without an 'if' = an always
       await this.runBranch(actionData.then, evt, trackResult)
     }
 
@@ -314,6 +322,27 @@ class GameObject {
   async runConditionalBranch(action: ActionData, evt: SceneEvent, trackResult: boolean) {
     const condBranch: ActionBranch = this.getConditionalBranch(action)
     await this.runBranch(condBranch, evt, trackResult)
+  }
+
+  async runSwitchBlock(switchBlock: SwitchBlock[], evt: SceneEvent, trackResult: boolean) {
+    for (const block of switchBlock) {
+      if (this.checkConditionList(block.case)) {
+        logger.log('passed switch', block.case)
+        await this.runBranch(block.then, evt, trackResult)
+        // break
+        return true
+      }
+    }
+    // if (switchBlock.default) {
+    // }
+    return false
+  }
+
+  // check a list of conditions
+  checkConditionList(lines: string[]) {
+    if (!lines) return true // empty check = default
+    const fail = lines.find(line => !(this.checkOneCondition(line)));
+    return !fail
   }
 
   getConditionalBranch(action: ActionData): ActionBranch {
@@ -488,6 +517,16 @@ class GameObject {
     } else {
       const msg = `you don't have the ${this.name}`
       await pal.sendText(msg)
+    }
+  }
+
+  getStatus() {
+    const props = Util.removeEmptyKeys(this.props)
+    // hidden getters
+    props.canTake = props.canTake ? true : false
+    props.hidden = props.hidden ? true : false
+    return {
+      [this.cname]: { props }
     }
   }
 

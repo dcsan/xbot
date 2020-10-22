@@ -9,7 +9,8 @@ import Game from './Game'
 import AppConfig from '../../lib/AppConfig'
 import { SceneEvent } from '../MupTypes'
 import { LoadOptions } from '../MupTypes'
-import { RexParser } from '../parser/RexParser'
+// import { RexParser } from '../parser/RexParser'
+import { SynManager } from '../parser/Synonyms'
 
 const logger = new MakeLogger('Story')
 
@@ -98,7 +99,7 @@ class Story {
       room.story = this
       this.rooms.push(room)
     })
-    // this.reset()
+    SynManager.cacheNames(this.rooms)
   }
 
   async gotoRoom(roomName: string, evt?: SceneEvent) {
@@ -110,7 +111,6 @@ class Story {
     if (room) {
       logger.log('gotoRoom', roomName)
       this.room = room
-      RexParser.cacheNames(room.roomItems, room.name)
       if (evt) {
         await this.room.enterRoom(evt.pal)
       }

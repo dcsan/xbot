@@ -3,7 +3,7 @@ import { Pal } from './pal/base/Pal'
 
 import { HandleCodes } from './models/ErrorHandler'
 
-interface LoadOptions {
+export interface LoadOptions {
   storyName?: string
   pal: Pal
 }
@@ -23,7 +23,7 @@ export interface StateBlock {
 }
 
 // the fail/pass block branches of a full ActionData
-interface ActionBranch {
+export interface ActionBranch {
   reply?: string
   buttons?: string[]
   imageUrl?: string
@@ -37,7 +37,7 @@ interface ActionBranch {
   callJS?: string // javascript function
 }
 
-interface ActionData {
+export interface ActionData {
   match: string
   reply?: string
   goto?: string
@@ -45,15 +45,20 @@ interface ActionData {
   if: ActionIf
   then: ActionBranch
   else: ActionBranch
+  switch: SwitchBlock[]
 }
 
+export interface SwitchBlock {
+  case: string[]
+  then: ActionBranch
+}
 
-interface ActionIf {
+export interface ActionIf {
   all: string[]
   any: string[]
 }
 
-interface ActionResult {
+export interface ActionResult {
   handled: HandleCodes
   err?: boolean
   doc?: ActionData
@@ -70,7 +75,7 @@ export interface ParserResult {
   combos?: string[]   // combinations to try baesd on clean/rebuilt inputs
 }
 
-interface SceneEvent {
+export interface SceneEvent {
   pal: Pal,
   pres: ParserResult  // parsed, rule
   game: Game
@@ -107,12 +112,6 @@ export interface StoryTest {
 // open(verb) window(target) with hammer(subject)
 
 export {
-  LoadOptions,
-  ActionBranch,
-  ActionData,
-  ActionResult,
-  ActionIf,
-  SceneEvent,
   Game
 }
 

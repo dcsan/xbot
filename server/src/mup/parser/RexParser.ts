@@ -4,8 +4,6 @@ import WordUtils from '../../lib/WordUtils'
 // import RouterService from './RouterService'
 
 import { StaticRules, OneRule } from './CommandList'
-import { SynManager, ISyn } from './Synonyms'
-import { GameObject } from '../models/GameObject'
 
 import {
   PosResult,
@@ -14,13 +12,11 @@ import {
 } from '../MupTypes'
 
 const log = console.log
-const logger = new MakeLogger('rexParser')
+const logger = new MakeLogger('rexParser', 2)
 
 const ParserConfig = {
   verbs: 'take|move|get|open|wear|drink|rub|drop|lock|unlock|use'
 }
-
-let synPairsCache: ISyn[] = []
 
 const RexParser = {
 
@@ -383,53 +379,6 @@ const RexParser = {
   //   return result
   // }
 
-  makeRexFromLine(line) {
-    let rexstr = line.split('|').join('\\b|\\b')
-    rexstr = `\\b${rexstr}\\b`
-    // console.log('rexstr', rexstr)
-    return new RegExp(rexstr)
-  },
-
-  // build a list of items when you enter a new room
-  cacheNames(itemList: GameObject[], roomName: string) {
-    logger.logObj(`build sync cache for room [${roomName}]`, { itemList })
-    itemList.forEach(item => {
-      if (item.doc.called) {
-        const rex = RexParser.makeRexFromLine(item.doc.called)
-        const pair: ISyn = {
-          base: item.name,
-          called: item.doc.called,
-          rex
-        }
-        synPairsCache.push(pair)
-      }
-    })
-    // console.log('created synPairsCache', synPairsCache)
-  },
-
-  // fixed command syns eg wear -> take
-  replaceSyns(input: string) {
-    // logger.log('synPairs', synPairsCache)
-    let clean = input + ''
-    const syns = SynManager.all()
-
-    if (!synPairsCache || !synPairsCache.length) {
-      // should have been setup when entering a room based on objects in the room
-      logger.warn('no syn pairs for room')
-    }
-    for (const rep of syns) {
-      clean = clean.replace(rep.rex, rep.base)
-    }
-    // names of items in game
-    for (const rep of synPairsCache) {
-      clean = clean.replace(rep.rex, rep.base)
-    }
-    if (input !== clean) {
-      logger.log(`reduced vocab ${input} => ${clean}`)
-    }
-    return clean
-  },
-
   findRule(usedText: string): OneRule | undefined {
     let rule = StaticRules.find((oneRule: OneRule) => {
       const result = oneRule.rex.test(usedText)
@@ -445,7 +394,6 @@ const RexParser = {
   parseCommands(clean: string): ParserResult {
 
     // let clean = WordUtils.basicNormalize(input)
-    // clean = RexParser.replaceSyns(clean)
 
     let pres: ParserResult = {
       // input,

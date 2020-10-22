@@ -39,7 +39,7 @@ class Player extends GameObject {
       reply.push('nothing')
     } else this.invItems.map(item => {
       // logger.log('item', item)
-      reply.push(item.name)
+      reply.push(item.cname)
     })
     // logger.log('player.status.reply:', reply)
     return reply
@@ -117,12 +117,12 @@ class Player extends GameObject {
       // buttonLinks.push(`notebook | x notebook`) // artificial
       blocks.push(builder.buttonsBlock(buttonLinks))
     }
-    if (this.invItems.length === 1) {
+    if (this.invItems.length === 1 && this.invItems[0].name === 'Note') {
       blocks.push(builder.contextBlock(
-        ':pencil2: you can `x note` to examine the note'))
+        ':pencil2: type `x (note)` to examine the note'))
     } else {
       blocks.push(builder.contextBlock(
-        ':pencil2: you can `x (name of the item)` to examine items'))
+        ':pencil2: type `x (name of item)` to examine anything'))
     }
     // blocks.push(BaseBuilder.contextBlock(':information_source: hint: _try to `use item with ...` other things in the room_'))
     await evt.pal.sendBlocks(blocks)

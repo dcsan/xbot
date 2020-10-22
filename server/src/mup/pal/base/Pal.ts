@@ -13,16 +13,17 @@ import AppConfig from '../../../lib/AppConfig'
 // TODO - cleanup different log methods
 // get to just one common log method
 import { ChatLogger, IChatRow } from '../ChatLogger'
-import { MakeLogger } from '../../../lib/LogLib'
 import { MockChannel, IMessage } from '../mock/MockChannel'
 import { ISlackEvent, ISlackSection } from '../slack/SlackTypes'
 import { BaseBuilder } from './BaseBuilder'
+
+import { MakeLogger } from '../../../lib/LogLib'
+const logger = new MakeLogger('BasePal')
 
 // import Util from '../../lib/Util'
 
 // import chalk from 'chalk'
 
-const logger = new MakeLogger('BasePal')
 
 const debugOutput = AppConfig.logLevel
 const logMode = false
@@ -30,6 +31,7 @@ const logMode = false
 export interface IPal {
   sendBlocks(blocks): Promise<any>
   sendText(msg: string)
+  sendReaction(msg: string)
   postMessage(msg: string)
   showLog()
 
@@ -74,8 +76,11 @@ class Pal implements IPal {
     // this.builder = BaseBuilder  // overridden in child
     logger.log('new pal', { sessionId: this.sessionId })
   }
+  sendReaction(_msg: string) {
+    throw new Error("sendRection Method not implemented.");
+  }
   isAdmin(): boolean {
-    throw new Error("Method not implemented.")
+    throw new Error("isAdmin Method not implemented.")
   }
   channelName(): string {
     logger.error("channelName Method not implemented.");

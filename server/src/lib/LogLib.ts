@@ -14,11 +14,16 @@ enum LogLevels {
   SILLY = 5,
 }
 
+// TODO - read from AppConfig? but avoid circular deps
+const AppLevel = LogLevels.DEBUG    // default level
+
 class MakeLogger {
   name: string
+  level: number
 
-  constructor(name: string) {
+  constructor(name: string, level = LogLevels.DEBUG) {
     this.name = name.padEnd(12, ' ')
+    this.level = level
   }
 
   nodeEnv() {
@@ -34,6 +39,7 @@ class MakeLogger {
   }
 
   log(msg, ...rest) {
+    if (this.level < AppLevel) return
     if (forceLogging || process.env.NODE_ENV !== 'test') {
       console.log(this.where, msg, ...rest)
     }
@@ -119,6 +125,7 @@ class MakeLogger {
     const force = opts.force || false
     // dont noisy log for tests
     if (process.env.NODE_ENV == 'test' && !force) return
+    if (this.level < AppLevel) return
     obj = Util.removeEmptyKeys(obj)
     if (!obj) {
       this.warn('logObj with null obj')
@@ -127,27 +134,28 @@ class MakeLogger {
     try {
       // this dumps better
       const json = JSON.stringify(obj, null, 2)
-      const blob = yaml.dump(json)
+      const blob = Util.yamlDump(obj)
       console.log(this.where, msg, blob)
     } catch (err) {
-      console.warn('failed to stringify obj')
+      console.warn('rawObj', obj)
       console.log('log', this.where, msg)
     }
   }
 
-  logLine(msg, obj?) {
-    let line = ''
-    if (obj) {
-      if (typeof obj === 'string') {
-        line = (msg + ' ' + obj + '\n')
-      } else {
-        line = (msg + JSON.stringify(obj, null, 2) + '\n')
-      }
-    } else {
-      line = (msg + '\n')
-    }
+  // without newline
+  logLine(line) {
+    // let line = msg
+    // if (obj) {
+    //   if (typeof obj === 'string') {
+    //     line = (msg + ' ' + obj + '\n')
+    //   } else {
+    //     line = (msg + JSON.stringify(obj, null, 2) + '\n')
+    //   }
+    // } else {
+    //   line = (msg + '\n')
+    // }
     process.stdout.write(line)
-    return line
+    // return line
   }
 
   table(msg, obj) {

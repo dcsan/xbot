@@ -8,6 +8,7 @@ import { ISlackBlock } from '../slack/SlackTypes'
 import { DiscordBuilder } from './DiscordBuilder'
 import { BaseBuilder } from '../base/BaseBuilder'
 import { MakeLogger } from '../../../lib/LogLib'
+import { EmojiMap } from '../../../lib/EmojiMap'
 
 const logger = new MakeLogger('DiscordPal')
 
@@ -94,6 +95,12 @@ class DiscordPal extends Pal implements IPal {
     // const block = SlackBuilder.textBlock(text)
     // await this.sendBlocks([block])
     // await this.wrapSay({ text, type: 'text', who: 'bot' })
+  }
+
+  async sendReaction(emoji: string) {
+    const message = this.lastEvent as Message
+    const emCode = EmojiMap.find(emoji)
+    await message.react(emCode!)
   }
 
   // blocks [

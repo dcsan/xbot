@@ -117,24 +117,34 @@ class Game {
   // TODO add debug/admin on user check
   async showStatus(evt: SceneEvent) {
     // const tasklist = await this.showThingStatus(evt, 'tasklist')
+    const itemNames = this.story.room.allThings.map(t => t.cname).sort()
     const tasklist = this.story.room.findThing('tasklist')
     const statusInfo = {
       story: this.story.status(),
-      room: this.story.room.status(),
+      room: this.story.room.name,
+      itemCount: itemNames.length,
+      itemNames,
+      // room: this.story.room.status(),
       player: this.player.status(),
       tasklist: tasklist?.props
     }
     // await pal.sendText('state ```\n' + JSON.stringify(pal.state, null, 2) + '```')
+    // logger.logObj('room.allThings', this.story.room.allThings.sort())
+    logger.logObj('status', statusInfo)
+
     const blob = Util.yamlDump(statusInfo)
-    await evt.pal.sendText(Util.quoteCode(blob))
+    const code = Util.quoteCode(blob)
+    await evt.pal.sendText(code)
   }
 
   async showThingStatus(evt: SceneEvent, name?: string) {
     name = name || evt.pres.parsed?.groups?.thingName
     const thing = this.story.room.findThing(name!)
     if (thing) {
-      const blob = yaml.dump(thing.props)
-      await evt.pal.sendText(Util.quoteCode(blob))
+      const blob = thing.getStatus()
+      const out = Util.yamlDump(blob)
+      logger.logObj(thing.cname, out)
+      await evt.pal.sendText(Util.quoteCode(out))
     } else {
       await evt.pal.sendText('cannot find thing:' + name)
     }

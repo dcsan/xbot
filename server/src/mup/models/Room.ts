@@ -73,7 +73,7 @@ class Room extends GameObject {
       item.room = this
       this.roomItems.push(item)
     })
-    logger.log('load roomItems', this.roomItems)
+    // logger.log('load roomItems', this.roomItems)
   }
 
   loadActors(story) {
@@ -172,18 +172,10 @@ class Room extends GameObject {
     }
     // FIXME!
     // @ts-ignore
-    reply.items = this.allThings.map((thing: Item) => {
-      const props = Util.removeEmptyKeys(thing.props)
-      // hidden getters
-      props.canTake = props.canTake ? true : false
-      props.hidden = props.hidden ? true : false
-      return {
-        [thing.name]: { props }
-      }
-    }) || []
+    reply.items = this.allThings.map((thing: Item) => thing.getStatus()) || []
 
     // logger.table(thing.name, props)
-    logger.table('props', reply.items)
+    logger.logObj('room.items', reply.items)
     // @ts-ignore
     reply.actors = this.actors?.map((thing: Actor) => {
       return { [thing.name]: thing.state }
@@ -343,22 +335,24 @@ class Room extends GameObject {
     logger.log('findThing', cname, 'in', this.klass)
     const found = this.allThings.filter((thing: GameObject) => {
       if (thing.cname === cname) return true
-      if (thing.doc.called) {
-        const rex: RegExp = new RegExp(thing.doc.called)
-        if (rex.test(itemName)) {
-          return true
-          // found.push(thing)
-        }
-      } // else
+      // if (thing.doc.called) {
+      //   const rex: RegExp = new RegExp(thing.doc.called)
+      //   if (rex.test(itemName)) {
+      //     return true
+      //     // found.push(thing)
+      //   }
+      // } // else
       return false  // not found
     })
     if (found.length > 0) {
       const item = found[0]
-      logger.log('found thing:', item.name)
+      logger.log('found thing:', item.cname)
       return item
     } else {
-      logger.warn(`cannot find ${cname} in room:`)
-      logger.logObj('room items:', this.roomObj.itemCnames())
+      logger.warn(`cannot find in room:`, cname)
+      let roomItems: string[] = this.roomObj.allThings.map(t => t.cname)
+      roomItems = roomItems.sort()
+      logger.logObj('roomItems:', roomItems)
       // logger.log('this:', this.cname, this.klass)
       return undefined
     }
@@ -376,9 +370,13 @@ class Room extends GameObject {
     return vis.map(item => item.name).join(', ')
   }
 
-  async showNotes(evt: SceneEvent) {
-    const notes = this.searchThing('notebook')
-    await notes?.describeThing(evt)
+  // show tasklist
+  // currently depends on a room item called 'tasklist'
+  // TODO - rewrite task system
+  async showTask(evt: SceneEvent) {
+    const tasklist = this.searchThing('tasklist')
+    logger.log('showTask')
+    await tasklist?.describeThing(evt)
   }
 
   async showHint(evt: SceneEvent) {

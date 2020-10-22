@@ -1,5 +1,8 @@
+import { MakeLogger } from './LogLib'
+const logger = new MakeLogger('BasePal')
+
 // emojiCharacters.js
-export const Emoji = {
+export const EmojiMap = {
   map: {
     a: '🇦', b: '🇧', c: '🇨', d: '🇩',
     e: '🇪', f: '🇫', g: '🇬', h: '🇭',
@@ -11,7 +14,9 @@ export const Emoji = {
     2: '2️⃣', 3: '3️⃣', 4: '4️⃣', 5: '5️⃣',
     6: '6️⃣', 7: '7️⃣', 8: '8️⃣', 9: '9️⃣',
     10: '🔟', '#': '#️⃣', '*': '*️⃣',
-    '!': '❗', '?': '❓',
+    '!': '❗',
+    '?': '❓',
+    help: '❓',
     ok: '🆗',
     next: '▶️',
     mag: '🔎',
@@ -21,11 +26,11 @@ export const Emoji = {
     host: '👩🏼‍⚕️'
   },
 
-  findName(em): string | undefined {
-    for (const [key, val] of Object.entries(Emoji.map)) {
-      if (em === val) return key
-    }
-    return undefined
+  find(em): string {
+    const emCode = EmojiMap.map[em]
+    if (emCode) return emCode
+    logger.warn('cannot find emoji for ', em)
+    return '❓'
   }
 
 };

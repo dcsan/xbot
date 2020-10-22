@@ -11,9 +11,9 @@ import { DiscordRouter } from './mup/pal/discord/DiscordRouter'
 async function main() {
   // Start your app
 
-  console.time('dbConnect')
+  // console.time('dbConnect')
   DbConfig.init()
-  console.timeEnd('dbConnect')
+  // console.timeEnd('dbConnect')
 
   if (AppConfig.read('SLACK_BOT_TOKEN')) {
     await SlackRouter.startUp()
@@ -22,6 +22,8 @@ async function main() {
   if (AppConfig.read('DISCORD_BOT_TOKEN')) {
     await DiscordRouter.init()
   }
+
+  // Promise.all([p1, p2]).
 
   console.log('--- READY! ----')
 

@@ -83,11 +83,10 @@ const StaticRules: RuleSpec[] = [
 
   {
     rex: /^(teams)$/i,
-    cname: 'hint',
+    cname: 'teams',
     type: 'preCommand',
     event: RouterService.showTeams
   },
-
 
   {
     cname: 'inventory',
@@ -98,17 +97,18 @@ const StaticRules: RuleSpec[] = [
 
   {
     cname: 'lookRoom',
-    rex: /^(look|l|x|examine|look room|x room|l room|look at room|👀)$/i,
+    rex: /^(look|lookroom|👀)$/i,
     event: RouterService.lookRoom,
-    type: 'preCommand'
+    type: 'postCommand'
   },
 
-  // has to come after `look room`
+  // has to come after custom actions eg `look pillow`
+  // because those actions set flags
   {
     cname: 'lookAt',
     rex: /^(?<verb>look at|look|examine|x at|l|x) (?<target>\w+)$/i,
     event: RouterService.lookRoomThing,
-    type: 'preCommand'
+    type: 'postCommand'
   },
 
   // just on its own no 'with' or 'on'
@@ -148,14 +148,14 @@ const StaticRules: RuleSpec[] = [
   // },
 
   {
-    rex: /^st (?<thingName>\w+)$/,
+    rex: /^status (?<thingName>\w+)$/,
     cname: 'thingStatus',
     type: 'preCommand',
     event: RouterService.showThingStatus
   },
 
   {
-    rex: /^(st|status)$/,
+    rex: /^(status)$/,
     cname: 'status',
     type: 'preCommand',
     event: RouterService.showStatus
@@ -168,18 +168,18 @@ const StaticRules: RuleSpec[] = [
     event: RouterService.showLog
   },
 
-  {
-    rex: /^(cacheNames|cn)$/i,
-    cname: 'recache',
-    type: 'preCommand',
-    event: RouterService.cacheNames
-  },
+  // {
+  //   rex: /^(cacheNames|cn)$/i,
+  //   cname: 'recache',
+  //   type: 'preCommand',
+  //   event: RouterService.cacheNames
+  // },
 
   {
-    rex: /^(task|tasks|tasklist|t)$/,
-    cname: 'log',
+    rex: /^(task)$/,
+    cname: 'task',
     type: 'preCommand',
-    event: RouterService.showNotes
+    event: RouterService.showTask
   },
 
   // {
