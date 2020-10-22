@@ -127,7 +127,7 @@ const StaticRules: RuleSpec[] = [
   },
 
   {
-    rex: /^(test)$/i,
+    rex: /^echo/i,
     cname: 'test',
     event: RouterService.echoTest,
     type: 'preCommand'

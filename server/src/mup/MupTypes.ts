@@ -19,6 +19,7 @@ export interface StateBlock {
   long: string
   reply?: string
   buttons: string[]
+  emoji: string[]
   navbar: string
 }
 

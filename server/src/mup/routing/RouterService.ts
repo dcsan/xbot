@@ -53,7 +53,10 @@ const RouterService = {
   },
 
   echoTest: async (evt: SceneEvent) => {
-    await evt.pal.sendText('echo test back!')
+    const input = evt.pres.clean.replace('echo', '')
+    const echo = '> ' + input
+    logger.log('echo', echo)
+    await evt.pal.sendText(echo)
   },
 
   getActionMatchesList(actions) {

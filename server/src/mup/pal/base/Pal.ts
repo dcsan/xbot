@@ -62,6 +62,7 @@ class Pal implements IPal {
   // lastEvent: FlexEvent
   // FIXME - could be slack or discord event type
   lastEvent: any
+  lastSent: any // for tagging emoji onto
 
   sessionId: string
   chatLogger: ChatLogger
@@ -71,6 +72,7 @@ class Pal implements IPal {
   // FIXME - for slack middleware
   constructor(channelEvent: FlexEvent, sid: string) {
     this.lastEvent = channelEvent
+    this.lastSent = channelEvent  // until we overwrite
     this.sessionId = sid
     this.chatLogger = new ChatLogger(sid)
     // this.builder = BaseBuilder  // overridden in child

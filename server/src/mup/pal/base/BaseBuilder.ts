@@ -19,24 +19,22 @@ class BaseBuilder {
   // },
 
   // a single button: text|value|emoji
-  // TODO - add 'MockBuilder'
+  // TODO - simplify for MockBuilder / debugging
   static buttonItem(buttonLine: string) {
-    logger.warn('buttonItem should be in subclass', buttonLine)
-    return ('button: ' + buttonLine)
-    // let [text, value, icon] = buttonLine.split('|')
-    // // icon = (icon).trim()
-    // text = text.trim()
-    // value = (value || text).trim()
-    // return {
-    //   "type": "button",
-    //   "text": {
-    //     "type": "plain_text",
-    //     "text": text,
-    //     "emoji": true
-    //   },
-    //   // icon, // for discord emoji
-    //   "value": value
-    // }
+    let [text, value, icon] = buttonLine.split('|')
+    // icon = (icon).trim()
+    text = text.trim()
+    value = (value || text).trim()
+    return {
+      "type": "button",
+      "text": {
+        "type": "plain_text",
+        "text": text,
+        "emoji": true
+      },
+      // icon, // for discord emoji
+      "value": value
+    }
   }
 
   static wrapActionsInBlock(elements) {
@@ -51,6 +49,14 @@ class BaseBuilder {
   static buttonsBlock(buttons: string[]) {
     const buttonElements = buttons.map(b => this.buttonItem(b))
     const block = BaseBuilder.wrapActionsInBlock(buttonElements)
+    return block
+  }
+
+  static emojiBlock(emoji: string[]) {
+    const block = {
+      type: 'emoji',
+      emoji
+    }
     return block
   }
 

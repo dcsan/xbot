@@ -91,7 +91,7 @@ class DiscordPal extends Pal implements IPal {
       logger.warn('tried to send empty text', text)
     }
     text = this.processTemplate(text)
-    await this.lastEvent.channel.send(text)
+    this.lastSent = await this.lastEvent.channel.send(text)
     // const block = SlackBuilder.textBlock(text)
     // await this.sendBlocks([block])
     // await this.wrapSay({ text, type: 'text', who: 'bot' })
@@ -245,6 +245,18 @@ class DiscordPal extends Pal implements IPal {
     logger.log('sendButtons=>', message.content, emoList)
   }
 
+  // TODO - check lastMessaeg is OK to attache emoji to
+  async sendEmojiBlock(block) {
+    const message = this.lastSent as Message
+    for (const em of block.emoji) {
+      logger.log('em', em)
+      try {
+        await message.react(em)
+      } catch (err) {
+        logger.warn('failed to send emoji', em, err[0])
+      }
+    }
+  }
 
   // FIXME - based on slack notion of sending list of blocks
   // TODO rebuild this with embeds and a Discord builder
@@ -254,6 +266,10 @@ class DiscordPal extends Pal implements IPal {
       switch (block.type) {
         case 'image':
           await this.sendImageBlock(block)
+          break
+
+        case 'emoji':
+          await this.sendEmojiBlock(block)
           break
 
         case 'section':

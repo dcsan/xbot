@@ -222,6 +222,11 @@ class GameObject {
       palBlocks.push(buttonsBlock)
     }
 
+    if (stateInfo.emoji) {
+      const emojiBlock = pal.builder.emojiBlock(stateInfo.emoji)
+      palBlocks.push(emojiBlock)
+    }
+
     if (stateInfo.hint) {
       palBlocks.push(BaseBuilder.contextBlock(stateInfo.hint))
     }
