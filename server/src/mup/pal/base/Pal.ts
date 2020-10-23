@@ -14,7 +14,7 @@ import AppConfig from '../../../lib/AppConfig'
 // get to just one common log method
 import { ChatLogger, IChatRow } from '../ChatLogger'
 import { MockChannel, IMessage } from '../mock/MockChannel'
-import { ISlackEvent, ISlackSection } from '../slack/SlackTypes'
+import { ISlackEvent, ISlackSection, ISlackBlock } from '../slack/SlackTypes'
 import { BaseBuilder } from './BaseBuilder'
 
 import { MakeLogger } from '../../../lib/LogLib'
@@ -50,6 +50,8 @@ export interface IPal {
   // fixme - signatue
   isAdmin(): boolean
 
+  sendSection(section: ISlackBlock): Promise<void>
+  sendImageBlock(section: ISlackBlock): Promise<void>
   // builder methods
   // buttonsBlock(buttons: string[]): Buttons
 }
@@ -78,7 +80,13 @@ class Pal implements IPal {
     // this.builder = BaseBuilder  // overridden in child
     logger.log('new pal', { sessionId: this.sessionId })
   }
-  sendReaction(_msg: string) {
+  async sendSection(_section: ISlackBlock): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
+  async sendImageBlock(_section: ISlackBlock): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
+  async sendReaction(_msg: string) {
     throw new Error("sendRection Method not implemented.");
   }
   isAdmin(): boolean {
