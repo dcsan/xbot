@@ -65,8 +65,9 @@ const SynManager = {
   // but then we have to also use the right cache for each game
   cacheNames(roomList: Room[]) {
     storyItemAliases = []
+    logger.log('cacheNames')
+    // logger.logObj(`build synCache room [${room.name}]`)
     roomList.forEach((room: Room) => {
-      logger.logObj(`build synCache room [${room.name}]`)
       room.allThings.forEach((item: GameObject) => {
         // logger.log('synItem', item.doc.name, item.doc.called)
         if (item.doc.called) {

@@ -6,7 +6,7 @@ import { dbConn, DbConfig } from './mup/core/DbConfig'
 
 import SlackRouter from './mup/pal/slack/SlackRouter'
 import { DiscordRouter } from './mup/pal/discord/DiscordRouter'
-
+import { WebApp } from './mup/web/WebApp'
 
 async function main() {
   // Start your app
@@ -22,6 +22,12 @@ async function main() {
   if (AppConfig.read('DISCORD_BOT_TOKEN')) {
     await DiscordRouter.init()
   }
+
+  WebApp.init()
+
+  // if (AppConfig.read('WEB_APP')) {
+  //   await WebRouter.init()
+  // }
 
   // Promise.all([p1, p2]).
 

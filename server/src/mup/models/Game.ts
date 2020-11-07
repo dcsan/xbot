@@ -1,6 +1,6 @@
 // import fs from 'fs'
 // import path from 'path'
-import yaml from 'js-yaml'
+// import yaml from 'js-yaml'
 
 // const posTagger = require('wink-pos-tagger');
 // import AppConfig from '../../lib/AppConfig'
@@ -117,7 +117,7 @@ class Game {
   // TODO add debug/admin on user check
   async showStatus(evt: SceneEvent) {
     // const tasklist = await this.showThingStatus(evt, 'tasklist')
-    const itemNames = this.story.room.allThings.map(t => t.cname).sort()
+    const itemNames = this.story.room.allThings?.map(t => t.cname).sort()
     const tasklist = this.story.room.findThing('tasklist')
     const statusInfo = {
       story: this.story.status(),

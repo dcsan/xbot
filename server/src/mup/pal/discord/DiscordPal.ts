@@ -165,7 +165,7 @@ class DiscordPal extends Pal implements IPal {
   }
 
   // FIXME - to send emoji buttons
-  // use pal.builder earlier in flow to format for discord as emoji buttons
+  // TODO use pal.builder earlier in flow to format for discord as emoji buttons
   async sendButtons(buttons: string[]) {
     const block = this.builder.buttonsBlock(buttons)
     await this.sendBlocks([block])
@@ -219,12 +219,14 @@ class DiscordPal extends Pal implements IPal {
           // text += ` \`\`\`[ ${elem.text.text} ] \`\`\` `
           text += `⬇︎ ${elem.text.text}`
         } else {
-          text += `${elem.text.text}|`
+          if (elem.text.text) {
+            text += `${elem.text.text}|`
+          }
         }
       }
       emojis.push(elem.icon)
     }
-    if (wrapText) {
+    if (wrapText && text) {
       text = '```' + text + '```'
     }
     let message
@@ -235,8 +237,12 @@ class DiscordPal extends Pal implements IPal {
       logger.logObj('embed', embed)
       message = await this.lastEvent.channel.send({ embed })
     } else {
-      message = await this.lastEvent.channel.send(text)
+      if (text) {
+        // could be an empty text
+        message = await this.lastEvent.channel.send(text)
+      }
     }
+    message = message || this.lastEvent
     const emoList = emojis.filter(em => !!em)
     logger.log('reactions', emoList)
     for (const em of emoList) {

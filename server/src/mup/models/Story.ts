@@ -29,7 +29,7 @@ class Story {
   }
 
   async reset(pal: Pal): Promise<Room> {
-    logger.log('story.reset')
+    logger.log('story.reset doc', this.doc)
     for (const room of this.rooms) {
       await room.reset()
     }
@@ -48,8 +48,8 @@ class Story {
       startRoomName = startRoom?.room
     }
     if (!startRoomName) {
-      logger.warn('cannot find startRoomName for channel: ', channelName)
       startRoomName = this.doc.startRoomDefault
+      logger.log('cannot find startRoomName for channel: ', channelName, 'using ', startRoomName, 'from doc:', this.doc)
     }
 
     if (startRoomName) {
@@ -77,7 +77,7 @@ class Story {
   load(_opts: LoadOptions): string {
     // default to config if not passed
     const storyName = AppConfig.read('storyName')
-
+    logger.log('load .storyName', storyName)
     // const storyName =
     //   opts?.storyName ||
     //   this.storyName ||
@@ -93,12 +93,14 @@ class Story {
   }
 
   buildStory(doc) {
+    logger.log('buildStory doc.startRoomDefault', doc.startRoomDefault)
     this.rooms = []
-    doc.rooms.forEach((roomData) => {
+    for (const roomData of doc.rooms) {
+      // doc.rooms.forEach((roomData) => {
       const room = new Room(roomData, this)
       room.story = this
       this.rooms.push(room)
-    })
+    }
     SynManager.cacheNames(this.rooms)
   }
 

@@ -35,10 +35,11 @@ const SlackRouter = {
     }
     const slackApp = SlackRouter.init()
     // console.timeEnd('SlackRouter.init')
-    const port = process.env.PORT || 3000
+    const port = process.env.SLACKPORT || 33120
     console.time('slackApp.init')
-    await slackApp.start(port);
+    await slackApp.start(port)
     console.timeEnd('slackApp.init')
+    console.log('start slackapp on port: ', port)
   },
 
   init(): App {
@@ -72,7 +73,6 @@ const SlackRouter = {
       await req.next();
     }
     app.use(eventLogger)
-
 
     // doesnt work
     receiver.app.use(morgan('tiny'));
