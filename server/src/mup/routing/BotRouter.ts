@@ -91,8 +91,10 @@ const BotRouter = {
       await this.nluCommands(evt)
 
     if (handled) {
+      await pal.cbLogInput(input, false) // 2nd param is NOThandled (inverse)
       return true
     } else {
+      await pal.cbLogInput(input, true)
       const err = `no match: [${clean}]`
       // await pal.debugMessage(err)
       logger.warn(err)

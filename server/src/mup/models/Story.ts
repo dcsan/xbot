@@ -29,7 +29,7 @@ class Story {
   }
 
   async reset(pal: Pal): Promise<Room> {
-    logger.log('story.reset doc', this.doc)
+    logger.log('story.reset doc.cname', this.doc.cname)
     for (const room of this.rooms) {
       await room.reset()
     }

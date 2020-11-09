@@ -6,20 +6,24 @@ import Util from '../../../lib/Util'
 
 import { ISlackBlock } from '../slack/SlackTypes'
 import { DiscordBuilder } from './DiscordBuilder'
-import { BaseBuilder } from '../base/BaseBuilder'
 import { MakeLogger } from '../../../lib/LogLib'
 import { EmojiMap } from '../../../lib/EmojiMap'
 
+import { PalMsg } from '../../MupTypes'
+
 const logger = new MakeLogger('DiscordPal')
+
 
 class DiscordPal extends Pal implements IPal {
 
   builder = DiscordBuilder
 
+  // created from incoming message
   constructor(message: Message, sid: string) {
     super(message, sid)
     this.builder = DiscordBuilder
     this.lastEvent = message  // to force the type
+    logger.log('created discord pal', message.channel.id)
   }
 
   // for logger
@@ -44,6 +48,17 @@ class DiscordPal extends Pal implements IPal {
     this.sendText(msg)
     logger.warn(msg)
     return false
+  }
+
+  async cbLogInput(input: string, notHandled: boolean = false) {
+    const palMsg: PalMsg = {
+      text: input,
+      notHandled,
+      sender: 'user',
+      platform: 'discord',
+      channel: this.lastEvent.channel.id,
+    }
+    this.cbLog(palMsg)
   }
 
   // --------- admin commands ----------
@@ -92,9 +107,13 @@ class DiscordPal extends Pal implements IPal {
     }
     text = this.processTemplate(text)
     this.lastSent = await this.lastEvent.channel.send(text)
-    // const block = SlackBuilder.textBlock(text)
-    // await this.sendBlocks([block])
-    // await this.wrapSay({ text, type: 'text', who: 'bot' })
+    const palMsg: PalMsg = {
+      text,
+      sender: 'bot',
+      platform: 'discord',
+      channel: this.lastEvent.channel.id
+    }
+    this.cbLog(palMsg)
   }
 
   async sendReaction(emoji: string) {

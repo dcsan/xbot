@@ -112,6 +112,16 @@ export interface StoryTest {
 // minimum verb and target `open window`
 // open(verb) window(target) with hammer(subject)
 
+
+// TODO - fix with enums
+export interface PalMsg {
+  text: string
+  channel: string
+  sender: string // agent|user|bot
+  platform: string // discord|slack
+  notHandled?: boolean
+}
+
 export {
   Game
 }

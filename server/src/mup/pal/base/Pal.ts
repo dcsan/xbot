@@ -4,15 +4,14 @@ import {
   Message
 } from "discord.js";
 
-
-// import fs from 'fs'
-// import path from 'path'
-// import yaml from 'js-yaml'
 import AppConfig from '../../../lib/AppConfig'
+import { PalMsg } from '../../MupTypes'
 
 // TODO - cleanup different log methods
 // get to just one common log method
+import { CbLogger } from './ChatbaseLogger'
 import { ChatLogger, IChatRow } from '../ChatLogger'
+
 import { MockChannel, IMessage } from '../mock/MockChannel'
 import { ISlackEvent, ISlackSection, ISlackBlock } from '../slack/SlackTypes'
 import { BaseBuilder } from './BaseBuilder'
@@ -112,7 +111,11 @@ class Pal implements IPal {
     throw new Error("sendImage Method not implemented.");
   }
 
-  wrapSay(_msg: IChatRow): Promise<void> {
+  async wrapSay(_msg: IChatRow) {
+    logger.error('wrapSay not implemented ')
+    // throw new Error("wrapSay Method not implemented.");
+  }
+  cbLogInput(_input: string, _notHandled: boolean): Promise<void> {
     throw new Error("wrapSay Method not implemented.");
   }
 
@@ -175,6 +178,13 @@ class Pal implements IPal {
     // }
   }
 
+  // called from router to route event types
+  setLastEvent(event: any) {
+    // will be different for slack
+    logger.log('setLastEvent channel.id', event.channel?.id)
+    this.lastEvent = event
+  }
+
   lastOutput() {
     logger.logObj('pal.logger', this.chatLogger, { force: true })
     return this.chatLogger.rows[this.chatLogger.rows.length - 1]
@@ -187,6 +197,10 @@ class Pal implements IPal {
   // TODO - find names for common emoji
   emojiName(emoji): string {
     return emoji
+  }
+
+  cbLog(palMsg: PalMsg) {
+    CbLogger.log(palMsg)
   }
 
   async showTeams() {

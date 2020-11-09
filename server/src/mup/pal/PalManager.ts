@@ -44,7 +44,7 @@ const PalManager = {
       palCache[sid!] = pal
       logger.log('cached pal')
     } // else
-    pal.lastEvent = message
+    pal.setLastEvent(message)
     return pal
   }
 
