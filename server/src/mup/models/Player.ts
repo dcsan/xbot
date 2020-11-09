@@ -119,7 +119,7 @@ class Player extends GameObject {
     }
     if (this.invItems.length === 1 && this.invItems[0].name === 'Note') {
       blocks.push(builder.contextBlock(
-        ':pencil2: type `x (note)` to examine the note'))
+        ':pencil2: to examine the note type: ```fix\nx note``` '))
     } else {
       blocks.push(builder.contextBlock(
         ':pencil2: type `x (name of item)` to examine anything'))
