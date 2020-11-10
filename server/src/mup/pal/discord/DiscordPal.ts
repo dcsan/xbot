@@ -79,19 +79,19 @@ class DiscordPal extends Pal implements IPal {
       const ch = message.channel as TextChannel
       for (c = 0; c < 10; c++) {
         const deleted = await ch!.bulkDelete(count)
+        logger.log('clear', c, deleted.size)
         // .catch(console.error) // FIXME - breaks to "done" if this isn't here?
         // .then((result) => console.error('clear result', result))
         if (deleted?.size < 1) {
-          logger.log('finish clear at c =', c)
+          logger.log('no more to clear at c =', c)
           break
         }
-        logger.log('clear', c)
       }
       // message.delete();
     } catch (err) {
-      logger.warn('exit to delete at c=', c, err)
+      logger.warn('clear exit at c=', c, err)
     }
-    logger.log('clear done c=', c)
+    logger.log('clear done at c=', c)
   }
 
   async showInstallUrl() {
