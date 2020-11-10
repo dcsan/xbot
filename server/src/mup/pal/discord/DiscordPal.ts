@@ -91,7 +91,7 @@ class DiscordPal extends Pal implements IPal {
     } catch (err) {
       logger.warn('exit to delete at c=', c, err)
     }
-    logger.log('clear done!')
+    logger.log('clear done c=', c)
   }
 
   async showInstallUrl() {
@@ -135,17 +135,33 @@ class DiscordPal extends Pal implements IPal {
   //   }
   // ]
 
+  async safeSend(blob: any) {
+    try {
+      await this.lastEvent.channel.send(blob)
+    } catch (err) {
+      logger.error('failed to send', blob)
+      // TODO - check for CLIENT_DEBUG_OUTPUT=yes
+      const imgPath = blob?.files?.[0].imgPath
+      if (imgPath) {
+        await this.sendText(`broken image: ${imgPath}`)
+      } else {
+        await this.sendText('send error! ```json\n' + JSON.stringify(blob) + '```')
+      }
+      // TODO - handle sending text for other error types
+    }
+  }
+
   // FIXME - we should not have to extract formatted images from blocks
   // by using a custom DiscordBuilder in the first place
   async sendImageBlock(block: ISlackBlock) {
     const imgPath = Util.localCdnPath(block.image_url)
-    await this.lastEvent.channel.send(
-      // block.alt_text,
+    await this.safeSend(
       {
         files: [
           imgPath
         ]
-      })
+      }
+    )
   }
 
   async sendImage(url: string) {
@@ -245,8 +261,9 @@ class DiscordPal extends Pal implements IPal {
       }
       emojis.push(elem.icon)
     }
+    text = text.replace(/\|$/, '')  // remove trailing |
     if (wrapText && text) {
-      text = '```' + text + '```'
+      text = '```fix\n' + text + '```'
     }
     let message
     if (useEmbeds) {
