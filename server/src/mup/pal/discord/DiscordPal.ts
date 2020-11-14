@@ -348,10 +348,24 @@ class DiscordPal extends Pal implements IPal {
     return this.lastEvent.channel.name
   }
 
-  async sendInvite() {
+  async fixedInvite() {
     const link = AppConfig.read('DISCORD_INVITE')
-    const text = `Invite Yo Friends!\n${link}`
+    const text = `Invite Your Friends!\n${link}`
     await this.sendText(text)
+  }
+
+  handleError(opts) {
+    logger.error('DJS', opts)
+  }
+
+  async sendInvite(text = "Invite your friends!") {
+    let invite = await this.lastEvent.channel.createInvite(
+      {
+        maxAge: 0, // 10 * 60 * 1000, // in ms 0 = forever
+        maxUses: 100 // maximum times it can be used
+      },
+    ).catch(this.handleError);
+    this.sendText(invite ? `${text} ${invite}` : "Could not create invite, please check bot permissions");
   }
 
   // show linked channels for team-1 etc channel names
@@ -359,19 +373,23 @@ class DiscordPal extends Pal implements IPal {
     const channelNames = AppConfig.read('TEAM_CHANNELS').split('|')
     logger.log('channelNames', channelNames)
     const channelCache = this.lastEvent.member.guild.channels.cache
-    const teamIds = channelNames.map(channelName => {
-      const channel = channelCache.find(ch => ch.name === channelName)
-      if (channel) {
-        return channel.toString()
-      } else {
-        logger.log('cannot find team', channelName)
-      }
-    }).filter(x => x) // remove nulls
+    try {
+      const teamIds = channelNames.map(channelName => {
+        const channel = channelCache.find(ch => ch.name.includes(channelName))
+        if (channel) {
+          return channel.toString()
+        } else {
+          logger.log('cannot find team', channelName)
+        }
+      }).filter(x => x) // remove nulls
+      let text = "This game is more fun with friends! \nIf a friend invited you, join their team channel below, or choose one to start a new game and invite your friends to join you!\n"
+      text += teamIds.join('  |  ')
+      console.log('teams msg', text)
+      await this.sendText(text)
+    } catch (err) {
+      this.sendText('missing permissions:' + err)
+    }
 
-    let text = "This game is more fun with friends! \nIf a friend invited you, join their team channel below, or choose one to start a new game and invite your friends to join you!\n"
-    text += teamIds.join('  |  ')
-    console.log('teams msg', text)
-    await this.sendText(text)
   }
 
 }

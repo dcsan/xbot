@@ -110,7 +110,8 @@ const RouterService = {
       return
     }
     await evt.game?.reset(evt.pal)
-    await evt.pal.sendText('reset to room:' + evt.game?.story.room.name)
+    // await evt.pal.sendText('reset to room:' + evt.game?.story.room.name)
+    await evt.pal.sendText('\:eye: ')
 
     return await evt.game?.story.room.enterRoom(evt.pal)
   },
