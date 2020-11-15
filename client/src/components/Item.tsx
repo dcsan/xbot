@@ -19,7 +19,7 @@ const log = console.log
 const data = [
   {
     cname: 'album',
-    imgPath: '/cdn/storydata/asylum/items/600/album.jpg',
+    imgPath: 'bureau/ch1/750/mj-poster-cu.png',
     headCaption: '⬆️ close this window to go back to the game',
     footCaption: 'You take the poster off the wall and flip it over...',
     backText: [
@@ -36,7 +36,8 @@ const data = [
 ]
 
 const cdnPath = (rel: string) => {
-  return rel
+  const url = `https://cbg.rik.ai/cdn/storydata/${rel}`
+  return url
 }
 
 export function Item() {
@@ -69,12 +70,14 @@ export function Item() {
   // console.log('opacity', opacity.value)
 
   // const vis = flipped ? 'visible' : 'hidden'
-  const vis = 'visible'
+  // const vis = 'visible'
+
+  // <div className='caption head' >{item?.headCaption}</div>
 
   return (
     <div onClick={flipIt}>
       <div className='brick' />
-      <div className='caption head' >{item?.headCaption}</div>
+
 
       {flipped &&
         <div className='caption foot slider-left'>{item?.footCaption}</div>
@@ -82,11 +85,11 @@ export function Item() {
 
       <animated.img
         style={{ opacity: opacity.interpolate((o: any) => 1 - o), transform }}
-        className='c'
+        className='fill-item'
         src={cdnPath(item!.imgPath)} alt={item!.headCaption}
       />
 
-      <animated.div className="c album-back" style={{ opacity, transform: transform.interpolate((t: any) => `${t} rotateX(180deg)`) }}>
+      <animated.div className="fill-item album-back" style={{ opacity, transform: transform.interpolate((t: any) => `${t} rotateX(180deg)`) }}>
         {backLines}
       </animated.div>
     </div>

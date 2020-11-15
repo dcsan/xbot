@@ -31,14 +31,15 @@ body,
   justify-content: center;
 }
 
+/* album wrapper front AND back */
 
-.c {
-  border: 2px solid #ccc;
+.fill-item {
+  /* border: 2px solid #ccc; */
   position: absolute;
   /* max-width: 500px;
   max-height: 500px; */
-  width: 80vw;
-  height: 80vw;
+  max-width: 70vw;
+  max-height: 70vh;
   cursor: pointer;
   will-change: transform, opacity;
   z-index: 10;
@@ -52,9 +53,13 @@ body,
   /* padding: 20px; */
   background: #444;
   color: white;
-  font-size: 4vw;
+  font-size: 3vh;
   line-height: 175%;
+  padding: 20px;
   z-index: 5;
+  max-width: 70vh;
+  background-color: #444;
+  /* max-height: 70vw; */
 }
 
 .brick {
@@ -71,7 +76,7 @@ body,
   width: 100vw;
   /* height: 100%; */
   padding: 15px;
-  font-size: 5vw;
+  font-size: 3vh;
   z-index: 40;
   text-align: left;
 }

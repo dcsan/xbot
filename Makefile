@@ -37,7 +37,8 @@ fixPermissions:
 	# directories 755
 	find server/cdn -type d -exec chmod 755 {} \;
 	# files 644
-	find server/cdn -type f -exec chmod 644 {} \;
+	find server/cdn -type f -name '*.jpg' -exec chmod 644 {} \;
+	find server/cdn -type f -name '*.png' -exec chmod 644 {} \;
 
 buildClient: clean fixPermissions
 	cd client && npm run build

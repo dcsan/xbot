@@ -13,8 +13,9 @@ import { GameManager } from '../models/GameManager'
 import {
   // RouterService,
   // PosResult,
+  PalMsg,
   SceneEvent,
-  ActionResult
+  // ActionResult
 } from '../MupTypes'
 
 import WordUtils from '../../lib/WordUtils'
@@ -84,17 +85,26 @@ const BotRouter = {
     const game: Game = await GameManager.findGame({ pal })
     let evt: SceneEvent = { pal, pres, game }
 
+    logger.log('evt.pres', evt.pres)
+
     let handled =
       await this.preCommands(evt) ||
       await this.tryRoomActions(evt) ||
       await this.postCommands(evt) ||
       await this.nluCommands(evt)
 
+    let palMsg: PalMsg = {
+      text: input,
+    }
+
     if (handled) {
-      await pal.cbLogInput(input, false) // 2nd param is NOThandled (inverse)
+      palMsg.notHandled = false
+      palMsg.intent = evt.pres.clean
+      await pal.cbLogInput(palMsg) // 2nd param is NOThandled (inverse)
       return true
     } else {
-      await pal.cbLogInput(input, true)
+      palMsg.notHandled = true
+      await pal.cbLogInput(palMsg)
       const err = `no match: [${clean}]`
       // await pal.debugMessage(err)
       logger.warn(err)

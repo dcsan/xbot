@@ -1,5 +1,7 @@
 // Platform Abstraction Layer
 
+import { strict as assert } from 'assert';
+
 import {
   Message
 } from "discord.js";
@@ -9,7 +11,7 @@ import { PalMsg } from '../../MupTypes'
 
 // TODO - cleanup different log methods
 // get to just one common log method
-import { CbLogger } from './ChatbaseLogger'
+import { CbLogger } from '../util/ChatbaseLogger'
 import { ChatLogger, IChatRow } from '../ChatLogger'
 
 import { MockChannel, IMessage } from '../mock/MockChannel'
@@ -115,10 +117,6 @@ class Pal implements IPal {
     logger.error('wrapSay not implemented ')
     // throw new Error("wrapSay Method not implemented.");
   }
-  cbLogInput(_input: string, _notHandled: boolean): Promise<void> {
-    throw new Error("wrapSay Method not implemented.");
-  }
-
   async showVoiceChannel(_pal: Pal) {
     throw new Error("showVoiceChannel Method not implemented in Pal");
   }
@@ -199,7 +197,11 @@ class Pal implements IPal {
     return emoji
   }
 
-  cbLog(palMsg: PalMsg) {
+  async cbLog(palMsg: PalMsg) {
+    CbLogger.log(palMsg)
+  }
+  async cbLogInput(palMsg) {
+    palMsg.sender = 'user'
     CbLogger.log(palMsg)
   }
 

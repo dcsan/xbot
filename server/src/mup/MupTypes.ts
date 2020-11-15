@@ -116,9 +116,11 @@ export interface StoryTest {
 // TODO - fix with enums
 export interface PalMsg {
   text: string
-  channel: string
-  sender: string // agent|user|bot
-  platform: string // discord|slack
+  intent?: string
+  channel?: string
+  userId?: string
+  sender?: string // agent|user|bot
+  platform?: string // discord|slack
   notHandled?: boolean
 }
 

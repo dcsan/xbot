@@ -50,14 +50,25 @@ class DiscordPal extends Pal implements IPal {
     return false
   }
 
-  async cbLogInput(input: string, notHandled: boolean = false) {
-    const palMsg: PalMsg = {
-      text: input,
-      notHandled,
-      sender: 'user',
+  async cbLogInput(palMsg: PalMsg) {
+    const intent = palMsg.intent || palMsg.text
+    Object.assign(palMsg, {
       platform: 'discord',
-      channel: this.lastEvent.channel.id,
-    }
+      sender: 'user',
+      channel: this.lastEvent.channel.id,  // actually channel ID
+      intent
+    })
+    this.cbLog(palMsg)
+  }
+
+  async cbLogOutput(palMsg: PalMsg) {
+    // const intent = palMsg.intent || palMsg.text
+    Object.assign(palMsg, {
+      platform: 'discord',
+      sender: 'bot',
+      channel: this.lastEvent.channel.id,  // actually channel ID
+      // intent
+    })
     this.cbLog(palMsg)
   }
 
@@ -108,12 +119,9 @@ class DiscordPal extends Pal implements IPal {
     text = this.processTemplate(text)
     this.lastSent = await this.lastEvent.channel.send(text)
     const palMsg: PalMsg = {
-      text,
-      sender: 'bot',
-      platform: 'discord',
-      channel: this.lastEvent.channel.id
+      text
     }
-    this.cbLog(palMsg)
+    this.cbLogOutput(palMsg)
   }
 
   async sendReaction(emoji: string) {
