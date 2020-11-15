@@ -79,13 +79,12 @@ const BotRouter = {
     const clean = SynManager.simplify(input, roomName)
     const pres: ParserResult = RexParser.parseCommands(clean)
 
-    logger.log('parserResult ', pres)
     pal.logInput(input)  // store it for GameFuncs
 
     const game: Game = await GameManager.findGame({ pal })
     let evt: SceneEvent = { pal, pres, game }
 
-    logger.log('evt.pres', evt.pres)
+    logger.log('evt.pres.clean', evt.pres.clean)
 
     let handled =
       await this.preCommands(evt) ||

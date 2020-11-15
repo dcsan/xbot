@@ -22,6 +22,7 @@ export interface StateBlock {
   emoji: string[]
   navbar: string
   showChannels: string
+  showInvite: string
 }
 
 // the fail/pass block branches of a full ActionData

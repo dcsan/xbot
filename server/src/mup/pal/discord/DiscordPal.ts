@@ -366,14 +366,17 @@ class DiscordPal extends Pal implements IPal {
     logger.error('DJS', opts)
   }
 
-  async sendInvite(text = "Invite your friends!") {
+  async showInvite(text = "Invite your friends!"): Promise<string> {
     let invite = await this.lastEvent.channel.createInvite(
       {
         maxAge: 0, // 10 * 60 * 1000, // in ms 0 = forever
-        maxUses: 100 // maximum times it can be used
+        maxUses: 0, // maximum times it can be used
+        reason: text,
+        unique: true
       },
     ).catch(this.handleError);
-    this.sendText(invite ? `${text} ${invite}` : "Could not create invite, please check bot permissions");
+    const msg = invite ? `${text} ${invite}` : "Could not create invite, please check bot permissions"
+    return msg
   }
 
   // show linked channels for team-1 etc channel names

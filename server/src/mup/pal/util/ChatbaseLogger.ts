@@ -16,7 +16,7 @@ chatbase.setApiKey(AppConfig.read('CHATBASE_KEY'))
 const CbLogger = {
 
   async log(palMsg: PalMsg) {
-    logger.log('log palMsg', palMsg)
+    // logger.log('log palMsg', palMsg)
     assert(palMsg.userId !== null)
     assert(palMsg.platform !== null)
     assert(palMsg.text !== null)

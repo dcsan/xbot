@@ -134,9 +134,12 @@ class Pal implements IPal {
     throw new Error("showLog Method not implemented in Pal");
   }
 
-  async sendInvite(text = "Invite your friends!") {
-    this.sendText('invite your friends! ' + text)
+  async showInvite(text = "Invite your friends!"): Promise<string> {
+    logger.warn('showInvite not implemented in BasePal')
+    this.sendText(text)
+    return text
   }
+
   // abstract methods
   processTemplate(text: string): string {
     return text

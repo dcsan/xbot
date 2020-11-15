@@ -239,6 +239,13 @@ class GameObject {
       )
     }
 
+    if (stateInfo.showInvite) {
+      const channels: string = await pal.showInvite(stateInfo.showInvite)
+      palBlocks.push(
+        BaseBuilder.textBlock(channels)
+      )
+    }
+
     if (stateInfo.navbar === 'false') {
       logger.warn('dont use navbar: false', stateInfo)
     }

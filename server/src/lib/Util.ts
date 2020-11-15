@@ -172,7 +172,7 @@ const Util = {
       logger.warn('muted in channel', channelName, mutes, ' SKIP reply')
       return true
     }
-    logger.log('not muted', channelName, mutes)
+    // logger.log('not muted', channelName, mutes)
     return false
   },
 

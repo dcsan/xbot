@@ -174,7 +174,8 @@ const RouterService = {
   },
 
   inviteLink: async (evt: SceneEvent) => {
-    return await evt.pal.sendInvite()
+    const invite = await evt.pal.showInvite('invite your friends')
+    await evt.pal.sendText(invite)
   },
 
   // sendImageFooter: async (evt: SceneEvent) => {
