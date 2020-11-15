@@ -155,8 +155,8 @@ const RouterService = {
     return await evt.game.story.room.showHint(evt)
   },
 
-  showTeams: async (evt: SceneEvent) => {
-    await evt.pal.showTeams()
+  showChannels: async (evt: SceneEvent) => {
+    await evt.pal.showChannels()
   },
 
   showSurvey: async (evt: SceneEvent) => {

@@ -184,7 +184,7 @@ class GameObject {
   // may work for rooms and things
   async describeThing(evt: SceneEvent) {
     const stateInfo: StateBlock = this.getStateBlock()
-    const palBlocks = this.renderBlocks(stateInfo, evt.pal)
+    const palBlocks = await this.renderBlocks(stateInfo, evt.pal)
     await evt.pal.sendBlocks(palBlocks)
     return palBlocks
   }
@@ -192,7 +192,8 @@ class GameObject {
   // render item as a display set of blocks
   // TODO - use pal.builder to decide what type of builder to use - slack/discord
   // so rendering is different
-  renderBlocks(stateInfo: StateBlock, pal: Pal): any[] {
+  // this is main place to add more rendering types and script commands
+  async renderBlocks(stateInfo: StateBlock, pal: Pal): Promise<any[]> {
     const palBlocks: any[] = []
 
     // logger.log('describeThing', {
@@ -201,10 +202,6 @@ class GameObject {
     //   props: this.props,
     //   stateInfo,
     // })
-
-    if (stateInfo.showTeams) {
-      pal.showTeams(stateInfo.showTeams)
-    }
 
     if (stateInfo.imageUrl) {
       palBlocks.push(BaseBuilder.imageBlock(stateInfo, this))
@@ -233,6 +230,13 @@ class GameObject {
 
     if (stateInfo.hint) {
       palBlocks.push(BaseBuilder.contextBlock(stateInfo.hint))
+    }
+
+    if (stateInfo.showChannels) {
+      const channels: string = await pal.showChannels(stateInfo.showChannels)
+      palBlocks.push(
+        BaseBuilder.textBlock(channels)
+      )
     }
 
     if (stateInfo.navbar === 'false') {
@@ -444,7 +448,7 @@ class GameObject {
     }
 
     // FIXME merge types for branch and stateBlock
-    const palBlocks = this.renderBlocks(branch as StateBlock, evt.pal)
+    const palBlocks = await this.renderBlocks(branch as StateBlock, evt.pal)
     if (palBlocks && palBlocks.length) {
       // console.log('palBlocks', palBlocks)
       await evt.pal.sendBlocks(palBlocks)

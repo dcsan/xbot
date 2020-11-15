@@ -169,7 +169,7 @@ const Util = {
     const channelName = pal.channelName()
     const mutes = AppConfig.read('MUTED_CHANNELS')
     if (mutes.includes(channelName)) {
-      logger.warn('muted in channel', channelName, ' SKIP reply')
+      logger.warn('muted in channel', channelName, mutes, ' SKIP reply')
       return true
     }
     logger.log('not muted', channelName, mutes)

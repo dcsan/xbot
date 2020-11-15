@@ -377,30 +377,30 @@ class DiscordPal extends Pal implements IPal {
   }
 
   // show linked channels for team-1 etc channel names
-  async showTeams(teamsFilter?: string) {
+  async showChannels(teamsFilter?: string): Promise<string> {
     teamsFilter = teamsFilter || AppConfig.read('TEAMS_FILTER') || 'team'
-    const rex = new RegExp(teamsFilter!, 'g')
+    const rex = new RegExp(teamsFilter!, 'gim')
     const channelCache = this.lastEvent.member.guild.channels.cache
     try {
       // get <?xxx> format teamIds
       const teamIds = channelCache.map(ch => {
         const flag = rex.test(ch.name)
-        logger.log('flag', ch.name, '=>', flag)
+        logger.log('test', rex, ch.name, '=>', flag)
         if (flag) {
           return ch.toString()
         }
 
       }).filter(x => x) // remove nulls
       logger.log('found teams', teamIds)
-      let text = "This game is more fun with friends! \n- "
+      // let text = "This game is more fun with friends! \n- "
       // \nIf a friend invited you, join their team channel below, or choose one to start a new game and invite your friends to join you!\n"
-      text += teamIds?.join('\n- ')
+      // let text = teamIds?.map(t => `\n${t}`)
+      let text = teamIds?.join(`\n`)
       console.log('teams msg', text)
-      await this.sendText(text)
+      return (text)
     } catch (err) {
-      this.sendText('missing permissions:' + err)
+      return ('showChannels error:' + JSON.stringify(err))
     }
-
   }
 
 }

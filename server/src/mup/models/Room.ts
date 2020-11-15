@@ -95,7 +95,7 @@ class Room extends GameObject {
   async enterRoom(pal: Pal) {
 
     const stateInfo: StateBlock = this.getStateBlock()
-    const palBlocks = this.renderBlocks(stateInfo, pal)
+    const palBlocks = await this.renderBlocks(stateInfo, pal)
     await pal.sendBlocks(palBlocks)
     return palBlocks
 
