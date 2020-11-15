@@ -58,7 +58,7 @@ const StaticRules: RuleSpec[] = [
 
   {
     cname: 'clear',
-    rex: /^(clear)/i,
+    rex: /^(clear)$/i,
     event: RouterService.clear,
     type: 'preCommand',
     admin: true
