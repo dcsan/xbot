@@ -21,6 +21,7 @@ export interface StateBlock {
   buttons: string[]
   emoji: string[]
   navbar: string
+  showTeams: string
 }
 
 // the fail/pass block branches of a full ActionData

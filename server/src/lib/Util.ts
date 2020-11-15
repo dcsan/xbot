@@ -178,7 +178,7 @@ const Util = {
 
   shouldIgnore(input): boolean {
     if (!input) return true
-    if (input.split(' ').length > 5) return true
+    if (input.split(' ').length >= 5) return true
     if (/^[-'"\.#! `,>\\]/.test(input)) { return true } // has prefix
     if (/http/.test(input)) return true  // shared URLs - dont respond to
     // logger.log('not ignore', input)

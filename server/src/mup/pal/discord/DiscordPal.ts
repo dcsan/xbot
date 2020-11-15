@@ -377,21 +377,24 @@ class DiscordPal extends Pal implements IPal {
   }
 
   // show linked channels for team-1 etc channel names
-  async showTeams() {
-    const channelNames = AppConfig.read('TEAM_CHANNELS').split('|')
-    logger.log('channelNames', channelNames)
+  async showTeams(teamsFilter?: string) {
+    teamsFilter = teamsFilter || AppConfig.read('TEAMS_FILTER') || 'team'
+    const rex = new RegExp(teamsFilter!, 'g')
     const channelCache = this.lastEvent.member.guild.channels.cache
     try {
-      const teamIds = channelNames.map(channelName => {
-        const channel = channelCache.find(ch => ch.name.includes(channelName))
-        if (channel) {
-          return channel.toString()
-        } else {
-          logger.log('cannot find team', channelName)
+      // get <?xxx> format teamIds
+      const teamIds = channelCache.map(ch => {
+        const flag = rex.test(ch.name)
+        logger.log('flag', ch.name, '=>', flag)
+        if (flag) {
+          return ch.toString()
         }
+
       }).filter(x => x) // remove nulls
-      let text = "This game is more fun with friends! \nIf a friend invited you, join their team channel below, or choose one to start a new game and invite your friends to join you!\n"
-      text += teamIds.join('  |  ')
+      logger.log('found teams', teamIds)
+      let text = "This game is more fun with friends! \n- "
+      // \nIf a friend invited you, join their team channel below, or choose one to start a new game and invite your friends to join you!\n"
+      text += teamIds?.join('\n- ')
       console.log('teams msg', text)
       await this.sendText(text)
     } catch (err) {

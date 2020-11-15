@@ -111,15 +111,19 @@ const BotRouter = {
       const target = evt.pres.pos?.target
       const verb = evt.pres.pos?.verb
       let msg = ''
-      if (target && verb) {
-        msg = `I don't know how to ${verb} the ${target}`
+      if (verb && target) {
+        msg = `I don't know how to ${verb} ${target}`
+      } else if (verb) {
+        msg = `I don't know how to ${verb}`
       } else if (target) {
         msg = `I can't see a ${target}`
       } else {
-        await pal.sendReaction('help')
         // dont understand at all!
         // TODO handle with an emoji reaction?
-        // msg = `I don't understand ${clean}`
+        if (Math.random() < 0.1) {
+          await pal.sendReaction('help')
+          // msg = `I don't understand ${clean}`
+        }
       }
       if (msg) {
         await evt.pal.sendText(msg)

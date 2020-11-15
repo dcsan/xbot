@@ -205,8 +205,8 @@ class Pal implements IPal {
     CbLogger.log(palMsg)
   }
 
-  async showTeams() {
-    logger.warn('not implemented')
+  async showTeams(teamFilter?: string) {
+    logger.warn('not implemented', teamFilter)
   }
 
 }

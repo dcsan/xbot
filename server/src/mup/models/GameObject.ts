@@ -202,6 +202,10 @@ class GameObject {
     //   stateInfo,
     // })
 
+    if (stateInfo.showTeams) {
+      pal.showTeams(stateInfo.showTeams)
+    }
+
     if (stateInfo.imageUrl) {
       palBlocks.push(BaseBuilder.imageBlock(stateInfo, this))
     }
