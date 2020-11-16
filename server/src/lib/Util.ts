@@ -178,7 +178,8 @@ const Util = {
 
   shouldIgnore(input): boolean {
     if (!input) return true
-    if (input.split(' ').length >= 5) return true
+    // Wash hands, neck, ears, face - longest command so far?
+    if (input.split(' ').length > 5) return true
     if (/^[-'"\.#! `,>\\]/.test(input)) { return true } // has prefix
     if (/http/.test(input)) return true  // shared URLs - dont respond to
     // logger.log('not ignore', input)
