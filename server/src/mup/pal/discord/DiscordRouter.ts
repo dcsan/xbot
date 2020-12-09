@@ -50,28 +50,30 @@ const DiscordRouter = {
 
       client.on('messageReactionAdd', async (reaction, _user) => {
         if (_user.bot) return;
-
+        logger.log('reaction', reaction)
+        logger.log('reaction.emoji', reaction.emoji)
         // When we receive a reaction we check if the reaction is partial or not
         if (reaction.partial) {
           // If the message this reaction belongs to was removed the fetching might result in an API error, which we need to handle
           try {
             await reaction.fetch();
+            logger.log('reaction.partial.fetch', reaction)
           } catch (error) {
             console.error('Something went wrong when fetching the message: ', error);
             // Return as `reaction.message.author` may be undefined/null
             return;
           }
         }
-
-        logger.log('reaction.emoji', reaction.emoji)
-        const pal: Pal = PalManager.findDiscoPal(reaction.message)
-        const emojiName = reaction.emoji.name
-        await BotRouter.actionEvent(pal, emojiName)
-
         // Now the message has been cached and is fully available
         // console.log(`${reaction.message.author}'s message "${reaction.message.content}" gained a reaction!`);
         // The reaction is now also fully available and the properties will be reflected accurately:
         // console.log(`${reaction.count} user(s) have given the same reaction to this message!`);
+
+        // logger.log('reaction.emoji', reaction.emoji)
+        const pal: Pal = PalManager.findDiscoPal(reaction.message)
+        const emojiName = reaction.emoji.name
+        await BotRouter.actionEvent(pal, emojiName)
+
       });
 
       // Create an event listener for new guild members

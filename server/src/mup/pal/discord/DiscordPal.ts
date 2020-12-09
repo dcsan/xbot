@@ -83,26 +83,32 @@ class DiscordPal extends Pal implements IPal {
     if (message.channel.type !== 'text') {
       return logger.warn('cannot clear channel type', message.channel.type)
     }
-    let c
+    let iter
     try {
       // FIXME - the error isn't throwing properly it exits the loop instead and doesnt catch
-      const count = 99
+      const batchSize = 50
+      const loopCount = 5 // iterations
       const ch = message.channel as TextChannel
-      for (c = 0; c < 10; c++) {
-        const deleted = await ch!.bulkDelete(count)
-        logger.log('clear', c, deleted.size)
-        // .catch(console.error) // FIXME - breaks to "done" if this isn't here?
-        // .then((result) => console.error('clear result', result))
-        if (deleted?.size < 1) {
-          logger.log('no more to clear at c =', c)
+      logger.log('clear for channel', ch.name)
+      for (iter = 0; iter < loopCount; iter++) {
+        logger.log('delete.iter= ', iter)
+        const deleted = await ch!.bulkDelete(batchSize, true)
+          .catch((err) => {
+            console.error(err)
+          }) // FIXME - breaks to "done" if this isn't here?
+          .then(() => logger.log('cleared', iter, deleted))
+        // result[0].channel.rawPosition
+        logger.log('deleted', iter)
+        if (deleted?.size === 0) {
+          logger.log('no more to clear at iter: ', iter)
           break
         }
       }
       // message.delete();
     } catch (err) {
-      logger.warn('clear exit at c=', c, err)
+      logger.warn('clear exit at iter: ', iter, err)
     }
-    logger.log('clear done at c=', c)
+    logger.log('clear done at iter:', iter)
   }
 
   async showInstallUrl() {

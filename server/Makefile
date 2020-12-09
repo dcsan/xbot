@@ -69,3 +69,8 @@ storyPush:
 
 nginx-logs:
 	tail -f /var/log/nginx/*.log
+
+discordjs-latest:
+	npm i -S "https://github.com/discordjs/discord.js#master"
+
+
