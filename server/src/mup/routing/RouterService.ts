@@ -1,3 +1,6 @@
+// route actions to the right classes
+// this acts as glue between CommandList and game items
+
 import AppConfig from '../../lib/AppConfig'
 
 import yaml from 'js-yaml'
@@ -42,6 +45,10 @@ const RouterService = {
 
   takeRoomThing: async (evt: SceneEvent) => {
     return await evt.game?.story.room.takeItemCommand(evt)
+  },
+
+  doneRoomThing: async (evt: SceneEvent) => {
+    return await evt.game?.story.room.doneItemCommand(evt)
   },
 
   useRoomThingAlone: async (evt: SceneEvent) => {
@@ -141,6 +148,10 @@ const RouterService = {
 
   showInventory: async (evt: SceneEvent) => {
     return await evt.game?.player.showInventory(evt)
+  },
+
+  showGoals: async (evt: SceneEvent) => {
+    return await evt.game?.player.showGoals(evt)
   },
 
   showTask: async (evt: SceneEvent) => {

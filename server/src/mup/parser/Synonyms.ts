@@ -111,7 +111,7 @@ const SynManager = {
     if (input !== clean) {
       logger.log(`synReplaced:\t [${input}] => [${clean}]`)
     } else {
-      logger.log(`NO synReplaced ${input} => ${clean}`)
+      // logger.log(`NO synReplaced ${input} => ${clean}`)
       // logger.log(`synList`, synList)
     }
     return clean

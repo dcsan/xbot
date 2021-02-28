@@ -1,3 +1,5 @@
+// Route discord events to the PAL > game engine
+
 import AppConfig from '../../../lib/AppConfig'
 import Discord from 'discord.js'
 import {
@@ -36,7 +38,7 @@ const DiscordRouter = {
       client.once('ready', () => {
         logger.log('<< OK')
         // console.log('DJS Ready!');
-        // logger.log('install: ', DiscoUtils.installUrl())
+        logger.log('install: ', DiscoUtils.installUrl())
         resolve('done')
       });
 

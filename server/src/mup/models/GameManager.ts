@@ -5,6 +5,7 @@ import { LoadOptions } from 'mup/MupTypes'
 import AppConfig from '../../lib/AppConfig'
 const logger = new MakeLogger('GameManager')
 
+// games have state, kept in memory atm
 let GameList: Game[] = []
 
 const GameManager = {

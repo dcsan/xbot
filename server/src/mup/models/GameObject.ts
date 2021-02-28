@@ -139,6 +139,7 @@ class GameObject {
 
   get long() {
     logger.checkItem(this.doc, 'long')
+    // FIXME - we had some inconsistent names in YAML files for objects
     return this.doc.long ||
       this.doc.description ||
       this.doc.short ||

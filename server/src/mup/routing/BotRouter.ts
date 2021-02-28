@@ -146,10 +146,14 @@ const BotRouter = {
   },
 
   // action.matches special commands
+  // this checks against all the `actions.match` script in the room
   async tryRoomActions(evt: SceneEvent): Promise<boolean | undefined> {
-    logger.log('tryRoomActions evt.pres.clean=', evt.pres.clean)
     const result = await evt.game.story.room.findAndRunAction(evt)
-    logger.log('roomActions.result =>', result)
+    if (result) {
+      logger.log('tryRoomActions.result =>', result)
+    } else {
+      logger.log('tryRoomActions no match for: ', evt.pres.clean)
+    }
     return result
   },
 

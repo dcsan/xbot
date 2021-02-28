@@ -1,3 +1,6 @@
+// PAL Platform Abstraction Layer
+// select relevant Pal to dispatch events to
+
 import { Pal, ISlackEvent } from './base/Pal'
 import {
   Message

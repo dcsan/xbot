@@ -12,6 +12,10 @@ import { ParserResult, RexParser } from '../parser/RexParser'
 
 const logger = new MakeLogger('room')
 
+// suppress warnings if you try to take something you already have
+// for buggy YAML files that repeat themselves
+const QUIET_MODE = true
+
 import {
   ErrorHandler,
   HandleCodes
@@ -207,6 +211,7 @@ class Room extends GameObject {
   // just going to look for actions on the ROOM
   findAction(input: string): ActionData | undefined {
     const room = this.roomObj
+    // TODO - should be coming from the DB to allow updates in realtime
     if (!room.doc.actions) {
       logger.warn('no actions for item:', this.doc.name)
     }
@@ -214,7 +219,8 @@ class Room extends GameObject {
     input = WordUtils.basicNormalize(input)
 
     const foundAction: ActionData = room.doc.actions?.find((action: ActionData) => {
-      const rex = new RegExp(action.match, 'i')
+      const text = action.match ? action.match.toLowerCase() : ''
+      const rex = new RegExp(text, 'i') // why doesn't the 'i' work on this?
       const check = rex.test(input)
       if (check) {
         return action // and exit loop
@@ -251,6 +257,22 @@ class Room extends GameObject {
     return true // found
   }
 
+  // similar to dropping an item but just set state to 'checked'
+  async doneItemCommand(evt: SceneEvent): Promise<boolean> {
+    const thingName = evt.pres.pos?.target
+    if (!thingName) {
+      logger.warn('no thingName to drop', evt)
+      return false
+    }
+    evt.game?.player?.doneItem(thingName)
+    // const thing = this.findThing(thingName)
+    // if (!thing) {
+    //   logger.warn('no thing found')
+    //   return false
+    // }
+    return true // found
+  }
+
   // in the room
   async takeItemByName(
     thingName: string,
@@ -260,14 +282,17 @@ class Room extends GameObject {
     const thing = this.findThing(thingName)
 
     if (!thing) {
-      // then look into inventory
+      // if not in the room, then look into inventory
+      // and just describe the item
       if (evt.game?.player?.hasItem(thingName)) {
-        const msg = `You already have the ${thingName}`
-        const blocks = [
-          BaseBuilder.textBlock(msg),
-          BaseBuilder.contextBlock("type `inv` to see what you're carrying"),
-        ]
-        await evt.pal.sendBlocks(blocks)
+        if (!QUIET_MODE) {
+          const msg = `You already have the ${thingName}`
+          const blocks = [
+            BaseBuilder.textBlock(msg),
+            BaseBuilder.contextBlock("type `inv` to see what you're carrying"),
+          ]
+          await evt.pal.sendBlocks(blocks)
+        }
         // return { handled: HandleCodes.foundAction, err: false } // even if you didn't get it
         return true   // handled
       } else {
@@ -295,7 +320,7 @@ class Room extends GameObject {
     const took = evt.game?.player.takeItem(thing)
     if (took) {
       // TODO custom take message eg 'wear item'
-      if (options.output) {
+      if (options.output && !thing.doc.silent) {
         const msg = thing.doc.onTake || `You take the ${thingName}`
         const getMsg = BaseBuilder.textBlock(msg)
         let blocks = [
@@ -329,7 +354,7 @@ class Room extends GameObject {
     return allNames
   }
 
-  // looks for actors
+  // looks for things in the room
   findThing(itemName: string): GameObject | undefined {
     const cname = Util.safeName(itemName)
     logger.log('findThing', cname, 'in', this.klass)

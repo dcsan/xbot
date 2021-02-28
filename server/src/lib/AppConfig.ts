@@ -15,6 +15,7 @@ const AppConfig = {
 
   init() {
     // this is run after module has been used elsewhere so not good
+    console.log('using NODE_ENV: ', process.env.NODE_ENV)
   },
 
   // async toggleDebug(evt: SceneEvent) {

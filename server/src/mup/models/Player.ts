@@ -1,12 +1,16 @@
+// Player in game
+// TODO - move inventory code to another module
+
 import Item from './Item'
 import { MakeLogger } from '../../lib/LogLib'
 import { SceneEvent } from '../MupTypes'
-import { BaseBuilder } from '../pal/base/BaseBuilder'
 import { GameObject } from './GameObject'
+// import { BaseBuilder } from '../pal/base/BaseBuilder'
 // import { Pal } from '../pal/Pal'
 import WordUtils from '../../lib/WordUtils';
 
 const logger = new MakeLogger('player')
+const INV_LIST_MODE = true
 
 class Player extends GameObject {
 
@@ -68,6 +72,7 @@ class Player extends GameObject {
     return true
   }
 
+
   // addItemByName(itemName) {
   //   const item = {
   //     name: itemName,
@@ -98,6 +103,41 @@ class Player extends GameObject {
     return !!item
   }
 
+  // check item as dnoe for task list /goals
+  doneItem(cname: string): boolean {
+    cname = WordUtils.makeCname(cname)
+    const item = this.findThing(cname)
+    if (item) {
+      item.doc.done = true
+      return true
+    } else {
+      logger.warn('cannot find item', cname)
+      return false
+    }
+  }
+
+  async showGoals(evt: SceneEvent) {
+    // show the inv as a LIST of items
+    const blocks: any[] = []
+    const builder = evt.pal.builder
+    logger.logObj('showInv', this.invItems)
+
+    if (!this.invItems.length) {
+      blocks.push(builder.textBlock(
+        `No goals set`
+      ))
+    } else {
+      this.invItems.forEach(item => {
+        const checked = item.doc.done ? '[√]' : '[ ]'
+        blocks.push(
+          builder.textBlock(`${checked} ${item.name} | ${item.description}`)
+        )
+      })
+    }
+    logger.log('items', blocks)
+    await evt.pal.sendBlocks(blocks)
+  }
+
   async showInventory(evt: SceneEvent) {
     // await evt.pal.sendText('Inventory:')
 
@@ -117,6 +157,8 @@ class Player extends GameObject {
       // buttonLinks.push(`notebook | x notebook`) // artificial
       blocks.push(builder.buttonsBlock(buttonLinks))
     }
+
+    // special case when its just the notebook
     if (this.invItems.length === 1 && this.invItems[0].name === 'Note') {
       blocks.push(builder.contextBlock(
         ':pencil2: to examine the note type: ```fix\nx note``` '))
@@ -124,6 +166,7 @@ class Player extends GameObject {
       blocks.push(builder.contextBlock(
         ':pencil2: type `x (name of item)` to examine anything'))
     }
+
     // blocks.push(BaseBuilder.contextBlock(':information_source: hint: _try to `use item with ...` other things in the room_'))
     await evt.pal.sendBlocks(blocks)
   }

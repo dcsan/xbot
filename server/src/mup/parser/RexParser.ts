@@ -1,7 +1,8 @@
-// const Dispatcher = require('../Dispatcher')
+// RegexParser on user inputs
+// matches against fixed rules defined in CommandList
+
 import { MakeLogger } from '../../lib/LogLib'
 import WordUtils from '../../lib/WordUtils'
-// import RouterService from './RouterService'
 
 import { StaticRules, OneRule } from './CommandList'
 
@@ -380,6 +381,7 @@ const RexParser = {
   // }
 
   findRule(usedText: string): OneRule | undefined {
+    // look for fixed rules in the command list
     let rule = StaticRules.find((oneRule: OneRule) => {
       const result = oneRule.rex.test(usedText)
       // logger.logLine('test', { clean, rex: oneRule.rex, result })

@@ -1,5 +1,7 @@
+// shortcut commands that are implemented at engine level
+
 import { RouterService } from '../routing/RouterService'
-import AppConfig from '../../lib/AppConfig'
+// import AppConfig from '../../lib/AppConfig'
 
 // import Player from '../models/Player'
 // import { synData, ISyn } from './Synonyms'
@@ -96,6 +98,13 @@ const StaticRules: RuleSpec[] = [
   },
 
   {
+    cname: 'goals',
+    rex: /^(goals|✅)$/i,
+    event: RouterService.showGoals,
+    type: 'preCommand'
+  },
+
+  {
     cname: 'lookRoom',
     rex: /^(look|lookroom|👀)$/i,
     event: RouterService.lookRoom,
@@ -106,7 +115,7 @@ const StaticRules: RuleSpec[] = [
   // because those actions set flags
   {
     cname: 'lookAt',
-    rex: /^(?<verb>look at|look|examine|x at|l|x) (?<target>\w+)$/i,
+    rex: /^(?<verb>look at|check|look|examine|details|deets|x at|l|x) (?<target>\w+)$/i,
     event: RouterService.lookRoomThing,
     type: 'postCommand'
   },
@@ -240,8 +249,15 @@ const StaticRules: RuleSpec[] = [
   // have to fire from your inventory too...
   {
     cname: 'takeRoomThing',
-    rex: /^(?<verb>get|take|grab|try on|wear|put on|pick up|t) (?<target>\w+)$/i,
+    rex: /^(?<verb>get|take|grab|add|try on|wear|put on|pick up|t) (?<target>\w+)$/i,
     event: RouterService.takeRoomThing,
+    type: 'postCommand'
+  },
+
+  {
+    cname: 'doneRoomThing',
+    rex: /^(?<verb>done) (?<target>\w+)$/i,
+    event: RouterService.doneRoomThing,
     type: 'postCommand'
   },
 

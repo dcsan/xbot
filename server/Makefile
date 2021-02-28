@@ -1,6 +1,9 @@
 # test app
 testAppId=A017ADRUE49
 
+dev-coachabl:
+	NODE_ENV=coachabl DEBUG=mup* LOG_LEVEL=debug nodemon src/index.ts
+
 dev-console:
 	# DEBUG=bottender:action,mup* npm run dev -- --console
 	DEBUG=mup* npm run dev -- --console

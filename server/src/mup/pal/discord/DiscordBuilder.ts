@@ -1,3 +1,5 @@
+// building complex message types custom for each client
+
 import { BaseBuilder } from '../base/BaseBuilder'
 
 import { MakeLogger } from "../../../lib/LogLib"
