@@ -36,6 +36,12 @@ const AppConfig = {
     // throw (msg)
   },
 
+  readNum(key) {
+    let num = AppConfig.read(key)
+    num = parseInt(num, 10);
+    return num
+  },
+
   checkCoreKeys() {
     const checks = [
       'storyName',

@@ -66,11 +66,15 @@ const BotRouter = {
     if (!input || Util.shouldIgnore(input)) {
       logger.warn('shouldIgnore? TRUE:', input)
       return false
+    } else {
+      logger.log('not ignore:', input)
     }
     if (!Util.isCommand(input)) {
+      logger.log('not isCommand:', input)
       return false
     }
     if (Util.isMutedChannel(pal)) {
+      logger.log('isMutedChannel:', input)
       return false
     }
 
@@ -95,6 +99,8 @@ const BotRouter = {
     let palMsg: PalMsg = {
       text: input,
     }
+
+    logger.log('handled:', handled)
 
     if (handled) {
       palMsg.notHandled = false

@@ -149,11 +149,21 @@ const Util = {
   //   return false
   // },
 
+  shortInput(input: string): boolean {
+    // for adventure games we dont process long inputs
+    const ignoreLength = AppConfig.readNum('ignoreLength') || 5
+    if (input.split(' ').length < ignoreLength) {
+      return true
+    }
+    logger.warn('length too long - skipping')
+    return false
+  },
+
   isCommand(input): boolean {
     let cmdFlag = false
     if (!input) return false
-    if (input.split(' ').length < 6) cmdFlag = true
     if (/^btn /.test(input)) cmdFlag = true
+    if (Util.shortInput(input)) cmdFlag = true
     if (cmdFlag) {
       logger.log('isCommand: TRUE =>', input)
     }
@@ -179,7 +189,8 @@ const Util = {
   shouldIgnore(input): boolean {
     if (!input) return true
     // Wash hands, neck, ears, face - longest command so far?
-    if (input.split(' ').length > 5) return true
+    if (!Util.shortInput(input)) return false
+
     if (/^[-'"\.#! `,>\\]/.test(input)) { return true } // has prefix
     if (/http/.test(input)) return true  // shared URLs - dont respond to
     // logger.log('not ignore', input)

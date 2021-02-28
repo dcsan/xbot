@@ -35,7 +35,7 @@ class MakeLogger {
   }
 
   get where() {
-    return chalk.gray(`[${this.name}]  \t`)
+    return chalk.gray(`[${this.name}] `)
   }
 
   log(msg, ...rest) {
