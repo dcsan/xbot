@@ -85,9 +85,10 @@ class DiscordPal extends Pal implements IPal {
     }
     let iter
     try {
-      // FIXME - the error isn't throwing properly it exits the loop instead and doesnt catch
-      const batchSize = 50
-      const loopCount = 5 // iterations
+      // FIXME - the error isn't throwing properly
+      // it exits the loop instead and doesnt catch
+      const batchSize = 100
+      const loopCount = 10 // iterations
       const ch = message.channel as TextChannel
       logger.log('clear for channel', ch.name)
       for (iter = 0; iter < loopCount; iter++) {
