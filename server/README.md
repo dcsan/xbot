@@ -2,7 +2,7 @@
 
 A platform for creating games for the [TEN / BoPO Discord Bot](https://ten.rik.ai)
 
-## Commands:
+## Example Commands:
 
 - status - player status and all items in the room
 - cheat - see room actions
@@ -11,13 +11,14 @@ A platform for creating games for the [TEN / BoPO Discord Bot](https://ten.rik.a
 - debug - turn event debugging on/off
 - log - show whole chat history
 
-- Command list:
+Full Command list:
 https://github.com/exiteer/xbot/blob/master/server/src/mup/parser/CommandList.ts
 
 ## Parser
 
-you can see each command has it's own little regex and a route to the function to handle it.
+You can see each command has it's own little regex and a route to the function to handle it.
 eg `look`
+
 ```ts
   {
     cname: 'lookRoom',  // unique name in lookup table
