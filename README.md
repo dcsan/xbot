@@ -3,6 +3,13 @@
 This is an engine to run text adventure games inside Discord.
 It includes a full parser for a custom game scripting language.
 
+Released as Open Source, so please do what you want!
+If you need help leave an issue here in the repo or ask me (email in bio!)
+
+I wrote up a bit more about the project genesis here:
+
+https://dc.rik.ai/projects/ten
+
 <img width='350px' src='https://dc.rik.ai/assets/projectDetail/ten/tut-clip-x2.gif' />
 
 
@@ -210,10 +217,6 @@ https://cbg.rik.ai/api/webhooks/slack
 Everything handled by the server is under `/api` namespace.
 
 </details>
-
-# Marketing stuff
-
-<video src='https://dc.rik.ai/video/bopo-cap.mp4' />
 
 
 More info about the company [TEN / BoPO Discord Bot](https://ten.rik.ai)
