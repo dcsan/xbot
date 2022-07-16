@@ -3,7 +3,7 @@
 This is an engine to run text adventure games inside Discord.
 It includes a full parser for a custom game scripting language.
 
-<img width='250px' src'https://dc.rik.ai/assets/projectDetail/ten/tut-clip-x2.gif' />
+<img width='350px' src='https://dc.rik.ai/assets/projectDetail/ten/tut-clip-x2.gif' />
 
 
 ## Try the game!
