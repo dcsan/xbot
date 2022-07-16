@@ -1,3 +1,5 @@
+// TODO - google shut this down so I need to remove this logging
+
 // Google ChatBase logging lib
 // https://github.com/google/chatbase-node/blob/master/README.md
 
@@ -15,14 +17,24 @@ chatbase.setApiKey(AppConfig.read('CHATBASE_KEY'))
 
 const CbLogger = {
 
-  async log(palMsg: PalMsg) {
+  async log(_palMsg: PalMsg) {
+    // service doesn't exist now
+    return
+  },
+
+  async oldLog(palMsg: PalMsg) {
     // logger.log('log palMsg', palMsg)
     assert(palMsg.userId !== null)
     assert(palMsg.platform !== null)
     assert(palMsg.text !== null)
     assert(palMsg.sender !== null)
 
-    const cbMsg = chatbase.newMessage(AppConfig.read('CHATBASE_KEY'))
+    const cbKey = AppConfig.read('CHATBASE_KEY')
+    if (!cbKey) {
+      return
+    }
+
+    const cbMsg = chatbase.newMessage(cbKey)
 
     // platform
     cbMsg.setPlatform(palMsg.platform)
