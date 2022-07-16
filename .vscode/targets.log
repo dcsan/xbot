@@ -1,0 +1,478 @@
+make all --print-data-base --no-builtin-variables --no-builtin-rules --question
+# GNU Make 3.81
+# Copyright (C) 2006  Free Software Foundation, Inc.
+# This is free software; see the source for copying conditions.
+# There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE.
+
+# This program built for i386-apple-darwin11.3.0
+
+# Make data base, printed on Sat Jul 16 12:57:38 2022
+
+# Variables
+
+# automatic
+<D = $(patsubst %/,%,$(dir $<))
+# automatic
+?F = $(notdir $?)
+# environment
+ELECTRON_NO_ATTACH_CONSOLE = 1
+# environment
+FIG_WORKFLOWS_KEYBIND = ^f
+# environment
+LC_CTYPE = en_US.UTF-8
+# environment
+NVM_INC = /Users/dc/.nvm/versions/node/v16.11.1/include/node
+# automatic
+?D = $(patsubst %/,%,$(dir $?))
+# automatic
+@D = $(patsubst %/,%,$(dir $@))
+# automatic
+@F = $(notdir $@)
+# makefile
+CURDIR := /Users/dc/dev/ten/xbot
+# makefile
+SHELL = /bin/sh
+# environment
+VSCODE_NLS_CONFIG = {"locale":"en-us","availableLanguages":{},"_languagePackSupport":true}
+# environment
+_ = /usr/bin/make
+# makefile (from `Makefile', line 1)
+MAKEFILE_LIST :=  Makefile
+# makefile (from `Makefile', line 3)
+deployDir = '/mnt/ext250/web-apps/cbg.rik.ai'
+# environment
+LC_COLLATE = en_US.UTF-8
+# environment
+__CFBundleIdentifier = com.microsoft.VSCode
+# environment
+INFOPATH = /opt/homebrew/share/info:
+# environment
+VSCODE_CWD = /Users/dc/dev/ten/xbot
+# environment
+PATH = /opt/homebrew/opt/libpq/bin:/Users/dc/.yarn/bin:/Users/dc/.config/yarn/global/node_modules/.bin:/Users/dc/.nvm/versions/node/v16.11.1/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/Library/Frameworks/Python.framework/Versions/3.8/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Users/dc/.cargo/bin:/Users/dc/.fig/bin:/Users/dc/.local/bin:~/bin:~dc/dotfiles/bin:/usr/local/bin:/Users/dc/.foundry/bin
+# environment
+LOG_DST = /Users/dc/Library/Application Support/Code/logs/20220716T125733/exthost1/dendron.dendron/dendron.log
+# environment
+LSCOLORS = Gxfxcxdxbxegedabagacad
+# environment
+LC_MESSAGES = en_US.UTF-8
+# environment
+NVM_BIN = /Users/dc/.nvm/versions/node/v16.11.1/bin
+# environment
+LOG_LEVEL = info
+# environment
+LC_NUMERIC = en_US.UTF-8
+# default
+.FEATURES := target-specific order-only second-expansion else-if archives jobserver check-symlink
+# environment
+SSH_AUTH_SOCK = /private/tmp/com.apple.launchd.9zzY94Ygua/Listeners
+# automatic
+%F = $(notdir $%)
+# environment
+TTY = /dev/ttys008
+# environment
+SQLITE_EXEMPT_PATH_FROM_VNODE_GUARDS = /Users/dc/Library/WebKit/Databases
+# environment
+FIG_PID = 29152
+# environment
+PWD = /Users/dc/dev/ten/xbot
+# environment
+HOMEBREW_CELLAR = /opt/homebrew/Cellar
+# environment
+ORIGINAL_XDG_CURRENT_DESKTOP = undefined
+# environment
+MANPATH = /Users/dc/.nvm/versions/node/v16.11.1/share/man:/opt/homebrew/share/man::
+# environment
+VSCODE_AMD_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
+# environment
+HOME = /Users/dc
+# environment
+POWERLINE_COMMAND = oh-my-posh
+# makefile (from `Makefile', line 4)
+login = root@rik.ai
+# environment
+PGDATA = /usr/local/var/postgres
+# default
+MAKEFILEPATH := /Applications/Xcode.app/Contents/Developer/Makefiles
+# environment
+VSCODE_CLI = 1
+# environment
+VSCODE_CODE_CACHE_PATH = /Users/dc/Library/Application Support/Code/CachedData/b06ae3b2d2dbfe28bca3134cc6be65935cdfea6a
+# environment
+LOGNAME = dc
+# environment
+APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = true
+# environment
+CONDA_PROMPT_MODIFIER = false
+# environment
+NVM_CD_FLAGS = -q
+# environment
+ZSH = /Users/dc/.oh-my-zsh
+# environment
+VSCODE_HANDLES_UNCAUGHT_ERRORS = true
+# automatic
+^D = $(patsubst %/,%,$(dir $^))
+# environment
+LC_TIME = en_US.UTF-8
+# environment
+XPC_FLAGS = 0x0
+# environment
+COLORTERM = truecolor
+# default
+MAKE = $(MAKE_COMMAND)
+# environment
+LC_TERMINAL = iTerm2
+# environment
+SHLVL = 3
+# environment
+POSH_THEME = /Users/dc/.cache/oh-my-posh/config.omp.json
+# environment
+FIG_TERM = 1
+# default
+MAKE_VERSION := 3.81
+# environment
+USER = dc
+# environment
+LC_MONETARY = en_US.UTF-8
+# environment
+FIG_TERM_VERSION = 4.4.1
+# default
+MAKECMDGOALS := all
+# environment
+TERM_SESSION_ID = w0t3p0:3A6C854A-36B1-432B-81B1-216966F01CE3
+# environment
+LESS = -R
+# automatic
+%D = $(patsubst %/,%,$(dir $%))
+# environment
+GHI_TOKEN = 8b1b5e4719ad17a4ed39a6118ba7e43c0c695139
+# environment
+FIG_INTEGRATION_VERSION = 8
+# default
+MAKE_COMMAND := /Applications/Xcode.app/Contents/Developer/usr/bin/make
+# environment
+TERM_PROGRAM = iTerm.app
+# default
+.VARIABLES := 
+# environment
+TMPDIR = /var/folders/mv/dl7k_yb16pndc06zn4jq669c0000gn/T/
+# automatic
+*F = $(notdir $*)
+# environment
+VSCODE_IPC_HOOK = /Users/dc/Library/Application Support/Code/1.69.1-main.sock
+# environment
+MallocNanoZone = 0
+# makefile
+MAKEFLAGS = Rrqp
+# environment
+MFLAGS = -Rrqp
+# automatic
+*D = $(patsubst %/,%,$(dir $*))
+# environment
+TERM_PROGRAM_VERSION = 3.4.16
+# environment
+NVM_DIR = /Users/dc/.nvm
+# environment
+XPC_SERVICE_NAME = application.com.microsoft.VSCode.86306456.86306462.6CE3C772-4E52-418A-B3BE-7E3DD567F661
+# environment
+LC_TERMINAL_VERSION = 3.4.16
+# environment
+HOMEBREW_PREFIX = /opt/homebrew
+# automatic
++D = $(patsubst %/,%,$(dir $+))
+# environment
+PGHOST = localhost
+# automatic
++F = $(notdir $+)
+# environment
+ITERM_SESSION_ID = w0t3p0:3A6C854A-36B1-432B-81B1-216966F01CE3
+# environment
+HOMEBREW_REPOSITORY = /opt/homebrew
+# environment
+COLORFGBG = 15;0
+# environment
+__CF_USER_TEXT_ENCODING = 0x1F5:0x0:0x0
+# environment
+COMMAND_MODE = unix2003
+# default
+MAKEFILES := 
+# automatic
+<F = $(notdir $<)
+# environment
+ITERM_PROFILE = pb
+# environment
+ELECTRON_RUN_AS_NODE = 1
+# environment
+EDITOR = vim
+# environment
+PAGER = less
+# environment
+LC_ALL = C
+# automatic
+^F = $(notdir $^)
+# default
+SUFFIXES := 
+# default
+.INCLUDE_DIRS = /usr/local/include
+# environment
+MAKELEVEL := 0
+# makefile
+.DEFAULT_GOAL := login
+# environment
+LANG = C
+# environment
+TERM = xterm-256color
+# environment
+VSCODE_PID = 6708
+# variable set hash-table stats:
+# Load=107/1024=10%, Rehash=0, Collisions=8/131=6%
+
+# Pattern-specific Variable Values
+
+# No pattern-specific variable values.
+
+# Directories
+
+# . (device 16777234, inode 4499155): 14 files, no impossibilities.
+
+# 14 files, no impossibilities in 1 directories.
+
+# Implicit Rules
+
+# No implicit rules.
+
+# Files
+
+# Not a target:
+all:
+#  Command-line target.
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has not been updated.
+# variable set hash-table stats:
+# Load=0/32=0%, Rehash=0, Collisions=0/0=0%
+
+tailNginx:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 94):
+	ssh ${login} "tail -f /var/log/nginx/*log"
+	
+
+buildClient: clean fixPermissions
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 44):
+	cd client && npm run build
+	
+
+copyClient:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 53):
+	cp -r client/build server
+	
+
+prep: clean buildBoth copyClient
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+pm2logs:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 28):
+	ssh ${login} "pm2 logs cbg"
+	
+
+# Not a target:
+.SUFFIXES:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+pm2restart:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 25):
+	ssh ${login} "pm2 restart cbg"
+	
+
+# Not a target:
+Makefile:
+#  Implicit rule search has been done.
+#  Last modified 2022-02-01 09:03:35
+#  File has been updated.
+#  Successfully updated.
+# variable set hash-table stats:
+# Load=0/32=0%, Rehash=0, Collisions=0/0=0%
+
+syncCdn: fixPermissions
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 78):
+	rsync -avi --delete \
+	--exclude .git \
+	server/cdn/ "${login}:${deployDir}/cdn"
+	echo "done"
+	
+
+buildServer:
+ 
+make: *** No rule to make target `all'.  Stop.
+
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 47):
+	cd server && npm run build
+	
+
+quickDeploy: buildServer sync pm2restart
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+sync:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 60):
+	rsync -avi --delete \
+	--exclude .git \
+	--exclude coverage \
+	--exclude ./src/* \
+	--exclude *.ts \
+	--exclude .vscode \
+	--exclude .build \
+	--exclude .github \
+	--exclude coverage \
+	--exclude logs/*.log \
+	--exclude docs \
+	--exclude asylum-illustrations \
+	server/ ${login}:${deployDir}
+	echo "done"
+	
+
+buildBoth: buildServer buildClient
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+login:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 7):
+	ssh ${login}
+	
+
+# Not a target:
+.DEFAULT:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+clean:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 31):
+	rm -rf client/build
+	rm -rf server/build
+	rm -rf server/dist
+	
+
+nginxSetup:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 11):
+	scp devops/cbg.rik.ai.nginx ${login}:/etc/nginx/sites-enabled/
+	# echo "testing config:"
+	ssh ${login} "sudo nginx -t"
+	# echo "restarting nginx"
+	ssh ${login} "sudo nginx -t && sudo systemctl restart nginx"
+	
+
+testLocalImages:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 100):
+	curl http://localhost:33010/cdn/assets/items/key.png
+	
+
+firstDeploy:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 18):
+	# make deploy dir
+	ssh ${login} "mkdir -p ${deployDir}"
+	
+
+pm2first:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 22):
+	ssh ${login} "cd ${deployDir} && NODE_ENV=production pm2 --name=cbg start dist/index.js"
+	
+
+deploy: prep sync pm2restart
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+testDeploy:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 97):
+	curl http://cbg.rik.ai/assets/items/chest-closed.png
+	
+
+renewCert:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 91):
+	certbot certonly -n -d cbg.rik.ai --nginx
+	
+
+fixPermissions:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  commands to execute (from `Makefile', line 37):
+	# directories 755
+	find server/cdn -type d -exec chmod 755 {} \;
+	# files 644
+	find server/cdn -type f -name '*.jpg' -exec chmod 644 {} \;
+	find server/cdn -type f -name '*.png' -exec chmod 644 {} \;
+	
+
+# files hash-table stats:
+# Load=25/1024=2%, Rehash=0, Collisions=1/51=2%
+# VPATH Search Paths
+
+# No `vpath' search paths.
+
+# No general (`VPATH' variable) search path.
+
+# # of strings in strcache: 1
+# # of strcache buffers: 1
+# strcache size: total = 4096 / max = 4096 / min = 4096 / avg = 4096
+# strcache free: total = 4087 / max = 4087 / min = 4087 / avg = 4087
+
+# Finished Make data base on Sat Jul 16 12:57:38 2022
+
+ 
