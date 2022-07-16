@@ -59,13 +59,14 @@ rooms:
 The script language is documented here with example stories:
 https://github.com/dcsan/storydata
 
-
-- status - player status and all items in the room
-- cheat - see room actions
-- look - view the room
-- inv - items
-- debug - turn event debugging on/off
-- log - show whole chat history
+| command  | description                             |
+| -------- | --------------------------------------- |
+| `status` | player status and all items in the room |
+| `cheat`  | see room actions                        |
+| `look`   | view the room                           |
+| `inv`    | items                                   |
+| `debug`  | turn event debugging on/off             |
+| `log`    | show whole chat history                 |
 
 Full Command list:
 https://github.com/exiteer/xbot/blob/master/server/src/mup/parser/CommandList.ts
@@ -174,8 +175,11 @@ Again this is implemented in [GameObject](https://github.com/exiteer/xbot/blob/m
   }
 ```
 
+# DevOps
+<details>
+<summary>### Deploying / Nginx / Proxy </summary>
 
-### Deploying
+
 
 [Makefile](Makefile) has various deploy scripts
 
@@ -204,6 +208,8 @@ https://cbg.rik.ai/api/webhooks/slack
 
 ### API calls
 Everything handled by the server is under `/api` namespace.
+
+</details>
 
 # Marketing stuff
 
