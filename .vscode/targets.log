@@ -6,8 +6,11 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # PARTICULAR PURPOSE.
 
 # This program built for i386-apple-darwin11.3.0
+ 
+make: *** No rule to make target `all'.  Stop.
 
-# Make data base, printed on Sat Jul 16 12:57:38 2022
+
+# Make data base, printed on Tue Jul 26 19:01:32 2022
 
 # Variables
 
@@ -22,7 +25,7 @@ FIG_WORKFLOWS_KEYBIND = ^f
 # environment
 LC_CTYPE = en_US.UTF-8
 # environment
-NVM_INC = /Users/dc/.nvm/versions/node/v16.11.1/include/node
+NVM_INC = /Users/dc/.nvm/versions/node/v18.6.0/include/node
 # automatic
 ?D = $(patsubst %/,%,$(dir $?))
 # automatic
@@ -50,31 +53,29 @@ INFOPATH = /opt/homebrew/share/info:
 # environment
 VSCODE_CWD = /Users/dc/dev/ten/xbot
 # environment
-PATH = /opt/homebrew/opt/libpq/bin:/Users/dc/.yarn/bin:/Users/dc/.config/yarn/global/node_modules/.bin:/Users/dc/.nvm/versions/node/v16.11.1/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/Library/Frameworks/Python.framework/Versions/3.8/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Users/dc/.cargo/bin:/Users/dc/.fig/bin:/Users/dc/.local/bin:~/bin:~dc/dotfiles/bin:/usr/local/bin:/Users/dc/.foundry/bin
-# environment
-LOG_DST = /Users/dc/Library/Application Support/Code/logs/20220716T125733/exthost1/dendron.dendron/dendron.log
+PATH = /Users/dc/miniconda3/bin:/Users/dc/miniconda3/condabin:/opt/homebrew/opt/libpq/bin:/Users/dc/.yarn/bin:/Users/dc/.config/yarn/global/node_modules/.bin:/Users/dc/.nvm/versions/node/v18.6.0/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/Library/Frameworks/Python.framework/Versions/3.8/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Users/dc/.cargo/bin:/Users/dc/.fig/bin:/Users/dc/.local/bin:~/bin:~dc/dotfiles/bin:/usr/local/bin:/Users/dc/.foundry/bin
 # environment
 LSCOLORS = Gxfxcxdxbxegedabagacad
 # environment
 LC_MESSAGES = en_US.UTF-8
 # environment
-NVM_BIN = /Users/dc/.nvm/versions/node/v16.11.1/bin
+NVM_BIN = /Users/dc/.nvm/versions/node/v18.6.0/bin
 # environment
-LOG_LEVEL = info
+LaunchInstanceID = A61CC6C5-BC2B-4BA9-832F-F9322819E437
 # environment
 LC_NUMERIC = en_US.UTF-8
 # default
 .FEATURES := target-specific order-only second-expansion else-if archives jobserver check-symlink
 # environment
-SSH_AUTH_SOCK = /private/tmp/com.apple.launchd.9zzY94Ygua/Listeners
+SSH_AUTH_SOCK = /private/tmp/com.apple.launchd.9i9PkUEDdC/Listeners
 # automatic
 %F = $(notdir $%)
 # environment
-TTY = /dev/ttys008
+CONDA_EXE = /Users/dc/miniconda3/bin/conda
 # environment
-SQLITE_EXEMPT_PATH_FROM_VNODE_GUARDS = /Users/dc/Library/WebKit/Databases
+TTY = /dev/ttys020
 # environment
-FIG_PID = 29152
+FIG_PID = 70232
 # environment
 PWD = /Users/dc/dev/ten/xbot
 # environment
@@ -82,7 +83,7 @@ HOMEBREW_CELLAR = /opt/homebrew/Cellar
 # environment
 ORIGINAL_XDG_CURRENT_DESKTOP = undefined
 # environment
-MANPATH = /Users/dc/.nvm/versions/node/v16.11.1/share/man:/opt/homebrew/share/man::
+MANPATH = /Users/dc/.nvm/versions/node/v18.6.0/share/man:/opt/homebrew/share/man::
 # environment
 VSCODE_AMD_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
 # environment
@@ -98,13 +99,13 @@ MAKEFILEPATH := /Applications/Xcode.app/Contents/Developer/Makefiles
 # environment
 VSCODE_CLI = 1
 # environment
-VSCODE_CODE_CACHE_PATH = /Users/dc/Library/Application Support/Code/CachedData/b06ae3b2d2dbfe28bca3134cc6be65935cdfea6a
+VSCODE_CODE_CACHE_PATH = /Users/dc/Library/Application Support/Code/CachedData/3b889b090b5ad5793f524b5d1d39fda662b96a2a
 # environment
 LOGNAME = dc
 # environment
 APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = true
 # environment
-CONDA_PROMPT_MODIFIER = false
+CONDA_PROMPT_MODIFIER = (base) 
 # environment
 NVM_CD_FLAGS = -q
 # environment
@@ -115,6 +116,8 @@ VSCODE_HANDLES_UNCAUGHT_ERRORS = true
 ^D = $(patsubst %/,%,$(dir $^))
 # environment
 LC_TIME = en_US.UTF-8
+# environment
+CONDA_DEFAULT_ENV = base
 # environment
 XPC_FLAGS = 0x0
 # environment
@@ -140,7 +143,7 @@ FIG_TERM_VERSION = 4.4.1
 # default
 MAKECMDGOALS := all
 # environment
-TERM_SESSION_ID = w0t3p0:3A6C854A-36B1-432B-81B1-216966F01CE3
+TERM_SESSION_ID = w0t9p0:B0E030CA-543B-460D-A2D0-0B039E794A29
 # environment
 LESS = -R
 # automatic
@@ -149,6 +152,8 @@ LESS = -R
 GHI_TOKEN = 8b1b5e4719ad17a4ed39a6118ba7e43c0c695139
 # environment
 FIG_INTEGRATION_VERSION = 8
+# environment
+CONDA_SHLVL = 1
 # default
 MAKE_COMMAND := /Applications/Xcode.app/Contents/Developer/usr/bin/make
 # environment
@@ -160,7 +165,7 @@ TMPDIR = /var/folders/mv/dl7k_yb16pndc06zn4jq669c0000gn/T/
 # automatic
 *F = $(notdir $*)
 # environment
-VSCODE_IPC_HOOK = /Users/dc/Library/Application Support/Code/1.69.1-main.sock
+VSCODE_IPC_HOOK = /Users/dc/Library/Application Support/Code/1.69.2-main.sock
 # environment
 MallocNanoZone = 0
 # makefile
@@ -174,7 +179,7 @@ TERM_PROGRAM_VERSION = 3.4.16
 # environment
 NVM_DIR = /Users/dc/.nvm
 # environment
-XPC_SERVICE_NAME = application.com.microsoft.VSCode.86306456.86306462.6CE3C772-4E52-418A-B3BE-7E3DD567F661
+XPC_SERVICE_NAME = application.com.microsoft.VSCode.87643014.87643020.F54CB4B7-A027-4952-B713-4798DD7580E7
 # environment
 LC_TERMINAL_VERSION = 3.4.16
 # environment
@@ -186,7 +191,7 @@ PGHOST = localhost
 # automatic
 +F = $(notdir $+)
 # environment
-ITERM_SESSION_ID = w0t3p0:3A6C854A-36B1-432B-81B1-216966F01CE3
+ITERM_SESSION_ID = w0t9p0:B0E030CA-543B-460D-A2D0-0B039E794A29
 # environment
 HOMEBREW_REPOSITORY = /opt/homebrew
 # environment
@@ -209,10 +214,16 @@ EDITOR = vim
 PAGER = less
 # environment
 LC_ALL = C
+# environment
+CONDA_PYTHON_EXE = /Users/dc/miniconda3/bin/python
+# environment
+SECURITYSESSIONID = 186b1
 # automatic
 ^F = $(notdir $^)
 # default
 SUFFIXES := 
+# environment
+_CE_M = 
 # default
 .INCLUDE_DIRS = /usr/local/include
 # environment
@@ -220,13 +231,17 @@ MAKELEVEL := 0
 # makefile
 .DEFAULT_GOAL := login
 # environment
-LANG = C
+CONDA_PREFIX = /Users/dc/miniconda3
 # environment
 TERM = xterm-256color
 # environment
-VSCODE_PID = 6708
+VSCODE_PID = 87819
+# environment
+_CE_CONDA = 
+# environment
+LANG = C
 # variable set hash-table stats:
-# Load=107/1024=10%, Rehash=0, Collisions=8/131=6%
+# Load=113/1024=11%, Rehash=0, Collisions=9/137=7%
 
 # Pattern-specific Variable Values
 
@@ -234,7 +249,7 @@ VSCODE_PID = 6708
 
 # Directories
 
-# . (device 16777234, inode 4499155): 14 files, no impossibilities.
+# . (device 16777230, inode 4499155): 14 files, no impossibilities.
 
 # 14 files, no impossibilities in 1 directories.
 
@@ -325,10 +340,8 @@ syncCdn: fixPermissions
 	
 
 buildServer:
- 
-make: *** No rule to make target `all'.  Stop.
-
 #  Implicit rule search has not been done.
+ 
 #  Modification time never checked.
 #  File has not been updated.
 #  commands to execute (from `Makefile', line 47):
@@ -473,6 +486,6 @@ fixPermissions:
 # strcache size: total = 4096 / max = 4096 / min = 4096 / avg = 4096
 # strcache free: total = 4087 / max = 4087 / min = 4087 / avg = 4087
 
-# Finished Make data base on Sat Jul 16 12:57:38 2022
+# Finished Make data base on Tue Jul 26 19:01:32 2022
 
  

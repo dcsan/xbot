@@ -98,3 +98,4 @@ testDeploy:
 
 testLocalImages:
 	curl http://localhost:33010/cdn/assets/items/key.png
+

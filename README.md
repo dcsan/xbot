@@ -4,7 +4,7 @@ This is an engine to run text adventure games inside Discord.
 It includes a full parser for a custom game scripting language.
 
 Released as Open Source, so please do what you want!
-If you need help leave an issue here in the repo or ask me (email in bio!)
+If you need help leave an issue here in the repo or ask me.
 
 I wrote up a bit more about the project genesis here:
 
@@ -66,14 +66,18 @@ rooms:
 The script language is documented here with example stories:
 https://github.com/dcsan/storydata
 
-| command  | description                             |
-| -------- | --------------------------------------- |
-| `status` | player status and all items in the room |
-| `cheat`  | see room actions                        |
-| `look`   | view the room                           |
-| `inv`    | items                                   |
-| `debug`  | turn event debugging on/off             |
-| `log`    | show whole chat history                 |
+| command                    | description                             |
+| -------------------------- | --------------------------------------- |
+| `status`                   | player status and all items in the room |
+| `look`                     | view the room                           |
+| `look` `<item>`            | inspect an item                         |
+| `get`                      | take an item from the room              |
+| `inv`                      | show inventory items you're carrying    |
+| `use` `<item>`             | use an item                             |
+| `use` `<item>` on `<item>` | use an item with another thing          |
+| `debug`                    | turn event debugging on/off             |
+| `log`                      | show whole chat history                 |
+| `cheat`                    | see room actions                        |
 
 Full Command list:
 https://github.com/exiteer/xbot/blob/master/server/src/mup/parser/CommandList.ts
