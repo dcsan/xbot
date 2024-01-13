@@ -12,6 +12,15 @@ https://dc.rik.ai/projects/ten
 
 <img width='350px' src='https://dc.rik.ai/assets/projectDetail/ten/tut-clip-x2.gif' />
 
+## Initial setup
+Clone with submodules for story content
+
+`git clone --recurse-submodules git@github.com:dcsan/xbot.git`
+
+or if you already cloned it, get the submodules
+
+`git submodule update --init --recursive`
+
 
 ## Try the game!
 
@@ -190,18 +199,32 @@ Again this is implemented in [GameObject](https://github.com/exiteer/xbot/blob/m
 <details>
 <summary>### Deploying / Nginx / Proxy </summary>
 
-
-
 [Makefile](Makefile) has various deploy scripts
+
+These are specific to my domain, so you will need to change eg cbg.rik.ai to your domain
 
 `server/build` is where the built files the client go before deploying
 
-if you update/deploy the nginx script,
-you might need to run certbot on the server again
+### start server
+
+make sure you have a `.env.production` file with the correct settings then
+start the server with
+
+`NODE_ENV=production pm2 --name=cbg start dist/index.js`
+
+### ssh cert
+if you update/deploy the nginx script, you might need to run certbot on the server again
 check the certificate is in the correct place
 
+`certbot certonly -n -d cbg.rik.ai --nginx`
+
 ### Static files
-some web features are in /client
+some web game features are in /client but you just need to host those files.
+check nginx config for the correct path, eg
+
+`/mnt/ext250/web-apps/cbg.rik.ai/cdn/`
+
+sometimes the discord CDN will cache failed requests so be patient when updating files
 
 ### Notes
 

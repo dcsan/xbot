@@ -87,8 +87,10 @@ deploy: prep sync pm2restart
 # just server code
 quickDeploy: buildServer sync pm2restart
 
+# run on the target machine
 renewCert:
 	certbot certonly -n -d cbg.rik.ai --nginx
+	sudo systemctl restart nginx
 
 tailNginx:
 	ssh ${login} "tail -f /var/log/nginx/*log"
